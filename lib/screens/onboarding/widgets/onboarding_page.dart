@@ -1,0 +1,113 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+
+/// A reusable info page widget for onboarding screens (pages 1-3).
+///
+/// Displays a large animated icon inside a gradient circle,
+/// a bold title, and a descriptive subtitle. All elements
+/// animate in with staggered fade and slide effects.
+class OnboardingPage extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String description;
+  final List<Color> gradientColors;
+
+  const OnboardingPage({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.description,
+    required this.gradientColors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Spacer(flex: 2),
+
+          // --- Gradient circle with icon ---
+          Container(
+            width: 180,
+            height: 180,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: gradientColors,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: gradientColors.first.withValues(alpha: 0.4),
+                  blurRadius: 30,
+                  offset: const Offset(0, 12),
+                ),
+              ],
+            ),
+            child: Icon(
+              icon,
+              size: 80,
+              color: Colors.white,
+            ),
+          )
+              .animate()
+              .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+              .scale(
+                begin: const Offset(0.5, 0.5),
+                end: const Offset(1.0, 1.0),
+                duration: 600.ms,
+                curve: Curves.elasticOut,
+              ),
+
+          const SizedBox(height: 48),
+
+          // --- Title ---
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+          )
+              .animate()
+              .fadeIn(delay: 200.ms, duration: 500.ms)
+              .slideY(
+                begin: 0.3,
+                end: 0,
+                delay: 200.ms,
+                duration: 500.ms,
+                curve: Curves.easeOut,
+              ),
+
+          const SizedBox(height: 16),
+
+          // --- Description ---
+          Text(
+            description,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Colors.white.withValues(alpha: 0.85),
+                  height: 1.5,
+                ),
+          )
+              .animate()
+              .fadeIn(delay: 400.ms, duration: 500.ms)
+              .slideY(
+                begin: 0.3,
+                end: 0,
+                delay: 400.ms,
+                duration: 500.ms,
+                curve: Curves.easeOut,
+              ),
+
+          const Spacer(flex: 3),
+        ],
+      ),
+    );
+  }
+}

@@ -1,0 +1,102 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'core/theme/app_theme.dart';
+import 'core/router/app_router.dart';
+import 'providers/providers.dart';
+import 'screens/lock/lock_screen.dart';
+
+class ReglTakipApp extends ConsumerStatefulWidget {
+  const ReglTakipApp({super.key});
+
+  @override
+  ConsumerState<ReglTakipApp> createState() => _ReglTakipAppState();
+}
+
+class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
+    with WidgetsBindingObserver {
+  bool _isLocked = true;
+  bool _needsLock = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _checkLockNeeded();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  void _checkLockNeeded() {
+    final profile = ref.read(userProfileProvider);
+    final needs = (profile?.pinEnabled == true) || (profile?.biometricEnabled == true);
+    setState(() {
+      _needsLock = needs;
+      _isLocked = needs;
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      // Re-lock when app goes to background
+      final profile = ref.read(userProfileProvider);
+      if ((profile?.pinEnabled == true) || (profile?.biometricEnabled == true)) {
+        setState(() => _isLocked = true);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final locale = ref.watch(localeProvider);
+    final router = ref.watch(routerProvider);
+    final isDarkMode = ref.watch(darkModeProvider);
+
+    // Watch profile changes to detect lock settings changes
+    final profile = ref.watch(userProfileProvider);
+    final currentNeedsLock =
+        (profile?.pinEnabled == true) || (profile?.biometricEnabled == true);
+    if (currentNeedsLock != _needsLock) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          _needsLock = currentNeedsLock;
+          if (!currentNeedsLock) _isLocked = false;
+        });
+      });
+    }
+
+    return MaterialApp.router(
+      title: 'Regl Takip',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      locale: locale,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('tr'),
+        Locale('en'),
+      ],
+      routerConfig: router,
+      builder: (context, child) {
+        if (_isLocked && _needsLock) {
+          return LockScreen(
+            onUnlocked: () => setState(() => _isLocked = false),
+          );
+        }
+        return child ?? const SizedBox.shrink();
+      },
+    );
+  }
+}
