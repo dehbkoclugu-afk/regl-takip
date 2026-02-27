@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
 
 /// Shows a full-screen PIN setup flow. Returns true if PIN was set successfully.
@@ -107,7 +106,7 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
               const SizedBox(height: 16),
               Text(
                 _isConfirming ? l10n.confirmPin : l10n.createPin,
-                style: GoogleFonts.nunito(
+                style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -118,7 +117,7 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
                     l10n.pinMismatch,
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(
                       fontSize: 14,
                       color: Colors.yellow.shade200,
                     ),
@@ -190,7 +189,7 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
                 }
                 return _numpadButton(
                   child: Text(key,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w600,
                           color: Colors.white)),

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
@@ -44,7 +43,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       appBar: AppBar(
         title: Text(
           l10n.calendar,
-          style: GoogleFonts.nunito(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             color: AppColors.tp(context),
           ),
@@ -81,7 +80,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               headerStyle: HeaderStyle(
                 formatButtonVisible: false,
                 titleCentered: true,
-                titleTextStyle: GoogleFonts.nunito(
+                titleTextStyle: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.tp(context),
@@ -92,30 +91,30 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     color: AppColors.primary),
               ),
               daysOfWeekStyle: DaysOfWeekStyle(
-                weekdayStyle: GoogleFonts.nunito(
+                weekdayStyle: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: AppColors.ts(context)),
-                weekendStyle: GoogleFonts.nunito(
+                weekendStyle: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: AppColors.ts(context)),
               ),
               calendarStyle: CalendarStyle(
                 outsideDaysVisible: false,
-                defaultTextStyle: GoogleFonts.nunito(
+                defaultTextStyle: TextStyle(
                     fontWeight: FontWeight.w600, color: AppColors.tp(context)),
-                weekendTextStyle: GoogleFonts.nunito(
+                weekendTextStyle: TextStyle(
                     fontWeight: FontWeight.w600, color: AppColors.tp(context)),
                 todayDecoration: BoxDecoration(
                   color: AppColors.primary.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                todayTextStyle: GoogleFonts.nunito(
+                todayTextStyle: TextStyle(
                     fontWeight: FontWeight.bold, color: AppColors.primary),
                 selectedDecoration: const BoxDecoration(
                     color: AppColors.primary, shape: BoxShape.circle),
-                selectedTextStyle: GoogleFonts.nunito(
+                selectedTextStyle: TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.white),
               ),
               calendarBuilders: CalendarBuilders(
@@ -202,7 +201,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             child: Center(
               child: Text(
                 '${day.day}',
-                style: GoogleFonts.nunito(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: isToday ? FontWeight.bold : FontWeight.w600,
                   color: textColor,
@@ -236,7 +235,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         ),
         const SizedBox(width: 4),
         Text(label,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontSize: 12, color: AppColors.ts(context))),
       ],
     );
@@ -292,7 +291,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(dateStr,
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.tp(context))),
@@ -313,7 +312,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           l10n.nGlassesWater(log.waterIntake), AppColors.water),
                     if (log == null && !isPeriod)
                       Text(l10n.noRecordForDay,
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(
                               fontSize: 14, color: AppColors.ts(context))),
                   ],
                 ),
@@ -344,7 +343,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             Icon(icon, color: color, size: 18),
             const SizedBox(width: 8),
             Text(label,
-                style: GoogleFonts.nunito(
+                style: TextStyle(
                     fontSize: 14, fontWeight: FontWeight.w600, color: color)),
           ],
         ),

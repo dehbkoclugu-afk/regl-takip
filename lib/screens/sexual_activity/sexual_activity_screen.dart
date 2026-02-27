@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
@@ -54,7 +53,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
         title: Text(l10n.sexualActivity,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontWeight: FontWeight.bold, color: AppColors.tp(context))),
         backgroundColor: AppColors.bg(context),
         elevation: 0,
@@ -69,7 +68,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(l10n.protectionMethod,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold,
                           color: AppColors.tp(context)))
                       .animate().fadeIn(duration: 400.ms),
@@ -102,7 +101,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
         final isSelected = _protection == method;
         return ChoiceChip(
           label: Text(labels[method]!,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
                 color: isSelected ? Colors.white : AppColors.tp(context),
@@ -128,7 +127,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(l10n.orgasm,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.w700,
                   color: AppColors.tp(context))),
           Switch.adaptive(
@@ -151,17 +150,17 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(l10n.noteOptional,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.w700,
                   color: AppColors.tp(context))),
           const SizedBox(height: 12),
           TextField(
             controller: _noteController,
             maxLines: 3,
-            style: GoogleFonts.nunito(color: AppColors.tp(context)),
+            style: TextStyle(color: AppColors.tp(context)),
             decoration: InputDecoration(
               hintText: l10n.addNoteHint,
-              hintStyle: GoogleFonts.nunito(color: AppColors.ts(context)),
+              hintStyle: TextStyle(color: AppColors.ts(context)),
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide(color: AppColors.dv(context))),
@@ -191,7 +190,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
                 borderRadius: BorderRadius.circular(16)),
           ),
           child: Text(l10n.save,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.bold)),
         ),
       ),

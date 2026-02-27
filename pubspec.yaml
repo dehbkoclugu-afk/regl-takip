@@ -30,7 +30,7 @@ dependencies:
   printing: ^5.13.5
   uuid: ^4.5.1
   smooth_page_indicator: ^1.2.0+3
-  google_fonts: ^6.2.1
+
   percent_indicator: ^4.2.3
   flutter_animate: ^4.5.2
   timezone: ^0.9.4
@@ -47,3 +47,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+
+  fonts:
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito-Variable.ttf

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
@@ -36,7 +35,7 @@ class _MedicationTrackingScreenState
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
         title: Text(l10n.medicationTracking,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontWeight: FontWeight.bold, color: AppColors.tp(context))),
         backgroundColor: AppColors.bg(context),
         elevation: 0,
@@ -60,11 +59,11 @@ class _MedicationTrackingScreenState
               color: AppColors.ts(context).withValues(alpha: 0.3)),
           const SizedBox(height: 16),
           Text(l10n.noMedicationsYet,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 16, color: AppColors.ts(context))),
           const SizedBox(height: 8),
           Text(l10n.tapToAdd,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 13, color: AppColors.ts(context))),
         ],
       ),
@@ -132,7 +131,7 @@ class _MedicationTrackingScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(med.name,
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w700,
                               color: AppColors.tp(context),
                               decoration: med.taken
@@ -141,14 +140,14 @@ class _MedicationTrackingScreenState
                             )),
                         if (med.dose.isNotEmpty)
                           Text(med.dose,
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(
                                   fontSize: 13, color: AppColors.ts(context))),
                       ],
                     ),
                   ),
                   if (med.reminderTime != null)
                     Text(med.reminderTime!,
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(
                             fontSize: 13, fontWeight: FontWeight.w600,
                             color: AppColors.medication)),
                 ],
@@ -192,13 +191,13 @@ class _MedicationTrackingScreenState
               ),
               const SizedBox(height: 20),
               Text(l10n.addMedication,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(
                       fontSize: 20, fontWeight: FontWeight.bold,
                       color: AppColors.tp(context))),
               const SizedBox(height: 16),
               TextField(
                 controller: nameCtrl,
-                style: GoogleFonts.nunito(color: AppColors.tp(context)),
+                style: TextStyle(color: AppColors.tp(context)),
                 decoration: InputDecoration(
                   labelText: l10n.medicationName,
                   border: OutlineInputBorder(
@@ -212,7 +211,7 @@ class _MedicationTrackingScreenState
               const SizedBox(height: 12),
               TextField(
                 controller: doseCtrl,
-                style: GoogleFonts.nunito(color: AppColors.tp(context)),
+                style: TextStyle(color: AppColors.tp(context)),
                 decoration: InputDecoration(
                   labelText: l10n.dose,
                   hintText: l10n.doseHint,
@@ -244,7 +243,7 @@ class _MedicationTrackingScreenState
                           color: AppColors.medication),
                       const SizedBox(width: 12),
                       Text(selectedTime.format(ctx),
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(
                               fontSize: 16, color: AppColors.tp(context))),
                     ],
                   ),
@@ -276,7 +275,7 @@ class _MedicationTrackingScreenState
                         borderRadius: BorderRadius.circular(14)),
                   ),
                   child: Text(l10n.add,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(
                           fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),

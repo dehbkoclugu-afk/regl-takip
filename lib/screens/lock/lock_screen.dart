@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:local_auth/local_auth.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/providers.dart';
@@ -108,7 +107,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
               const SizedBox(height: 16),
               Text(
                 l10n.enterPin,
-                style: GoogleFonts.nunito(
+                style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -119,7 +118,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
                     l10n.wrongPin,
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(
                       fontSize: 14,
                       color: Colors.yellow.shade200,
                     ),
@@ -137,7 +136,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                       color: Colors.white70, size: 28),
                   label: Text(
                     l10n.unlockWithBiometric,
-                    style: GoogleFonts.nunito(color: Colors.white70),
+                    style: TextStyle(color: Colors.white70),
                   ),
                 ),
               const SizedBox(height: 24),
@@ -201,7 +200,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                 }
                 return _numpadButton(
                   child: Text(key,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w600,
                           color: Colors.white)),

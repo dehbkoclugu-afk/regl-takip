@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/providers.dart';
@@ -124,7 +123,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
         title: Text(l10n.editProfile,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontWeight: FontWeight.bold, color: AppColors.tp(context))),
         backgroundColor: AppColors.bg(context),
         elevation: 0,
@@ -144,11 +143,11 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                     child: TextField(
                       controller: _nameController,
                       textCapitalization: TextCapitalization.words,
-                      style: GoogleFonts.nunito(fontSize: 16),
+                      style: TextStyle(fontSize: 16),
                       decoration: InputDecoration(
                         hintText: l10n.yourName,
                         hintStyle:
-                            GoogleFonts.nunito(color: AppColors.ts(context)),
+                            TextStyle(color: AppColors.ts(context)),
                         filled: true,
                         fillColor: AppColors.isDark(context) ? AppColors.cardDark : Colors.grey.shade50,
                         border: OutlineInputBorder(
@@ -273,7 +272,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
               ),
               const SizedBox(width: 12),
               Text(title,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: AppColors.tp(context))),
@@ -311,7 +310,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
             const SizedBox(width: 12),
             Text(
               value,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                 fontSize: 15,
                 color: hasValue ? AppColors.tp(context) : AppColors.ts(context),
               ),
@@ -334,7 +333,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       children: [
         Text(
           displayText,
-          style: GoogleFonts.nunito(
+          style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
             color: AppColors.primary,
@@ -383,7 +382,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                   child: CircularProgressIndicator(
                       strokeWidth: 2.5, color: Colors.white))
               : Text(l10n.save,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(
                       fontSize: 16, fontWeight: FontWeight.bold)),
         ),
       ),

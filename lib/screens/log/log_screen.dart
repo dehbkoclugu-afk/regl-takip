@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
@@ -49,7 +48,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
       backgroundColor: logBg,
       appBar: AppBar(
         title: Text(l10n.dailyLog,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontWeight: FontWeight.bold, color: AppColors.tp(context))),
         backgroundColor: logBg,
         elevation: 0,
@@ -112,7 +111,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
                 children: [
                   Text(
                     DateFormat('E', Localizations.localeOf(context).toString()).format(date).substring(0, 2).toUpperCase(),
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: isSelected ? Colors.white70 : AppColors.ts(context),
@@ -121,7 +120,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
                   const SizedBox(height: 4),
                   Text(
                     '${date.day}',
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: isSelected ? Colors.white : AppColors.tp(context),
@@ -207,7 +206,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(cat.label,
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.tp(context),
@@ -215,7 +214,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
                               overflow: TextOverflow.ellipsis),
                           if (cat.summary.isNotEmpty)
                             Text(cat.summary,
-                                style: GoogleFonts.nunito(
+                                style: TextStyle(
                                   fontSize: 11,
                                   color: AppColors.ts(context),
                                 ),

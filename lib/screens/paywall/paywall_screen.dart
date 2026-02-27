@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
@@ -146,7 +145,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       // Title
                       Text(
                         'Premium\'a Geç',
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w800,
                           color: AppColors.tp(context),
@@ -156,7 +155,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       Text(
                         'Deneme süreniz sona erdi.\nPremium ile tüm özelliklere erişmeye devam edin!',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(
                           fontSize: 15,
                           color: AppColors.ts(context),
                           height: 1.5,
@@ -189,7 +188,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                               ),
                               child: Text(
                                 '1 Ay Ücretsiz Deneme',
-                                style: GoogleFonts.nunito(
+                                style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
                                   color: AppColors.primaryDark,
@@ -199,7 +198,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                             const SizedBox(height: 12),
                             Text(
                               'sonrasında',
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(
                                 fontSize: 13,
                                 color: AppColors.ts(context),
                               ),
@@ -207,7 +206,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                             const SizedBox(height: 4),
                             Text(
                               _price,
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(
                                 fontSize: 36,
                                 fontWeight: FontWeight.w900,
                                 color: AppColors.tp(context),
@@ -216,7 +215,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                             const SizedBox(height: 4),
                             Text(
                               'İstediğin zaman iptal edebilirsin',
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(
                                 fontSize: 12,
                                 color: AppColors.ts(context),
                               ),
@@ -267,7 +266,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                                   )
                                 : Text(
                                     'Abone Ol',
-                                    style: GoogleFonts.nunito(
+                                    style: TextStyle(
                                       fontSize: 17,
                                       fontWeight: FontWeight.w800,
                                       color: Colors.white,
@@ -282,7 +281,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                         onPressed: _purchasing ? null : _restore,
                         child: Text(
                           'Satın Alımları Geri Yükle',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(
                             fontSize: 14,
                             color: AppColors.ts(context),
                             fontWeight: FontWeight.w600,
@@ -337,7 +336,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                   children: [
                     Text(
                       f.$2,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: AppColors.tp(context),
@@ -345,7 +344,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     ),
                     Text(
                       f.$3,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(
                         fontSize: 12,
                         color: AppColors.ts(context),
                       ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../models/enums.dart';
@@ -119,7 +118,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
         title: Text(l10n.symptomTracking,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontWeight: FontWeight.bold, color: AppColors.tp(context))),
         backgroundColor: AppColors.bg(context),
         elevation: 0,
@@ -130,7 +129,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
           labelColor: AppColors.primary,
           unselectedLabelColor: AppColors.ts(context),
           indicatorColor: AppColors.primary,
-          labelStyle: GoogleFonts.nunito(fontWeight: FontWeight.w700),
+          labelStyle: TextStyle(fontWeight: FontWeight.w700),
           tabs: [
             Tab(text: l10n.physical), Tab(text: l10n.emotional), Tab(text: l10n.skinCategory),
             Tab(text: l10n.digestive), Tab(text: l10n.otherCategory),
@@ -161,7 +160,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
                       borderRadius: BorderRadius.circular(20)),
                 ),
                 child: Text(l10n.saveNSymptoms(_selectedSymptoms.length),
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             ),
@@ -220,7 +219,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
                     size: 28),
                 const SizedBox(height: 6),
                 Text(_symptomName(symptom, l10n),
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
                       color: isSelected ? AppColors.primary : AppColors.tp(context),

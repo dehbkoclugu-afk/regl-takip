@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
@@ -63,11 +62,11 @@ class DashboardScreen extends ConsumerWidget {
         backgroundColor: AppColors.sf(context).withValues(alpha: 0.95),
         title: Text(
           _phaseName(phase, l10n),
-          style: GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         content: Text(
           _phaseInfo(phase, l10n),
-          style: GoogleFonts.nunito(fontSize: 14, height: 1.5),
+          style: TextStyle(fontSize: 14, height: 1.5),
         ),
         actions: [
           TextButton(
@@ -162,7 +161,7 @@ class DashboardScreen extends ConsumerWidget {
               // Greeting
               Text(
                 l10n.helloName(profile?.name ?? ''),
-                style: GoogleFonts.nunito(
+                style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
                   color: AppColors.tp(context),
@@ -184,7 +183,7 @@ class DashboardScreen extends ConsumerWidget {
                     children: [
                       Text(
                         _phaseName(phase, l10n),
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: AppColors.tp(context),
@@ -306,7 +305,7 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(width: 10),
                 Text(
                   label,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: AppColors.tp(context),

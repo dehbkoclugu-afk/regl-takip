@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
@@ -40,7 +39,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
         title: Text(l10n.dailyNote,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontWeight: FontWeight.bold, color: AppColors.tp(context))),
         backgroundColor: AppColors.bg(context),
         elevation: 0,
@@ -65,7 +64,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                             color: AppColors.notesColor, size: 22),
                         const SizedBox(width: 8),
                         Text(l10n.myNotes,
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold,
                                 color: AppColors.tp(context))),
                       ],
@@ -76,12 +75,12 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                       maxLines: 14,
                       maxLength: _maxChars,
                       onChanged: (_) => setState(() {}),
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(
                           fontSize: 15, color: AppColors.tp(context),
                           height: 1.5),
                       decoration: InputDecoration(
                         hintText: l10n.notesHint,
-                        hintStyle: GoogleFonts.nunito(
+                        hintStyle: TextStyle(
                             color: AppColors.ts(context)),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
@@ -90,7 +89,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                             borderRadius: BorderRadius.circular(14),
                             borderSide: const BorderSide(
                                 color: AppColors.notesColor, width: 2)),
-                        counterStyle: GoogleFonts.nunito(
+                        counterStyle: TextStyle(
                             fontSize: 12, color: AppColors.ts(context)),
                       ),
                     ),
@@ -121,7 +120,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                 borderRadius: BorderRadius.circular(16)),
           ),
           child: Text(l10n.save,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.bold)),
         ),
       ),

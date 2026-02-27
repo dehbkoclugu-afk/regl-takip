@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/cycle_utils.dart';
 
@@ -133,7 +133,7 @@ class CycleProgressRing extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           '$cycleDay',
-          style: GoogleFonts.plusJakartaSans(
+          style: TextStyle(
             fontSize: 48,
             fontWeight: FontWeight.w800,
             color: _ringColor,
@@ -143,7 +143,7 @@ class CycleProgressRing extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           l10n.day,
-          style: GoogleFonts.plusJakartaSans(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
             color: AppColors.tp(context),
@@ -161,7 +161,7 @@ class CycleProgressRing extends StatelessWidget {
             daysUntilNextPeriod > 0
                 ? l10n.daysLater(daysUntilNextPeriod)
                 : l10n.todayExclamation,
-            style: GoogleFonts.plusJakartaSans(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
               color: _ringColor,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
@@ -113,7 +113,7 @@ class QuickStatusCards extends ConsumerWidget {
           padding: const EdgeInsets.only(left: 4, bottom: 12),
           child: Text(
             l10n.todaySummary,
-            style: GoogleFonts.plusJakartaSans(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
               color: AppColors.tp(context),
@@ -195,7 +195,7 @@ class QuickStatusCards extends ConsumerWidget {
                 children: [
                   Text(
                     l10n.howAreYouFeeling,
-                    style: GoogleFonts.plusJakartaSans(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: AppColors.tp(context),
@@ -204,7 +204,7 @@ class QuickStatusCards extends ConsumerWidget {
                   const SizedBox(height: 3),
                   Text(
                     l10n.logMoodAndSymptoms,
-                    style: GoogleFonts.plusJakartaSans(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                       color: AppColors.ts(context),
@@ -266,7 +266,7 @@ class QuickStatusCards extends ConsumerWidget {
               children: [
                 Text(
                   l10n.mood,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                     color: AppColors.ts(context),
@@ -276,7 +276,7 @@ class QuickStatusCards extends ConsumerWidget {
                 const SizedBox(height: 2),
                 Text(
                   _moodName(mood, l10n),
-                  style: GoogleFonts.plusJakartaSans(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: AppColors.tp(context),
@@ -331,7 +331,7 @@ class QuickStatusCards extends ConsumerWidget {
               children: [
                 Text(
                   l10n.symptoms,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                     color: AppColors.ts(context),
@@ -341,7 +341,7 @@ class QuickStatusCards extends ConsumerWidget {
                 const SizedBox(height: 2),
                 Text(
                   l10n.nSymptoms(symptomCount),
-                  style: GoogleFonts.plusJakartaSans(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: AppColors.tp(context),

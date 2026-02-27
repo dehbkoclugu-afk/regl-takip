@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
@@ -49,7 +48,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
         title: Text(l10n.weight,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontWeight: FontWeight.bold, color: AppColors.tp(context))),
         backgroundColor: AppColors.bg(context),
         elevation: 0,
@@ -99,12 +98,12 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text(_weight.toStringAsFixed(1),
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(
                       fontSize: 48, fontWeight: FontWeight.bold,
                       color: AppColors.weightColor)),
               const SizedBox(width: 4),
               Text('kg',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(
                       fontSize: 22, fontWeight: FontWeight.w600,
                       color: AppColors.weightColor.withValues(alpha: 0.7))),
             ],
@@ -124,7 +123,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(l10n.quickAdjust,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.w700,
                   color: AppColors.tp(context))),
           const SizedBox(height: 16),
@@ -152,7 +151,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
           borderRadius: BorderRadius.circular(14),
         ),
         child: Text(label,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontSize: 16, fontWeight: FontWeight.w700,
                 color: AppColors.weightColor)),
       ),
@@ -169,19 +168,19 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(l10n.manualEntry,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.w700,
                   color: AppColors.tp(context))),
           const SizedBox(height: 12),
           TextField(
             controller: _controller,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontSize: 22, fontWeight: FontWeight.bold,
                 color: AppColors.weightColor),
             decoration: InputDecoration(
               suffixText: 'kg',
-              suffixStyle: GoogleFonts.nunito(
+              suffixStyle: TextStyle(
                   fontSize: 16, color: AppColors.weightColor),
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
@@ -218,7 +217,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
                 borderRadius: BorderRadius.circular(16)),
           ),
           child: Text(l10n.save,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.bold)),
         ),
       ),

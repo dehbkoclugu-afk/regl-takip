@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 class AppTheme {
   AppTheme._();
 
+  static const String _fontFamily = 'Nunito';
+
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      fontFamily: _fontFamily,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         primary: AppColors.primary,
@@ -17,55 +19,56 @@ class AppTheme {
         error: AppColors.error,
       ),
       scaffoldBackgroundColor: AppColors.background,
-      textTheme: GoogleFonts.nunitoTextTheme().copyWith(
-        headlineLarge: GoogleFonts.nunito(
+      textTheme: const TextTheme(
+        headlineLarge: TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.bold,
           color: AppColors.textPrimary,
         ),
-        headlineMedium: GoogleFonts.nunito(
+        headlineMedium: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,
           color: AppColors.textPrimary,
         ),
-        headlineSmall: GoogleFonts.nunito(
+        headlineSmall: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        titleLarge: GoogleFonts.nunito(
+        titleLarge: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        titleMedium: GoogleFonts.nunito(
+        titleMedium: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        bodyLarge: GoogleFonts.nunito(
+        bodyLarge: TextStyle(
           fontSize: 16,
           color: AppColors.textPrimary,
         ),
-        bodyMedium: GoogleFonts.nunito(
+        bodyMedium: TextStyle(
           fontSize: 14,
           color: AppColors.textSecondary,
         ),
-        bodySmall: GoogleFonts.nunito(
+        bodySmall: TextStyle(
           fontSize: 12,
           color: AppColors.textSecondary,
         ),
       ),
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.nunito(
+        titleTextStyle: TextStyle(
+          fontFamily: _fontFamily,
           fontSize: 20,
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -76,7 +79,8 @@ class AppTheme {
             borderRadius: BorderRadius.circular(24),
           ),
           elevation: 0,
-          textStyle: GoogleFonts.nunito(
+          textStyle: const TextStyle(
+            fontFamily: _fontFamily,
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -90,7 +94,8 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
-          textStyle: GoogleFonts.nunito(
+          textStyle: const TextStyle(
+            fontFamily: _fontFamily,
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -142,6 +147,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
+      fontFamily: _fontFamily,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         brightness: Brightness.dark,
@@ -151,57 +157,56 @@ class AppTheme {
         error: AppColors.error,
       ),
       scaffoldBackgroundColor: AppColors.backgroundDark,
-      textTheme: GoogleFonts.nunitoTextTheme(
-        ThemeData.dark().textTheme,
-      ).copyWith(
-        headlineLarge: GoogleFonts.nunito(
+      textTheme: const TextTheme(
+        headlineLarge: TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.bold,
           color: AppColors.textPrimaryDark,
         ),
-        headlineMedium: GoogleFonts.nunito(
+        headlineMedium: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,
           color: AppColors.textPrimaryDark,
         ),
-        headlineSmall: GoogleFonts.nunito(
+        headlineSmall: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimaryDark,
         ),
-        titleLarge: GoogleFonts.nunito(
+        titleLarge: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimaryDark,
         ),
-        titleMedium: GoogleFonts.nunito(
+        titleMedium: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimaryDark,
         ),
-        bodyLarge: GoogleFonts.nunito(
+        bodyLarge: TextStyle(
           fontSize: 16,
           color: AppColors.textPrimaryDark,
         ),
-        bodyMedium: GoogleFonts.nunito(
+        bodyMedium: TextStyle(
           fontSize: 14,
           color: AppColors.textSecondaryDark,
         ),
-        bodySmall: GoogleFonts.nunito(
+        bodySmall: TextStyle(
           fontSize: 12,
           color: AppColors.textSecondaryDark,
         ),
       ),
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.nunito(
+        titleTextStyle: TextStyle(
+          fontFamily: _fontFamily,
           fontSize: 20,
           fontWeight: FontWeight.bold,
           color: AppColors.textPrimaryDark,
         ),
-        iconTheme: const IconThemeData(color: AppColors.textPrimaryDark),
+        iconTheme: IconThemeData(color: AppColors.textPrimaryDark),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -212,7 +217,8 @@ class AppTheme {
             borderRadius: BorderRadius.circular(24),
           ),
           elevation: 0,
-          textStyle: GoogleFonts.nunito(
+          textStyle: const TextStyle(
+            fontFamily: _fontFamily,
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -226,7 +232,8 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
-          textStyle: GoogleFonts.nunito(
+          textStyle: const TextStyle(
+            fontFamily: _fontFamily,
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),

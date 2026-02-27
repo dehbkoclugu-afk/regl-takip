@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
@@ -40,7 +39,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
         title: Text(l10n.flowTracking,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontWeight: FontWeight.bold, color: AppColors.tp(context))),
         backgroundColor: AppColors.bg(context),
         elevation: 0,
@@ -55,7 +54,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(l10n.flowIntensity,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold,
                           color: AppColors.tp(context)))
                       .animate().fadeIn(duration: 400.ms),
@@ -63,7 +62,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                   _buildIntensityRow(l10n),
                   const SizedBox(height: 28),
                   Text(l10n.color,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold,
                           color: AppColors.tp(context)))
                       .animate().fadeIn(delay: 100.ms, duration: 400.ms),
@@ -130,7 +129,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(item.$2,
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
                       color: isSelected ? item.$4 : AppColors.ts(context),
@@ -185,7 +184,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
               ),
               const SizedBox(height: 6),
               Text(item.$2,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(
                       fontSize: 11, color: AppColors.ts(context)),
                   textAlign: TextAlign.center),
             ],
@@ -208,11 +207,11 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(l10n.clots,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(
                       fontSize: 16, fontWeight: FontWeight.w700,
                       color: AppColors.tp(context))),
               Text(l10n.clotsQuestion,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(
                       fontSize: 13, color: AppColors.ts(context))),
             ],
           ),
@@ -236,7 +235,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(l10n.padChange,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.w700,
                   color: AppColors.tp(context))),
           const SizedBox(height: 16),
@@ -248,7 +247,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
               }),
               const SizedBox(width: 32),
               Text('$_padChanges',
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(
                       fontSize: 36, fontWeight: FontWeight.bold,
                       color: AppColors.primary)),
               const SizedBox(width: 32),
@@ -290,7 +289,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                 borderRadius: BorderRadius.circular(20)),
           ),
           child: Text(l10n.save,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.bold)),
         ),
       ),

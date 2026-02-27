@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/glass_card.dart';
@@ -45,13 +45,13 @@ class PredictionCard extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: Text(title,
-                  style: GoogleFonts.nunito(
+                  style: TextStyle(
                       fontSize: 16, fontWeight: FontWeight.bold)),
             ),
           ],
         ),
         content: Text(infoText!,
-            style: GoogleFonts.nunito(fontSize: 14, height: 1.5)),
+            style: TextStyle(fontSize: 14, height: 1.5)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -104,7 +104,7 @@ class PredictionCard extends StatelessWidget {
                   Flexible(
                     child: Text(
                       title,
-                      style: GoogleFonts.plusJakartaSans(
+                      style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                         color: AppColors.ts(context),
@@ -125,7 +125,7 @@ class PredictionCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 value,
-                style: GoogleFonts.plusJakartaSans(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   color: AppColors.tp(context),

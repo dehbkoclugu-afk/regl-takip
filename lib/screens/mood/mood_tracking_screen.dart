@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../models/enums.dart';
@@ -71,7 +70,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
         title: Text(l10n.mood,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontWeight: FontWeight.bold, color: AppColors.tp(context))),
         backgroundColor: AppColors.bg(context),
         elevation: 0,
@@ -86,7 +85,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(l10n.howAreYouFeeling,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(
                           fontSize: 22, fontWeight: FontWeight.bold,
                           color: AppColors.tp(context)))
                       .animate().fadeIn(duration: 400.ms),
@@ -134,7 +133,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                                       fontSize: isSelected ? 36 : 30)),
                               const SizedBox(height: 6),
                               Text(label,
-                                  style: GoogleFonts.nunito(
+                                  style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: isSelected
                                         ? FontWeight.w700 : FontWeight.w600,
@@ -153,7 +152,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                   ),
                   const SizedBox(height: 24),
                   Text(l10n.addNoteOptional,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(
                           fontSize: 16, fontWeight: FontWeight.w600,
                           color: AppColors.tp(context))),
                   const SizedBox(height: 8),
@@ -162,7 +161,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                     maxLines: 3,
                     decoration: InputDecoration(
                       hintText: l10n.writeAboutToday,
-                      hintStyle: GoogleFonts.nunito(color: AppColors.ts(context)),
+                      hintStyle: TextStyle(color: AppColors.ts(context)),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(color: AppColors.dv(context))),
@@ -191,7 +190,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                       borderRadius: BorderRadius.circular(20)),
                 ),
                 child: Text(l10n.save,
-                    style: GoogleFonts.nunito(
+                    style: TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             ),

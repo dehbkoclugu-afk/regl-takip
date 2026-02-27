@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
@@ -58,7 +57,7 @@ class _TemperatureTrackingScreenState
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
         title: Text(l10n.temperature,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontWeight: FontWeight.bold, color: AppColors.tp(context))),
         backgroundColor: AppColors.bg(context),
         elevation: 0,
@@ -106,14 +105,14 @@ class _TemperatureTrackingScreenState
             duration: const Duration(milliseconds: 300),
             builder: (context, value, _) => Text(
               '${value.toStringAsFixed(1)}°C',
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 48, fontWeight: FontWeight.bold,
                   color: _getTempColor()),
             ),
           ),
           const SizedBox(height: 8),
           Text(_getTempLabel(l10n),
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.w600,
                   color: _getTempColor())),
         ],
@@ -132,9 +131,9 @@ class _TemperatureTrackingScreenState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('35.0°C', style: GoogleFonts.nunito(
+              Text('35.0°C', style: TextStyle(
                   fontSize: 12, color: AppColors.ts(context))),
-              Text('40.0°C', style: GoogleFonts.nunito(
+              Text('40.0°C', style: TextStyle(
                   fontSize: 12, color: AppColors.ts(context))),
             ],
           ),
@@ -192,10 +191,10 @@ class _TemperatureTrackingScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(l10n.measurementTime,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(
                           fontSize: 14, color: AppColors.ts(context))),
                   Text(_measureTime.format(context),
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold,
                           color: AppColors.temperature)),
                 ],
@@ -224,7 +223,7 @@ class _TemperatureTrackingScreenState
                 borderRadius: BorderRadius.circular(16)),
           ),
           child: Text(l10n.save,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.bold)),
         ),
       ),

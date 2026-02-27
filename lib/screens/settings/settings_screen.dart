@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
@@ -27,7 +26,7 @@ class SettingsScreen extends ConsumerWidget {
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
         title: Text(l10n.settings,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontWeight: FontWeight.bold, color: AppColors.tp(context))),
         backgroundColor: AppColors.bg(context),
         elevation: 0,
@@ -71,7 +70,7 @@ class SettingsScreen extends ConsumerWidget {
                     color: AppColors.secondary, size: 22),
               ),
               title: Text(l10n.language,
-                  style: GoogleFonts.nunito(fontWeight: FontWeight.w600)),
+                  style: TextStyle(fontWeight: FontWeight.w600)),
               trailing: SegmentedButton<String>(
                 segments: const [
                   ButtonSegment(value: 'tr', label: Text('TR')),
@@ -87,7 +86,7 @@ class SettingsScreen extends ConsumerWidget {
                 style: ButtonStyle(
                   visualDensity: VisualDensity.compact,
                   textStyle: WidgetStateProperty.all(
-                      GoogleFonts.nunito(fontSize: 13)),
+                      TextStyle(fontSize: 13)),
                 ),
               ),
             ),
@@ -297,7 +296,7 @@ class SettingsScreen extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 4, bottom: 8),
       child: Text(title,
-          style: GoogleFonts.nunito(
+          style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: AppColors.ts(context))),
@@ -327,9 +326,9 @@ class SettingsScreen extends ConsumerWidget {
         child: Icon(icon, color: AppColors.primary, size: 22),
       ),
       title: Text(title,
-          style: GoogleFonts.nunito(fontWeight: FontWeight.w600, fontSize: 15)),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
       trailing: Text(value,
-          style: GoogleFonts.nunito(
+          style: TextStyle(
               fontSize: 14, color: AppColors.ts(context))),
     );
   }
@@ -349,7 +348,7 @@ class SettingsScreen extends ConsumerWidget {
         child: Icon(icon, color: AppColors.primary, size: 22),
       ),
       title: Text(title,
-          style: GoogleFonts.nunito(fontWeight: FontWeight.w600, fontSize: 15)),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
       trailing: Switch(
         value: value,
         onChanged: onChanged,
@@ -374,7 +373,7 @@ class SettingsScreen extends ConsumerWidget {
         child: Icon(icon, color: color, size: 22),
       ),
       title: Text(title,
-          style: GoogleFonts.nunito(fontWeight: FontWeight.w600, fontSize: 15)),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
       trailing: Icon(Icons.chevron_right_rounded, color: AppColors.ts(context)),
     );
   }
@@ -412,9 +411,9 @@ class SettingsScreen extends ConsumerWidget {
             const Icon(Icons.access_time_rounded, color: AppColors.primary, size: 22),
       ),
       title: Text(title,
-          style: GoogleFonts.nunito(fontWeight: FontWeight.w600, fontSize: 15)),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
       trailing: Text(timeStr,
-          style: GoogleFonts.nunito(
+          style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: AppColors.primary)),

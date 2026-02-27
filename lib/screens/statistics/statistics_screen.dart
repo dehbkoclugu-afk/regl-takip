@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
@@ -48,7 +47,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
         title: Text(l10n.statistics,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontWeight: FontWeight.bold, color: AppColors.tp(context))),
         backgroundColor: AppColors.bg(context),
         elevation: 0,
@@ -115,7 +114,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           ),
         ),
         child: Text(label,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: isSelected ? Colors.white : AppColors.ts(context),
@@ -136,7 +135,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(l10n.cycleOverview,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.tp(context))),
@@ -180,12 +179,12 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         ),
         const SizedBox(height: 8),
         Text(value,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: AppColors.tp(context))),
         Text(label,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontSize: 11, color: AppColors.ts(context))),
       ],
     );
@@ -215,7 +214,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(l10n.symptomFrequency,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.tp(context))),
@@ -239,7 +238,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                             padding: const EdgeInsets.only(top: 8),
                             child: Text(
                               top5[idx].key.name.substring(0, 3),
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(
                                   fontSize: 10, color: AppColors.ts(context)),
                             ),
                           );
@@ -318,7 +317,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(l10n.moodDistribution,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.tp(context))),
@@ -336,7 +335,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     value: e.value.toDouble(),
                     title: '$pct%',
                     radius: 50,
-                    titleStyle: GoogleFonts.nunito(
+                    titleStyle: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
@@ -363,7 +362,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(e.key.name,
-                      style: GoogleFonts.nunito(
+                      style: TextStyle(
                           fontSize: 11, color: AppColors.ts(context))),
                 ],
               );
@@ -390,7 +389,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(l10n.cycleHistory,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.tp(context))),
@@ -407,23 +406,23 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     ),
                     const SizedBox(width: 12),
                     Text(dateFormat.format(r.startDate),
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: AppColors.tp(context))),
                     if (r.endDate != null) ...[
                       Text(' - ${dateFormat.format(r.endDate!)}',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(
                               fontSize: 14, color: AppColors.ts(context))),
                     ] else
                       Text(' (${l10n.ongoing})',
-                          style: GoogleFonts.nunito(
+                          style: TextStyle(
                               fontSize: 14,
                               color: AppColors.menstrual,
                               fontStyle: FontStyle.italic)),
                     const Spacer(),
                     Text(l10n.nDays(r.durationDays),
-                        style: GoogleFonts.nunito(
+                        style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                             color: AppColors.ts(context))),
@@ -474,7 +473,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.tp(context))),
@@ -501,7 +500,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                       reservedSize: 42,
                       getTitlesWidget: (value, meta) {
                         return Text(value.toStringAsFixed(1),
-                            style: GoogleFonts.nunito(
+                            style: TextStyle(
                                 fontSize: 10, color: AppColors.ts(context)));
                       },
                     ),
@@ -517,7 +516,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                             padding: const EdgeInsets.only(top: 8),
                             child: Text(
                               dateFormat.format(dataPoints[idx].key),
-                              style: GoogleFonts.nunito(
+                              style: TextStyle(
                                   fontSize: 9, color: AppColors.ts(context)),
                             ),
                           );
@@ -542,7 +541,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                             : '';
                         return LineTooltipItem(
                           '$date\n${spot.y.toStringAsFixed(1)} $unit',
-                          GoogleFonts.nunito(
+                          TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                               color: Colors.white),
@@ -601,13 +600,13 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         child: Column(
           children: [
             Text(title,
-                style: GoogleFonts.nunito(
+                style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppColors.tp(context))),
             const SizedBox(height: 12),
             Text(message,
-                style: GoogleFonts.nunito(
+                style: TextStyle(
                     fontSize: 14, color: AppColors.ts(context))),
           ],
         ),

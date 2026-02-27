@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
@@ -70,7 +69,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
         title: Text(l10n.sleepTracking,
-            style: GoogleFonts.nunito(
+            style: TextStyle(
                 fontWeight: FontWeight.bold, color: AppColors.tp(context))),
         backgroundColor: AppColors.bg(context),
         elevation: 0,
@@ -112,12 +111,12 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
           const Icon(Icons.bedtime_rounded, color: AppColors.sleep, size: 48),
           const SizedBox(height: 12),
           Text(_calculateDuration(),
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 42, fontWeight: FontWeight.bold,
                   color: AppColors.sleep)),
           const SizedBox(height: 4),
           Text(l10n.totalSleep,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 14, color: AppColors.ts(context))),
         ],
       ),
@@ -159,11 +158,11 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
           children: [
             Icon(icon, color: AppColors.sleep, size: 28),
             const SizedBox(height: 8),
-            Text(label, style: GoogleFonts.nunito(
+            Text(label, style: TextStyle(
                 fontSize: 13, color: AppColors.ts(context))),
             const SizedBox(height: 4),
             Text(time.format(context),
-                style: GoogleFonts.nunito(
+                style: TextStyle(
                     fontSize: 22, fontWeight: FontWeight.bold,
                     color: AppColors.sleep)),
           ],
@@ -182,7 +181,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(l10n.sleepQuality,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.w700,
                   color: AppColors.tp(context))),
           const SizedBox(height: 16),
@@ -210,7 +209,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
           const SizedBox(height: 8),
           Center(
             child: Text(_qualityLabelText(l10n),
-                style: GoogleFonts.nunito(
+                style: TextStyle(
                     fontSize: 16, fontWeight: FontWeight.w600,
                     color: AppColors.sleep)),
           ),
@@ -234,7 +233,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
                 borderRadius: BorderRadius.circular(16)),
           ),
           child: Text(l10n.save,
-              style: GoogleFonts.nunito(
+              style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.bold)),
         ),
       ),
