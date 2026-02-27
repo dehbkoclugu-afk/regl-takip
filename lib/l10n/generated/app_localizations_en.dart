@@ -1,0 +1,977 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
+class AppLocalizationsEn extends AppLocalizations {
+  AppLocalizationsEn([String locale = 'en']) : super(locale);
+
+  @override
+  String get appTitle => 'Period Tracker';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get calendar => 'Calendar';
+
+  @override
+  String get log => 'Log';
+
+  @override
+  String get statistics => 'Statistics';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get onboardingWelcome => 'Welcome!';
+
+  @override
+  String get onboardingWelcomeDesc => 'The easiest way to track your health';
+
+  @override
+  String get onboardingTitle1 => 'Track Your Cycle';
+
+  @override
+  String get onboardingDesc1 => 'Easily log your period and predict your next one.';
+
+  @override
+  String get onboardingTitle2 => 'Monitor Your Health';
+
+  @override
+  String get onboardingDesc2 => 'Track symptoms, mood, temperature and more.';
+
+  @override
+  String get onboardingTitle3 => 'View Your Analysis';
+
+  @override
+  String get onboardingDesc3 => 'Understand your cycle with detailed charts and statistics.';
+
+  @override
+  String get onboardingTitle4 => 'Get Notifications';
+
+  @override
+  String get onboardingDesc4 => 'Receive reminders for your period and ovulation days.';
+
+  @override
+  String get getStarted => 'Get Started';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get maybeLater => 'Set up later';
+
+  @override
+  String get enableBiometric => 'Fingerprint / Face recognition';
+
+  @override
+  String get enablePin => 'Lock with PIN';
+
+  @override
+  String get securitySetup => 'Security Setup';
+
+  @override
+  String get securitySetupDesc => 'Would you like to lock the app?';
+
+  @override
+  String get enterName => 'Enter your name';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get birthDate => 'Date of Birth';
+
+  @override
+  String get lastPeriodDate => 'Last Period Date';
+
+  @override
+  String get averageCycleLength => 'Average Cycle Length';
+
+  @override
+  String get averagePeriodLength => 'Average Period Length';
+
+  @override
+  String get days => 'days';
+
+  @override
+  String get day => 'day';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get cycleDay => 'Cycle Day';
+
+  @override
+  String get periodIn => 'Period in';
+
+  @override
+  String daysLeft(int count) {
+    return '$count days left';
+  }
+
+  @override
+  String get periodToday => 'Your period may start today';
+
+  @override
+  String get periodOngoing => 'You are on your period';
+
+  @override
+  String get ovulationDay => 'Ovulation Day';
+
+  @override
+  String get fertileWindow => 'Fertile Window';
+
+  @override
+  String get lutealPhase => 'Luteal Phase';
+
+  @override
+  String get follicularPhase => 'Follicular Phase';
+
+  @override
+  String get periodPhase => 'Period Phase';
+
+  @override
+  String get logPeriod => 'Log Period';
+
+  @override
+  String get periodStarted => 'Period Started';
+
+  @override
+  String get periodEnded => 'Period Ended';
+
+  @override
+  String get flowIntensity => 'Flow Intensity';
+
+  @override
+  String get light => 'Light';
+
+  @override
+  String get medium => 'Medium';
+
+  @override
+  String get heavy => 'Heavy';
+
+  @override
+  String get veryHeavy => 'Very Heavy';
+
+  @override
+  String get spotting => 'Spotting';
+
+  @override
+  String get symptoms => 'Symptoms';
+
+  @override
+  String get mood => 'Mood';
+
+  @override
+  String get temperature => 'Temperature';
+
+  @override
+  String get weight => 'Weight';
+
+  @override
+  String get waterIntake => 'Water Intake';
+
+  @override
+  String get sleep => 'Sleep';
+
+  @override
+  String get sexualActivity => 'Sexual Activity';
+
+  @override
+  String get medication => 'Medication';
+
+  @override
+  String get notes => 'Notes';
+
+  @override
+  String get cramps => 'Cramps';
+
+  @override
+  String get headache => 'Headache';
+
+  @override
+  String get bloating => 'Bloating';
+
+  @override
+  String get breastTenderness => 'Breast Tenderness';
+
+  @override
+  String get backPain => 'Back Pain';
+
+  @override
+  String get fatigue => 'Fatigue';
+
+  @override
+  String get nausea => 'Nausea';
+
+  @override
+  String get dizziness => 'Dizziness';
+
+  @override
+  String get stress => 'Stress';
+
+  @override
+  String get anxiety => 'Anxiety';
+
+  @override
+  String get irritability => 'Irritability';
+
+  @override
+  String get crying => 'Crying';
+
+  @override
+  String get sensitivity => 'Sensitivity';
+
+  @override
+  String get acne => 'Acne';
+
+  @override
+  String get oilySkin => 'Oily Skin';
+
+  @override
+  String get drySkin => 'Dry Skin';
+
+  @override
+  String get constipation => 'Constipation';
+
+  @override
+  String get diarrhea => 'Diarrhea';
+
+  @override
+  String get gas => 'Gas';
+
+  @override
+  String get increasedAppetite => 'Increased Appetite';
+
+  @override
+  String get decreasedAppetite => 'Decreased Appetite';
+
+  @override
+  String get insomnia => 'Insomnia';
+
+  @override
+  String get hotFlash => 'Hot Flash';
+
+  @override
+  String get swelling => 'Swelling';
+
+  @override
+  String get hairLoss => 'Hair Loss';
+
+  @override
+  String get happy => 'Happy';
+
+  @override
+  String get sad => 'Sad';
+
+  @override
+  String get angry => 'Angry';
+
+  @override
+  String get anxious => 'Anxious';
+
+  @override
+  String get calm => 'Calm';
+
+  @override
+  String get energetic => 'Energetic';
+
+  @override
+  String get tired => 'Tired';
+
+  @override
+  String get romantic => 'Romantic';
+
+  @override
+  String get confused => 'Confused';
+
+  @override
+  String get confident => 'Confident';
+
+  @override
+  String get avgCycleLength => 'Avg. Cycle Length';
+
+  @override
+  String get avgPeriodLength => 'Avg. Period Length';
+
+  @override
+  String get cycleHistory => 'Cycle History';
+
+  @override
+  String get symptomFrequency => 'Symptom Frequency';
+
+  @override
+  String get moodDistribution => 'Mood Distribution';
+
+  @override
+  String get temperatureTrend => 'Temperature Trend';
+
+  @override
+  String get weightTrend => 'Weight Trend';
+
+  @override
+  String get last3Months => 'Last 3 Months';
+
+  @override
+  String get last6Months => 'Last 6 Months';
+
+  @override
+  String get last12Months => 'Last 12 Months';
+
+  @override
+  String get exportData => 'Export Data';
+
+  @override
+  String get exportPdf => 'PDF Report';
+
+  @override
+  String get exportCsv => 'CSV File';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get theme => 'Theme';
+
+  @override
+  String get lightTheme => 'Light Theme';
+
+  @override
+  String get darkTheme => 'Dark Theme';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get periodReminder => 'Period Reminder';
+
+  @override
+  String get ovulationReminder => 'Ovulation Reminder';
+
+  @override
+  String get medicationReminder => 'Medication Reminder';
+
+  @override
+  String get waterReminder => 'Water Reminder';
+
+  @override
+  String get security => 'Security';
+
+  @override
+  String get pinLock => 'PIN Lock';
+
+  @override
+  String get biometricLock => 'Biometric Lock';
+
+  @override
+  String get dataBackup => 'Data Backup';
+
+  @override
+  String get deleteAllData => 'Delete All Data';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get version => 'Version';
+
+  @override
+  String get glasses => 'glasses';
+
+  @override
+  String get dailyGoal => 'Daily Goal';
+
+  @override
+  String get sleepQuality => 'Sleep Quality';
+
+  @override
+  String get bedTime => 'Bed Time';
+
+  @override
+  String get wakeTime => 'Wake Time';
+
+  @override
+  String get totalSleep => 'Total Sleep';
+
+  @override
+  String get hours => 'hours';
+
+  @override
+  String get protection => 'Protection';
+
+  @override
+  String get condom => 'Condom';
+
+  @override
+  String get pill => 'Pill';
+
+  @override
+  String get iud => 'IUD';
+
+  @override
+  String get none => 'None';
+
+  @override
+  String get other => 'Other';
+
+  @override
+  String get medicationName => 'Medication Name';
+
+  @override
+  String get dose => 'Dose';
+
+  @override
+  String get reminderTime => 'Reminder Time';
+
+  @override
+  String get taken => 'Taken';
+
+  @override
+  String get notTaken => 'Not Taken';
+
+  @override
+  String get addNote => 'Add Note';
+
+  @override
+  String get selectDate => 'Select Date';
+
+  @override
+  String get noDataYet => 'No data yet';
+
+  @override
+  String get predictions => 'Predictions';
+
+  @override
+  String get nextPeriod => 'Next Period';
+
+  @override
+  String get nextOvulation => 'Next Ovulation';
+
+  @override
+  String get cycleRegularity => 'Cycle Regularity';
+
+  @override
+  String get regular => 'Regular';
+
+  @override
+  String get irregular => 'Irregular';
+
+  @override
+  String get setupComplete => 'Setup Complete!';
+
+  @override
+  String get letsStart => 'Let\'s Start';
+
+  @override
+  String get bmi => 'BMI';
+
+  @override
+  String get goalReached => 'Goal reached!';
+
+  @override
+  String helloName(String name) {
+    return 'Hello, $name!';
+  }
+
+  @override
+  String get ovulationPhase => 'Ovulation Phase';
+
+  @override
+  String get menstrualPhase => 'Menstrual Phase';
+
+  @override
+  String get todaySummary => 'Today\'s Summary';
+
+  @override
+  String get howAreYouFeeling => 'How are you feeling today?';
+
+  @override
+  String get logMoodAndSymptoms => 'Log your mood and symptoms';
+
+  @override
+  String get addRecord => 'Add Record';
+
+  @override
+  String nSymptoms(int count) {
+    return '$count symptoms';
+  }
+
+  @override
+  String get periodDayLabel => 'Period day';
+
+  @override
+  String get predicted => 'Predicted';
+
+  @override
+  String get fertile => 'Fertile';
+
+  @override
+  String get ovulation => 'Ovulation';
+
+  @override
+  String moodLabel(String mood) {
+    return 'Mood: $mood';
+  }
+
+  @override
+  String nGlassesWater(int count) {
+    return '$count glasses of water';
+  }
+
+  @override
+  String get noRecordForDay => 'No record for this day.';
+
+  @override
+  String get dailyLog => 'Daily Log';
+
+  @override
+  String get flow => 'Flow';
+
+  @override
+  String get recorded => 'Recorded';
+
+  @override
+  String nMedications(int count) {
+    return '$count medications';
+  }
+
+  @override
+  String nGlasses(int count) {
+    return '$count glasses';
+  }
+
+  @override
+  String get flowTracking => 'Flow Tracking';
+
+  @override
+  String get color => 'Color';
+
+  @override
+  String get lightRed => 'Light Red';
+
+  @override
+  String get red => 'Red';
+
+  @override
+  String get darkRed => 'Dark';
+
+  @override
+  String get brown => 'Brown';
+
+  @override
+  String get clots => 'Clots';
+
+  @override
+  String get clotsQuestion => 'Any clots?';
+
+  @override
+  String get padChange => 'Pad Changes';
+
+  @override
+  String get flowSaved => 'Flow saved';
+
+  @override
+  String get symptomTracking => 'Symptom Tracking';
+
+  @override
+  String get physical => 'Physical';
+
+  @override
+  String get emotional => 'Emotional';
+
+  @override
+  String get skinCategory => 'Skin';
+
+  @override
+  String get digestive => 'Digestive';
+
+  @override
+  String get otherCategory => 'Other';
+
+  @override
+  String get glowingSkin => 'Glowing Skin';
+
+  @override
+  String saveNSymptoms(int count) {
+    return 'Save ($count symptoms)';
+  }
+
+  @override
+  String nSymptomsSaved(int count) {
+    return '$count symptoms saved';
+  }
+
+  @override
+  String get addNoteOptional => 'Add note (optional)';
+
+  @override
+  String get writeAboutToday => 'Write something about today...';
+
+  @override
+  String get moodSaved => 'Mood saved';
+
+  @override
+  String get sensitiveM => 'Sensitive';
+
+  @override
+  String get irritableM => 'Irritable';
+
+  @override
+  String get neutralM => 'Neutral';
+
+  @override
+  String get lowTemp => 'Low';
+
+  @override
+  String get normalTemp => 'Normal';
+
+  @override
+  String get highTemp => 'High';
+
+  @override
+  String get fever => 'Fever';
+
+  @override
+  String get measurementTime => 'Measurement Time';
+
+  @override
+  String get temperatureSaved => 'Temperature saved';
+
+  @override
+  String get quickAdjust => 'Quick Adjust';
+
+  @override
+  String get manualEntry => 'Manual Entry';
+
+  @override
+  String get weightSaved => 'Weight saved';
+
+  @override
+  String get waterTracking => 'Water Tracking';
+
+  @override
+  String get waterSaved => 'Water saved';
+
+  @override
+  String get sleepTracking => 'Sleep Tracking';
+
+  @override
+  String get bedTimeLabel => 'Bed Time';
+
+  @override
+  String get wakeTimeLabel => 'Wake Time';
+
+  @override
+  String get veryBad => 'Very Bad';
+
+  @override
+  String get bad => 'Bad';
+
+  @override
+  String get moderate => 'Moderate';
+
+  @override
+  String get good => 'Good';
+
+  @override
+  String get great => 'Great';
+
+  @override
+  String get sleepSaved => 'Sleep saved';
+
+  @override
+  String get protectionMethod => 'Protection Method';
+
+  @override
+  String get orgasm => 'Orgasm';
+
+  @override
+  String get noteOptional => 'Note (optional)';
+
+  @override
+  String get addNoteHint => 'Add note...';
+
+  @override
+  String get savedGeneric => 'Saved';
+
+  @override
+  String get medicationTracking => 'Medication Tracking';
+
+  @override
+  String get addMedication => 'Add Medication';
+
+  @override
+  String get noMedicationsYet => 'No medications added yet';
+
+  @override
+  String get tapToAdd => 'Tap + to add';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get dailyNote => 'Daily Note';
+
+  @override
+  String get myNotes => 'My Notes';
+
+  @override
+  String get notesHint => 'How are you feeling? Write your notes here...';
+
+  @override
+  String get noteSaved => 'Note saved';
+
+  @override
+  String get cycleOverview => 'Cycle Overview';
+
+  @override
+  String get avgCycle => 'Avg. Cycle';
+
+  @override
+  String get avgPeriod => 'Avg. Period';
+
+  @override
+  String get regularity => 'Regularity';
+
+  @override
+  String get insufficientData => 'Insufficient data';
+
+  @override
+  String get noSymptomData => 'No symptom data yet';
+
+  @override
+  String get noMoodData => 'No mood data yet';
+
+  @override
+  String get noCycleData => 'No cycle data yet';
+
+  @override
+  String get ongoing => 'ongoing';
+
+  @override
+  String nDays(int count) {
+    return '$count days';
+  }
+
+  @override
+  String get profileSection => 'Profile';
+
+  @override
+  String get preferences => 'Preferences';
+
+  @override
+  String get age => 'Age';
+
+  @override
+  String nYearsOld(int count) {
+    return '$count years old';
+  }
+
+  @override
+  String get cycleDuration => 'Cycle Duration';
+
+  @override
+  String get periodDuration => 'Period Duration';
+
+  @override
+  String get dataSection => 'Data';
+
+  @override
+  String get exportPdfReport => 'Export PDF Report';
+
+  @override
+  String get exportCsvFile => 'Export CSV';
+
+  @override
+  String get pdfExportSoon => 'PDF export coming soon!';
+
+  @override
+  String get csvExportSoon => 'CSV export coming soon!';
+
+  @override
+  String get letsKnowYou => 'Let\'s Get to Know You';
+
+  @override
+  String get whatShouldWeCallYou => 'What should we call you?';
+
+  @override
+  String get yourName => 'Your name';
+
+  @override
+  String get yourBirthDate => 'Your Birth Date';
+
+  @override
+  String get birthDateHelp => 'Helps us provide age-appropriate suggestions.';
+
+  @override
+  String get selectDateHint => 'Select date';
+
+  @override
+  String get lastPeriodTitle => 'Your Last Period';
+
+  @override
+  String get lastPeriodHelp => 'Select the start date of your last period.';
+
+  @override
+  String get cycleLengthTitle => 'Cycle Length';
+
+  @override
+  String get cycleLengthHelp => 'How many days is your average cycle?\n(From the first day of one period to the first day of the next)';
+
+  @override
+  String get periodLengthTitle => 'Period Length';
+
+  @override
+  String get periodLengthHelp => 'How many days does your period usually last?';
+
+  @override
+  String get averageLabel => 'average';
+
+  @override
+  String get completeBtn => 'Complete';
+
+  @override
+  String get continueBtn => 'Continue';
+
+  @override
+  String errorOccurred(String error) {
+    return 'An error occurred: $error';
+  }
+
+  @override
+  String get welcomeInfoTitle => 'Welcome!';
+
+  @override
+  String get welcomeInfoDesc => 'The easiest and most beautiful way to track your health. We\'re with you every step of your cycle.';
+
+  @override
+  String get trackCycleTitle => 'Track Your Cycle';
+
+  @override
+  String get trackCycleDesc => 'Easily log your period dates, symptoms and mood. All your data is safe.';
+
+  @override
+  String get getPredictionsTitle => 'Get Predictions';
+
+  @override
+  String get getPredictionsDesc => 'Learn your next cycle and fertile days with smart predictions.';
+
+  @override
+  String get startBtn => 'Start';
+
+  @override
+  String daysLater(int count) {
+    return 'in $count days';
+  }
+
+  @override
+  String get todayExclamation => 'Today!';
+
+  @override
+  String get spiral => 'IUD';
+
+  @override
+  String get enterPin => 'Enter PIN';
+
+  @override
+  String get createPin => 'Create PIN';
+
+  @override
+  String get confirmPin => 'Confirm PIN';
+
+  @override
+  String get pinMismatch => 'PINs don\'t match, try again';
+
+  @override
+  String get wrongPin => 'Wrong PIN';
+
+  @override
+  String get pinSet => 'PIN set successfully';
+
+  @override
+  String get pinRemoved => 'PIN removed';
+
+  @override
+  String get unlockWithBiometric => 'Unlock with fingerprint or face';
+
+  @override
+  String get biometricNotAvailable => 'Biometric authentication not available on this device';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get profileSaved => 'Profile saved';
+
+  @override
+  String sleepDurationShort(int hours, int minutes) {
+    return '${hours}h ${minutes}m';
+  }
+
+  @override
+  String get deleteAllDataConfirm => 'Are you sure you want to delete all data? This action cannot be undone.';
+
+  @override
+  String get dataDeleted => 'All data deleted';
+
+  @override
+  String get doseHint => 'e.g. 500mg';
+
+  @override
+  String get menstrualPhaseInfo => 'The period when menstrual bleeding occurs. Usually lasts 3-7 days. The body sheds the uterine lining.';
+
+  @override
+  String get follicularPhaseInfo => 'After your period, the ovaries prepare a new egg. Estrogen rises and energy levels increase.';
+
+  @override
+  String get ovulationPhaseInfo => 'The phase when an egg is released from the ovary. Pregnancy likelihood is at its highest.';
+
+  @override
+  String get lutealPhaseInfo => 'The phase from ovulation until the next period. Progesterone rises, PMS symptoms may occur.';
+
+  @override
+  String get fertileWindowInfo => 'The period with the highest chance of pregnancy. Starts 5 days before ovulation and ends 1 day after.';
+
+  @override
+  String get ovulationCardInfo => 'The estimated day when an egg is released from the ovary. Occurs around the middle of the cycle.';
+
+  @override
+  String get nextPeriodInfo => 'The estimated start date of your next period. Calculated based on your cycle length.';
+
+  @override
+  String get phaseInfoTitle => 'What is this phase?';
+
+  @override
+  String get learnMore => 'Info';
+}
