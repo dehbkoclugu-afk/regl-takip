@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
 
 class TemperatureTrackingScreen extends ConsumerStatefulWidget {
@@ -91,13 +92,11 @@ class _TemperatureTrackingScreenState
   }
 
   Widget _buildTempDisplay(AppLocalizations l10n) {
-    return Container(
+    return GlassCard(
+      borderRadius: 24,
+      blur: 10,
+      opacity: 0.15,
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
-      ),
       child: Column(
         children: [
           Icon(Icons.thermostat_rounded, color: _getTempColor(), size: 48),
@@ -123,13 +122,11 @@ class _TemperatureTrackingScreenState
   }
 
   Widget _buildSlider() {
-    return Container(
+    return GlassCard(
+      borderRadius: 22,
+      blur: 8,
+      opacity: 0.15,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
-      ),
       child: Column(
         children: [
           Row(
@@ -214,7 +211,7 @@ class _TemperatureTrackingScreenState
 
   Widget _buildSaveButton(AppLocalizations l10n) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton(

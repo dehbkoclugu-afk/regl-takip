@@ -259,29 +259,35 @@ class NotificationService {
 
   /// Reschedules all notifications based on profile preferences and cycle data.
   Future<void> rescheduleAll(UserProfile profile) async {
-    await cancelAll();
+    if (!_isInitialized) return;
 
-    final hour = profile.reminderHour;
-    final minute = profile.reminderMinute;
-    final locale = profile.language;
+    try {
+      await cancelAll();
 
-    if (profile.lastPeriodStart != null) {
-      final cycleLen = profile.averageCycleLength;
-      final lastStart = profile.lastPeriodStart!;
+      final hour = profile.reminderHour;
+      final minute = profile.reminderMinute;
+      final locale = profile.language;
 
-      if (profile.periodReminderEnabled) {
-        final nextPeriod = CycleUtils.predictNextPeriod(lastStart, cycleLen);
-        await schedulePeriodReminder(nextPeriod, hour, minute, locale);
+      if (profile.lastPeriodStart != null) {
+        final cycleLen = profile.averageCycleLength;
+        final lastStart = profile.lastPeriodStart!;
+
+        if (profile.periodReminderEnabled) {
+          final nextPeriod = CycleUtils.predictNextPeriod(lastStart, cycleLen);
+          await schedulePeriodReminder(nextPeriod, hour, minute, locale);
+        }
+
+        if (profile.ovulationReminderEnabled) {
+          final ovulation = CycleUtils.predictOvulation(lastStart, cycleLen);
+          await scheduleOvulationReminder(ovulation, hour, minute, locale);
+        }
       }
 
-      if (profile.ovulationReminderEnabled) {
-        final ovulation = CycleUtils.predictOvulation(lastStart, cycleLen);
-        await scheduleOvulationReminder(ovulation, hour, minute, locale);
+      if (profile.medicationReminderEnabled) {
+        await scheduleMedicationReminder(hour, minute, locale);
       }
-    }
-
-    if (profile.medicationReminderEnabled) {
-      await scheduleMedicationReminder(hour, minute, locale);
+    } catch (_) {
+      // Notification scheduling failed - ignore to prevent app freeze
     }
   }
 }

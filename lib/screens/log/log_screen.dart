@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
 
 class LogScreen extends ConsumerStatefulWidget {
@@ -39,13 +40,18 @@ class _LogScreenState extends ConsumerState<LogScreen> {
         '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}';
     final log = dailyLogs[dateKey];
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final logBg = isDark
+        ? const Color(0xFF1A1020)
+        : const Color(0xFFEDE0F0);
+
     return Scaffold(
-      backgroundColor: AppColors.bg(context),
+      backgroundColor: logBg,
       appBar: AppBar(
         title: Text(l10n.dailyLog,
             style: GoogleFonts.nunito(
                 fontWeight: FontWeight.bold, color: AppColors.tp(context))),
-        backgroundColor: AppColors.bg(context),
+        backgroundColor: logBg,
         elevation: 0,
         iconTheme: IconThemeData(color: AppColors.tp(context)),
       ),
@@ -81,18 +87,25 @@ class _LogScreenState extends ConsumerState<LogScreen> {
           return GestureDetector(
             onTap: () => setState(() => _selectedDate = date),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 250),
               width: 52,
               margin: const EdgeInsets.symmetric(horizontal: 4),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primary : AppColors.sf(context),
-                borderRadius: BorderRadius.circular(16),
+                gradient: isSelected
+                    ? const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [AppColors.primary, AppColors.primaryDark],
+                      )
+                    : null,
+                color: isSelected ? null : AppColors.sf(context),
+                borderRadius: BorderRadius.circular(18),
                 border: isToday && !isSelected
-                    ? Border.all(color: AppColors.primary, width: 2)
+                    ? Border.all(color: AppColors.primary.withValues(alpha: 0.5), width: 1.5)
                     : null,
                 boxShadow: isSelected
-                    ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 8)]
-                    : [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4)],
+                    ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.25), blurRadius: 12, offset: const Offset(0, 4))]
+                    : [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 6)],
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -161,29 +174,28 @@ class _LogScreenState extends ConsumerState<LogScreen> {
         final cat = categories[index];
         return GestureDetector(
           onTap: cat.onTap,
-          child: Container(
+          child: GlassCard(
+            borderRadius: 22,
+            blur: 8,
+            opacity: 0.15,
             padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: AppColors.sf(context),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: cat.color.withValues(alpha: 0.1),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  width: 38,
-                  height: 38,
+                  width: 40,
+                  height: 40,
                   decoration: BoxDecoration(
-                    color: cat.color.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        cat.color.withValues(alpha: 0.25),
+                        cat.color.withValues(alpha: 0.1),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                   child: Icon(cat.icon, color: cat.color, size: 20),
                 ),

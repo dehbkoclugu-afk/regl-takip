@@ -109,16 +109,22 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                         onTap: () => setState(() =>
                             _selectedMood = _selectedMood == mood ? null : mood),
                         child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
+                          duration: const Duration(milliseconds: 250),
                           decoration: BoxDecoration(
-                            color: isSelected
-                                ? emojiData.$2.withValues(alpha: 0.15)
-                                : AppColors.sf(context),
-                            borderRadius: BorderRadius.circular(20),
+                            gradient: isSelected
+                                ? LinearGradient(
+                                    colors: [emojiData.$2.withValues(alpha: 0.2), emojiData.$2.withValues(alpha: 0.08)],
+                                  )
+                                : null,
+                            color: isSelected ? null : AppColors.sf(context),
+                            borderRadius: BorderRadius.circular(22),
                             border: Border.all(
                               color: isSelected ? emojiData.$2 : AppColors.dv(context),
-                              width: isSelected ? 2.5 : 1,
+                              width: isSelected ? 2 : 0.5,
                             ),
+                            boxShadow: isSelected
+                                ? [BoxShadow(color: emojiData.$2.withValues(alpha: 0.2), blurRadius: 12)]
+                                : [],
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -171,7 +177,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -182,7 +188,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                   disabledBackgroundColor: AppColors.dv(context),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
+                      borderRadius: BorderRadius.circular(20)),
                 ),
                 child: Text(l10n.save,
                     style: GoogleFonts.nunito(

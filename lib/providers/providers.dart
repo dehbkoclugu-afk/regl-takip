@@ -51,7 +51,11 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
   }
 
   void _load() {
-    state = _hiveService.getUserProfile();
+    try {
+      state = _hiveService.getUserProfile();
+    } catch (_) {
+      state = null;
+    }
   }
 
   Future<void> updateProfile(UserProfile profile) async {
@@ -75,6 +79,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     int? reminderHour,
     int? reminderMinute,
     bool? darkModeEnabled,
+    int? waterGoal,
   }) async {
     final current = state ?? UserProfile();
     if (name != null) current.name = name;
@@ -104,8 +109,13 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     if (reminderHour != null) current.reminderHour = reminderHour;
     if (reminderMinute != null) current.reminderMinute = reminderMinute;
     if (darkModeEnabled != null) current.darkModeEnabled = darkModeEnabled;
+    if (waterGoal != null) current.waterGoal = waterGoal;
 
     await _hiveService.saveUserProfile(current);
+    // Force Riverpod to detect change by emitting a different reference
+    // Using a dummy profile briefly (not null, to avoid null-related issues in watchers)
+    final dummy = UserProfile();
+    state = dummy;
     state = current;
 
     // Reschedule notifications when relevant settings change
@@ -115,7 +125,11 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         reminderHour != null ||
         reminderMinute != null ||
         lastPeriodStart != null) {
-      await NotificationService().rescheduleAll(current);
+      try {
+        await NotificationService().rescheduleAll(current);
+      } catch (_) {
+        // Notification scheduling failed - ignore
+      }
     }
   }
 
@@ -141,7 +155,11 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
   }
 
   void _load() {
-    state = _hiveService.getAllPeriodRecords();
+    try {
+      state = _hiveService.getAllPeriodRecords();
+    } catch (_) {
+      state = [];
+    }
   }
 
   Future<void> addRecord(PeriodRecord record) async {
@@ -209,12 +227,16 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
   }
 
   void _load() {
-    final logs = _hiveService.getAllDailyLogs();
-    final map = <String, DailyLog>{};
-    for (final log in logs) {
-      map[log.dateKey] = log;
+    try {
+      final logs = _hiveService.getAllDailyLogs();
+      final map = <String, DailyLog>{};
+      for (final log in logs) {
+        map[log.dateKey] = log;
+      }
+      state = map;
+    } catch (_) {
+      state = {};
     }
-    state = map;
   }
 
   DailyLog? getDailyLog(DateTime date) {
@@ -335,13 +357,50 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
 final currentCycleDayProvider = Provider<int>((ref) {
   final profile = ref.watch(userProfileProvider);
   if (profile == null || profile.lastPeriodStart == null) return 0;
-  return CycleUtils.currentCycleDay(profile.lastPeriodStart!);
+  final rawDay = CycleUtils.currentCycleDay(profile.lastPeriodStart!);
+  final cycleLength = profile.averageCycleLength;
+  // Döngü uzunluğunu aşarsa yeni döngü başlamış demektir, modulo ile sıfırla
+  if (rawDay > cycleLength) {
+    final mod = rawDay % cycleLength;
+    return mod == 0 ? cycleLength : mod;
+  }
+  return rawDay;
 });
 
 final currentCyclePhaseProvider = Provider<CyclePhase>((ref) {
   final profile = ref.watch(userProfileProvider);
   if (profile == null || profile.lastPeriodStart == null) {
     return CyclePhase.follicular;
+  }
+  // If there's an ongoing period, always show menstrual phase
+  final ongoingPeriod = ref.watch(ongoingPeriodProvider);
+  if (ongoingPeriod != null) {
+    return CyclePhase.menstrual;
+  }
+  // If period ended, use actual end date to determine real period length
+  final records = ref.watch(periodRecordsProvider);
+  final lps = profile.lastPeriodStart!;
+  final lastCompleted = records
+      .where((r) => !r.isOngoing &&
+          r.startDate.year == lps.year &&
+          r.startDate.month == lps.month &&
+          r.startDate.day == lps.day)
+      .toList();
+  if (lastCompleted.isNotEmpty && lastCompleted.first.endDate != null) {
+    // Period has ended - check if we're past the end date
+    final endDate = lastCompleted.first.endDate!;
+    final now = DateTime.now();
+    final normalizedNow = DateTime(now.year, now.month, now.day);
+    final normalizedEnd = DateTime(endDate.year, endDate.month, endDate.day);
+    if (normalizedNow.compareTo(normalizedEnd) >= 0) {
+      // Period is over, skip menstrual phase - use 0 as period length
+      // so getCurrentPhase won't return menstrual
+      return CycleUtils.getCurrentPhase(
+        profile.lastPeriodStart!,
+        profile.averageCycleLength,
+        0,
+      );
+    }
   }
   return CycleUtils.getCurrentPhase(
     profile.lastPeriodStart!,

@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -20,6 +21,20 @@ class CycleProgressRing extends StatelessWidget {
     required this.daysUntilNextPeriod,
   });
 
+  /// Daha koyu/doygun ring rengi - arka plandan ayrışması için
+  Color get _ringColor {
+    switch (phase) {
+      case CyclePhase.menstrual:
+        return const Color(0xFFD4607E);
+      case CyclePhase.follicular:
+        return const Color(0xFFE8944A);
+      case CyclePhase.ovulation:
+        return const Color(0xFF9060A8);
+      case CyclePhase.luteal:
+        return const Color(0xFFE8A830);
+    }
+  }
+
   Color get _phaseColor {
     switch (phase) {
       case CyclePhase.menstrual:
@@ -34,7 +49,7 @@ class CycleProgressRing extends StatelessWidget {
   }
 
   Color get _phaseBackgroundColor {
-    return _phaseColor.withValues(alpha: 0.15);
+    return _ringColor.withValues(alpha: 0.15);
   }
 
   String get _phaseEmoji {
@@ -54,31 +69,47 @@ class CycleProgressRing extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final double progress = (cycleDay / cycleLength).clamp(0.0, 1.0);
+    final isDark = AppColors.isDark(context);
 
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: _phaseColor.withValues(alpha: 0.2),
-            blurRadius: 40,
-            spreadRadius: 8,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(140),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.35)
+                : Colors.white.withValues(alpha: 0.65),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.12)
+                  : Colors.white.withValues(alpha: 0.8),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: _ringColor.withValues(alpha: 0.2),
+                blurRadius: 40,
+                spreadRadius: 5,
+              ),
+            ],
           ),
-        ],
-      ),
-      child: CircularPercentIndicator(
-        radius: 110.0,
-        lineWidth: 14.0,
-        animation: true,
-        animationDuration: 1500,
-        percent: progress,
-        center: _buildCenterContent(l10n),
-        circularStrokeCap: CircularStrokeCap.round,
-        progressColor: _phaseColor,
-        backgroundColor: _phaseBackgroundColor,
-        backgroundWidth: 8.0,
-        startAngle: 270.0,
+          child: CircularPercentIndicator(
+            radius: 110.0,
+            lineWidth: 16.0,
+            animation: true,
+            animationDuration: 1500,
+            percent: progress,
+            center: _buildCenterContent(l10n, context),
+            circularStrokeCap: CircularStrokeCap.round,
+            progressColor: _ringColor,
+            backgroundColor: _phaseBackgroundColor,
+            backgroundWidth: 6.0,
+            startAngle: 270.0,
+          ),
+        ),
       ),
     )
         .animate()
@@ -91,7 +122,7 @@ class CycleProgressRing extends StatelessWidget {
         .fadeIn(duration: 600.ms);
   }
 
-  Widget _buildCenterContent(AppLocalizations l10n) {
+  Widget _buildCenterContent(AppLocalizations l10n, BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -105,7 +136,7 @@ class CycleProgressRing extends StatelessWidget {
           style: GoogleFonts.plusJakartaSans(
             fontSize: 48,
             fontWeight: FontWeight.w800,
-            color: Colors.white,
+            color: _ringColor,
             height: 1.0,
           ),
         ),
@@ -115,7 +146,7 @@ class CycleProgressRing extends StatelessWidget {
           style: GoogleFonts.plusJakartaSans(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Colors.white.withValues(alpha: 0.8),
+            color: AppColors.tp(context),
             letterSpacing: 1.5,
           ),
         ),
@@ -123,7 +154,7 @@ class CycleProgressRing extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.2),
+            color: _ringColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
@@ -132,8 +163,8 @@ class CycleProgressRing extends StatelessWidget {
                 : l10n.todayExclamation,
             style: GoogleFonts.plusJakartaSans(
               fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.white.withValues(alpha: 0.9),
+              fontWeight: FontWeight.w700,
+              color: _ringColor,
             ),
           ),
         ),

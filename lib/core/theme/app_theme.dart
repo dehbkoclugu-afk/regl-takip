@@ -73,8 +73,9 @@ class AppTheme {
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(24),
           ),
+          elevation: 0,
           textStyle: GoogleFonts.nunito(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -84,10 +85,10 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
-          side: const BorderSide(color: AppColors.primary),
+          side: const BorderSide(color: AppColors.primary, width: 1.5),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(24),
           ),
           textStyle: GoogleFonts.nunito(
             fontSize: 16,
@@ -96,38 +97,40 @@ class AppTheme {
         ),
       ),
       cardTheme: CardThemeData(
-        color: Colors.white,
-        elevation: 2,
-        shadowColor: AppColors.primary.withValues(alpha: 0.1),
+        color: Colors.white.withValues(alpha: 0.7),
+        elevation: 0,
+        shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
         ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.textSecondary,
         type: BottomNavigationBarType.fixed,
-        elevation: 8,
+        elevation: 0,
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
+        elevation: 4,
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Colors.white.withValues(alpha: 0.6),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.divider),
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(
+              color: AppColors.primary.withValues(alpha: 0.15)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
         ),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -206,8 +209,9 @@ class AppTheme {
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(24),
           ),
+          elevation: 0,
           textStyle: GoogleFonts.nunito(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -217,10 +221,10 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primaryLight,
-          side: const BorderSide(color: AppColors.primaryLight),
+          side: const BorderSide(color: AppColors.primaryLight, width: 1.5),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(24),
           ),
           textStyle: GoogleFonts.nunito(
             fontSize: 16,
@@ -229,38 +233,39 @@ class AppTheme {
         ),
       ),
       cardTheme: CardThemeData(
-        color: AppColors.surfaceDark,
-        elevation: 2,
-        shadowColor: Colors.black26,
+        color: AppColors.surfaceDark.withValues(alpha: 0.7),
+        elevation: 0,
+        shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
         ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Color(0xFF1A1A1A),
+        backgroundColor: Colors.transparent,
         selectedItemColor: AppColors.primaryLight,
         unselectedItemColor: AppColors.textSecondaryDark,
         type: BottomNavigationBarType.fixed,
-        elevation: 8,
+        elevation: 0,
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
+        elevation: 4,
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.cardDark,
+        fillColor: AppColors.cardDark.withValues(alpha: 0.6),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: AppColors.dividerDark),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
         ),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 20, vertical: 16),

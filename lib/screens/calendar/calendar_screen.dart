@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -7,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/cycle_utils.dart';
+import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
 import '../../models/daily_log.dart';
 import '../../models/period_record.dart';
@@ -52,19 +54,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       ),
       body: Column(
         children: [
-          Container(
+          GlassCard(
+            borderRadius: 24,
+            blur: 10,
+            opacity: 0.18,
             margin: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              color: AppColors.sf(context),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
             child: TableCalendar(
               firstDay: DateTime(2020, 1, 1),
               lastDay: DateTime(2030, 12, 31),
@@ -261,56 +255,70 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (sheetContext) => DraggableScrollableSheet(
         initialChildSize: 0.4,
         minChildSize: 0.25,
         maxChildSize: 0.7,
         expand: false,
-        builder: (sheetContext, scrollController) => SingleChildScrollView(
-          controller: scrollController,
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppColors.dv(context),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+        builder: (sheetContext, scrollController) => ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.sf(context).withValues(alpha: 0.9),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.3),
+                  width: 1,
                 ),
               ),
-              const SizedBox(height: 16),
-              Text(dateStr,
-                  style: GoogleFonts.nunito(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.tp(context))),
-              const SizedBox(height: 16),
-              if (isPeriod)
-                _chip(Icons.water_drop, l10n.periodDayLabel, AppColors.menstrual),
-              if (log?.mood != null)
-                _chip(Icons.emoji_emotions,
-                    l10n.moodLabel(log!.mood!.type.name), AppColors.moodHappy),
-              if (log != null && log.symptoms.isNotEmpty)
-                _chip(Icons.monitor_heart,
-                    l10n.nSymptoms(log.symptoms.length), AppColors.secondary),
-              if (log?.temperature != null)
-                _chip(Icons.thermostat,
-                    '${log!.temperature!.toStringAsFixed(1)}°C', AppColors.warning),
-              if (log != null && log.waterIntake > 0)
-                _chip(Icons.water_drop_outlined,
-                    l10n.nGlassesWater(log.waterIntake), Colors.blue),
-              if (log == null && !isPeriod)
-                Text(l10n.noRecordForDay,
-                    style: GoogleFonts.nunito(
-                        fontSize: 14, color: AppColors.ts(context))),
-            ],
+              child: SingleChildScrollView(
+                controller: scrollController,
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppColors.dv(context),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(dateStr,
+                        style: GoogleFonts.nunito(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.tp(context))),
+                    const SizedBox(height: 16),
+                    if (isPeriod)
+                      _chip(Icons.water_drop, l10n.periodDayLabel, AppColors.menstrual),
+                    if (log?.mood != null)
+                      _chip(Icons.emoji_emotions,
+                          l10n.moodLabel(log!.mood!.type.name), AppColors.moodHappy),
+                    if (log != null && log.symptoms.isNotEmpty)
+                      _chip(Icons.monitor_heart,
+                          l10n.nSymptoms(log.symptoms.length), AppColors.secondary),
+                    if (log?.temperature != null)
+                      _chip(Icons.thermostat,
+                          '${log!.temperature!.toStringAsFixed(1)}°C', AppColors.warning),
+                    if (log != null && log.waterIntake > 0)
+                      _chip(Icons.water_drop_outlined,
+                          l10n.nGlassesWater(log.waterIntake), AppColors.water),
+                    if (log == null && !isPeriod)
+                      Text(l10n.noRecordForDay,
+                          style: GoogleFonts.nunito(
+                              fontSize: 14, color: AppColors.ts(context))),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -324,7 +332,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: color.withValues(alpha: 0.2),
+            width: 0.5,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

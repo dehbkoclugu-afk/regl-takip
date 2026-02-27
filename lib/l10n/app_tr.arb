@@ -376,5 +376,14 @@
   "deleteAllDataConfirm": "Tüm verileri silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
   "delete": "Sil",
   "dataDeleted": "Tüm veriler silindi",
-  "doseHint": "ör. 500mg"
+  "doseHint": "ör. 500mg",
+  "menstrualPhaseInfo": "Adet kanamasının yaşandığı dönemdir. Genellikle 3-7 gün sürer. Vücut rahim iç tabakasını atar.",
+  "follicularPhaseInfo": "Adet sonrası yumurtalıkların yeni yumurta hazırladığı dönemdir. Östrojen yükselir, enerji seviyesi artar.",
+  "ovulationPhaseInfo": "Yumurtanın yumurtalıktan serbest bırakıldığı dönemdir. Hamilelik olasılığı en yüksek seviyededir.",
+  "lutealPhaseInfo": "Ovulasyon sonrası bir sonraki adet dönemine kadar süren fazıdır. Progesteron yükselir, PMS belirtileri görülebilir.",
+  "fertileWindowInfo": "Hamilelik olasılığının en yüksek olduğu dönemdir. Ovulasyondan 5 gün önce başlar ve 1 gün sonra sona erer.",
+  "ovulationCardInfo": "Yumurtalıktan yumurtanın serbest bırakılacağı tahmini gündür. Döngünün ortasına denk gelir.",
+  "nextPeriodInfo": "Bir sonraki adet kanamasının tahmini başlangıç tarihidir. Döngü sürenize göre hesaplanır.",
+  "phaseInfoTitle": "Bu faz nedir?",
+  "learnMore": "Bilgi"
 }

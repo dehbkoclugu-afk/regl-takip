@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'services/hive_service.dart';
 import 'services/notification_service.dart';
+import 'services/premium_service.dart';
 import 'providers/providers.dart';
 import 'app.dart';
 
@@ -26,15 +27,26 @@ void main() async {
   // Initialize Hive
   await HiveService().init();
 
-  // Initialize notifications
+  // Initialize Premium/Trial service
+  await PremiumService().initialize();
+
+  // Initialize notifications (with error handling to prevent freeze)
   final notificationService = NotificationService();
-  await notificationService.init();
-  await notificationService.requestPermission();
+  try {
+    await notificationService.init();
+    await notificationService.requestPermission();
+  } catch (_) {
+    // Notification init failed - continue without notifications
+  }
 
   // Schedule notifications if profile exists
   final profile = HiveService().getUserProfile();
   if (profile != null) {
-    await notificationService.rescheduleAll(profile);
+    try {
+      await notificationService.rescheduleAll(profile);
+    } catch (_) {
+      // Notification scheduling failed - continue without notifications
+    }
   }
 
   runApp(

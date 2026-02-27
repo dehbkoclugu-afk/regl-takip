@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/cycle_utils.dart';
+import '../../core/widgets/glass_card.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../models/daily_log.dart';
@@ -68,40 +69,22 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               ],
             ).animate().fadeIn(duration: 400.ms),
             const SizedBox(height: 20),
-
-            // Cycle overview
             _buildOverviewCard(l10n, avgCycle, avgPeriod, records),
             const SizedBox(height: 16),
-
-            // Symptom frequency
             _buildSymptomChart(l10n, filteredLogs),
             const SizedBox(height: 16),
-
-            // Mood distribution
             _buildMoodChart(l10n, filteredLogs),
             const SizedBox(height: 16),
-
-            // Cycle history
             _buildCycleHistory(l10n, filteredRecords),
             const SizedBox(height: 16),
-
-            // Temperature trend
             _buildTrendChart(
-              l10n.temperatureTrend,
-              filteredLogs,
-              (log) => log.temperature,
-              AppColors.temperature,
-              '°C',
+              l10n.temperatureTrend, filteredLogs,
+              (log) => log.temperature, AppColors.temperature, '°C',
             ),
             const SizedBox(height: 16),
-
-            // Weight trend
             _buildTrendChart(
-              l10n.weightTrend,
-              filteredLogs,
-              (log) => log.weight,
-              AppColors.weightColor,
-              'kg',
+              l10n.weightTrend, filteredLogs,
+              (log) => log.weight, AppColors.weightColor, 'kg',
             ),
             const SizedBox(height: 24),
           ],
@@ -114,13 +97,21 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final isSelected = _filterMonths == months;
     return GestureDetector(
       onTap: () => setState(() => _filterMonths = months),
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : AppColors.sf(context),
+          gradient: isSelected
+              ? const LinearGradient(
+                  colors: [AppColors.primary, AppColors.primaryDark],
+                )
+              : null,
+          color: isSelected ? null : AppColors.sf(context),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.dv(context),
+            color: isSelected
+                ? Colors.transparent
+                : AppColors.primary.withValues(alpha: 0.2),
           ),
         ),
         child: Text(label,
@@ -136,19 +127,11 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   Widget _buildOverviewCard(
       AppLocalizations l10n, double avgCycle, double avgPeriod, List<PeriodRecord> records) {
     final isRegular = records.length >= 3;
-    return Container(
+    return GlassCard(
+      borderRadius: 24,
+      blur: 10,
+      opacity: 0.18,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -188,7 +171,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           width: 44,
           height: 44,
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.12),
+            gradient: LinearGradient(
+              colors: [color.withValues(alpha: 0.25), color.withValues(alpha: 0.1)],
+            ),
             shape: BoxShape.circle,
           ),
           child: Icon(icon, color: color, size: 22),
@@ -221,19 +206,11 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       return _emptyCard(l10n.symptomFrequency, l10n.noSymptomData);
     }
 
-    return Container(
+    return GlassCard(
+      borderRadius: 24,
+      blur: 10,
+      opacity: 0.18,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -286,10 +263,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     barRods: [
                       BarChartRodData(
                         toY: entry.value.value.toDouble(),
-                        color: AppColors.primary,
+                        gradient: const LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [AppColors.primaryLight, AppColors.primary],
+                        ),
                         width: 24,
                         borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(8)),
+                            top: Radius.circular(10)),
                       ),
                     ],
                   );
@@ -328,19 +309,11 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
 
     final total = moodCount.values.fold<int>(0, (a, b) => a + b);
 
-    return Container(
+    return GlassCard(
+      borderRadius: 24,
+      blur: 10,
+      opacity: 0.18,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -408,19 +381,11 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
 
     final localeStr = Localizations.localeOf(context).toString();
     final dateFormat = DateFormat('d MMM yyyy', localeStr);
-    return Container(
+    return GlassCard(
+      borderRadius: 24,
+      blur: 10,
+      opacity: 0.18,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -500,19 +465,11 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final localeStr = Localizations.localeOf(context).toString();
     final dateFormat = DateFormat('d/M', localeStr);
 
-    return Container(
+    return GlassCard(
+      borderRadius: 24,
+      blur: 10,
+      opacity: 0.18,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -614,7 +571,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     ),
                     belowBarData: BarAreaData(
                       show: true,
-                      color: color.withValues(alpha: 0.1),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          color.withValues(alpha: 0.2),
+                          color.withValues(alpha: 0.02),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -627,25 +591,26 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   }
 
   Widget _emptyCard(String title, String message) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        children: [
-          Text(title,
-              style: GoogleFonts.nunito(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.tp(context))),
-          const SizedBox(height: 12),
-          Text(message,
-              style: GoogleFonts.nunito(
-                  fontSize: 14, color: AppColors.ts(context))),
-        ],
+      child: GlassCard(
+        borderRadius: 24,
+        blur: 8,
+        opacity: 0.12,
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Text(title,
+                style: GoogleFonts.nunito(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.tp(context))),
+            const SizedBox(height: 12),
+            Text(message,
+                style: GoogleFonts.nunito(
+                    fontSize: 14, color: AppColors.ts(context))),
+          ],
+        ),
       ),
     ).animate().fadeIn(duration: 400.ms);
   }

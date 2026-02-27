@@ -1,6 +1,6 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
@@ -11,12 +11,6 @@ import '../../providers/providers.dart';
 import '../../models/user_profile.dart';
 import 'widgets/onboarding_page.dart';
 
-/// Main onboarding screen with a 4-page PageView.
-///
-/// Pages 1-3 are informational pages using [OnboardingPage].
-/// Page 4 is a multi-step data-collection form that gathers
-/// the user's name, birth date, last period date, cycle length,
-/// and period length.
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -25,19 +19,15 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
-  // ---------------------------------------------------------------------------
-  // Controllers & State
-  // ---------------------------------------------------------------------------
   final PageController _mainPageController = PageController();
   final PageController _formPageController = PageController();
   final TextEditingController _nameController = TextEditingController();
 
   int _currentMainPage = 0;
   int _currentFormStep = 0;
-  static const int _totalInfoPages = 3;
+  static const int _totalInfoPages = 1;
   static const int _totalFormSteps = 5;
 
-  // Form data
   DateTime? _birthDate;
   DateTime? _lastPeriodDate;
   double _cycleLength = 28;
@@ -45,9 +35,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   bool _isSaving = false;
 
-  // ---------------------------------------------------------------------------
-  // Lifecycle
-  // ---------------------------------------------------------------------------
   @override
   void dispose() {
     _mainPageController.dispose();
@@ -56,9 +43,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     super.dispose();
   }
 
-  // ---------------------------------------------------------------------------
-  // Navigation helpers
-  // ---------------------------------------------------------------------------
   void _nextMainPage() {
     if (_currentMainPage < _totalInfoPages) {
       _mainPageController.nextPage(
@@ -86,7 +70,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-      // Go back to info pages
       _mainPageController.previousPage(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
@@ -94,9 +77,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Save & navigate
-  // ---------------------------------------------------------------------------
   Future<void> _completeOnboarding() async {
     if (_isSaving) return;
     setState(() => _isSaving = true);
@@ -129,9 +109,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Date pickers
-  // ---------------------------------------------------------------------------
   Future<void> _pickBirthDate() async {
     final now = DateTime.now();
     final picked = await showDatePicker(
@@ -173,7 +150,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         ),
         dialogTheme: const DialogThemeData(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
+            borderRadius: BorderRadius.all(Radius.circular(24)),
           ),
         ),
       ),
@@ -181,9 +158,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Build
-  // ---------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -192,41 +166,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [AppColors.primary, AppColors.secondary],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
         ),
         child: SafeArea(
           child: Column(
             children: [
-              // --- Skip button (visible only on info pages) ---
-              if (_currentMainPage < _totalInfoPages)
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 8, right: 16),
-                    child: TextButton(
-                      onPressed: () {
-                        _mainPageController.animateToPage(
-                          _totalInfoPages,
-                          duration: const Duration(milliseconds: 400),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                      child: Text(
-                        l10n.skip,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.8),
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ),
-                )
-              else
-                const SizedBox(height: 48),
-
-              // --- Main PageView ---
+              const SizedBox(height: 16),
               Expanded(
                 child: PageView(
                   controller: _mainPageController,
@@ -235,46 +182,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     setState(() => _currentMainPage = index);
                   },
                   children: [
-                    // Page 1 - Welcome
                     OnboardingPage(
                       icon: Icons.favorite,
                       title: l10n.welcomeInfoTitle,
                       description: l10n.welcomeInfoDesc,
                       gradientColors: const [
-                        Color(0xFFE91E63),
-                        Color(0xFFAD1457),
+                        AppColors.primary,
+                        AppColors.primaryDark,
                       ],
                     ),
-
-                    // Page 2 - Track
-                    OnboardingPage(
-                      icon: Icons.calendar_month,
-                      title: l10n.trackCycleTitle,
-                      description: l10n.trackCycleDesc,
-                      gradientColors: const [
-                        Color(0xFF9C27B0),
-                        Color(0xFF7B1FA2),
-                      ],
-                    ),
-
-                    // Page 3 - Predict
-                    OnboardingPage(
-                      icon: Icons.auto_graph,
-                      title: l10n.getPredictionsTitle,
-                      description: l10n.getPredictionsDesc,
-                      gradientColors: const [
-                        Color(0xFFFF4081),
-                        Color(0xFFC51162),
-                      ],
-                    ),
-
-                    // Page 4 - Setup form
                     _buildSetupPage(),
                   ],
                 ),
               ),
-
-              // --- Bottom controls ---
               _buildBottomControls(),
             ],
           ),
@@ -283,63 +203,25 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Bottom controls: dots + button (info pages) or nothing (form page)
-  // ---------------------------------------------------------------------------
   Widget _buildBottomControls() {
     final l10n = AppLocalizations.of(context)!;
     if (_currentMainPage >= _totalInfoPages) {
-      // Form page has its own navigation
       return const SizedBox(height: 16);
     }
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 32, left: 32, right: 32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Page indicator dots
-          SmoothPageIndicator(
-            controller: _mainPageController,
-            count: _totalInfoPages + 1,
-            effect: ExpandingDotsEffect(
-              activeDotColor: Colors.white,
-              dotColor: Colors.white.withValues(alpha: 0.35),
-              dotHeight: 8,
-              dotWidth: 8,
-              expansionFactor: 3,
-              spacing: 6,
-            ),
-          ),
-          const SizedBox(height: 32),
-
-          // Action button
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: _GradientButton(
-              label: _currentMainPage == _totalInfoPages - 1
-                  ? l10n.startBtn
-                  : l10n.next,
-              onPressed: _nextMainPage,
-            ),
-          )
-              .animate()
-              .fadeIn(delay: 500.ms, duration: 400.ms)
-              .slideY(
-                begin: 0.2,
-                end: 0,
-                delay: 500.ms,
-                duration: 400.ms,
-              ),
-        ],
+      child: SizedBox(
+        width: double.infinity,
+        height: 56,
+        child: _GlassButton(
+          label: l10n.startBtn,
+          onPressed: _nextMainPage,
+        ),
       ),
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Page 4 : Setup form
-  // ---------------------------------------------------------------------------
   Widget _buildSetupPage() {
     final l10n = AppLocalizations.of(context)!;
     return Padding(
@@ -347,8 +229,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       child: Column(
         children: [
           const SizedBox(height: 8),
-
-          // Title
           Text(
             l10n.letsKnowYou,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -359,15 +239,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               .animate()
               .fadeIn(duration: 400.ms)
               .slideY(begin: -0.2, end: 0, duration: 400.ms),
-
           const SizedBox(height: 8),
-
-          // Step progress
           _buildStepProgress(),
-
           const SizedBox(height: 16),
-
-          // Form steps PageView
           Expanded(
             child: PageView(
               controller: _formPageController,
@@ -384,19 +258,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               ],
             ),
           ),
-
-          // Form navigation buttons
           _buildFormNavigation(),
-
           const SizedBox(height: 16),
         ],
       ),
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Step progress indicator
-  // ---------------------------------------------------------------------------
   Widget _buildStepProgress() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -421,14 +289,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Form navigation
-  // ---------------------------------------------------------------------------
   Widget _buildFormNavigation() {
     final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
-        // Back button
         SizedBox(
           height: 52,
           child: OutlinedButton.icon(
@@ -438,22 +302,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.white,
               side: BorderSide(
-                color: Colors.white.withValues(alpha: 0.5),
+                color: Colors.white.withValues(alpha: 0.4),
               ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(18),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 20),
             ),
           ),
         ),
         const SizedBox(width: 12),
-
-        // Next / Complete button
         Expanded(
           child: SizedBox(
             height: 52,
-            child: _GradientButton(
+            child: _GlassButton(
               label: _currentFormStep == _totalFormSteps - 1
                   ? l10n.completeBtn
                   : l10n.continueBtn,
@@ -466,31 +328,36 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Form step cards
-  // ---------------------------------------------------------------------------
-
-  /// Wraps form step content in a styled white card.
   Widget _formCard({required List<Widget> children}) {
     return Center(
       child: SingleChildScrollView(
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(28),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(28),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.85),
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.5),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 30,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: children,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: children,
+              ),
+            ),
           ),
         )
             .animate()
@@ -514,7 +381,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         boxShadow: [
           BoxShadow(
             color: AppColors.primary.withValues(alpha: 0.3),
-            blurRadius: 12,
+            blurRadius: 16,
             offset: const Offset(0, 4),
           ),
         ],
@@ -549,7 +416,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  // ---- Step 1: Name ----
   Widget _buildNameStep() {
     final l10n = AppLocalizations.of(context)!;
     return _formCard(
@@ -568,13 +434,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             filled: true,
             fillColor: Colors.grey.shade50,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
               borderSide:
-                  const BorderSide(color: AppColors.primary, width: 2),
+                  const BorderSide(color: AppColors.primary, width: 1.5),
             ),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
@@ -584,7 +450,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  // ---- Step 2: Birth date ----
   Widget _buildBirthDateStep() {
     final l10n = AppLocalizations.of(context)!;
     final dateFormatter = DateFormat('dd MMMM yyyy', Localizations.localeOf(context).toString());
@@ -600,12 +465,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             decoration: BoxDecoration(
               color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: _birthDate != null
                     ? AppColors.primary
                     : Colors.transparent,
-                width: 2,
+                width: 1.5,
               ),
             ),
             child: Row(
@@ -631,7 +496,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  // ---- Step 3: Last period date ----
   Widget _buildLastPeriodStep() {
     final l10n = AppLocalizations.of(context)!;
     final dateFormatter = DateFormat('dd MMMM yyyy', Localizations.localeOf(context).toString());
@@ -647,12 +511,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             decoration: BoxDecoration(
               color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: _lastPeriodDate != null
                     ? AppColors.primary
                     : Colors.transparent,
-                width: 2,
+                width: 1.5,
               ),
             ),
             child: Row(
@@ -678,7 +542,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  // ---- Step 4: Cycle length ----
   Widget _buildCycleLengthStep() {
     final l10n = AppLocalizations.of(context)!;
     return _formCard(
@@ -698,7 +561,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: AppColors.primary,
-            inactiveTrackColor: AppColors.primaryLight.withValues(alpha: 0.25),
+            inactiveTrackColor: AppColors.primaryLight.withValues(alpha: 0.3),
             thumbColor: AppColors.primary,
             overlayColor: AppColors.primary.withValues(alpha: 0.15),
             trackHeight: 6,
@@ -730,7 +593,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  // ---- Step 5: Period length ----
   Widget _buildPeriodLengthStep() {
     final l10n = AppLocalizations.of(context)!;
     return _formCard(
@@ -750,7 +612,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: AppColors.primary,
-            inactiveTrackColor: AppColors.primaryLight.withValues(alpha: 0.25),
+            inactiveTrackColor: AppColors.primaryLight.withValues(alpha: 0.3),
             thumbColor: AppColors.primary,
             overlayColor: AppColors.primary.withValues(alpha: 0.15),
             trackHeight: 6,
@@ -783,16 +645,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 }
 
-// =============================================================================
-// Gradient Button
-// =============================================================================
-
-class _GradientButton extends StatelessWidget {
+class _GlassButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final bool isLoading;
 
-  const _GradientButton({
+  const _GlassButton({
     required this.label,
     required this.onPressed,
     this.isLoading = false,
@@ -800,47 +658,59 @@ class _GradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(16),
-        child: Ink(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: const LinearGradient(
-              colors: [Colors.white, Color(0xFFFFF0F3)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Center(
-            child: isLoading
-                ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      color: AppColors.primary,
-                    ),
-                  )
-                : Text(
-                    label,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.primary,
-                      letterSpacing: 0.3,
-                    ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(18),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onPressed,
+            borderRadius: BorderRadius.circular(18),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18),
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white.withValues(alpha: 0.9),
+                    Colors.white.withValues(alpha: 0.7),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.5),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
                   ),
+                ],
+              ),
+              child: Center(
+                child: isLoading
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: AppColors.primary,
+                        ),
+                      )
+                    : Text(
+                        label,
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primary,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+              ),
+            ),
           ),
         ),
       ),

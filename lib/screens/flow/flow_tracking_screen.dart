@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/glass_card.dart';
 import '../../models/enums.dart';
 import '../../providers/providers.dart';
 
@@ -102,17 +103,23 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
           onTap: () => setState(() =>
               _intensity = _intensity == item.$1 ? null : item.$1),
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 250),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             decoration: BoxDecoration(
-              color: isSelected
-                  ? item.$4.withValues(alpha: 0.2)
-                  : AppColors.sf(context),
-              borderRadius: BorderRadius.circular(16),
+              gradient: isSelected
+                  ? LinearGradient(
+                      colors: [item.$4.withValues(alpha: 0.3), item.$4.withValues(alpha: 0.15)],
+                    )
+                  : null,
+              color: isSelected ? null : AppColors.sf(context),
+              borderRadius: BorderRadius.circular(18),
               border: Border.all(
                 color: isSelected ? item.$4 : AppColors.dv(context),
-                width: isSelected ? 2.5 : 1,
+                width: isSelected ? 2 : 1,
               ),
+              boxShadow: isSelected
+                  ? [BoxShadow(color: item.$4.withValues(alpha: 0.2), blurRadius: 12)]
+                  : [],
             ),
             child: Column(
               children: [
@@ -140,10 +147,10 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
 
   Widget _buildColorRow(AppLocalizations l10n) {
     final colors = [
-      (FlowColor.lightRed, l10n.lightRed, const Color(0xFFFF8A80)),
-      (FlowColor.red, l10n.red, const Color(0xFFEF5350)),
-      (FlowColor.darkRed, l10n.darkRed, const Color(0xFFB71C1C)),
-      (FlowColor.brown, l10n.brown, const Color(0xFF795548)),
+      (FlowColor.lightRed, l10n.lightRed, const Color(0xFFFFB0B0)),
+      (FlowColor.red, l10n.red, const Color(0xFFF0AAC0)),
+      (FlowColor.darkRed, l10n.darkRed, const Color(0xFFBE5B7B)),
+      (FlowColor.brown, l10n.brown, const Color(0xFFA08070)),
     ];
 
     return Row(
@@ -158,7 +165,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
           child: Column(
             children: [
               AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
+                duration: const Duration(milliseconds: 250),
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
@@ -166,10 +173,10 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: isSelected ? AppColors.tp(context) : Colors.transparent,
-                    width: 3,
+                    width: 2.5,
                   ),
                   boxShadow: isSelected
-                      ? [BoxShadow(color: item.$3.withValues(alpha: 0.4), blurRadius: 8)]
+                      ? [BoxShadow(color: item.$3.withValues(alpha: 0.4), blurRadius: 12)]
                       : [],
                 ),
                 child: isSelected
@@ -189,15 +196,11 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
   }
 
   Widget _buildClotsToggle(AppLocalizations l10n) {
-    return Container(
+    return GlassCard(
+      borderRadius: 22,
+      blur: 8,
+      opacity: 0.15,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10),
-        ],
-      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -224,15 +227,11 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
   }
 
   Widget _buildPadCounter(AppLocalizations l10n) {
-    return Container(
+    return GlassCard(
+      borderRadius: 22,
+      blur: 8,
+      opacity: 0.15,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10),
-        ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -268,7 +267,9 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: AppColors.primary.withValues(alpha: 0.12),
+          gradient: LinearGradient(
+            colors: [AppColors.primary.withValues(alpha: 0.2), AppColors.primary.withValues(alpha: 0.08)],
+          ),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Icon(icon, color: AppColors.primary, size: 24),
@@ -278,17 +279,15 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
 
   Widget _buildSaveButton(AppLocalizations l10n) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton(
           onPressed: _save,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)),
+                borderRadius: BorderRadius.circular(20)),
           ),
           child: Text(l10n.save,
               style: GoogleFonts.nunito(

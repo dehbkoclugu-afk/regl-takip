@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/glass_card.dart';
 import '../../models/user_profile.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
@@ -61,7 +62,9 @@ class SettingsScreen extends ConsumerWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: AppColors.secondary.withValues(alpha: 0.12),
+                  gradient: LinearGradient(
+                    colors: [AppColors.secondary.withValues(alpha: 0.25), AppColors.secondary.withValues(alpha: 0.1)],
+                  ),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(Icons.language_rounded,
@@ -222,7 +225,7 @@ class SettingsScreen extends ConsumerWidget {
             }),
             _divider(context),
             _actionTile(context,
-                Icons.table_chart_rounded, l10n.exportCsvFile, Colors.green, () async {
+                Icons.table_chart_rounded, l10n.exportCsvFile, AppColors.success, () async {
               final exportService = ExportService();
               final periods = ref.read(periodRecordsProvider);
               final dailyLogs = ref.read(dailyLogProvider);
@@ -245,6 +248,7 @@ class SettingsScreen extends ConsumerWidget {
               final confirmed = await showDialog<bool>(
                 context: context,
                 builder: (ctx) => AlertDialog(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
                   title: Text(l10n.deleteAllData),
                   content: Text(l10n.deleteAllDataConfirm),
                   actions: [
@@ -271,7 +275,7 @@ class SettingsScreen extends ConsumerWidget {
                     SnackBar(content: Text(l10n.dataDeleted),
                         backgroundColor: AppColors.success),
                   );
-                  context.go('/');
+                  context.go('/onboarding');
                 }
               }
             }),
@@ -301,18 +305,10 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _settingsCard(BuildContext context, List<Widget> children) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return GlassCard(
+      borderRadius: 24,
+      blur: 8,
+      opacity: 0.15,
       child: Column(children: children),
     ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.05, end: 0);
   }
@@ -323,7 +319,9 @@ class SettingsScreen extends ConsumerWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: AppColors.primary.withValues(alpha: 0.12),
+          gradient: LinearGradient(
+            colors: [AppColors.primary.withValues(alpha: 0.25), AppColors.primary.withValues(alpha: 0.1)],
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(icon, color: AppColors.primary, size: 22),
@@ -343,7 +341,9 @@ class SettingsScreen extends ConsumerWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: AppColors.primary.withValues(alpha: 0.12),
+          gradient: LinearGradient(
+            colors: [AppColors.primary.withValues(alpha: 0.25), AppColors.primary.withValues(alpha: 0.1)],
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(icon, color: AppColors.primary, size: 22),
@@ -366,7 +366,9 @@ class SettingsScreen extends ConsumerWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.12),
+          gradient: LinearGradient(
+            colors: [color.withValues(alpha: 0.25), color.withValues(alpha: 0.1)],
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(icon, color: color, size: 22),
@@ -401,7 +403,9 @@ class SettingsScreen extends ConsumerWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: AppColors.primary.withValues(alpha: 0.12),
+          gradient: LinearGradient(
+            colors: [AppColors.primary.withValues(alpha: 0.25), AppColors.primary.withValues(alpha: 0.1)],
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         child:

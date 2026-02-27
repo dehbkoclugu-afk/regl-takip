@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/cycle_utils.dart';
+import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
 import 'widgets/cycle_progress_ring.dart';
 import 'widgets/prediction_card.dart';
@@ -41,6 +42,43 @@ class DashboardScreen extends ConsumerWidget {
     }
   }
 
+  String _phaseInfo(CyclePhase phase, AppLocalizations l10n) {
+    switch (phase) {
+      case CyclePhase.menstrual:
+        return l10n.menstrualPhaseInfo;
+      case CyclePhase.follicular:
+        return l10n.follicularPhaseInfo;
+      case CyclePhase.ovulation:
+        return l10n.ovulationPhaseInfo;
+      case CyclePhase.luteal:
+        return l10n.lutealPhaseInfo;
+    }
+  }
+
+  void _showPhaseInfoDialog(BuildContext context, CyclePhase phase, AppLocalizations l10n) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        backgroundColor: AppColors.sf(context).withValues(alpha: 0.95),
+        title: Text(
+          _phaseName(phase, l10n),
+          style: GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          _phaseInfo(phase, l10n),
+          style: GoogleFonts.nunito(fontSize: 14, height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.done),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(userProfileProvider);
@@ -72,10 +110,14 @@ class DashboardScreen extends ConsumerWidget {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [gradient[0], gradient[1], AppColors.bg(context)],
-          stops: const [0.0, 0.4, 1.0],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            gradient[0].withValues(alpha: 0.35),
+            gradient[1].withValues(alpha: 0.2),
+            AppColors.bg(context),
+          ],
+          stops: const [0.0, 0.3, 0.8],
         ),
       ),
       child: SafeArea(
@@ -84,27 +126,82 @@ class DashboardScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
+              // Dark mode toggle - sağ üst
+              Align(
+                alignment: Alignment.centerRight,
+                child: GlassContainer(
+                  borderRadius: 14,
+                  blur: 10,
+                  padding: EdgeInsets.zero,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(14),
+                      onTap: () {
+                        final current = ref.read(darkModeProvider);
+                        ref.read(darkModeProvider.notifier).state = !current;
+                        ref.read(userProfileProvider.notifier)
+                            .saveProfile(darkModeEnabled: !current);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Icon(
+                          ref.watch(darkModeProvider)
+                              ? Icons.light_mode_rounded
+                              : Icons.dark_mode_rounded,
+                          color: AppColors.tp(context),
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Greeting
               Text(
                 l10n.helloName(profile?.name ?? ''),
                 style: GoogleFonts.nunito(
-                  fontSize: 24,
+                  fontSize: 26,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: AppColors.tp(context),
                 ),
               )
                   .animate()
                   .fadeIn(duration: 500.ms)
                   .slideY(begin: -0.2, end: 0, duration: 500.ms),
               const SizedBox(height: 8),
-              Text(
-                _phaseName(phase, l10n),
-                style: GoogleFonts.nunito(
-                  fontSize: 16,
-                  color: Colors.white.withValues(alpha: 0.85),
+              // Phase name
+              GestureDetector(
+                onTap: () => _showPhaseInfoDialog(context, phase, l10n),
+                child: GlassContainer(
+                  borderRadius: 20,
+                  blur: 10,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _phaseName(phase, l10n),
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.tp(context),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Icon(
+                        Icons.info_outline_rounded,
+                        size: 16,
+                        color: AppColors.ts(context),
+                      ),
+                    ],
+                  ),
                 ),
               ).animate().fadeIn(delay: 200.ms, duration: 500.ms),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
+              // Progress Ring
               CycleProgressRing(
                 cycleDay: cycleDay,
                 cycleLength: profile?.averageCycleLength ?? 28,
@@ -112,12 +209,14 @@ class DashboardScreen extends ConsumerWidget {
                 daysUntilNextPeriod: daysUntil,
               ),
               const SizedBox(height: 32),
+              // Prediction Cards
               PredictionCardsRow(
                 nextPeriodDate: nextPeriodStr,
                 ovulationDate: ovulationStr,
                 fertileWindowDate: fertileStr,
               ),
               const SizedBox(height: 24),
+              // Action Buttons
               Row(
                 children: [
                   Expanded(
@@ -133,6 +232,7 @@ class DashboardScreen extends ConsumerWidget {
                           await ref
                               .read(periodRecordsProvider.notifier)
                               .endPeriod(ongoingPeriod.id, DateTime.now());
+                          ref.read(userProfileProvider.notifier).refresh();
                         } else {
                           final record = await ref
                               .read(periodRecordsProvider.notifier)
@@ -177,46 +277,43 @@ class DashboardScreen extends ConsumerWidget {
     required Color color,
     required VoidCallback onTap,
   }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          decoration: BoxDecoration(
-            color: AppColors.sf(context),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: color.withValues(alpha: 0.15),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
+    return GlassCard(
+      borderRadius: 24,
+      blur: 12,
+      opacity: 0.2,
+      padding: EdgeInsets.zero,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(24),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 18),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [color.withValues(alpha: 0.3), color.withValues(alpha: 0.15)],
+                    ),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: color, size: 20),
                 ),
-                child: Icon(icon, color: color, size: 20),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                label,
-                style: GoogleFonts.nunito(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.tp(context),
+                const SizedBox(width: 10),
+                Text(
+                  label,
+                  style: GoogleFonts.nunito(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.tp(context),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

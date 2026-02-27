@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
 
 class SleepTrackingScreen extends ConsumerStatefulWidget {
@@ -101,13 +102,11 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
   }
 
   Widget _buildDurationDisplay(AppLocalizations l10n) {
-    return Container(
+    return GlassCard(
+      borderRadius: 24,
+      blur: 10,
+      opacity: 0.15,
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
-      ),
       child: Column(
         children: [
           const Icon(Icons.bedtime_rounded, color: AppColors.sleep, size: 48),
@@ -151,13 +150,11 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
       VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: GlassCard(
+        borderRadius: 22,
+        blur: 8,
+        opacity: 0.15,
         padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: AppColors.sf(context),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
-        ),
         child: Column(
           children: [
             Icon(icon, color: AppColors.sleep, size: 28),
@@ -176,13 +173,11 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
   }
 
   Widget _buildQualitySection(AppLocalizations l10n) {
-    return Container(
+    return GlassCard(
+      borderRadius: 22,
+      blur: 8,
+      opacity: 0.15,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -226,7 +221,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
 
   Widget _buildSaveButton(AppLocalizations l10n) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton(

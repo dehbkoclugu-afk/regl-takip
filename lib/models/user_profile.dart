@@ -49,6 +49,9 @@ class UserProfile extends HiveObject {
   @HiveField(14)
   bool darkModeEnabled;
 
+  @HiveField(15)
+  int waterGoal;
+
   UserProfile({
     this.name = '',
     this.birthDate,
@@ -65,6 +68,7 @@ class UserProfile extends HiveObject {
     this.reminderHour = 9,
     this.reminderMinute = 0,
     this.darkModeEnabled = false,
+    this.waterGoal = 8,
   });
 
   int? get age {

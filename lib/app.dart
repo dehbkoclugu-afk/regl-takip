@@ -6,6 +6,8 @@ import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'providers/providers.dart';
 import 'screens/lock/lock_screen.dart';
+import 'screens/paywall/paywall_screen.dart';
+import 'services/premium_service.dart';
 
 class ReglTakipApp extends ConsumerStatefulWidget {
   const ReglTakipApp({super.key});
@@ -18,12 +20,24 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     with WidgetsBindingObserver {
   bool _isLocked = true;
   bool _needsLock = false;
+  bool _pendingLockUpdate = false;
+  bool _showPaywall = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _checkLockNeeded();
+    _checkPremiumAccess();
+  }
+
+  Future<void> _checkPremiumAccess() async {
+    final premiumService = PremiumService();
+    await premiumService.initialize();
+    final hasAccess = await premiumService.hasAccess();
+    if (!hasAccess && mounted) {
+      setState(() => _showPaywall = true);
+    }
   }
 
   @override
@@ -62,12 +76,20 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     final profile = ref.watch(userProfileProvider);
     final currentNeedsLock =
         (profile?.pinEnabled == true) || (profile?.biometricEnabled == true);
-    if (currentNeedsLock != _needsLock) {
+    if (currentNeedsLock != _needsLock && !_pendingLockUpdate) {
+      _pendingLockUpdate = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          _needsLock = currentNeedsLock;
-          if (!currentNeedsLock) _isLocked = false;
-        });
+        if (mounted) {
+          _pendingLockUpdate = false;
+          final p = ref.read(userProfileProvider);
+          final needs = (p?.pinEnabled == true) || (p?.biometricEnabled == true);
+          if (needs != _needsLock) {
+            setState(() {
+              _needsLock = needs;
+              if (!needs) _isLocked = false;
+            });
+          }
+        }
       });
     }
 
@@ -93,6 +115,14 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
         if (_isLocked && _needsLock) {
           return LockScreen(
             onUnlocked: () => setState(() => _isLocked = false),
+          );
+        }
+        if (_showPaywall) {
+          return PaywallScreen(
+            key: const ValueKey('paywall'),
+            onPremiumActivated: () {
+              setState(() => _showPaywall = false);
+            },
           );
         }
         return child ?? const SizedBox.shrink();

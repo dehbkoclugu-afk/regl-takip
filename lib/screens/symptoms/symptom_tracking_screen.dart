@@ -148,7 +148,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -158,7 +158,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
+                      borderRadius: BorderRadius.circular(20)),
                 ),
                 child: Text(l10n.saveNSymptoms(_selectedSymptoms.length),
                     style: GoogleFonts.nunito(
@@ -194,17 +194,23 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
             }
           }),
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 250),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isSelected
-                  ? AppColors.primary.withValues(alpha: 0.1)
-                  : AppColors.sf(context),
-              borderRadius: BorderRadius.circular(16),
+              gradient: isSelected
+                  ? LinearGradient(
+                      colors: [AppColors.primary.withValues(alpha: 0.15), AppColors.primary.withValues(alpha: 0.05)],
+                    )
+                  : null,
+              color: isSelected ? null : AppColors.sf(context),
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: isSelected ? AppColors.primary : AppColors.dv(context),
-                width: isSelected ? 2 : 1,
+                width: isSelected ? 1.5 : 0.5,
               ),
+              boxShadow: isSelected
+                  ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.15), blurRadius: 12)]
+                  : [],
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

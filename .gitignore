@@ -50,3 +50,7 @@ app.*.map.json
 # JVM crash logs
 hs_err_pid*.log
 flutter_*.log
+
+# Signing
+android/key.properties
+*.jks

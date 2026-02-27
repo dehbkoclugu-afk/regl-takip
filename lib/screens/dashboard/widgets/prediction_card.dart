@@ -3,12 +3,14 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/glass_card.dart';
 
 class PredictionCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String value;
   final Color color;
+  final String? infoText;
 
   const PredictionCard({
     super.key,
@@ -16,73 +18,124 @@ class PredictionCard extends StatelessWidget {
     required this.title,
     required this.value,
     required this.color,
+    this.infoText,
   });
+
+  void _showInfoDialog(BuildContext context) {
+    if (infoText == null) return;
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        backgroundColor: AppColors.sf(context).withValues(alpha: 0.95),
+        title: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [color.withValues(alpha: 0.3), color.withValues(alpha: 0.15)],
+                ),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: 18),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(title,
+                  style: GoogleFonts.nunito(
+                      fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+        content: Text(infoText!,
+            style: GoogleFonts.nunito(fontSize: 14, height: 1.5)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.done),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-        decoration: BoxDecoration(
-          color: AppColors.sf(context),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: color.withValues(alpha: 0.1),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
-              spreadRadius: 0,
-            ),
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
+      child: GestureDetector(
+        onTap: infoText != null ? () => _showInfoDialog(context) : null,
+        child: GlassCard(
+          borderRadius: 22,
+          blur: 10,
+          opacity: 0.18,
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      color.withValues(alpha: 0.25),
+                      color.withValues(alpha: 0.1),
+                    ],
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 22,
+                ),
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 22,
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Text(
+                      title,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.ts(context),
+                        letterSpacing: 0.3,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (infoText != null) ...[
+                    const SizedBox(width: 2),
+                    Icon(Icons.info_outline_rounded,
+                        size: 12, color: AppColors.ts(context)),
+                  ],
+                ],
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              title,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: AppColors.ts(context),
-                letterSpacing: 0.3,
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.tp(context),
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: AppColors.tp(context),
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -111,18 +164,21 @@ class PredictionCardsRow extends StatelessWidget {
           title: l10n.nextPeriod,
           value: nextPeriodDate,
           color: AppColors.menstrual,
+          infoText: l10n.nextPeriodInfo,
         ),
         PredictionCard(
           icon: Icons.egg_rounded,
           title: l10n.ovulation,
           value: ovulationDate,
           color: AppColors.ovulation,
+          infoText: l10n.ovulationCardInfo,
         ),
         PredictionCard(
           icon: Icons.favorite_rounded,
           title: l10n.fertileWindow,
           value: fertileWindowDate,
           color: AppColors.fertileWindow,
+          infoText: l10n.fertileWindowInfo,
         ),
       ],
     )

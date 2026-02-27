@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/glass_card.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../providers/providers.dart';
@@ -118,13 +119,11 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
   }
 
   Widget _buildOrgasmToggle(AppLocalizations l10n) {
-    return Container(
+    return GlassCard(
+      borderRadius: 22,
+      blur: 8,
+      opacity: 0.15,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
-      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -143,13 +142,11 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
   }
 
   Widget _buildNoteField(AppLocalizations l10n) {
-    return Container(
+    return GlassCard(
+      borderRadius: 22,
+      blur: 8,
+      opacity: 0.15,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -181,7 +178,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
 
   Widget _buildSaveButton(AppLocalizations l10n) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton(

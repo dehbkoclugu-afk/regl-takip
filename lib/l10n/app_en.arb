@@ -376,5 +376,14 @@
   "deleteAllDataConfirm": "Are you sure you want to delete all data? This action cannot be undone.",
   "delete": "Delete",
   "dataDeleted": "All data deleted",
-  "doseHint": "e.g. 500mg"
+  "doseHint": "e.g. 500mg",
+  "menstrualPhaseInfo": "The period when menstrual bleeding occurs. Usually lasts 3-7 days. The body sheds the uterine lining.",
+  "follicularPhaseInfo": "After your period, the ovaries prepare a new egg. Estrogen rises and energy levels increase.",
+  "ovulationPhaseInfo": "The phase when an egg is released from the ovary. Pregnancy likelihood is at its highest.",
+  "lutealPhaseInfo": "The phase from ovulation until the next period. Progesterone rises, PMS symptoms may occur.",
+  "fertileWindowInfo": "The period with the highest chance of pregnancy. Starts 5 days before ovulation and ends 1 day after.",
+  "ovulationCardInfo": "The estimated day when an egg is released from the ovary. Occurs around the middle of the cycle.",
+  "nextPeriodInfo": "The estimated start date of your next period. Calculated based on your cycle length.",
+  "phaseInfoTitle": "What is this phase?",
+  "learnMore": "Info"
 }
