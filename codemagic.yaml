@@ -42,5 +42,5 @@ workflows:
           success: true
           failure: true
       app_store_connect:
-        api_key: Codemagic
+        auth: integration
         submit_to_testflight: true
