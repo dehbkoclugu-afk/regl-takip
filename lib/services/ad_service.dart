@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter/foundation.dart';
@@ -19,7 +20,7 @@ class AdService {
       _isIOS ? _openAdUnitIdIOS : _openAdUnitIdAndroid;
 
   static InterstitialAd? _openAd;
-  static bool _isLoadingOpenAd = false;
+  static Completer<void>? _loadCompleter;
 
   static Future<void> initialize() async {
     await MobileAds.instance.initialize();
@@ -27,25 +28,29 @@ class AdService {
   }
 
   static Future<void> loadOpenAd() async {
-    if (_isLoadingOpenAd) return;
-    _isLoadingOpenAd = true;
-    try {
-      await InterstitialAd.load(
-        adUnitId: kDebugMode ? _testInterstitialId : _openAdUnitId,
-        request: const AdRequest(),
-        adLoadCallback: InterstitialAdLoadCallback(
-          onAdLoaded: (ad) {
-            _openAd = ad;
-            debugPrint('Open Ad yuklendi');
-          },
-          onAdFailedToLoad: (error) {
-            debugPrint('Open Ad yuklenemedi: $error');
-          },
-        ),
-      );
-    } finally {
-      _isLoadingOpenAd = false;
-    }
+    _loadCompleter = Completer<void>();
+    InterstitialAd.load(
+      adUnitId: kDebugMode ? _testInterstitialId : _openAdUnitId,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          _openAd = ad;
+          debugPrint('Open Ad yuklendi');
+          _loadCompleter?.complete();
+        },
+        onAdFailedToLoad: (error) {
+          debugPrint('Open Ad yuklenemedi: $error');
+          _loadCompleter?.complete();
+        },
+      ),
+    );
+    // Maksimum 5 saniye bekle, yüklenemezse devam et
+    await _loadCompleter!.future.timeout(
+      const Duration(seconds: 5),
+      onTimeout: () {
+        debugPrint('Open Ad yukleme zaman asimi');
+      },
+    );
   }
 
   static Future<void> showOpenAd() async {
