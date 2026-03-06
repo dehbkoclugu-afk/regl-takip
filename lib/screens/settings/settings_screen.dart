@@ -191,6 +191,14 @@ class SettingsScreen extends ConsumerWidget {
                     }
                     return;
                   }
+                  // PIN yoksa önce PIN kurduralım (fallback için)
+                  if (profile?.pinEnabled != true) {
+                    if (!context.mounted) return;
+                    final pinSet = await showPinSetupDialog(context);
+                    if (!pinSet) return;
+                    ref.read(userProfileProvider.notifier)
+                        .saveProfile(pinEnabled: true);
+                  }
                 }
                 ref.read(userProfileProvider.notifier)
                     .saveProfile(biometricEnabled: val);
