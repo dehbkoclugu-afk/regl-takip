@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'services/hive_service.dart';
 import 'services/notification_service.dart';
-import 'services/premium_service.dart';
+import 'services/ad_service.dart';
 import 'providers/providers.dart';
 import 'app.dart';
 
@@ -27,8 +27,9 @@ void main() async {
   // Initialize Hive
   await HiveService().init();
 
-  // Initialize Premium/Trial service
-  await PremiumService().initialize();
+  // Initialize AdMob
+  await AdService.initialize();
+  await AdService.loadOpenAd();
 
   // Initialize notifications (with error handling to prevent freeze)
   final notificationService = NotificationService();

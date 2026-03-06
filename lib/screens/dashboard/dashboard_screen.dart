@@ -261,10 +261,35 @@ class DashboardScreen extends ConsumerWidget {
                       begin: 0.15, end: 0, delay: 500.ms, duration: 600.ms),
               const SizedBox(height: 24),
               const QuickStatusCards(),
+              const SizedBox(height: 16),
+              _buildDisclaimer(context, l10n),
               const SizedBox(height: 24),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildDisclaimer(BuildContext context, AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline_rounded,
+              size: 14, color: AppColors.ts(context).withValues(alpha: 0.6)),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              l10n.healthDisclaimer,
+              style: TextStyle(
+                fontSize: 11,
+                color: AppColors.ts(context).withValues(alpha: 0.6),
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

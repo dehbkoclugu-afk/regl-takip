@@ -6,8 +6,7 @@ import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'providers/providers.dart';
 import 'screens/lock/lock_screen.dart';
-import 'screens/paywall/paywall_screen.dart';
-import 'services/premium_service.dart';
+import 'services/ad_service.dart';
 
 class ReglTakipApp extends ConsumerStatefulWidget {
   const ReglTakipApp({super.key});
@@ -21,23 +20,18 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   bool _isLocked = true;
   bool _needsLock = false;
   bool _pendingLockUpdate = false;
-  bool _showPaywall = false;
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _checkLockNeeded();
-    _checkPremiumAccess();
+    _showOpenAd();
   }
 
-  Future<void> _checkPremiumAccess() async {
-    final premiumService = PremiumService();
-    await premiumService.initialize();
-    final hasAccess = await premiumService.hasAccess();
-    if (!hasAccess && mounted) {
-      setState(() => _showPaywall = true);
-    }
+  Future<void> _showOpenAd() async {
+    // Kısa bir gecikme ile reklam göster (UI hazır olduktan sonra)
+    await Future.delayed(const Duration(milliseconds: 500));
+    await AdService.showOpenAd();
   }
 
   @override
@@ -115,14 +109,6 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
         if (_isLocked && _needsLock) {
           return LockScreen(
             onUnlocked: () => setState(() => _isLocked = false),
-          );
-        }
-        if (_showPaywall) {
-          return PaywallScreen(
-            key: const ValueKey('paywall'),
-            onPremiumActivated: () {
-              setState(() => _showPaywall = false);
-            },
           );
         }
         return child ?? const SizedBox.shrink();

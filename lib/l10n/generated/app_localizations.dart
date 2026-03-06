@@ -1972,6 +1972,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bilgi'**
   String get learnMore;
+
+  /// No description provided for @healthDisclaimer.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu uygulama tıbbi tavsiye niteliğinde değildir. Sağlık sorunlarınız için lütfen bir sağlık uzmanına danışın.'**
+  String get healthDisclaimer;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

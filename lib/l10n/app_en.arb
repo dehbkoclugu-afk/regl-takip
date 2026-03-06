@@ -385,5 +385,6 @@
   "ovulationCardInfo": "The estimated day when an egg is released from the ovary. Occurs around the middle of the cycle.",
   "nextPeriodInfo": "The estimated start date of your next period. Calculated based on your cycle length.",
   "phaseInfoTitle": "What is this phase?",
-  "learnMore": "Info"
+  "learnMore": "Info",
+  "healthDisclaimer": "This app is not a substitute for medical advice. Please consult a healthcare professional for health concerns."
 }

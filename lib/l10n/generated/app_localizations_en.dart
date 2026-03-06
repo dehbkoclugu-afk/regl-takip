@@ -974,4 +974,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get learnMore => 'Info';
+
+  @override
+  String get healthDisclaimer => 'This app is not a substitute for medical advice. Please consult a healthcare professional for health concerns.';
 }

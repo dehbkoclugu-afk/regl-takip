@@ -385,5 +385,6 @@
   "ovulationCardInfo": "Yumurtalıktan yumurtanın serbest bırakılacağı tahmini gündür. Döngünün ortasına denk gelir.",
   "nextPeriodInfo": "Bir sonraki adet kanamasının tahmini başlangıç tarihidir. Döngü sürenize göre hesaplanır.",
   "phaseInfoTitle": "Bu faz nedir?",
-  "learnMore": "Bilgi"
+  "learnMore": "Bilgi",
+  "healthDisclaimer": "Bu uygulama tıbbi tavsiye niteliğinde değildir. Sağlık sorunlarınız için lütfen bir sağlık uzmanına danışın."
 }

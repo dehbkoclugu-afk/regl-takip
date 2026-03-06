@@ -974,4 +974,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get learnMore => 'Bilgi';
+
+  @override
+  String get healthDisclaimer => 'Bu uygulama tıbbi tavsiye niteliğinde değildir. Sağlık sorunlarınız için lütfen bir sağlık uzmanına danışın.';
 }

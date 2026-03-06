@@ -138,6 +138,28 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               ],
             ),
           ).animate().fadeIn(delay: 300.ms, duration: 500.ms),
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline_rounded,
+                    size: 14,
+                    color: AppColors.ts(context).withValues(alpha: 0.6)),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    l10n.healthDisclaimer,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AppColors.ts(context).withValues(alpha: 0.6),
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
