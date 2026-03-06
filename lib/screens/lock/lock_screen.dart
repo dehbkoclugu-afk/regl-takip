@@ -21,20 +21,11 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   final _localAuth = LocalAuthentication();
   String _enteredPin = '';
   bool _isError = false;
-  bool _hasPin = false;
 
   @override
   void initState() {
     super.initState();
-    _checkPinAndBiometric();
-  }
-
-  Future<void> _checkPinAndBiometric() async {
-    final storedPin = await _storage.read(key: 'app_pin');
-    if (mounted) {
-      setState(() => _hasPin = storedPin != null && storedPin.isNotEmpty);
-    }
-    await _tryBiometric();
+    _tryBiometric();
   }
 
   Future<void> _tryBiometric() async {
@@ -44,13 +35,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
     try {
       final canCheck = await _localAuth.canCheckBiometrics;
       final isDeviceSupported = await _localAuth.isDeviceSupported();
-      if (!canCheck || !isDeviceSupported) {
-        // Biyometrik kullanılamıyor ve PIN de yoksa kilidi aç
-        if (!_hasPin && mounted) {
-          widget.onUnlocked();
-        }
-        return;
-      }
+      if (!canCheck || !isDeviceSupported) return;
       if (!mounted) return;
 
       final l10n = AppLocalizations.of(context)!;
@@ -65,10 +50,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
         widget.onUnlocked();
       }
     } catch (_) {
-      // Biyometrik hata verdi ve PIN de yoksa kilidi aç
-      if (!_hasPin && mounted) {
-        widget.onUnlocked();
-      }
+      // Biyometrik başarısız - PIN ekranında kalsın
     }
   }
 
@@ -126,14 +108,14 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                   .animate().fadeIn(duration: 500.ms).scale(begin: const Offset(0.5, 0.5)),
               const SizedBox(height: 16),
               Text(
-                _hasPin ? l10n.enterPin : l10n.unlockWithBiometric,
+                l10n.enterPin,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ).animate().fadeIn(delay: 200.ms),
-              if (_isError && _hasPin)
+              if (_isError)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
@@ -145,22 +127,11 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                   ).animate().shakeX(hz: 4, amount: 4),
                 ),
               const SizedBox(height: 32),
-              if (_hasPin) ...[
-                _buildPinDots(),
-                const Spacer(),
-                _buildNumpad(),
-                const SizedBox(height: 16),
-              ],
-              if (!_hasPin) ...[
-                const Spacer(),
-                IconButton(
-                  onPressed: _tryBiometric,
-                  icon: const Icon(Icons.fingerprint_rounded,
-                      color: Colors.white, size: 64),
-                ),
-                const Spacer(),
-              ],
-              if (_hasPin && profile?.biometricEnabled == true)
+              _buildPinDots(),
+              const Spacer(),
+              _buildNumpad(),
+              const SizedBox(height: 16),
+              if (profile?.biometricEnabled == true)
                 TextButton.icon(
                   onPressed: _tryBiometric,
                   icon: const Icon(Icons.fingerprint_rounded,
