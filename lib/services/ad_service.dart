@@ -20,61 +20,72 @@ class AdService {
       _isIOS ? _openAdUnitIdIOS : _openAdUnitIdAndroid;
 
   static InterstitialAd? _openAd;
-  static Completer<void>? _loadCompleter;
 
   static Future<void> initialize() async {
-    await MobileAds.instance.initialize();
-    debugPrint('AdMob initialized');
+    try {
+      await MobileAds.instance.initialize();
+      debugPrint('[AD] AdMob initialized successfully');
+    } catch (e) {
+      debugPrint('[AD] AdMob initialize FAILED: $e');
+    }
   }
 
   static Future<void> loadOpenAd() async {
-    _loadCompleter = Completer<void>();
+    final adUnitId = kDebugMode ? _testInterstitialId : _openAdUnitId;
+    debugPrint('[AD] Loading ad with ID: $adUnitId (debug=$kDebugMode, iOS=$_isIOS)');
+
+    final completer = Completer<void>();
+
     InterstitialAd.load(
-      adUnitId: kDebugMode ? _testInterstitialId : _openAdUnitId,
+      adUnitId: adUnitId,
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
           _openAd = ad;
-          debugPrint('Open Ad yuklendi');
-          _loadCompleter?.complete();
+          debugPrint('[AD] Ad loaded successfully');
+          if (!completer.isCompleted) completer.complete();
         },
         onAdFailedToLoad: (error) {
-          debugPrint('Open Ad yuklenemedi: $error');
-          _loadCompleter?.complete();
+          debugPrint('[AD] Ad FAILED to load: code=${error.code} domain=${error.domain} message=${error.message}');
+          if (!completer.isCompleted) completer.complete();
         },
       ),
     );
-    // Maksimum 5 saniye bekle, yüklenemezse devam et
-    await _loadCompleter!.future.timeout(
-      const Duration(seconds: 5),
+
+    await completer.future.timeout(
+      const Duration(seconds: 10),
       onTimeout: () {
-        debugPrint('Open Ad yukleme zaman asimi');
+        debugPrint('[AD] Ad load TIMEOUT (10s)');
       },
     );
   }
 
   static Future<void> showOpenAd() async {
-    // Reklam yüklenmemişse tekrar dene
     if (_openAd == null) {
-      debugPrint('Open Ad yuklenmemis, tekrar deneniyor...');
+      debugPrint('[AD] Ad not loaded, retrying...');
       await loadOpenAd();
     }
+
     if (_openAd != null) {
+      debugPrint('[AD] Showing ad...');
       _openAd!.fullScreenContentCallback = FullScreenContentCallback(
+        onAdShowedFullScreenContent: (ad) {
+          debugPrint('[AD] Ad SHOWN successfully');
+        },
         onAdDismissedFullScreenContent: (ad) {
           ad.dispose();
           _openAd = null;
-          debugPrint('Open Ad kapatildi');
+          debugPrint('[AD] Ad dismissed');
         },
         onAdFailedToShowFullScreenContent: (ad, error) {
           ad.dispose();
           _openAd = null;
-          debugPrint('Open Ad gosterilemedi: $error');
+          debugPrint('[AD] Ad FAILED to show: $error');
         },
       );
       await _openAd!.show();
     } else {
-      debugPrint('Open Ad yuklenemedi, reklam gosterilemiyor');
+      debugPrint('[AD] Ad could not be loaded, skipping');
     }
   }
 

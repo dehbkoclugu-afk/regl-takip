@@ -29,10 +29,11 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   }
 
   Future<void> _showOpenAd() async {
-    // İlk frame renderdan sonra çağır
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // Ekstra gecikme - activity tamamen hazır olsun
-      await Future.delayed(const Duration(seconds: 1));
+      // Activity/ViewController tamamen hazır olduktan sonra
+      await Future.delayed(const Duration(seconds: 2));
+      await AdService.initialize();
+      await AdService.loadOpenAd();
       await AdService.showOpenAd();
     });
   }
