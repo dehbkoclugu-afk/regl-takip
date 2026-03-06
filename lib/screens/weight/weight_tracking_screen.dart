@@ -190,7 +190,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
                   borderSide: const BorderSide(
                       color: AppColors.weightColor, width: 2)),
             ),
-            onSubmitted: (v) {
+            onChanged: (v) {
               final parsed = double.tryParse(v);
               if (parsed != null && parsed >= 20 && parsed <= 300) {
                 setState(() => _weight = double.parse(parsed.toStringAsFixed(1)));
@@ -225,6 +225,11 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   }
 
   Future<void> _save() async {
+    // Controller'dan son değeri al
+    final parsed = double.tryParse(_controller.text);
+    if (parsed != null && parsed >= 20 && parsed <= 300) {
+      _weight = double.parse(parsed.toStringAsFixed(1));
+    }
     await ref.read(dailyLogProvider.notifier).updateWeight(DateTime.now(), _weight);
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
