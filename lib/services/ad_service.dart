@@ -54,6 +54,11 @@ class AdService {
   }
 
   static Future<void> showOpenAd() async {
+    // Reklam yüklenmemişse tekrar dene
+    if (_openAd == null) {
+      debugPrint('Open Ad yuklenmemis, tekrar deneniyor...');
+      await loadOpenAd();
+    }
     if (_openAd != null) {
       _openAd!.fullScreenContentCallback = FullScreenContentCallback(
         onAdDismissedFullScreenContent: (ad) {
@@ -69,7 +74,7 @@ class AdService {
       );
       await _openAd!.show();
     } else {
-      debugPrint('Open Ad henuz yuklenmedi');
+      debugPrint('Open Ad yuklenemedi, reklam gosterilemiyor');
     }
   }
 
