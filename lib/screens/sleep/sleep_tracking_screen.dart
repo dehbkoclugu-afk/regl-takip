@@ -103,7 +103,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
 
   Widget _buildDurationDisplay(AppLocalizations l10n) {
     return GlassCard(
-      borderRadius: 24,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(24),
@@ -151,7 +151,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
     return GestureDetector(
       onTap: onTap,
       child: GlassCard(
-        borderRadius: 22,
+        borderRadius: 20,
         blur: 0,
         opacity: 0.15,
         padding: const EdgeInsets.all(18),
@@ -174,7 +174,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
 
   Widget _buildQualitySection(AppLocalizations l10n) {
     return GlassCard(
-      borderRadius: 22,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(20),

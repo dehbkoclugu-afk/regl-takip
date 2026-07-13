@@ -28,7 +28,7 @@ class PredictionCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         backgroundColor: AppColors.sf(context).withValues(alpha: 0.95),
         title: Row(
           children: [
@@ -69,7 +69,7 @@ class PredictionCard extends StatelessWidget {
       child: GestureDetector(
         onTap: infoText != null ? () => _showInfoDialog(context) : null,
         child: GlassCard(
-          borderRadius: 22,
+          borderRadius: 20,
           blur: 0,
           opacity: 0.18,
           margin: const EdgeInsets.symmetric(horizontal: 4),

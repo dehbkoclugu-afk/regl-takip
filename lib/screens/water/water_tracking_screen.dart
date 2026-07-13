@@ -274,7 +274,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
 
   Widget _buildGlassGrid(int goal, AppLocalizations l10n) {
     return GlassCard(
-      borderRadius: 22,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(18),
@@ -301,7 +301,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                   color: isFilled
                       ? AppColors.water.withValues(alpha: 0.15)
                       : AppColors.isDark(context) ? AppColors.cardDark : Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isFilled ? AppColors.water : Colors.transparent,
                     width: 2,

@@ -165,7 +165,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     // düzensiz sayılır (CycleUtils.isIrregular)
     final irregular = CycleUtils.isIrregular(records);
     return GlassCard(
-      borderRadius: 24,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.18,
       padding: const EdgeInsets.all(20),
@@ -253,7 +253,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     }
 
     return GlassCard(
-      borderRadius: 24,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.18,
       padding: const EdgeInsets.all(20),
@@ -365,7 +365,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final total = moodCount.values.fold<int>(0, (a, b) => a + b);
 
     return GlassCard(
-      borderRadius: 24,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.18,
       padding: const EdgeInsets.all(20),
@@ -519,7 +519,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     }
 
     return GlassCard(
-      borderRadius: 24,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.18,
       padding: const EdgeInsets.all(20),
@@ -572,7 +572,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final localeStr = Localizations.localeOf(context).toString();
     final dateFormat = DateFormat('d MMM yyyy', localeStr);
     return GlassCard(
-      borderRadius: 24,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.18,
       padding: const EdgeInsets.all(20),
@@ -656,7 +656,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final dateFormat = DateFormat('d/M', localeStr);
 
     return GlassCard(
-      borderRadius: 24,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.18,
       padding: const EdgeInsets.all(20),
@@ -792,7 +792,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     return SizedBox(
       width: double.infinity,
       child: GlassCard(
-        borderRadius: 24,
+        borderRadius: 20,
         blur: 0,
         opacity: 0.12,
         padding: const EdgeInsets.all(20),

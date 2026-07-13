@@ -231,7 +231,7 @@ class QuickStatusCards extends ConsumerWidget {
             height: 48,
             decoration: BoxDecoration(
               color: _moodColor(mood).withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
               child: Text(
@@ -297,7 +297,7 @@ class QuickStatusCards extends ConsumerWidget {
             height: 48,
             decoration: BoxDecoration(
               color: AppColors.secondary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
               Icons.monitor_heart_rounded,

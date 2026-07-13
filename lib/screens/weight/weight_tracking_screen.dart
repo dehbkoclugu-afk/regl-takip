@@ -84,7 +84,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
 
   Widget _buildWeightDisplay() {
     return GlassCard(
-      borderRadius: 24,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(24),
@@ -116,7 +116,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
 
   Widget _buildQuickAdjust(AppLocalizations l10n) {
     return GlassCard(
-      borderRadius: 22,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(20),
@@ -149,7 +149,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: AppColors.weightColor.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Text(label,
             style: TextStyle(
@@ -161,7 +161,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
 
   Widget _buildManualInput(AppLocalizations l10n) {
     return GlassCard(
-      borderRadius: 22,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(20),
@@ -184,10 +184,10 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
               suffixStyle: TextStyle(
                   fontSize: 16, color: AppColors.weightColor),
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: AppColors.dv(context))),
               focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(
                       color: AppColors.weightColor, width: 2)),
             ),

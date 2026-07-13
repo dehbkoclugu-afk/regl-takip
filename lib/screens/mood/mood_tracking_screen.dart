@@ -117,7 +117,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                                   )
                                 : null,
                             color: isSelected ? null : AppColors.sf(context),
-                            borderRadius: BorderRadius.circular(22),
+                            borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                               color: isSelected ? emojiData.$2 : AppColors.dv(context),
                               width: isSelected ? 2 : 0.5,

@@ -112,7 +112,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                     )
                   : null,
               color: isSelected ? null : AppColors.sf(context),
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isSelected ? item.$4 : AppColors.dv(context),
                 width: isSelected ? 2 : 1,
@@ -197,7 +197,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
 
   Widget _buildClotsToggle(AppLocalizations l10n) {
     return GlassCard(
-      borderRadius: 22,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -228,7 +228,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
 
   Widget _buildPadCounter(AppLocalizations l10n) {
     return GlassCard(
-      borderRadius: 22,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(20),
@@ -270,7 +270,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
           gradient: LinearGradient(
             colors: [AppColors.primary.withValues(alpha: 0.2), AppColors.primary.withValues(alpha: 0.08)],
           ),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(icon, color: AppColors.primary, size: 24),
       ),

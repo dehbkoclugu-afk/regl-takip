@@ -61,7 +61,7 @@ class DashboardScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         backgroundColor: AppColors.sf(context).withValues(alpha: 0.95),
         title: Text(
           _phaseName(phase, l10n),
@@ -148,7 +148,7 @@ class DashboardScreen extends ConsumerWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: GlassContainer(
-                  borderRadius: 14,
+                  borderRadius: 12,
                   blur: 0,
                   padding: EdgeInsets.zero,
                   child: Material(
@@ -158,7 +158,7 @@ class DashboardScreen extends ConsumerWidget {
                       label: l10n.darkTheme,
                       toggled: ref.watch(darkModeProvider),
                       child: InkWell(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(12),
                       onTap: () {
                         final current = ref.read(darkModeProvider);
                         ref.read(darkModeProvider.notifier).state = !current;
@@ -204,7 +204,7 @@ class DashboardScreen extends ConsumerWidget {
                 GestureDetector(
                   onTap: () => _showPhaseInfoDialog(context, phase, l10n),
                   child: GlassContainer(
-                    borderRadius: 20,
+                    borderRadius: 16,
                     blur: 0,
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -454,15 +454,15 @@ class DashboardScreen extends ConsumerWidget {
         color: selected
             ? color.withValues(alpha: 0.18)
             : AppColors.sf(context),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         child: InkWell(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           onTap: onTap,
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: selected
                     ? color
@@ -563,7 +563,7 @@ class DashboardScreen extends ConsumerWidget {
         isBreak ? l10n.pillBreakLabel(day - 21) : l10n.pillDayLabel(day);
 
     return GlassContainer(
-      borderRadius: 20,
+      borderRadius: 16,
       blur: 0,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -617,7 +617,7 @@ class DashboardScreen extends ConsumerWidget {
     required VoidCallback onTap,
   }) {
     return GlassCard(
-      borderRadius: 24,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.2,
       padding: EdgeInsets.zero,
@@ -625,7 +625,7 @@ class DashboardScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 18),
             child: Row(

@@ -96,7 +96,7 @@ class _MedicationTrackingScreenState
               child: const Icon(Icons.delete_rounded, color: Colors.white),
             ),
             child: GlassCard(
-              borderRadius: 22,
+              borderRadius: 20,
               blur: 0,
               opacity: 0.15,
               padding: const EdgeInsets.all(16),
@@ -202,9 +202,9 @@ class _MedicationTrackingScreenState
                 decoration: InputDecoration(
                   labelText: l10n.medicationName,
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14)),
+                      borderRadius: BorderRadius.circular(12)),
                   focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(
                           color: AppColors.medication, width: 2)),
                 ),
@@ -217,9 +217,9 @@ class _MedicationTrackingScreenState
                   labelText: l10n.dose,
                   hintText: l10n.doseHint,
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14)),
+                      borderRadius: BorderRadius.circular(12)),
                   focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(
                           color: AppColors.medication, width: 2)),
                 ),
@@ -236,7 +236,7 @@ class _MedicationTrackingScreenState
                       horizontal: 16, vertical: 14),
                   decoration: BoxDecoration(
                     border: Border.all(color: AppColors.dv(context)),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     children: [
@@ -273,7 +273,7 @@ class _MedicationTrackingScreenState
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                   child: Text(l10n.add,
                       style: TextStyle(

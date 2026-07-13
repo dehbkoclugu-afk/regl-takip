@@ -414,7 +414,7 @@ class SettingsScreen extends ConsumerWidget {
               final confirmed = await showDialog<bool>(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                   title: Text(l10n.deleteAllData),
                   content: Text(l10n.deleteAllDataConfirm),
                   actions: [
@@ -562,7 +562,7 @@ class SettingsScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(l10n.restoreConfirmTitle),
         content: Text(l10n.restoreConfirmBody(data.totalRecordCount)),
         actions: [
@@ -610,11 +610,13 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _sectionHeader(BuildContext context, String title) {
+    // Bölüm başlığı dili: 13/w700 ikincil renk — kart başlıklarından
+    // (18/bold birincil) net biçimde ayrışır, ListView ritmini bozmaz
     return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 8),
+      padding: const EdgeInsets.only(left: 4, bottom: 8, top: 4),
       child: Text(title,
           style: TextStyle(
-              fontSize: 16,
+              fontSize: 13,
               fontWeight: FontWeight.w700,
               color: AppColors.ts(context))),
     ).animateSafe(context).fadeIn(duration: 400.ms);
@@ -622,7 +624,7 @@ class SettingsScreen extends ConsumerWidget {
 
   Widget _settingsCard(BuildContext context, List<Widget> children) {
     return GlassCard(
-      borderRadius: 24,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.15,
       child: Column(children: children),

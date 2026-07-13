@@ -16,7 +16,8 @@ class GlassCard extends StatelessWidget {
   const GlassCard({
     super.key,
     required this.child,
-    this.borderRadius = 24,
+    // Kart dili: 20px — kontroller 16, sheet/hero 28
+    this.borderRadius = 20,
     // BackdropFilter Flutter'ın en pahalı efekti; kartların arkasında
     // çoğunlukla düz gradyan var — blur görsel fark yaratmıyor ama
     // orta segment Android'de kaydırma jank'ine yol açıyor.
@@ -59,13 +60,15 @@ class GlassCard extends StatelessWidget {
           color: border,
           width: borderWidth,
         ),
+        // Düz kart dili: ince kenar + çok hafif zemin gölgesi.
+        // Belirgin ışıma yalnız hero yüzeylerde (ring) — kart başına
+        // ağır gölge görsel gürültüydü.
         boxShadow: boxShadow ??
             [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 16,
-                spreadRadius: 1,
-                offset: const Offset(0, 4),
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
               ),
             ],
       ),

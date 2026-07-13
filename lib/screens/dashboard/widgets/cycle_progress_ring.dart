@@ -75,11 +75,12 @@ class CycleProgressRing extends StatelessWidget {
                   : Colors.white.withValues(alpha: 0.8),
               width: 1.5,
             ),
+            // Hero ışıması: yalnız ring'de — yumuşak, faz renginde hale
             boxShadow: [
               BoxShadow(
-                color: _ringColor.withValues(alpha: 0.2),
-                blurRadius: 40,
-                spreadRadius: 5,
+                color: _ringColor.withValues(alpha: 0.18),
+                blurRadius: 28,
+                spreadRadius: 2,
               ),
             ],
           ),

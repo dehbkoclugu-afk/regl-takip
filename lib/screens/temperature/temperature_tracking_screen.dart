@@ -93,7 +93,7 @@ class _TemperatureTrackingScreenState
 
   Widget _buildTempDisplay(AppLocalizations l10n) {
     return GlassCard(
-      borderRadius: 24,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(24),
@@ -123,7 +123,7 @@ class _TemperatureTrackingScreenState
 
   Widget _buildSlider() {
     return GlassCard(
-      borderRadius: 22,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(20),

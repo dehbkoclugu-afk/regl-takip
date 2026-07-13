@@ -133,7 +133,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
                       )
                     : null,
                 color: isSelected ? null : AppColors.sf(context),
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(16),
                 border: isToday && !isSelected
                     ? Border.all(color: AppColors.primary.withValues(alpha: 0.5), width: 1.5)
                     : null,
@@ -209,7 +209,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
         return GestureDetector(
           onTap: cat.onTap,
           child: GlassCard(
-            borderRadius: 22,
+            borderRadius: 20,
             blur: 0,
             opacity: 0.15,
             padding: const EdgeInsets.all(14),
@@ -229,7 +229,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
                         cat.color.withValues(alpha: 0.1),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(cat.icon, color: cat.color, size: 20),
                 ),

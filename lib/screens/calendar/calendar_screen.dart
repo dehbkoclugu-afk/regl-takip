@@ -57,7 +57,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       body: Column(
         children: [
           GlassCard(
-            borderRadius: 24,
+            borderRadius: 20,
             blur: 0,
             opacity: 0.18,
             margin: const EdgeInsets.symmetric(horizontal: 12),
@@ -361,7 +361,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: color.withValues(alpha: 0.2),
             width: 0.5,

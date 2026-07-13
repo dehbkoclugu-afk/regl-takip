@@ -120,7 +120,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
 
   Widget _buildOrgasmToggle(AppLocalizations l10n) {
     return GlassCard(
-      borderRadius: 22,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -143,7 +143,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
 
   Widget _buildNoteField(AppLocalizations l10n) {
     return GlassCard(
-      borderRadius: 22,
+      borderRadius: 20,
       blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(20),
@@ -163,10 +163,10 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
               hintText: l10n.addNoteHint,
               hintStyle: TextStyle(color: AppColors.ts(context)),
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: AppColors.dv(context))),
               focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(
                       color: AppColors.moodRomantic, width: 2)),
             ),

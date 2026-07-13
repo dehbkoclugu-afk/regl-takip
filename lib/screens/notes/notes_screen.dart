@@ -52,7 +52,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: GlassCard(
-                borderRadius: 22,
+                borderRadius: 20,
                 blur: 0,
                 opacity: 0.15,
                 padding: const EdgeInsets.all(20),
@@ -84,10 +84,10 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                         hintStyle: TextStyle(
                             color: AppColors.ts(context)),
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(color: AppColors.dv(context))),
                         focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
                                 color: AppColors.notesColor, width: 2)),
                         counterStyle: TextStyle(

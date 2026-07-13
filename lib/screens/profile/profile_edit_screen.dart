@@ -152,11 +152,11 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                         filled: true,
                         fillColor: AppColors.isDark(context) ? AppColors.cardDark : Colors.grey.shade50,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(
                               color: AppColors.primary, width: 2),
                         ),
@@ -267,7 +267,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                 height: 36,
                 decoration: BoxDecoration(
                   color: AppColors.primary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: AppColors.primary, size: 20),
               ),
@@ -298,7 +298,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: AppColors.isDark(context) ? AppColors.cardDark : Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: hasValue ? AppColors.primary.withValues(alpha: 0.3) : Colors.transparent,
           ),
