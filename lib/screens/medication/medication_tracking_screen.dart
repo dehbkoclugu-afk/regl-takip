@@ -23,7 +23,7 @@ class _MedicationTrackingScreenState
   @override
   void initState() {
     super.initState();
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(DateTime.now());
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
     if (log != null && log.medications.isNotEmpty) {
       _medications = List.from(log.medications);
     }
@@ -289,6 +289,6 @@ class _MedicationTrackingScreenState
 
   Future<void> _saveAll() async {
     await ref.read(dailyLogProvider.notifier).updateMedications(
-        DateTime.now(), _medications);
+        ref.read(selectedDateProvider), _medications);
   }
 }

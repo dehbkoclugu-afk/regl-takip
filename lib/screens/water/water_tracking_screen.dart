@@ -23,7 +23,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
   @override
   void initState() {
     super.initState();
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(DateTime.now());
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
     if (log != null) {
       _glasses = log.waterIntake;
     }
@@ -343,7 +343,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
   }
 
   Future<void> _save() async {
-    await ref.read(dailyLogProvider.notifier).updateWater(DateTime.now(), _glasses);
+    await ref.read(dailyLogProvider.notifier).updateWater(ref.read(selectedDateProvider), _glasses);
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(

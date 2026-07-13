@@ -120,7 +120,14 @@ class BackupService {
     await _hiveService.clearAll();
 
     if (data.profile != null) {
-      await _hiveService.saveUserProfile(data.profile!);
+      // PIN hash'i ve biyometrik kayıt cihaza özgüdür, yedeğe girmez.
+      // pinEnabled=true geri yüklenirse ve bu cihazda hash yoksa kullanıcı
+      // kilit ekranından asla geçemez — kilit ayarları sıfırlanır.
+      final profile = data.profile!.copyWith(
+        pinEnabled: false,
+        biometricEnabled: false,
+      );
+      await _hiveService.saveUserProfile(profile);
     }
     for (final record in data.periodRecords) {
       await _hiveService.savePeriodRecord(record);

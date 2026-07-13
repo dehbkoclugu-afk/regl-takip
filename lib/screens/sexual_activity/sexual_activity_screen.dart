@@ -33,7 +33,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
   @override
   void initState() {
     super.initState();
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(DateTime.now());
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
     if (log?.sexualActivity != null) {
       _protection = log!.sexualActivity!.protectionMethod;
       _orgasm = log.sexualActivity!.orgasm;
@@ -207,7 +207,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
     );
     await ref
         .read(dailyLogProvider.notifier)
-        .updateSexualActivity(DateTime.now(), entry);
+        .updateSexualActivity(ref.read(selectedDateProvider), entry);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.savedGeneric),

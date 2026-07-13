@@ -7,6 +7,7 @@ import 'package:regl_takip/models/daily_log.dart';
 import 'package:regl_takip/models/enums.dart';
 import 'package:regl_takip/models/period_record.dart';
 import 'package:regl_takip/models/user_profile.dart';
+import 'package:regl_takip/services/backup_service.dart';
 import 'package:regl_takip/services/hive_service.dart';
 
 void main() {
@@ -94,6 +95,31 @@ void main() {
     final raw = String.fromCharCodes(await boxFile.readAsBytes());
     expect(raw.contains('Migrasyon'), isFalse,
         reason: 'kutu dosyası düz metin içeriyor — şifreleme çalışmamış');
+  });
+
+  test('restore never re-enables device-specific lock settings', () async {
+    // Yedekte pinEnabled=true olsa bile geri yükleme kilidi kapatmalı:
+    // PIN hash'i yedeğe girmez, açık gelirse kullanıcı kilitli kalır
+    final service = HiveService();
+    await service.init(
+        encryptionKey: key, manageHivePath: false, assumeEncrypted: false);
+
+    final backup = BackupService(service);
+    final data = BackupData(
+      profile: UserProfile(
+        name: 'Yedekten',
+        pinEnabled: true,
+        biometricEnabled: true,
+      ),
+      periodRecords: [],
+      dailyLogs: [],
+    );
+    await backup.restoreBackup(data);
+
+    final restored = service.getUserProfile();
+    expect(restored?.name, 'Yedekten');
+    expect(restored?.pinEnabled, isFalse);
+    expect(restored?.biometricEnabled, isFalse);
   });
 
   test('second init with encrypted boxes is idempotent', () async {

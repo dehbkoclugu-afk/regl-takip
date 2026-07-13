@@ -121,7 +121,7 @@ class QuickStatusCards extends ConsumerWidget {
             ),
           ),
         ),
-        if (!hasAnyLog) _buildEmptyState(context, l10n),
+        if (!hasAnyLog) _buildEmptyState(context, ref, l10n),
         if (hasAnyLog)
           Row(
             children: [
@@ -143,9 +143,12 @@ class QuickStatusCards extends ConsumerWidget {
         .slideY(begin: 0.15, end: 0, delay: 600.ms, duration: 600.ms);
   }
 
-  Widget _buildEmptyState(BuildContext context, AppLocalizations l10n) {
+  Widget _buildEmptyState(
+      BuildContext context, WidgetRef ref, AppLocalizations l10n) {
     return GestureDetector(
       onTap: () {
+        // Dashboard'dan kayıt her zaman bugüne girilir
+        ref.read(selectedDateProvider.notifier).state = DateTime.now();
         context.push('/log');
       },
       child: Container(

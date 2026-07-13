@@ -24,7 +24,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
   @override
   void initState() {
     super.initState();
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(DateTime.now());
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
     if (log != null) {
       _intensity = log.flowIntensity;
       _colorSelection = log.flowColor;
@@ -299,7 +299,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
 
   Future<void> _save() async {
     await ref.read(dailyLogProvider.notifier).updateFlow(
-      DateTime.now(),
+      ref.read(selectedDateProvider),
       flowIntensity: _intensity,
       flowColor: _colorSelection,
       hasClots: _hasClots,

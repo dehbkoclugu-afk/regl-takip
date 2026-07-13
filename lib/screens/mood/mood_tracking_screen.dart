@@ -22,7 +22,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
   @override
   void initState() {
     super.initState();
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(DateTime.now());
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
     if (log?.mood != null) {
       _selectedMood = log!.mood!.type;
       _noteController.text = log.mood!.note ?? '';
@@ -207,7 +207,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
       type: _selectedMood!,
       note: _noteController.text.isEmpty ? null : _noteController.text,
     );
-    await ref.read(dailyLogProvider.notifier).updateMood(DateTime.now(), mood);
+    await ref.read(dailyLogProvider.notifier).updateMood(ref.read(selectedDateProvider), mood);
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(

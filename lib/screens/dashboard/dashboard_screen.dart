@@ -283,7 +283,12 @@ class DashboardScreen extends ConsumerWidget {
                       icon: Icons.add_reaction_rounded,
                       label: l10n.addRecord,
                       color: AppColors.secondary,
-                      onTap: () => context.push('/log'),
+                      onTap: () {
+                        // Dashboard'dan kayıt her zaman bugüne girilir
+                        ref.read(selectedDateProvider.notifier).state =
+                            DateTime.now();
+                        context.push('/log');
+                      },
                     ),
                   ),
                 ],

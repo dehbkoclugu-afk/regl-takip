@@ -25,7 +25,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(DateTime.now());
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
     if (log != null) {
       for (final entry in log.symptoms) {
         _selectedSymptoms[entry.type] = entry.severity;
@@ -255,7 +255,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
     final entries = _selectedSymptoms.entries
         .map((e) => SymptomEntry(type: e.key, severity: e.value))
         .toList();
-    await ref.read(dailyLogProvider.notifier).updateSymptoms(DateTime.now(), entries);
+    await ref.read(dailyLogProvider.notifier).updateSymptoms(ref.read(selectedDateProvider), entries);
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(

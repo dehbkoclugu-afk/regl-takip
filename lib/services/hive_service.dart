@@ -65,19 +65,39 @@ class HiveService {
     }
 
     final cipher = HiveAesCipher(key);
+    var encryptionSucceeded = true;
 
     if (!alreadyEncrypted && await _plainBoxesExistOnDisk()) {
-      // Eski kurulum: şifresiz kutular var — verileri şifreli kutulara taşı
-      await _migrateToEncrypted(cipher);
+      // Eski kurulum: şifresiz kutular var — verileri şifreli kutulara taşı.
+      // Migrasyon patlarsa uygulama açılmaz olur; düz kutulara düşüp
+      // veriyi erişilebilir tutmak şifrelemeden daha öncelikli.
+      try {
+        await _migrateToEncrypted(cipher);
+      } catch (e) {
+        debugPrint('[HIVE] encryption migration failed, '
+            'falling back to plain boxes: $e');
+        encryptionSucceeded = false;
+        await _openPlainBoxes();
+      }
     } else {
       await _openEncryptedBoxes(cipher);
     }
 
-    if (encryptionKey == null) {
+    // Bayrak yalnız şifreli açılış gerçekten başarılıysa yazılır;
+    // yoksa sonraki açılışta migrasyon yeniden denenir
+    if (encryptionKey == null && encryptionSucceeded) {
       await storage.write(key: _encryptedFlagKey, value: 'true');
     }
 
     _isInitialized = true;
+  }
+
+  Future<void> _openPlainBoxes() async {
+    _userProfileBox =
+        await Hive.openBox<UserProfile>(AppConstants.userProfileBox);
+    _periodRecordsBox =
+        await Hive.openBox<PeriodRecord>(AppConstants.periodRecordsBox);
+    _dailyLogsBox = await Hive.openBox<DailyLog>(AppConstants.dailyLogsBox);
   }
 
   void _registerAdapters() {

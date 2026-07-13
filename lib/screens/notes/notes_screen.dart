@@ -21,7 +21,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
   @override
   void initState() {
     super.initState();
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(DateTime.now());
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
     if (log?.notes != null) {
       _controller.text = log!.notes!;
     }
@@ -131,7 +131,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context)!;
     await ref.read(dailyLogProvider.notifier).updateNotes(
-      DateTime.now(),
+      ref.read(selectedDateProvider),
       _controller.text.isEmpty ? null : _controller.text,
     );
     if (mounted) {

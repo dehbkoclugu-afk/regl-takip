@@ -21,7 +21,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   @override
   void initState() {
     super.initState();
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(DateTime.now());
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
     if (log?.weight != null) {
       _weight = log!.weight!;
     }
@@ -231,7 +231,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
     if (parsed != null && parsed >= 20 && parsed <= 300) {
       _weight = double.parse(parsed.toStringAsFixed(1));
     }
-    await ref.read(dailyLogProvider.notifier).updateWeight(DateTime.now(), _weight);
+    await ref.read(dailyLogProvider.notifier).updateWeight(ref.read(selectedDateProvider), _weight);
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(

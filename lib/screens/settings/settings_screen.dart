@@ -17,7 +17,9 @@ import '../../services/backup_service.dart';
 import '../../services/export_service.dart';
 import '../../services/health_sync_service.dart';
 import '../../services/hive_service.dart';
+import '../../services/notification_service.dart';
 import '../../services/premium_service.dart';
+import '../../services/widget_service.dart';
 import '../lock/pin_setup_dialog.dart';
 import '../../core/utils/motion.dart';
 
@@ -576,6 +578,21 @@ class SettingsScreen extends ConsumerWidget {
     ref.read(userProfileProvider.notifier).refresh();
     ref.read(periodRecordsProvider.notifier).refresh();
     ref.read(dailyLogProvider.notifier).refresh();
+
+    // Geri yüklenen veriye göre bildirimleri ve widget'ı yeniden kur
+    final restoredProfile = HiveService().getUserProfile();
+    if (restoredProfile != null) {
+      try {
+        await NotificationService().rescheduleAll(
+          restoredProfile,
+          records: HiveService().getAllPeriodRecords(),
+        );
+      } catch (_) {
+        // Bildirim kurulamasa da geri yükleme başarılı sayılır
+      }
+      await WidgetService.update(
+          restoredProfile, HiveService().getAllPeriodRecords());
+    }
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(

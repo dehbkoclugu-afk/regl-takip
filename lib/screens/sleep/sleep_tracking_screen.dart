@@ -22,7 +22,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
   @override
   void initState() {
     super.initState();
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(DateTime.now());
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
     if (log != null) {
       if (log.sleepStart != null) {
         final parts = log.sleepStart!.split(':');
@@ -248,7 +248,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
     final wakeStr =
         '${_wakeTime.hour.toString().padLeft(2, '0')}:${_wakeTime.minute.toString().padLeft(2, '0')}';
     await ref.read(dailyLogProvider.notifier).updateSleep(
-      DateTime.now(),
+      ref.read(selectedDateProvider),
       sleepStart: bedStr,
       sleepEnd: wakeStr,
       sleepQuality: _quality,

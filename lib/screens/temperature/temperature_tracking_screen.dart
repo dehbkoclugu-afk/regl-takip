@@ -23,7 +23,7 @@ class _TemperatureTrackingScreenState
   @override
   void initState() {
     super.initState();
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(DateTime.now());
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
     if (log != null) {
       _temperature = log.temperature ?? 36.5;
       if (log.temperatureTime != null) {
@@ -235,7 +235,7 @@ class _TemperatureTrackingScreenState
     final timeStr =
         '${_measureTime.hour.toString().padLeft(2, '0')}:${_measureTime.minute.toString().padLeft(2, '0')}';
     await ref.read(dailyLogProvider.notifier).updateTemperature(
-      DateTime.now(),
+      ref.read(selectedDateProvider),
       _temperature,
       temperatureTime: timeStr,
     );

@@ -23,13 +23,36 @@ class _LogScreenState extends ConsumerState<LogScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedDate = DateTime.now();
+    // Takvimden gün seçilerek gelindiyse o gün açılır
+    final fromCalendar = ref.read(selectedDateProvider);
+    final now = DateTime.now();
+    _selectedDate = fromCalendar.isAfter(now) ? now : fromCalendar;
     _buildWeekDates();
   }
 
+  /// Hafta şeridi seçili günü son eleman olarak gösterir (geçmiş güne
+  /// gidildiğinde şerit o güne kayar); bugünden ileri gitmez.
   void _buildWeekDates() {
+    final anchor =
+        DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
+    _weekDates =
+        List.generate(7, (i) => anchor.subtract(Duration(days: 6 - i)));
+  }
+
+  Future<void> _pickDate() async {
     final now = DateTime.now();
-    _weekDates = List.generate(7, (i) => now.subtract(Duration(days: 6 - i)));
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: now.subtract(const Duration(days: 365 * 2)),
+      lastDate: now,
+    );
+    if (picked == null) return;
+    setState(() {
+      _selectedDate = picked;
+      _buildWeekDates();
+    });
+    ref.read(selectedDateProvider.notifier).state = picked;
   }
 
   @override
@@ -54,6 +77,13 @@ class _LogScreenState extends ConsumerState<LogScreen> {
         backgroundColor: logBg,
         elevation: 0,
         iconTheme: IconThemeData(color: AppColors.tp(context)),
+        actions: [
+          IconButton(
+            onPressed: _pickDate,
+            icon: const Icon(Icons.calendar_month_rounded),
+            tooltip: MaterialLocalizations.of(context).dateInputLabel,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -85,7 +115,11 @@ class _LogScreenState extends ConsumerState<LogScreen> {
               date.day == DateTime.now().day;
 
           return GestureDetector(
-            onTap: () => setState(() => _selectedDate = date),
+            onTap: () {
+              setState(() => _selectedDate = date);
+              // Kategori ekranları bu provider'daki güne kayıt yazar
+              ref.read(selectedDateProvider.notifier).state = date;
+            },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 250),
               width: 52,

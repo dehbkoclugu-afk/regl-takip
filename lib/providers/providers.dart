@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import '../services/hive_service.dart';
-import '../services/cycle_service.dart';
 import '../services/notification_service.dart';
 import '../services/widget_service.dart';
 import '../models/user_profile.dart';
@@ -15,11 +14,6 @@ import 'package:uuid/uuid.dart';
 
 final hiveServiceProvider = Provider<HiveService>((ref) {
   return HiveService();
-});
-
-final cycleServiceProvider = Provider<CycleService>((ref) {
-  final hiveService = ref.watch(hiveServiceProvider);
-  return CycleService(hiveService);
 });
 
 // ─── Simple State Providers ───────────────────────────────────────────
@@ -63,6 +57,18 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
   Future<void> updateProfile(UserProfile profile) async {
     await _hiveService.saveUserProfile(profile);
     state = profile;
+
+    // Onboarding bu yoldan geliyor: bildirimler ve widget ilk kayıtta da
+    // kurulmalı, yoksa uygulama yeniden başlatılana dek hatırlatma yok
+    try {
+      await NotificationService().rescheduleAll(
+        profile,
+        records: _hiveService.getAllPeriodRecords(),
+      );
+    } catch (e) {
+      debugPrint('[NOTIF] rescheduleAll failed: $e');
+    }
+    await WidgetService.update(profile, _hiveService.getAllPeriodRecords());
   }
 
   Future<void> saveProfile({
@@ -122,7 +128,11 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         reminderMinute != null ||
         lastPeriodStart != null ||
         smartPredictionEnabled != null ||
-        trackingMode != null) {
+        trackingMode != null ||
+        // Döngü/regl süresi tahmin tarihlerini kaydırır — bildirimler
+        // yeniden planlanmazsa eski tarihlerde kalır
+        averageCycleLength != null ||
+        averagePeriodLength != null) {
       try {
         await NotificationService().rescheduleAll(
           updated,
@@ -205,8 +215,8 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
     );
     await _hiveService.savePeriodRecord(record);
     _load();
-    await WidgetService.update(
-        _hiveService.getUserProfile(), state);
+    // Widget güncellemesi burada değil: çağıran akış hemen ardından
+    // saveProfile(lastPeriodStart) çağırır, widget orada güncel veriyle kurulur
     return record;
   }
 

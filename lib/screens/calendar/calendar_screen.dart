@@ -73,6 +73,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   _selectedDay = selectedDay;
                   _focusedDay = focusedDay;
                 });
+                // Log ekranı açıldığında bu gün seçili gelsin
+                ref.read(selectedDateProvider.notifier).state = selectedDay;
                 _showDayDetailSheet(context, selectedDay, records, dailyLogs);
               },
               onFormatChanged: (format) {
