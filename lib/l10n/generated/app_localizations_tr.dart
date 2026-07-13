@@ -1088,7 +1088,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get disguiseTitle => 'Gizli Mod';
 
   @override
-  String get disguiseDesc => 'Uygulama, çekmecede \"Notlar\" adı ve nötr bir ikonla görünür. Değişikliğin yansıması birkaç saniye sürebilir; ana ekran kısayolu kaybolursa uygulamayı çekmeceden yeniden ekleyin.';
+  String get disguiseDesc => 'Uygulama, çekmecede \"Notlar\" adı ve nötr bir ikonla görünür; ana ekran widget\'ı da nötrlenir. Bildirim içerikleri gizlenmez — gerekirse bildirimleri kapatın. Kısayol kaybolursa uygulamayı çekmeceden yeniden ekleyin.';
 
   @override
   String get backupData => 'Yedek Al (JSON)';

@@ -205,11 +205,19 @@ class CycleUtils {
       final rise2 = sorted[i + 1].value;
       final rise3 = sorted[i + 2].value;
 
-      if (rise1 > coverline &&
+      // Yükseliş üçlüsü ardışık TAKVİM günleri olmalı; ölçüm listesinde
+      // ardışık olması yetmez — gün atlamalı seyrek veride yanlış teyit olur
+      final d1 = sorted[i].key;
+      final d2 = sorted[i + 1].key;
+      final d3 = sorted[i + 2].key;
+      final consecutiveDays =
+          d2.difference(d1).inDays == 1 && d3.difference(d2).inDays == 1;
+
+      if (consecutiveDays &&
+          rise1 > coverline &&
           rise2 > coverline &&
           rise3 >= coverline + 0.2) {
-        final riseStart = sorted[i].key;
-        return DateTime(riseStart.year, riseStart.month, riseStart.day)
+        return DateTime(d1.year, d1.month, d1.day)
             .subtract(const Duration(days: 1));
       }
     }

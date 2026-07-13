@@ -49,6 +49,17 @@ void main() {
       expect(CycleUtils.detectOvulationFromBBT(temps), isNull);
     });
 
+    test('rise readings on non-consecutive days are not confirmed', () {
+      // Yüksek ölçümler gün atlamalı (9, 11, 13 Tem) — ardışık takvim
+      // günü şartını sağlamaz, teyit edilmemeli
+      final temps = [
+        t(1, 36.35), t(2, 36.40), t(3, 36.32), t(4, 36.38),
+        t(5, 36.36), t(6, 36.41), t(7, 36.37), t(8, 36.39),
+        t(9, 36.55), t(11, 36.60), t(13, 36.65),
+      ];
+      expect(CycleUtils.detectOvulationFromBBT(temps), isNull);
+    });
+
     test('unsorted input is handled', () {
       final temps = [
         t(10, 36.60), t(2, 36.40), t(8, 36.39), t(1, 36.35),

@@ -798,7 +798,14 @@ class _DisguiseTileState extends State<_DisguiseTile> {
             ? null
             : (value) async {
                 final ok = await DisguiseService.setDisguise(value);
-                if (ok && mounted) setState(() => _enabled = value);
+                if (!ok) return;
+                // Widget'ı yeni duruma göre hemen yenile: gizliyken nötr
+                // içerik, kapatınca gerçek döngü verisi
+                await WidgetService.update(
+                  HiveService().getUserProfile(),
+                  HiveService().getAllPeriodRecords(),
+                );
+                if (mounted) setState(() => _enabled = value);
               },
       ),
     );

@@ -7,6 +7,7 @@ import '../core/utils/cycle_utils.dart';
 import '../models/enums.dart';
 import '../models/period_record.dart';
 import '../models/user_profile.dart';
+import 'disguise_service.dart';
 
 /// Android ana ekran widget'ını besler. Metinler Dart tarafında
 /// lokalize edilip SharedPreferences üzerinden native provider'a geçer
@@ -44,6 +45,15 @@ class WidgetService {
     if (kIsWeb || !Platform.isAndroid) return;
 
     try {
+      // Gizli moddayken widget döngü verisi sızdırmamalı —
+      // uygulama "Notlar" kılığındayken nötr içerik göster
+      if (await DisguiseService.isDisguised()) {
+        await HomeWidget.saveWidgetData<String>('line1', 'Notlar');
+        await HomeWidget.saveWidgetData<String>('line2', '');
+        await HomeWidget.updateWidget(androidName: _androidProvider);
+        return;
+      }
+
       final locale = profile?.language ?? 'tr';
       String line1 = 'Regl Takip';
       String line2 = '';
