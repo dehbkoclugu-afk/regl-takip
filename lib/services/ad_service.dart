@@ -31,8 +31,9 @@ class AdService {
   }
 
   static Future<void> loadOpenAd() async {
-    // TODO: App Store'a yayinlandiktan sonra kDebugMode kontrolu ekle
-    final adUnitId = _testInterstitialId;
+    // Debug'da test ID (gerçek ID'ye test tıklaması AdMob ban riski),
+    // release'te gerçek ID
+    final adUnitId = kDebugMode ? _testInterstitialId : _openAdUnitId;
     debugPrint('[AD] Loading ad with ID: $adUnitId (debug=$kDebugMode, iOS=$_isIOS)');
 
     final completer = Completer<void>();

@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import '../models/user_profile.dart';
+import '../core/constants/app_constants.dart';
 import '../core/utils/cycle_utils.dart';
 
 class NotificationService {
@@ -15,9 +17,14 @@ class NotificationService {
   bool _isInitialized = false;
 
   // Notification IDs
-  static const int _periodReminderId = 1;
-  static const int _ovulationReminderId = 2;
+  // Regl/ovülasyon hatırlatmaları birkaç döngü ileriye planlanır;
+  // uygulama açılmazsa bile zincir kopmasın diye taban ID + döngü indeksi.
+  static const int _periodReminderBaseId = 10;
+  static const int _ovulationReminderBaseId = 20;
   static const int _medicationReminderId = 3;
+
+  /// Kaç döngü ileriye hatırlatma planlanacağı
+  static const int _cyclesToSchedule = 3;
 
   // Localized notification strings
   static const _strings = {
@@ -99,14 +106,13 @@ class NotificationService {
     return true;
   }
 
-  tz.TZDateTime _nextInstanceOfDateTime(
-      int year, int month, int day, int hour, int minute) {
+  /// Verilen tarih + saat için TZDateTime üretir.
+  /// Geçmişte kaldıysa null döner (geçmişe bildirim planlanamaz).
+  tz.TZDateTime? _scheduleFor(DateTime date, int hour, int minute) {
     final location = tz.local;
     final scheduled =
-        tz.TZDateTime(location, year, month, day, hour, minute);
-    if (scheduled.isBefore(tz.TZDateTime.now(location))) {
-      return scheduled;
-    }
+        tz.TZDateTime(location, date.year, date.month, date.day, hour, minute);
+    if (scheduled.isBefore(tz.TZDateTime.now(location))) return null;
     return scheduled;
   }
 
@@ -115,25 +121,20 @@ class NotificationService {
     DateTime nextPeriodDate,
     int hour,
     int minute,
-    String locale,
-  ) async {
+    String locale, {
+    int id = _periodReminderBaseId,
+  }) async {
     final reminderDate = nextPeriodDate.subtract(const Duration(days: 1));
-    final now = DateTime.now();
 
-    if (reminderDate.isBefore(now)) return;
+    await _plugin.cancel(id);
 
-    await _plugin.cancel(_periodReminderId);
-
-    final scheduledDate = _nextInstanceOfDateTime(
-      reminderDate.year,
-      reminderDate.month,
-      reminderDate.day,
-      hour,
-      minute,
-    );
+    // Saat dahil karşılaştır: hatırlatma günü bugünse ve saat henüz
+    // gelmediyse bildirim yine de kurulmalı.
+    final scheduledDate = _scheduleFor(reminderDate, hour, minute);
+    if (scheduledDate == null) return;
 
     await _plugin.zonedSchedule(
-      _periodReminderId,
+      id,
       _t(locale, 'periodTitle'),
       _t(locale, 'periodBody'),
       scheduledDate,
@@ -163,23 +164,16 @@ class NotificationService {
     DateTime ovulationDate,
     int hour,
     int minute,
-    String locale,
-  ) async {
-    final now = DateTime.now();
-    if (ovulationDate.isBefore(now)) return;
+    String locale, {
+    int id = _ovulationReminderBaseId,
+  }) async {
+    await _plugin.cancel(id);
 
-    await _plugin.cancel(_ovulationReminderId);
-
-    final scheduledDate = _nextInstanceOfDateTime(
-      ovulationDate.year,
-      ovulationDate.month,
-      ovulationDate.day,
-      hour,
-      minute,
-    );
+    final scheduledDate = _scheduleFor(ovulationDate, hour, minute);
+    if (scheduledDate == null) return;
 
     await _plugin.zonedSchedule(
-      _ovulationReminderId,
+      id,
       _t(locale, 'ovulationTitle'),
       _t(locale, 'ovulationBody'),
       scheduledDate,
@@ -271,23 +265,42 @@ class NotificationService {
       if (profile.lastPeriodStart != null) {
         final cycleLen = profile.averageCycleLength;
         final lastStart = profile.lastPeriodStart!;
+        // Geçmişte kalan tahminleri ileri sar, sonra birkaç döngü planla
+        final nextPeriod = CycleUtils.nextFuturePeriod(lastStart, cycleLen);
 
-        if (profile.periodReminderEnabled) {
-          final nextPeriod = CycleUtils.predictNextPeriod(lastStart, cycleLen);
-          await schedulePeriodReminder(nextPeriod, hour, minute, locale);
-        }
+        for (int i = 0; i < _cyclesToSchedule; i++) {
+          final periodDate = nextPeriod.add(Duration(days: cycleLen * i));
 
-        if (profile.ovulationReminderEnabled) {
-          final ovulation = CycleUtils.predictOvulation(lastStart, cycleLen);
-          await scheduleOvulationReminder(ovulation, hour, minute, locale);
+          if (profile.periodReminderEnabled) {
+            await schedulePeriodReminder(
+              periodDate,
+              hour,
+              minute,
+              locale,
+              id: _periodReminderBaseId + i,
+            );
+          }
+
+          if (profile.ovulationReminderEnabled) {
+            final ovulation = periodDate.subtract(
+                const Duration(days: AppConstants.ovulationDayBeforePeriod));
+            await scheduleOvulationReminder(
+              ovulation,
+              hour,
+              minute,
+              locale,
+              id: _ovulationReminderBaseId + i,
+            );
+          }
         }
       }
 
       if (profile.medicationReminderEnabled) {
         await scheduleMedicationReminder(hour, minute, locale);
       }
-    } catch (_) {
-      // Notification scheduling failed - ignore to prevent app freeze
+    } catch (e) {
+      // Bildirim planlaması başarısız — uygulamayı kilitlememek için yutulur
+      debugPrint('[NOTIF] rescheduleAll failed: $e');
     }
   }
 }

@@ -360,6 +360,14 @@
   "confirmPin": "PIN Onaylayın",
   "pinMismatch": "PIN'ler eşleşmiyor, tekrar deneyin",
   "wrongPin": "Yanlış PIN",
+  "tooManyAttempts": "Çok fazla yanlış deneme. {seconds} saniye bekleyin",
+  "@tooManyAttempts": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "pinSet": "PIN başarıyla ayarlandı",
   "pinRemoved": "PIN kaldırıldı",
   "unlockWithBiometric": "Parmak izi veya yüz ile kilidi açın",

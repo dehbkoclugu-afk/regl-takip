@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:csv/csv.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -10,6 +11,15 @@ import '../models/daily_log.dart';
 import '../models/user_profile.dart';
 
 class ExportService {
+  /// CSV injection koruması: Excel/Sheets formül olarak yorumlamasın diye
+  /// riskli karakterle başlayan hücrelere tek tırnak eklenir.
+  static String sanitizeCsvCell(String value) {
+    if (value.isEmpty) return value;
+    const riskyPrefixes = ['=', '+', '-', '@', '\t', '\r'];
+    if (riskyPrefixes.contains(value[0])) return "'$value";
+    return value;
+  }
+
   /// Exports daily log data as a CSV file. Returns the file path.
   Future<String> exportCsv(
     List<PeriodRecord> periods,
@@ -46,7 +56,7 @@ class ExportService {
         log.weight?.toStringAsFixed(1) ?? '',
         log.waterIntake,
         log.sleepQuality ?? '',
-        log.notes ?? '',
+        sanitizeCsvCell(log.notes ?? ''),
       ]);
     }
 
@@ -68,7 +78,19 @@ class ExportService {
     String locale,
   ) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
-    final pdf = pw.Document();
+
+    // Default Helvetica'da Türkçe glifler (ğ, ş, İ, ı) yok — Nunito göm
+    final fontData =
+        await rootBundle.load('assets/fonts/Nunito-Variable.ttf');
+    final nunito = pw.Font.ttf(fontData);
+    final pdf = pw.Document(
+      theme: pw.ThemeData.withFont(
+        base: nunito,
+        bold: nunito,
+        italic: nunito,
+        boldItalic: nunito,
+      ),
+    );
 
     // Sort periods by start date descending
     final sortedPeriods = List<PeriodRecord>.from(periods)

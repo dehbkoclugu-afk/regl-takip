@@ -53,7 +53,8 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
   void _load() {
     try {
       state = _hiveService.getUserProfile();
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[HIVE] getUserProfile failed: $e');
       state = null;
     }
   }
@@ -82,41 +83,27 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     int? waterGoal,
   }) async {
     final current = state ?? UserProfile();
-    if (name != null) current.name = name;
-    if (birthDate != null) current.birthDate = birthDate;
-    if (averageCycleLength != null) {
-      current.averageCycleLength = averageCycleLength;
-    }
-    if (averagePeriodLength != null) {
-      current.averagePeriodLength = averagePeriodLength;
-    }
-    if (pinEnabled != null) current.pinEnabled = pinEnabled;
-    if (biometricEnabled != null) current.biometricEnabled = biometricEnabled;
-    if (onboardingCompleted != null) {
-      current.onboardingCompleted = onboardingCompleted;
-    }
-    if (language != null) current.language = language;
-    if (lastPeriodStart != null) current.lastPeriodStart = lastPeriodStart;
-    if (periodReminderEnabled != null) {
-      current.periodReminderEnabled = periodReminderEnabled;
-    }
-    if (ovulationReminderEnabled != null) {
-      current.ovulationReminderEnabled = ovulationReminderEnabled;
-    }
-    if (medicationReminderEnabled != null) {
-      current.medicationReminderEnabled = medicationReminderEnabled;
-    }
-    if (reminderHour != null) current.reminderHour = reminderHour;
-    if (reminderMinute != null) current.reminderMinute = reminderMinute;
-    if (darkModeEnabled != null) current.darkModeEnabled = darkModeEnabled;
-    if (waterGoal != null) current.waterGoal = waterGoal;
+    final updated = current.copyWith(
+      name: name,
+      birthDate: birthDate,
+      averageCycleLength: averageCycleLength,
+      averagePeriodLength: averagePeriodLength,
+      pinEnabled: pinEnabled,
+      biometricEnabled: biometricEnabled,
+      onboardingCompleted: onboardingCompleted,
+      language: language,
+      lastPeriodStart: lastPeriodStart,
+      periodReminderEnabled: periodReminderEnabled,
+      ovulationReminderEnabled: ovulationReminderEnabled,
+      medicationReminderEnabled: medicationReminderEnabled,
+      reminderHour: reminderHour,
+      reminderMinute: reminderMinute,
+      darkModeEnabled: darkModeEnabled,
+      waterGoal: waterGoal,
+    );
 
-    await _hiveService.saveUserProfile(current);
-    // Force Riverpod to detect change by emitting a different reference
-    // Using a dummy profile briefly (not null, to avoid null-related issues in watchers)
-    final dummy = UserProfile();
-    state = dummy;
-    state = current;
+    await _hiveService.saveUserProfile(updated);
+    state = updated;
 
     // Reschedule notifications when relevant settings change
     if (periodReminderEnabled != null ||
@@ -126,9 +113,9 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         reminderMinute != null ||
         lastPeriodStart != null) {
       try {
-        await NotificationService().rescheduleAll(current);
-      } catch (_) {
-        // Notification scheduling failed - ignore
+        await NotificationService().rescheduleAll(updated);
+      } catch (e) {
+        debugPrint('[NOTIF] rescheduleAll failed: $e');
       }
     }
   }
@@ -157,7 +144,8 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
   void _load() {
     try {
       state = _hiveService.getAllPeriodRecords();
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[HIVE] getAllPeriodRecords failed: $e');
       state = [];
     }
   }
@@ -178,9 +166,18 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
   }
 
   Future<PeriodRecord> startPeriod(DateTime date) async {
+    final normalizedDate = DateTime(date.year, date.month, date.day);
+
     // End any ongoing period first
     final ongoing = state.where((r) => r.isOngoing).toList();
     for (final record in ongoing) {
+      final start = DateTime(record.startDate.year, record.startDate.month,
+          record.startDate.day);
+      // Aynı gün (veya öncesi) tekrar başlatılırsa mevcut kayıt aktif kalır;
+      // yoksa endDate < startDate olur ve süre hesapları bozulur.
+      if (!normalizedDate.isAfter(start)) {
+        return record;
+      }
       record.endDate = date.subtract(const Duration(days: 1));
       await _hiveService.savePeriodRecord(record);
     }
@@ -197,7 +194,9 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
   Future<void> endPeriod(String recordId, DateTime date) async {
     try {
       final record = state.firstWhere((r) => r.id == recordId);
-      record.endDate = date;
+      // Bitiş tarihi başlangıçtan önce olamaz
+      record.endDate =
+          date.isBefore(record.startDate) ? record.startDate : date;
       await _hiveService.savePeriodRecord(record);
       _load();
     } catch (_) {
@@ -358,13 +357,8 @@ final currentCycleDayProvider = Provider<int>((ref) {
   final profile = ref.watch(userProfileProvider);
   if (profile == null || profile.lastPeriodStart == null) return 0;
   final rawDay = CycleUtils.currentCycleDay(profile.lastPeriodStart!);
-  final cycleLength = profile.averageCycleLength;
-  // Döngü uzunluğunu aşarsa yeni döngü başlamış demektir, modulo ile sıfırla
-  if (rawDay > cycleLength) {
-    final mod = rawDay % cycleLength;
-    return mod == 0 ? cycleLength : mod;
-  }
-  return rawDay;
+  // Döngü uzunluğunu aşarsa yeni döngü başlamış demektir
+  return CycleUtils.wrappedCycleDay(rawDay, profile.averageCycleLength);
 });
 
 final currentCyclePhaseProvider = Provider<CyclePhase>((ref) {

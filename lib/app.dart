@@ -20,15 +20,19 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   bool _isLocked = true;
   bool _needsLock = false;
   bool _pendingLockUpdate = false;
+  bool _openAdShown = false;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _checkLockNeeded();
-    _showOpenAd();
+    // Kilit varsa reklam kilit açıldıktan sonra gösterilir (_onUnlocked)
+    if (!_needsLock) _showOpenAd();
   }
 
   Future<void> _showOpenAd() async {
+    if (_openAdShown) return;
+    _openAdShown = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Activity/ViewController tamamen hazır olduktan sonra
       await Future.delayed(const Duration(seconds: 2));
@@ -36,6 +40,11 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
       await AdService.loadOpenAd();
       await AdService.showOpenAd();
     });
+  }
+
+  void _onUnlocked() {
+    setState(() => _isLocked = false);
+    _showOpenAd();
   }
 
   @override
@@ -111,9 +120,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
       routerConfig: router,
       builder: (context, child) {
         if (_isLocked && _needsLock) {
-          return LockScreen(
-            onUnlocked: () => setState(() => _isLocked = false),
-          );
+          return LockScreen(onUnlocked: _onUnlocked);
         }
         return child ?? const SizedBox.shrink();
       },

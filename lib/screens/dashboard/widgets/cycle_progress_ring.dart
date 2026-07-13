@@ -35,19 +35,6 @@ class CycleProgressRing extends StatelessWidget {
     }
   }
 
-  Color get _phaseColor {
-    switch (phase) {
-      case CyclePhase.menstrual:
-        return AppColors.menstrual;
-      case CyclePhase.follicular:
-        return AppColors.follicular;
-      case CyclePhase.ovulation:
-        return AppColors.ovulation;
-      case CyclePhase.luteal:
-        return AppColors.luteal;
-    }
-  }
-
   Color get _phaseBackgroundColor {
     return _ringColor.withValues(alpha: 0.15);
   }

@@ -31,8 +31,9 @@ void main() async {
   try {
     await notificationService.init();
     await notificationService.requestPermission();
-  } catch (_) {
+  } catch (e) {
     // Notification init failed - continue without notifications
+    debugPrint('[NOTIF] init failed: $e');
   }
 
   // Schedule notifications if profile exists
@@ -40,8 +41,9 @@ void main() async {
   if (profile != null) {
     try {
       await notificationService.rescheduleAll(profile);
-    } catch (_) {
+    } catch (e) {
       // Notification scheduling failed - continue without notifications
+      debugPrint('[NOTIF] rescheduleAll failed: $e');
     }
   }
 

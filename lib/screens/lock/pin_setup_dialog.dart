@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/pin_utils.dart';
 
 /// Shows a full-screen PIN setup flow. Returns true if PIN was set successfully.
 Future<bool> showPinSetupDialog(BuildContext context) async {
@@ -59,7 +60,7 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
     } else {
       // Confirmation entry
       if (_pin == _firstPin) {
-        await _storage.write(key: 'app_pin', value: _pin);
+        await _storage.write(key: 'app_pin', value: PinUtils.hashPin(_pin));
         if (mounted) Navigator.of(context).pop(true);
       } else {
         HapticFeedback.heavyImpact();

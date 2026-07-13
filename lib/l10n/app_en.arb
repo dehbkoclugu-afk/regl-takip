@@ -360,6 +360,14 @@
   "confirmPin": "Confirm PIN",
   "pinMismatch": "PINs don't match, try again",
   "wrongPin": "Wrong PIN",
+  "tooManyAttempts": "Too many wrong attempts. Wait {seconds} seconds",
+  "@tooManyAttempts": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "pinSet": "PIN set successfully",
   "pinRemoved": "PIN removed",
   "unlockWithBiometric": "Unlock with fingerprint or face",

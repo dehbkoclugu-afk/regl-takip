@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +7,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/pin_utils.dart';
 import '../../providers/providers.dart';
 
 class LockScreen extends ConsumerStatefulWidget {
@@ -22,10 +24,76 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   String _enteredPin = '';
   bool _isError = false;
 
+  // Brute-force koruması: 5 yanlış denemeden sonra artan bekleme süresi
+  static const _maxFreeAttempts = 5;
+  static const _attemptsKey = 'pin_failed_attempts';
+  static const _lockoutKey = 'pin_lockout_until';
+  int _lockoutRemainingSeconds = 0;
+  Timer? _lockoutTimer;
+
   @override
   void initState() {
     super.initState();
+    _restoreLockout();
     _tryBiometric();
+  }
+
+  @override
+  void dispose() {
+    _lockoutTimer?.cancel();
+    super.dispose();
+  }
+
+  bool get _isLockedOut => _lockoutRemainingSeconds > 0;
+
+  Future<void> _restoreLockout() async {
+    final stored = await _storage.read(key: _lockoutKey);
+    final until = int.tryParse(stored ?? '');
+    if (until == null) return;
+    final remainingMs = until - DateTime.now().millisecondsSinceEpoch;
+    if (remainingMs > 0 && mounted) {
+      _startLockoutCountdown((remainingMs / 1000).ceil());
+    }
+  }
+
+  void _startLockoutCountdown(int seconds) {
+    _lockoutTimer?.cancel();
+    setState(() => _lockoutRemainingSeconds = seconds);
+    _lockoutTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      setState(() {
+        _lockoutRemainingSeconds--;
+        if (_lockoutRemainingSeconds <= 0) {
+          timer.cancel();
+          _lockoutRemainingSeconds = 0;
+        }
+      });
+    });
+  }
+
+  Future<void> _registerFailedAttempt() async {
+    final stored = await _storage.read(key: _attemptsKey);
+    final attempts = (int.tryParse(stored ?? '') ?? 0) + 1;
+    await _storage.write(key: _attemptsKey, value: attempts.toString());
+
+    if (attempts >= _maxFreeAttempts) {
+      // Her fazladan yanlış deneme bekleme süresini 30 sn artırır (max 5 dk)
+      final lockoutSeconds =
+          (30 * (attempts - _maxFreeAttempts + 1)).clamp(30, 300);
+      final until = DateTime.now()
+          .add(Duration(seconds: lockoutSeconds))
+          .millisecondsSinceEpoch;
+      await _storage.write(key: _lockoutKey, value: until.toString());
+      if (mounted) _startLockoutCountdown(lockoutSeconds);
+    }
+  }
+
+  Future<void> _clearFailedAttempts() async {
+    await _storage.delete(key: _attemptsKey);
+    await _storage.delete(key: _lockoutKey);
   }
 
   Future<void> _tryBiometric() async {
@@ -55,6 +123,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   }
 
   void _onDigitPressed(String digit) {
+    if (_isLockedOut) return;
     if (_enteredPin.length >= 4) return;
     setState(() {
       _isError = false;
@@ -74,11 +143,24 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   }
 
   Future<void> _verifyPin() async {
-    final storedPin = await _storage.read(key: 'app_pin');
-    if (_enteredPin == storedPin) {
+    final stored = await _storage.read(key: 'app_pin');
+    final enteredHash = PinUtils.hashPin(_enteredPin);
+
+    // Yeni format: hash karşılaştır. Eski format: düz PIN — eşleşirse
+    // hash'e yükselt (geçmiş sürümden gelen kullanıcılar kilitlenmesin).
+    final isLegacyMatch = stored != null && stored == _enteredPin;
+    final isMatch = stored != null && (stored == enteredHash || isLegacyMatch);
+
+    if (isMatch) {
+      if (isLegacyMatch) {
+        await _storage.write(key: 'app_pin', value: enteredHash);
+      }
+      await _clearFailedAttempts();
       widget.onUnlocked();
     } else {
       HapticFeedback.heavyImpact();
+      await _registerFailedAttempt();
+      if (!mounted) return;
       setState(() {
         _isError = true;
         _enteredPin = '';
@@ -115,7 +197,18 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                   color: Colors.white,
                 ),
               ).animate().fadeIn(delay: 200.ms),
-              if (_isError)
+              if (_isLockedOut)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    l10n.tooManyAttempts(_lockoutRemainingSeconds),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.yellow.shade200,
+                    ),
+                  ),
+                )
+              else if (_isError)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(

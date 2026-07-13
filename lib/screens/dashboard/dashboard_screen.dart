@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/widgets/glass_card.dart';
@@ -97,12 +98,20 @@ class DashboardScreen extends ConsumerWidget {
     if (profile?.lastPeriodStart != null) {
       final cycleLen = profile!.averageCycleLength;
       final lastStart = profile.lastPeriodStart!;
-      nextPeriodStr =
-          dateFormat.format(CycleUtils.predictNextPeriod(lastStart, cycleLen));
-      ovulationStr =
-          dateFormat.format(CycleUtils.predictOvulation(lastStart, cycleLen));
-      final fStart = CycleUtils.fertileWindowStart(lastStart, cycleLen);
-      final fEnd = CycleUtils.fertileWindowEnd(lastStart, cycleLen);
+      // Tahmin geçmişte kaldıysa (gecikmiş döngü) ileri sarılmış tarih göster
+      final nextPeriod = CycleUtils.nextFuturePeriod(lastStart, cycleLen);
+      nextPeriodStr = dateFormat.format(nextPeriod);
+
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      var ovulation = nextPeriod.subtract(
+          const Duration(days: AppConstants.ovulationDayBeforePeriod));
+      if (ovulation.isBefore(today)) {
+        ovulation = ovulation.add(Duration(days: cycleLen));
+      }
+      ovulationStr = dateFormat.format(ovulation);
+      final fStart = ovulation.subtract(const Duration(days: 5));
+      final fEnd = ovulation.add(const Duration(days: 1));
       fertileStr = '${dateFormat.format(fStart)} - ${dateFormat.format(fEnd)}';
     }
 

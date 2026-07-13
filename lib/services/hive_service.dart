@@ -118,15 +118,10 @@ class HiveService {
   // ─── DailyLog CRUD ─────────────────────────────────────────────────
 
   DailyLog? getDailyLogByDate(DateTime date) {
+    // Box key'i zaten dateKey — O(1) erişim
     final dateKey =
         '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-    try {
-      return _dailyLogsBox.values.firstWhere(
-        (log) => log.dateKey == dateKey,
-      );
-    } catch (_) {
-      return null;
-    }
+    return _dailyLogsBox.get(dateKey);
   }
 
   List<DailyLog> getAllDailyLogs() {

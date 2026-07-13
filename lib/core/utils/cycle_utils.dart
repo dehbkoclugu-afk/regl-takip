@@ -40,15 +40,21 @@ class CycleUtils {
     return normalizedNow.difference(normalizedStart).inDays + 1;
   }
 
-  /// Döngü fazını belirler
-  static CyclePhase getCurrentPhase(
-    DateTime lastPeriodStart,
+  /// Ham döngü gününü 1..cycleLength aralığına sarar.
+  /// Döngü uzunluğu aşılmışsa yeni döngü başlamış kabul edilir.
+  static int wrappedCycleDay(int rawDay, int cycleLength) {
+    if (rawDay <= cycleLength) return rawDay;
+    final mod = rawDay % cycleLength;
+    return mod == 0 ? cycleLength : mod;
+  }
+
+  /// Belirli bir döngü günü için fazı belirler
+  static CyclePhase phaseForDay(
+    int cycleDay,
     int cycleLength,
     int periodLength,
   ) {
-    final cycleDay = currentCycleDay(lastPeriodStart);
-
-    if (cycleDay <= periodLength) {
+    if (periodLength > 0 && cycleDay <= periodLength) {
       return CyclePhase.menstrual;
     }
 
@@ -64,6 +70,18 @@ class CycleUtils {
     }
 
     return CyclePhase.luteal;
+  }
+
+  /// Döngü fazını belirler (gün, wrappedCycleDay ile sarılır —
+  /// currentCycleDayProvider ile tutarlı kalması için)
+  static CyclePhase getCurrentPhase(
+    DateTime lastPeriodStart,
+    int cycleLength,
+    int periodLength,
+  ) {
+    final cycleDay =
+        wrappedCycleDay(currentCycleDay(lastPeriodStart), cycleLength);
+    return phaseForDay(cycleDay, cycleLength, periodLength);
   }
 
   /// Ortalama döngü süresini hesaplar
@@ -106,11 +124,25 @@ class CycleUtils {
         date.day == ovulation.day;
   }
 
+  /// Gelecekteki (bugün dahil) ilk tahmini adet başlangıcını döndürür.
+  /// Tahmin geçmişte kaldıysa döngü uzunluğu kadar ileri sarar.
+  static DateTime nextFuturePeriod(DateTime lastPeriodStart, int cycleLength) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    var next = predictNextPeriod(lastPeriodStart, cycleLength);
+    next = DateTime(next.year, next.month, next.day);
+    while (next.isBefore(today)) {
+      next = next.add(Duration(days: cycleLength));
+    }
+    return next;
+  }
+
   /// Sonraki adete kalan gün sayısı
   static int daysUntilNextPeriod(DateTime lastPeriodStart, int cycleLength) {
-    final nextPeriod = predictNextPeriod(lastPeriodStart, cycleLength);
+    final nextPeriod = nextFuturePeriod(lastPeriodStart, cycleLength);
     final now = DateTime.now();
-    final diff = nextPeriod.difference(DateTime(now.year, now.month, now.day)).inDays;
+    final diff =
+        nextPeriod.difference(DateTime(now.year, now.month, now.day)).inDays;
     return diff > 0 ? diff : 0;
   }
 }

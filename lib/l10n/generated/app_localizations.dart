@@ -1859,6 +1859,12 @@ abstract class AppLocalizations {
   /// **'Yanlış PIN'**
   String get wrongPin;
 
+  /// No description provided for @tooManyAttempts.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çok fazla yanlış deneme. {seconds} saniye bekleyin'**
+  String tooManyAttempts(int seconds);
+
   /// No description provided for @pinSet.
   ///
   /// In tr, this message translates to:

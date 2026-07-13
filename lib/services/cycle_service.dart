@@ -1,12 +1,9 @@
-import 'package:uuid/uuid.dart';
 import '../core/constants/app_constants.dart';
 import '../core/utils/cycle_utils.dart';
-import '../models/period_record.dart';
 import 'hive_service.dart';
 
 class CycleService {
   final HiveService _hiveService;
-  static const _uuid = Uuid();
 
   CycleService(this._hiveService);
 
@@ -71,44 +68,8 @@ class CycleService {
     );
   }
 
-  /// Starts a new period. Creates a PeriodRecord with a generated UUID,
-  /// saves it to Hive, and updates the user profile's lastPeriodStart.
-  Future<PeriodRecord> startPeriod(DateTime date) async {
-    // End any ongoing period first
-    final ongoing = _hiveService.getOngoingPeriod();
-    if (ongoing != null) {
-      final endDate = date.subtract(const Duration(days: 1));
-      ongoing.endDate = endDate;
-      await _hiveService.savePeriodRecord(ongoing);
-    }
-
-    final record = PeriodRecord(
-      id: _uuid.v4(),
-      startDate: date,
-    );
-    await _hiveService.savePeriodRecord(record);
-
-    // Update profile's last period start
-    final profile = _hiveService.getUserProfile();
-    if (profile != null) {
-      profile.lastPeriodStart = date;
-      await _hiveService.saveUserProfile(profile);
-    }
-
-    return record;
-  }
-
-  /// Ends a period by setting the end date on the matching PeriodRecord.
-  Future<void> endPeriod(String recordId, DateTime date) async {
-    final records = _hiveService.getAllPeriodRecords();
-    try {
-      final record = records.firstWhere((r) => r.id == recordId);
-      record.endDate = date;
-      await _hiveService.savePeriodRecord(record);
-    } catch (_) {
-      // Record not found, do nothing
-    }
-  }
+  // NOT: Regl başlatma/bitirme yazma işlemleri PeriodRecordsNotifier'da
+  // (providers.dart) — tek yazma yolu orada tutuluyor.
 
   /// Calculates the average cycle length from historical period records.
   double getAverageCycleLength() {

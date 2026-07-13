@@ -71,6 +71,49 @@ class UserProfile extends HiveObject {
     this.waterGoal = 8,
   });
 
+  /// Yeni bir kopya döndürür; verilen alanlar güncellenir.
+  /// Nullable alanlar (birthDate, lastPeriodStart) null'a çekilemez.
+  UserProfile copyWith({
+    String? name,
+    DateTime? birthDate,
+    int? averageCycleLength,
+    int? averagePeriodLength,
+    bool? pinEnabled,
+    bool? biometricEnabled,
+    bool? onboardingCompleted,
+    String? language,
+    DateTime? lastPeriodStart,
+    bool? periodReminderEnabled,
+    bool? ovulationReminderEnabled,
+    bool? medicationReminderEnabled,
+    int? reminderHour,
+    int? reminderMinute,
+    bool? darkModeEnabled,
+    int? waterGoal,
+  }) {
+    return UserProfile(
+      name: name ?? this.name,
+      birthDate: birthDate ?? this.birthDate,
+      averageCycleLength: averageCycleLength ?? this.averageCycleLength,
+      averagePeriodLength: averagePeriodLength ?? this.averagePeriodLength,
+      pinEnabled: pinEnabled ?? this.pinEnabled,
+      biometricEnabled: biometricEnabled ?? this.biometricEnabled,
+      onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
+      language: language ?? this.language,
+      lastPeriodStart: lastPeriodStart ?? this.lastPeriodStart,
+      periodReminderEnabled:
+          periodReminderEnabled ?? this.periodReminderEnabled,
+      ovulationReminderEnabled:
+          ovulationReminderEnabled ?? this.ovulationReminderEnabled,
+      medicationReminderEnabled:
+          medicationReminderEnabled ?? this.medicationReminderEnabled,
+      reminderHour: reminderHour ?? this.reminderHour,
+      reminderMinute: reminderMinute ?? this.reminderMinute,
+      darkModeEnabled: darkModeEnabled ?? this.darkModeEnabled,
+      waterGoal: waterGoal ?? this.waterGoal,
+    );
+  }
+
   int? get age {
     if (birthDate == null) return null;
     final now = DateTime.now();
