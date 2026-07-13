@@ -461,6 +461,9 @@
       }
     }
   },
+  "quickLog": "Hızlı Kayıt",
+  "allTrackers": "Tüm kayıt türleri",
+  "savedGeneric": "Kaydedildi",
   "disguiseTitle": "Gizli Mod",
   "disguiseDesc": "Uygulama, çekmecede \"Notlar\" adı ve nötr bir ikonla görünür; ana ekran widget'ı da nötrlenir. Bildirim içerikleri gizlenmez — gerekirse bildirimleri kapatın. Kısayol kaybolursa uygulamayı çekmeceden yeniden ekleyin.",
   "backupData": "Yedek Al (JSON)",

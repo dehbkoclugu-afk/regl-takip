@@ -1085,6 +1085,12 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get quickLog => 'Hızlı Kayıt';
+
+  @override
+  String get allTrackers => 'Tüm kayıt türleri';
+
+  @override
   String get disguiseTitle => 'Gizli Mod';
 
   @override

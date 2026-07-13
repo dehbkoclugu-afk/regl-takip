@@ -1,4 +1,4 @@
-import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -334,13 +334,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       child: SingleChildScrollView(
         child: ClipRRect(
           borderRadius: BorderRadius.circular(28),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-            child: Container(
+          // Cam bırakıldı: gradyan üstünde opak form kartı
+          child: Container(
               width: double.infinity,
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.85),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(28),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: 0.5),
@@ -359,7 +358,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 children: children,
               ),
             ),
-          ),
         )
             .animateSafe(context)
             .fadeIn(duration: 350.ms)
@@ -661,9 +659,8 @@ class _GlassButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-        child: Material(
+      // Cam bırakıldı: gradyan üstünde opak beyaz aksiyon butonu
+      child: Material(
           color: Colors.transparent,
           child: InkWell(
             onTap: onPressed,
@@ -671,14 +668,7 @@ class _GlassButton extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.white.withValues(alpha: 0.9),
-                    Colors.white.withValues(alpha: 0.7),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+                color: Colors.white,
                 border: Border.all(
                   color: Colors.white.withValues(alpha: 0.5),
                   width: 1,
@@ -714,7 +704,6 @@ class _GlassButton extends StatelessWidget {
             ),
           ),
         ),
-      ),
     );
   }
 }

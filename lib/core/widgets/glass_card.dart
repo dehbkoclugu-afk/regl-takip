@@ -1,6 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
+import '../theme/app_colors.dart';
+
+/// Tarihsel not: bu bileşenler cam (blur + yarı saydamlık) ile doğdu.
+/// Tasarım dili opak yüzeylere geçti — düz, sıcak zemin + ince kenar.
+/// API geriye uyumlu: [blur] > 0 verilirse hâlâ cam çizer (bilinçli
+/// istisnalar için), [opacity]/[gradient] eski çağrılar kırılmasın diye
+/// duruyor ama varsayılan görünümde kullanılmıyor.
 class GlassCard extends StatelessWidget {
   final Widget child;
   final double borderRadius;
@@ -18,10 +25,6 @@ class GlassCard extends StatelessWidget {
     required this.child,
     // Kart dili: 20px — kontroller 16, sheet/hero 28
     this.borderRadius = 20,
-    // BackdropFilter Flutter'ın en pahalı efekti; kartların arkasında
-    // çoğunlukla düz gradyan var — blur görsel fark yaratmıyor ama
-    // orta segment Android'de kaydırma jank'ine yol açıyor.
-    // Varsayılan 0: yarı saydam dolgu aynı görünümü bedava verir.
     this.blur = 0,
     this.opacity = 0.15,
     this.borderColor,
@@ -35,34 +38,21 @@ class GlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark
-        ? Colors.white.withValues(alpha: opacity * 0.9)
-        : Colors.white.withValues(alpha: opacity + 0.55);
-    final border = borderColor ??
-        (isDark
-            ? Colors.white.withValues(alpha: 0.18)
-            : const Color(0xFFBA90C6).withValues(alpha: 0.12));
+    final bgColor = isDark ? AppColors.cardDark : Colors.white;
+    final border = borderColor ?? AppColors.dv(context);
 
     final inner = Container(
       padding: padding,
       decoration: BoxDecoration(
-        gradient: gradient ??
-            LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                bgColor,
-                bgColor.withValues(alpha: bgColor.a * 0.7),
-              ],
-            ),
+        color: gradient == null ? bgColor : null,
+        gradient: gradient,
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
           color: border,
           width: borderWidth,
         ),
         // Düz kart dili: ince kenar + çok hafif zemin gölgesi.
-        // Belirgin ışıma yalnız hero yüzeylerde (ring) — kart başına
-        // ağır gölge görsel gürültüydü.
+        // Belirgin ışıma yalnız hero yüzeylerde (ring).
         boxShadow: boxShadow ??
             [
               BoxShadow(
@@ -104,7 +94,6 @@ class GlassContainer extends StatelessWidget {
     super.key,
     required this.child,
     this.borderRadius = 16,
-    // Bkz. GlassCard.blur — varsayılan 0, blur yalnız bilinçli istekle
     this.blur = 0,
     this.backgroundColor,
     this.padding,
@@ -116,10 +105,8 @@ class GlassContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = backgroundColor ??
-        (isDark
-            ? Colors.white.withValues(alpha: 0.12)
-            : Colors.white.withValues(alpha: 0.65));
+    final bgColor =
+        backgroundColor ?? (isDark ? AppColors.cardDark : Colors.white);
 
     final inner = Container(
       padding: padding,
@@ -127,10 +114,8 @@ class GlassContainer extends StatelessWidget {
         color: bgColor,
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.15)
-              : const Color(0xFFBA90C6).withValues(alpha: 0.15),
-          width: 0.5,
+          color: AppColors.dv(context),
+          width: 1,
         ),
       ),
       child: child,

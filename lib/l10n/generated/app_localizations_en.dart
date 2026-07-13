@@ -1085,6 +1085,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get quickLog => 'Quick Log';
+
+  @override
+  String get allTrackers => 'All tracker types';
+
+  @override
   String get disguiseTitle => 'Disguise Mode';
 
   @override

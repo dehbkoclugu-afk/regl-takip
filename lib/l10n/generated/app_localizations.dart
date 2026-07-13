@@ -2171,6 +2171,18 @@ abstract class AppLocalizations {
   /// **'{symptom} en çok {phase} fazında görülüyor (%{percent})'**
   String insightLine(String symptom, String phase, int percent);
 
+  /// No description provided for @quickLog.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hızlı Kayıt'**
+  String get quickLog;
+
+  /// No description provided for @allTrackers.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tüm kayıt türleri'**
+  String get allTrackers;
+
   /// No description provided for @disguiseTitle.
   ///
   /// In tr, this message translates to:

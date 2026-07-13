@@ -29,7 +29,7 @@ class PredictionCard extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: AppColors.sf(context).withValues(alpha: 0.95),
+        backgroundColor: AppColors.sf(context),
         title: Row(
           children: [
             Container(

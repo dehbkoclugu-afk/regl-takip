@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -75,26 +74,23 @@ class AppShell extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(28),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
+          // Opak pill: cam bırakıldı — son BackdropFilter da kalktı,
+          // düşük donanımda kaydırma maliyeti sıfırlandı
+          child: Container(
               decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : Colors.white.withValues(alpha: 0.7),
+                color: isDark ? AppColors.cardDark : Colors.white,
                 borderRadius: BorderRadius.circular(28),
                 border: Border.all(
                   color: isDark
-                      ? Colors.white.withValues(alpha: 0.1)
-                      : Colors.white.withValues(alpha: 0.5),
+                      ? AppColors.dividerDark
+                      : AppColors.divider,
                   width: 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.08),
-                    blurRadius: 30,
-                    spreadRadius: 0,
-                    offset: const Offset(0, 8),
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -159,7 +155,6 @@ class AppShell extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
           ),
         ),
       ),

@@ -23,12 +23,12 @@ class AppTheme {
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
           fontSize: 28,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
           color: AppColors.textPrimary,
         ),
         headlineMedium: TextStyle(
           fontSize: 24,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
           color: AppColors.textPrimary,
         ),
         headlineSmall: TextStyle(
@@ -46,16 +46,21 @@ class AppTheme {
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
+        // Gövde w500: display anları (w800) ile net kontrast —
+        // her şey bold olunca vurgu ölüyordu
         bodyLarge: TextStyle(
           fontSize: 16,
+          fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,
         ),
         bodyMedium: TextStyle(
           fontSize: 14,
+          fontWeight: FontWeight.w500,
           color: AppColors.textSecondary,
         ),
         bodySmall: TextStyle(
           fontSize: 12,
+          fontWeight: FontWeight.w500,
           color: AppColors.textSecondary,
         ),
       ),
@@ -110,7 +115,7 @@ class AppTheme {
         ),
       ),
       cardTheme: CardThemeData(
-        color: Colors.white.withValues(alpha: 0.7),
+        color: AppColors.surface,
         elevation: 0,
         shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(
@@ -131,7 +136,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.6),
+        fillColor: AppColors.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
@@ -180,12 +185,12 @@ class AppTheme {
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
           fontSize: 28,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
           color: AppColors.textPrimaryDark,
         ),
         headlineMedium: TextStyle(
           fontSize: 24,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
           color: AppColors.textPrimaryDark,
         ),
         headlineSmall: TextStyle(
@@ -205,14 +210,17 @@ class AppTheme {
         ),
         bodyLarge: TextStyle(
           fontSize: 16,
+          fontWeight: FontWeight.w500,
           color: AppColors.textPrimaryDark,
         ),
         bodyMedium: TextStyle(
           fontSize: 14,
+          fontWeight: FontWeight.w500,
           color: AppColors.textSecondaryDark,
         ),
         bodySmall: TextStyle(
           fontSize: 12,
+          fontWeight: FontWeight.w500,
           color: AppColors.textSecondaryDark,
         ),
       ),

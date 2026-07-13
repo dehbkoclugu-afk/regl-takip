@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
@@ -10,6 +9,7 @@ import '../../core/utils/cycle_utils.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../models/enums.dart';
 import '../../providers/providers.dart';
+import '../log/quick_log_sheet.dart';
 import 'widgets/cycle_progress_ring.dart';
 import 'widgets/prediction_card.dart';
 import 'widgets/quick_status_cards.dart';
@@ -62,7 +62,7 @@ class DashboardScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: AppColors.sf(context).withValues(alpha: 0.95),
+        backgroundColor: AppColors.sf(context),
         title: Text(
           _phaseName(phase, l10n),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -185,8 +185,9 @@ class DashboardScreen extends ConsumerWidget {
               Text(
                 l10n.helloName(profile?.name ?? ''),
                 style: TextStyle(
+                  // Display anı: gövdeden (w500) net ayrışan ağırlık
                   fontSize: 26,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
                   color: AppColors.tp(context),
                 ),
               )
@@ -239,6 +240,7 @@ class DashboardScreen extends ConsumerWidget {
                 CycleProgressRing(
                   cycleDay: cycleDay,
                   cycleLength: effectiveCycleLen,
+                  periodLength: profile?.averagePeriodLength ?? 5,
                   phase: phase,
                   daysUntilNextPeriod: daysUntil,
                 ),
@@ -297,12 +299,8 @@ class DashboardScreen extends ConsumerWidget {
                       icon: Icons.add_reaction_rounded,
                       label: l10n.addRecord,
                       color: AppColors.secondary,
-                      onTap: () {
-                        // Dashboard'dan kayıt her zaman bugüne girilir
-                        ref.read(selectedDateProvider.notifier).state =
-                            DateTime.now();
-                        context.push('/log');
-                      },
+                      onTap: () =>
+                          showQuickLogSheet(context, ref, DateTime.now()),
                     ),
                   ),
                 ],

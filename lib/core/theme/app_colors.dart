@@ -43,6 +43,8 @@ class AppColors {
   static const Color ringFollicular = Color(0xFFE8944A);
   static const Color ringOvulation = Color(0xFF9060A8);
   static const Color ringLuteal = Color(0xFFE8A830);
+  // Fertil bant: takvimdeki soluk yeşilin ring'de okunan doygun hali
+  static const Color ringFertile = Color(0xFF5E9C78);
 
   // Takvim işaretleri
   static const Color periodDay = Color(0xFFE8A0BF);

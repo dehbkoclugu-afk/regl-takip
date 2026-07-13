@@ -461,6 +461,9 @@
       }
     }
   },
+  "quickLog": "Quick Log",
+  "allTrackers": "All tracker types",
+  "savedGeneric": "Saved",
   "disguiseTitle": "Disguise Mode",
   "disguiseDesc": "The app appears in the drawer as \"Notes\" with a neutral icon; the home widget is neutralized too. Notification contents are NOT hidden — turn reminders off if needed. If the shortcut disappears, re-add the app from the drawer.",
   "backupData": "Back Up (JSON)",

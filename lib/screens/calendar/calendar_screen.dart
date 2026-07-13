@@ -1,4 +1,4 @@
-import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -10,6 +10,7 @@ import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
+import '../log/quick_log_sheet.dart';
 import '../../models/daily_log.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
@@ -289,14 +290,13 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         expand: false,
         builder: (sheetContext, scrollController) => ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-            child: Container(
+          // Opak sheet: cam dili bırakıldı
+          child: Container(
               decoration: BoxDecoration(
-                color: AppColors.sf(context).withValues(alpha: 0.9),
+                color: AppColors.sf(context),
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.3),
+                  color: AppColors.dv(context),
                   width: 1,
                 ),
               ),
@@ -344,11 +344,24 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       Text(l10n.noRecordForDay,
                           style: TextStyle(
                               fontSize: 14, color: AppColors.ts(context))),
+                    const SizedBox(height: 16),
+                    // Geçmiş güne hızlı kayıt: sheet kapatılıp quick log açılır
+                    if (!day.isAfter(DateTime.now()))
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.of(sheetContext).pop();
+                            showQuickLogSheet(context, ref, day);
+                          },
+                          icon: const Icon(Icons.edit_rounded, size: 18),
+                          label: Text(l10n.quickLog),
+                        ),
+                      ),
                   ],
                 ),
               ),
             ),
-          ),
         ),
       ),
     );
