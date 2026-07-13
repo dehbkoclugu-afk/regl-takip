@@ -14,6 +14,7 @@ import '../../core/utils/cycle_utils.dart';
 import '../../models/enums.dart';
 import '../../providers/providers.dart';
 import '../../services/backup_service.dart';
+import '../../services/disguise_service.dart';
 import '../../services/export_service.dart';
 import '../../services/health_sync_service.dart';
 import '../../services/hive_service.dart';
@@ -271,6 +272,10 @@ class SettingsScreen extends ConsumerWidget {
                     .saveProfile(biometricEnabled: val);
               },
             ),
+            if (DisguiseService.isSupported) ...[
+              _divider(context),
+              const _DisguiseTile(),
+            ],
           ]),
           const SizedBox(height: 16),
 
@@ -740,6 +745,62 @@ class SettingsScreen extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Divider(height: 1, color: AppColors.dv(context)),
+    );
+  }
+}
+
+/// Gizli mod anahtarı: launcher ikonunu/adını "Notlar" kılığına sokar.
+/// Durum platformdan okunur (secure storage değil — gerçek alias durumu).
+class _DisguiseTile extends StatefulWidget {
+  const _DisguiseTile();
+
+  @override
+  State<_DisguiseTile> createState() => _DisguiseTileState();
+}
+
+class _DisguiseTileState extends State<_DisguiseTile> {
+  bool? _enabled;
+
+  @override
+  void initState() {
+    super.initState();
+    DisguiseService.isDisguised().then((value) {
+      if (mounted) setState(() => _enabled = value);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return ListTile(
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.primary.withValues(alpha: 0.25),
+              AppColors.primary.withValues(alpha: 0.1),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Icon(Icons.visibility_off_rounded,
+            color: AppColors.primary, size: 22),
+      ),
+      title: Text(l10n.disguiseTitle,
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+      subtitle: Text(l10n.disguiseDesc, style: TextStyle(fontSize: 11)),
+      trailing: Switch(
+        value: _enabled ?? false,
+        activeColor: AppColors.primary,
+        onChanged: _enabled == null
+            ? null
+            : (value) async {
+                final ok = await DisguiseService.setDisguise(value);
+                if (ok && mounted) setState(() => _enabled = value);
+              },
+      ),
     );
   }
 }

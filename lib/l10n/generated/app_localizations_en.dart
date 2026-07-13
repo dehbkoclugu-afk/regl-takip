@@ -1085,6 +1085,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get disguiseTitle => 'Disguise Mode';
+
+  @override
+  String get disguiseDesc => 'The app appears in the drawer as \"Notes\" with a neutral icon. The change may take a few seconds; if the home screen shortcut disappears, re-add the app from the drawer.';
+
+  @override
   String get backupData => 'Back Up (JSON)';
 
   @override

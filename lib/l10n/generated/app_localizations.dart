@@ -2171,6 +2171,18 @@ abstract class AppLocalizations {
   /// **'{symptom} en çok {phase} fazında görülüyor (%{percent})'**
   String insightLine(String symptom, String phase, int percent);
 
+  /// No description provided for @disguiseTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gizli Mod'**
+  String get disguiseTitle;
+
+  /// No description provided for @disguiseDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Uygulama, çekmecede \"Notlar\" adı ve nötr bir ikonla görünür. Değişikliğin yansıması birkaç saniye sürebilir; ana ekran kısayolu kaybolursa uygulamayı çekmeceden yeniden ekleyin.'**
+  String get disguiseDesc;
+
   /// No description provided for @backupData.
   ///
   /// In tr, this message translates to:

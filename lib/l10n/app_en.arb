@@ -461,6 +461,8 @@
       }
     }
   },
+  "disguiseTitle": "Disguise Mode",
+  "disguiseDesc": "The app appears in the drawer as \"Notes\" with a neutral icon. The change may take a few seconds; if the home screen shortcut disappears, re-add the app from the drawer.",
   "backupData": "Back Up (JSON)",
   "restoreData": "Restore from Backup",
   "restoreConfirmTitle": "Restore backup?",
