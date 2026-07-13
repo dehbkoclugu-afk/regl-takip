@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'services/hive_service.dart';
 import 'services/notification_service.dart';
@@ -10,42 +10,31 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Set preferred orientations
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  // Oryantasyon kilidi yok: tüm ekranlar kaydırılabilir, tablet/landscape
+  // düzenleri app_shell'deki genişlik sınıfı (NavigationRail) ile karşılanıyor
 
-  // Set status bar style
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-    ),
-  );
+  // Status bar stili tema tarafından yönetiliyor (AppBarTheme.systemOverlayStyle)
+  // — global set edilirse açık temada beyaz ikonlar görünmez oluyordu
 
   // Initialize Hive
   await HiveService().init();
 
-  // Initialize notifications (with error handling to prevent freeze)
-  final notificationService = NotificationService();
-  try {
-    await notificationService.init();
-    await notificationService.requestPermission();
-  } catch (e) {
-    // Notification init failed - continue without notifications
-    debugPrint('[NOTIF] init failed: $e');
-  }
-
-  // Schedule notifications if profile exists
   final profile = HiveService().getUserProfile();
-  if (profile != null) {
+
+  // Bildirim kurulumu ilk kareyi bloklamasın — arka planda tamamlanır
+  final notificationService = NotificationService();
+  unawaited(() async {
     try {
-      await notificationService.rescheduleAll(profile);
+      await notificationService.init();
+      await notificationService.requestPermission();
+      if (profile != null) {
+        await notificationService.rescheduleAll(profile);
+      }
     } catch (e) {
-      // Notification scheduling failed - continue without notifications
-      debugPrint('[NOTIF] rescheduleAll failed: $e');
+      // Bildirimler olmadan devam et
+      debugPrint('[NOTIF] setup failed: $e');
     }
-  }
+  }());
 
   runApp(
     ProviderScope(

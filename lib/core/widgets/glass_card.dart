@@ -17,7 +17,11 @@ class GlassCard extends StatelessWidget {
     super.key,
     required this.child,
     this.borderRadius = 24,
-    this.blur = 12,
+    // BackdropFilter Flutter'ın en pahalı efekti; kartların arkasında
+    // çoğunlukla düz gradyan var — blur görsel fark yaratmıyor ama
+    // orta segment Android'de kaydırma jank'ine yol açıyor.
+    // Varsayılan 0: yarı saydam dolgu aynı görünümü bedava verir.
+    this.blur = 0,
     this.opacity = 0.15,
     this.borderColor,
     this.padding,
@@ -38,42 +42,46 @@ class GlassCard extends StatelessWidget {
             ? Colors.white.withValues(alpha: 0.18)
             : const Color(0xFFBA90C6).withValues(alpha: 0.12));
 
+    final inner = Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        gradient: gradient ??
+            LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                bgColor,
+                bgColor.withValues(alpha: bgColor.a * 0.7),
+              ],
+            ),
+        borderRadius: BorderRadius.circular(borderRadius),
+        border: Border.all(
+          color: border,
+          width: borderWidth,
+        ),
+        boxShadow: boxShadow ??
+            [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 16,
+                spreadRadius: 1,
+                offset: const Offset(0, 4),
+              ),
+            ],
+      ),
+      child: child,
+    );
+
     return Container(
       margin: margin,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-          child: Container(
-            padding: padding,
-            decoration: BoxDecoration(
-              gradient: gradient ??
-                  LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      bgColor,
-                      bgColor.withValues(alpha: bgColor.a * 0.7),
-                    ],
-                  ),
-              borderRadius: BorderRadius.circular(borderRadius),
-              border: Border.all(
-                color: border,
-                width: borderWidth,
-              ),
-              boxShadow: boxShadow ??
-                  [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.08),
-                      blurRadius: 16,
-                      spreadRadius: 1,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-            ),
-            child: child,
-          ),
-        ),
+        child: blur > 0
+            ? BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+                child: inner,
+              )
+            : inner,
       ),
     );
   }
@@ -93,7 +101,8 @@ class GlassContainer extends StatelessWidget {
     super.key,
     required this.child,
     this.borderRadius = 16,
-    this.blur = 8,
+    // Bkz. GlassCard.blur — varsayılan 0, blur yalnız bilinçli istekle
+    this.blur = 0,
     this.backgroundColor,
     this.padding,
     this.margin,
@@ -109,29 +118,33 @@ class GlassContainer extends StatelessWidget {
             ? Colors.white.withValues(alpha: 0.12)
             : Colors.white.withValues(alpha: 0.65));
 
+    final inner = Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(borderRadius),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.15)
+              : const Color(0xFFBA90C6).withValues(alpha: 0.15),
+          width: 0.5,
+        ),
+      ),
+      child: child,
+    );
+
     return Container(
       margin: margin,
       width: width,
       height: height,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-          child: Container(
-            padding: padding,
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(borderRadius),
-              border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.15)
-                    : const Color(0xFFBA90C6).withValues(alpha: 0.15),
-                width: 0.5,
-              ),
-            ),
-            child: child,
-          ),
-        ),
+        child: blur > 0
+            ? BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+                child: inner,
+              )
+            : inner,
       ),
     );
   }

@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../providers/providers.dart';
+import '../../core/utils/motion.dart';
 
 class MoodTrackingScreen extends ConsumerStatefulWidget {
   const MoodTrackingScreen({super.key});
@@ -88,7 +89,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                       style: TextStyle(
                           fontSize: 22, fontWeight: FontWeight.bold,
                           color: AppColors.tp(context)))
-                      .animate().fadeIn(duration: 400.ms),
+                      .animateSafe(context).fadeIn(duration: 400.ms),
                   const SizedBox(height: 20),
                   GridView.builder(
                     shrinkWrap: true,
@@ -143,7 +144,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                             ],
                           ),
                         ),
-                      ).animate()
+                      ).animateSafe(context)
                           .fadeIn(delay: (index * 40).ms, duration: 300.ms)
                           .scale(begin: const Offset(0.9, 0.9),
                               end: const Offset(1.0, 1.0),
@@ -170,7 +171,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                           borderSide: const BorderSide(
                               color: AppColors.primary, width: 2)),
                     ),
-                  ).animate().fadeIn(delay: 500.ms, duration: 400.ms),
+                  ).animateSafe(context).fadeIn(delay: 500.ms, duration: 400.ms),
                 ],
               ),
             ),

@@ -6,6 +6,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
+import '../../core/utils/motion.dart';
 
 class WaterTrackingScreen extends ConsumerStatefulWidget {
   const WaterTrackingScreen({super.key});
@@ -55,7 +56,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                 children: [
                   const SizedBox(height: 16),
                   _buildWaterCircle(progress, totalMl, goalMl, goal, l10n)
-                      .animate().fadeIn(duration: 500.ms)
+                      .animateSafe(context).fadeIn(duration: 500.ms)
                       .scale(begin: const Offset(0.8, 0.8), end: const Offset(1, 1), duration: 500.ms),
                   const SizedBox(height: 12),
                   Text(
@@ -67,10 +68,10 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                   ),
                   const SizedBox(height: 24),
                   _buildControls(goal)
-                      .animate().fadeIn(delay: 200.ms, duration: 400.ms),
+                      .animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
                   const SizedBox(height: 28),
                   _buildGlassGrid(goal, l10n)
-                      .animate().fadeIn(delay: 400.ms, duration: 400.ms),
+                      .animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
                 ],
               ),
             ),
@@ -274,7 +275,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
   Widget _buildGlassGrid(int goal, AppLocalizations l10n) {
     return GlassCard(
       borderRadius: 22,
-      blur: 8,
+      blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(18),
       child: Column(

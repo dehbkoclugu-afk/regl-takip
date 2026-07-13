@@ -2,6 +2,17 @@ import 'package:hive/hive.dart';
 
 part 'enums.g.dart';
 
+/// Yedek dosyalarındaki enum adlarını güvenli çözer.
+/// Bilinmeyen ad (ileri sürümden gelen yedek) null döner — çağıran
+/// taraf varsayılanla devam eder, içe aktarma patlamaz.
+T? enumFromName<T extends Enum>(List<T> values, String? name) {
+  if (name == null) return null;
+  for (final v in values) {
+    if (v.name == name) return v;
+  }
+  return null;
+}
+
 @HiveType(typeId: 10)
 enum FlowIntensity {
   @HiveField(0)

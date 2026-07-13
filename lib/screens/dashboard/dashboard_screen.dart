@@ -12,6 +12,7 @@ import '../../providers/providers.dart';
 import 'widgets/cycle_progress_ring.dart';
 import 'widgets/prediction_card.dart';
 import 'widgets/quick_status_cards.dart';
+import '../../core/utils/motion.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -130,7 +131,7 @@ class DashboardScreen extends ConsumerWidget {
       ),
       child: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 112),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -140,11 +141,15 @@ class DashboardScreen extends ConsumerWidget {
                 alignment: Alignment.centerRight,
                 child: GlassContainer(
                   borderRadius: 14,
-                  blur: 10,
+                  blur: 0,
                   padding: EdgeInsets.zero,
                   child: Material(
                     color: Colors.transparent,
-                    child: InkWell(
+                    child: Semantics(
+                      button: true,
+                      label: l10n.darkTheme,
+                      toggled: ref.watch(darkModeProvider),
+                      child: InkWell(
                       borderRadius: BorderRadius.circular(14),
                       onTap: () {
                         final current = ref.read(darkModeProvider);
@@ -163,6 +168,7 @@ class DashboardScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
+                    ),
                   ),
                 ),
               ),
@@ -176,7 +182,7 @@ class DashboardScreen extends ConsumerWidget {
                   color: AppColors.tp(context),
                 ),
               )
-                  .animate()
+                  .animateSafe(context)
                   .fadeIn(duration: 500.ms)
                   .slideY(begin: -0.2, end: 0, duration: 500.ms),
               const SizedBox(height: 8),
@@ -185,7 +191,7 @@ class DashboardScreen extends ConsumerWidget {
                 onTap: () => _showPhaseInfoDialog(context, phase, l10n),
                 child: GlassContainer(
                   borderRadius: 20,
-                  blur: 10,
+                  blur: 0,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -207,7 +213,7 @@ class DashboardScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-              ).animate().fadeIn(delay: 200.ms, duration: 500.ms),
+              ).animateSafe(context).fadeIn(delay: 200.ms, duration: 500.ms),
               const SizedBox(height: 28),
               // Progress Ring
               CycleProgressRing(
@@ -264,7 +270,7 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                 ],
               )
-                  .animate()
+                  .animateSafe(context)
                   .fadeIn(delay: 500.ms, duration: 600.ms)
                   .slideY(
                       begin: 0.15, end: 0, delay: 500.ms, duration: 600.ms),
@@ -286,14 +292,14 @@ class DashboardScreen extends ConsumerWidget {
       child: Row(
         children: [
           Icon(Icons.info_outline_rounded,
-              size: 14, color: AppColors.ts(context).withValues(alpha: 0.6)),
+              size: 14, color: AppColors.ts(context)),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
               l10n.healthDisclaimer,
               style: TextStyle(
                 fontSize: 11,
-                color: AppColors.ts(context).withValues(alpha: 0.6),
+                color: AppColors.ts(context),
                 height: 1.4,
               ),
             ),
@@ -312,7 +318,7 @@ class DashboardScreen extends ConsumerWidget {
   }) {
     return GlassCard(
       borderRadius: 24,
-      blur: 12,
+      blur: 0,
       opacity: 0.2,
       padding: EdgeInsets.zero,
       child: Material(

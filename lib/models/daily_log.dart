@@ -83,4 +83,57 @@ class DailyLog extends HiveObject {
 
   String get dateKey =>
       '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'date': date.toIso8601String(),
+        'symptoms': symptoms.map((s) => s.toJson()).toList(),
+        'mood': mood?.toJson(),
+        'temperature': temperature,
+        'temperatureTime': temperatureTime,
+        'weight': weight,
+        'waterIntake': waterIntake,
+        'sleepStart': sleepStart,
+        'sleepEnd': sleepEnd,
+        'sleepQuality': sleepQuality,
+        'sexualActivity': sexualActivity?.toJson(),
+        'medications': medications.map((m) => m.toJson()).toList(),
+        'notes': notes,
+        'flowIntensity': flowIntensity?.name,
+        'flowColor': flowColor?.name,
+        'hasClots': hasClots,
+        'padChangeCount': padChangeCount,
+      };
+
+  factory DailyLog.fromJson(Map<String, dynamic> json) => DailyLog(
+        id: json['id'] as String,
+        date: DateTime.parse(json['date'] as String),
+        symptoms: (json['symptoms'] as List<dynamic>? ?? [])
+            .map((s) => SymptomEntry.fromJson(s as Map<String, dynamic>))
+            .whereType<SymptomEntry>()
+            .toList(),
+        mood: json['mood'] != null
+            ? MoodEntry.fromJson(json['mood'] as Map<String, dynamic>)
+            : null,
+        temperature: (json['temperature'] as num?)?.toDouble(),
+        temperatureTime: json['temperatureTime'] as String?,
+        weight: (json['weight'] as num?)?.toDouble(),
+        waterIntake: json['waterIntake'] as int? ?? 0,
+        sleepStart: json['sleepStart'] as String?,
+        sleepEnd: json['sleepEnd'] as String?,
+        sleepQuality: json['sleepQuality'] as int?,
+        sexualActivity: json['sexualActivity'] != null
+            ? SexualActivityEntry.fromJson(
+                json['sexualActivity'] as Map<String, dynamic>)
+            : null,
+        medications: (json['medications'] as List<dynamic>? ?? [])
+            .map((m) => MedicationEntry.fromJson(m as Map<String, dynamic>))
+            .toList(),
+        notes: json['notes'] as String?,
+        flowIntensity:
+            enumFromName(FlowIntensity.values, json['flowIntensity'] as String?),
+        flowColor: enumFromName(FlowColor.values, json['flowColor'] as String?),
+        hasClots: json['hasClots'] as bool?,
+        padChangeCount: json['padChangeCount'] as int?,
+      );
 }

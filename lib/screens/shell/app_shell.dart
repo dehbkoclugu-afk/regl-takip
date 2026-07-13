@@ -14,6 +14,60 @@ class AppShell extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final isDark = AppColors.isDark(context);
 
+    // Geniş ekranda (tablet / masaüstü) alt bar yerine yan rail:
+    // gerilmiş telefon düzeni yerine Material genişlik sınıfı davranışı
+    final isWide = MediaQuery.sizeOf(context).width >= 600;
+
+    if (isWide) {
+      return Scaffold(
+        body: Row(
+          children: [
+            SafeArea(
+              child: NavigationRail(
+                selectedIndex: navigationShell.currentIndex,
+                onDestinationSelected: (index) {
+                  navigationShell.goBranch(
+                    index,
+                    initialLocation: index == navigationShell.currentIndex,
+                  );
+                },
+                labelType: NavigationRailLabelType.all,
+                indicatorColor: AppColors.primary.withValues(alpha: 0.12),
+                destinations: [
+                  NavigationRailDestination(
+                    icon: const Icon(Icons.home_outlined),
+                    selectedIcon: const Icon(Icons.home_rounded,
+                        color: AppColors.primaryStrong),
+                    label: Text(l10n.home),
+                  ),
+                  NavigationRailDestination(
+                    icon: const Icon(Icons.calendar_month_outlined),
+                    selectedIcon: const Icon(Icons.calendar_month_rounded,
+                        color: AppColors.primaryStrong),
+                    label: Text(l10n.calendar),
+                  ),
+                  NavigationRailDestination(
+                    icon: const Icon(Icons.bar_chart_outlined),
+                    selectedIcon: const Icon(Icons.bar_chart_rounded,
+                        color: AppColors.primaryStrong),
+                    label: Text(l10n.statistics),
+                  ),
+                  NavigationRailDestination(
+                    icon: const Icon(Icons.settings_outlined),
+                    selectedIcon: const Icon(Icons.settings_rounded,
+                        color: AppColors.primaryStrong),
+                    label: Text(l10n.settings),
+                  ),
+                ],
+              ),
+            ),
+            const VerticalDivider(thickness: 1, width: 1),
+            Expanded(child: navigationShell),
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
       body: navigationShell,
       extendBody: true,
@@ -70,7 +124,7 @@ class AppShell extends StatelessWidget {
                         selectedIcon: const Icon(
                           Icons.home_rounded,
                           size: 24,
-                          color: AppColors.primary,
+                          color: AppColors.primaryStrong,
                         ),
                         label: l10n.home,
                       ),
@@ -79,7 +133,7 @@ class AppShell extends StatelessWidget {
                         selectedIcon: const Icon(
                           Icons.calendar_month_rounded,
                           size: 24,
-                          color: AppColors.primary,
+                          color: AppColors.primaryStrong,
                         ),
                         label: l10n.calendar,
                       ),
@@ -88,7 +142,7 @@ class AppShell extends StatelessWidget {
                         selectedIcon: const Icon(
                           Icons.bar_chart_rounded,
                           size: 24,
-                          color: AppColors.primary,
+                          color: AppColors.primaryStrong,
                         ),
                         label: l10n.statistics,
                       ),
@@ -97,7 +151,7 @@ class AppShell extends StatelessWidget {
                         selectedIcon: const Icon(
                           Icons.settings_rounded,
                           size: 24,
-                          color: AppColors.primary,
+                          color: AppColors.primaryStrong,
                         ),
                         label: l10n.settings,
                       ),

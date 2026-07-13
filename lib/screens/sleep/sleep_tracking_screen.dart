@@ -5,6 +5,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
+import '../../core/utils/motion.dart';
 
 class SleepTrackingScreen extends ConsumerStatefulWidget {
   const SleepTrackingScreen({super.key});
@@ -83,13 +84,13 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
               child: Column(
                 children: [
                   _buildDurationDisplay(l10n)
-                      .animate().fadeIn(duration: 500.ms),
+                      .animateSafe(context).fadeIn(duration: 500.ms),
                   const SizedBox(height: 24),
                   _buildTimeCards(l10n)
-                      .animate().fadeIn(delay: 200.ms, duration: 400.ms),
+                      .animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
                   const SizedBox(height: 24),
                   _buildQualitySection(l10n)
-                      .animate().fadeIn(delay: 400.ms, duration: 400.ms),
+                      .animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
                 ],
               ),
             ),
@@ -103,7 +104,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
   Widget _buildDurationDisplay(AppLocalizations l10n) {
     return GlassCard(
       borderRadius: 24,
-      blur: 10,
+      blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -151,7 +152,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
       onTap: onTap,
       child: GlassCard(
         borderRadius: 22,
-        blur: 8,
+        blur: 0,
         opacity: 0.15,
         padding: const EdgeInsets.all(18),
         child: Column(
@@ -174,7 +175,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
   Widget _buildQualitySection(AppLocalizations l10n) {
     return GlassCard(
       borderRadius: 22,
-      blur: 8,
+      blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(20),
       child: Column(

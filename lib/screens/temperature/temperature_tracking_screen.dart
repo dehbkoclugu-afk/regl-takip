@@ -5,6 +5,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
+import '../../core/utils/motion.dart';
 
 class TemperatureTrackingScreen extends ConsumerStatefulWidget {
   const TemperatureTrackingScreen({super.key});
@@ -72,14 +73,14 @@ class _TemperatureTrackingScreenState
                 children: [
                   const SizedBox(height: 16),
                   _buildTempDisplay(l10n)
-                      .animate().fadeIn(duration: 500.ms)
+                      .animateSafe(context).fadeIn(duration: 500.ms)
                       .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1), duration: 500.ms),
                   const SizedBox(height: 28),
                   _buildSlider()
-                      .animate().fadeIn(delay: 200.ms, duration: 400.ms),
+                      .animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
                   const SizedBox(height: 24),
                   _buildTimeSelector(l10n)
-                      .animate().fadeIn(delay: 400.ms, duration: 400.ms),
+                      .animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
                 ],
               ),
             ),
@@ -93,7 +94,7 @@ class _TemperatureTrackingScreenState
   Widget _buildTempDisplay(AppLocalizations l10n) {
     return GlassCard(
       borderRadius: 24,
-      blur: 10,
+      blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -123,7 +124,7 @@ class _TemperatureTrackingScreenState
   Widget _buildSlider() {
     return GlassCard(
       borderRadius: 22,
-      blur: 8,
+      blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(20),
       child: Column(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../../../core/utils/motion.dart';
 
 /// A reusable info page widget for onboarding screens (pages 1-3).
 ///
@@ -54,7 +55,7 @@ class OnboardingPage extends StatelessWidget {
               color: Colors.white,
             ),
           )
-              .animate()
+              .animateSafe(context)
               .fadeIn(duration: 600.ms, curve: Curves.easeOut)
               .scale(
                 begin: const Offset(0.5, 0.5),
@@ -74,7 +75,7 @@ class OnboardingPage extends StatelessWidget {
                   color: Colors.white,
                 ),
           )
-              .animate()
+              .animateSafe(context)
               .fadeIn(delay: 200.ms, duration: 500.ms)
               .slideY(
                 begin: 0.3,
@@ -95,7 +96,7 @@ class OnboardingPage extends StatelessWidget {
                   height: 1.5,
                 ),
           )
-              .animate()
+              .animateSafe(context)
               .fadeIn(delay: 400.ms, duration: 500.ms)
               .slideY(
                 begin: 0.3,

@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../providers/providers.dart';
+import '../../core/utils/motion.dart';
 
 class SymptomTrackingScreen extends ConsumerStatefulWidget {
   const SymptomTrackingScreen({super.key});
@@ -245,7 +246,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
               ],
             ),
           ),
-        ).animate().fadeIn(delay: (index * 50).ms, duration: 300.ms);
+        ).animateSafe(context).fadeIn(delay: (index * 50).ms, duration: 300.ms);
       },
     );
   }

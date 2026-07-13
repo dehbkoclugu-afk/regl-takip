@@ -82,7 +82,7 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.primary, AppColors.secondary],
+            colors: [AppColors.primaryStrong, AppColors.secondaryStrong],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -137,6 +137,14 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
   }
 
   Widget _buildPinDots() {
+    return Semantics(
+      label: '${_pin.length}/4',
+      liveRegion: true,
+      child: ExcludeSemantics(child: _buildPinDotsRow()),
+    );
+  }
+
+  Widget _buildPinDotsRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(4, (i) {
@@ -182,10 +190,15 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
               children: row.map((key) {
                 if (key.isEmpty) return const SizedBox(width: 72);
                 if (key == 'del') {
-                  return _numpadButton(
-                    child: const Icon(Icons.backspace_rounded,
-                        color: Colors.white, size: 24),
-                    onTap: _onDelete,
+                  return Semantics(
+                    button: true,
+                    label: MaterialLocalizations.of(context)
+                        .deleteButtonTooltip,
+                    child: _numpadButton(
+                      child: const Icon(Icons.backspace_rounded,
+                          color: Colors.white, size: 24),
+                      onTap: _onDelete,
+                    ),
                   );
                 }
                 return _numpadButton(

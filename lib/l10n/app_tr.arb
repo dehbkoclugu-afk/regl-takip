@@ -368,6 +368,20 @@
       }
     }
   },
+  "backupData": "Yedek Al (JSON)",
+  "restoreData": "Yedekten Geri Yükle",
+  "restoreConfirmTitle": "Yedeği geri yükle?",
+  "restoreConfirmBody": "Mevcut tüm veriler silinecek ve yedekteki {count} kayıt geri yüklenecek. Bu işlem geri alınamaz.",
+  "@restoreConfirmBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "restore": "Geri Yükle",
+  "backupRestored": "Yedek geri yüklendi",
+  "invalidBackupFile": "Geçersiz yedek dosyası",
   "pinSet": "PIN başarıyla ayarlandı",
   "pinRemoved": "PIN kaldırıldı",
   "unlockWithBiometric": "Parmak izi veya yüz ile kilidi açın",

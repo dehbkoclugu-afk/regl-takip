@@ -8,10 +8,14 @@ import '../../core/widgets/glass_card.dart';
 import '../../models/user_profile.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import '../../providers/providers.dart';
+import '../../services/backup_service.dart';
 import '../../services/export_service.dart';
 import '../../services/hive_service.dart';
 import '../lock/pin_setup_dialog.dart';
+import '../../core/utils/motion.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -32,7 +36,7 @@ class SettingsScreen extends ConsumerWidget {
         elevation: 0,
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 112),
         children: [
           // Profile section
           _sectionHeader(context, l10n.profileSection),
@@ -210,6 +214,27 @@ class SettingsScreen extends ConsumerWidget {
           // Data
           _sectionHeader(context, l10n.dataSection),
           _settingsCard(context, [
+            _actionTile(context, Icons.backup_rounded, l10n.backupData,
+                AppColors.secondary, () async {
+              try {
+                final backupService = BackupService(HiveService());
+                final path = await backupService.exportBackup();
+                await ExportService().shareFile(path);
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Backup error: $e'),
+                        backgroundColor: AppColors.error),
+                  );
+                }
+              }
+            }),
+            _divider(context),
+            _actionTile(context, Icons.restore_rounded, l10n.restoreData,
+                AppColors.secondary, () async {
+              await _restoreFromBackup(context, ref, l10n);
+            }),
+            _divider(context),
             _actionTile(context, Icons.picture_as_pdf_rounded, l10n.exportPdfReport,
                 AppColors.error, () async {
               final exportService = ExportService();
@@ -322,6 +347,66 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  Future<void> _restoreFromBackup(
+      BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
+    final result = await FilePicker.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['json'],
+    );
+    final path = result?.files.single.path;
+    if (path == null) return;
+
+    final BackupData data;
+    try {
+      final jsonString = await File(path).readAsString();
+      data = BackupService(HiveService()).parseBackup(jsonString);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(l10n.invalidBackupFile),
+              backgroundColor: AppColors.error),
+        );
+      }
+      return;
+    }
+
+    if (!context.mounted) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        title: Text(l10n.restoreConfirmTitle),
+        content: Text(l10n.restoreConfirmBody(data.totalRecordCount)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: Text(l10n.restore),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    await BackupService(HiveService()).restoreBackup(data);
+    ref.read(userProfileProvider.notifier).refresh();
+    ref.read(periodRecordsProvider.notifier).refresh();
+    ref.read(dailyLogProvider.notifier).refresh();
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(l10n.backupRestored),
+            backgroundColor: AppColors.success),
+      );
+    }
+  }
+
   Widget _sectionHeader(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.only(left: 4, bottom: 8),
@@ -330,16 +415,16 @@ class SettingsScreen extends ConsumerWidget {
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: AppColors.ts(context))),
-    ).animate().fadeIn(duration: 400.ms);
+    ).animateSafe(context).fadeIn(duration: 400.ms);
   }
 
   Widget _settingsCard(BuildContext context, List<Widget> children) {
     return GlassCard(
       borderRadius: 24,
-      blur: 8,
+      blur: 0,
       opacity: 0.15,
       child: Column(children: children),
-    ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.05, end: 0);
+    ).animateSafe(context).fadeIn(duration: 400.ms).slideY(begin: 0.05, end: 0);
   }
 
   Widget _infoTile(BuildContext context, IconData icon, String title, String value) {

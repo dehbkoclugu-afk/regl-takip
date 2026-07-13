@@ -10,6 +10,7 @@ import '../../core/theme/app_colors.dart';
 import '../../providers/providers.dart';
 import '../../models/user_profile.dart';
 import 'widgets/onboarding_page.dart';
+import '../../core/utils/motion.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -165,7 +166,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.primary, AppColors.secondary],
+            colors: [AppColors.primaryStrong, AppColors.secondaryStrong],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -236,7 +237,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   color: Colors.white,
                 ),
           )
-              .animate()
+              .animateSafe(context)
               .fadeIn(duration: 400.ms)
               .slideY(begin: -0.2, end: 0, duration: 400.ms),
           const SizedBox(height: 8),
@@ -360,7 +361,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             ),
           ),
         )
-            .animate()
+            .animateSafe(context)
             .fadeIn(duration: 350.ms)
             .slideX(begin: 0.05, end: 0, duration: 350.ms),
       ),
@@ -374,7 +375,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: const LinearGradient(
-          colors: [AppColors.primary, AppColors.secondary],
+          colors: [AppColors.primaryStrong, AppColors.secondaryStrong],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

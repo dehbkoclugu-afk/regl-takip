@@ -922,6 +922,29 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get backupData => 'Yedek Al (JSON)';
+
+  @override
+  String get restoreData => 'Yedekten Geri Yükle';
+
+  @override
+  String get restoreConfirmTitle => 'Yedeği geri yükle?';
+
+  @override
+  String restoreConfirmBody(int count) {
+    return 'Mevcut tüm veriler silinecek ve yedekteki $count kayıt geri yüklenecek. Bu işlem geri alınamaz.';
+  }
+
+  @override
+  String get restore => 'Geri Yükle';
+
+  @override
+  String get backupRestored => 'Yedek geri yüklendi';
+
+  @override
+  String get invalidBackupFile => 'Geçersiz yedek dosyası';
+
+  @override
   String get pinSet => 'PIN başarıyla ayarlandı';
 
   @override

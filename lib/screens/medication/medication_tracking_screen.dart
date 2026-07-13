@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../models/period_record.dart';
 import '../../providers/providers.dart';
+import '../../core/utils/motion.dart';
 
 class MedicationTrackingScreen extends ConsumerStatefulWidget {
   const MedicationTrackingScreen({super.key});
@@ -67,7 +68,7 @@ class _MedicationTrackingScreenState
                   fontSize: 13, color: AppColors.ts(context))),
         ],
       ),
-    ).animate().fadeIn(duration: 400.ms);
+    ).animateSafe(context).fadeIn(duration: 400.ms);
   }
 
   Widget _buildList() {
@@ -96,7 +97,7 @@ class _MedicationTrackingScreenState
             ),
             child: GlassCard(
               borderRadius: 22,
-              blur: 8,
+              blur: 0,
               opacity: 0.15,
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -154,7 +155,7 @@ class _MedicationTrackingScreenState
               ),
             ),
           ),
-        ).animate().fadeIn(delay: (index * 60).ms, duration: 300.ms)
+        ).animateSafe(context).fadeIn(delay: (index * 60).ms, duration: 300.ms)
             .slideX(begin: 0.1, end: 0, delay: (index * 60).ms, duration: 300.ms);
       },
     );

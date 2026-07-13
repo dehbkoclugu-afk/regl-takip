@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../models/enums.dart';
 import '../../../providers/providers.dart';
+import '../../../core/utils/motion.dart';
 
 class QuickStatusCards extends ConsumerWidget {
   const QuickStatusCards({super.key});
@@ -137,7 +138,7 @@ class QuickStatusCards extends ConsumerWidget {
           ),
       ],
     )
-        .animate()
+        .animateSafe(context)
         .fadeIn(delay: 600.ms, duration: 600.ms)
         .slideY(begin: 0.15, end: 0, delay: 600.ms, duration: 600.ms);
   }

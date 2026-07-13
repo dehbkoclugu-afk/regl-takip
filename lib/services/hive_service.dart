@@ -1,4 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+
 import '../core/constants/app_constants.dart';
 import '../models/user_profile.dart';
 import '../models/period_record.dart';
@@ -10,6 +17,9 @@ class HiveService {
   factory HiveService() => _instance;
   HiveService._internal();
 
+  static const _aesKeyStorageKey = 'hive_aes_key';
+  static const _encryptedFlagKey = 'hive_encrypted';
+
   late Box<UserProfile> _userProfileBox;
   late Box<PeriodRecord> _periodRecordsBox;
   late Box<DailyLog> _dailyLogsBox;
@@ -18,12 +28,59 @@ class HiveService {
 
   bool get isInitialized => _isInitialized;
 
-  Future<void> init() async {
+  /// [encryptionKey] testlerde enjekte edilir; prod'da secure storage'dan
+  /// okunur/üretilir. [manageHivePath] false ise Hive.init çağıranın
+  /// sorumluluğundadır (testler temp dizinle kendileri init eder).
+  /// [assumeEncrypted] yalnız test yolunda: prod'daki secure-storage
+  /// bayrağının yerini tutar.
+  Future<void> init({
+    List<int>? encryptionKey,
+    bool manageHivePath = true,
+    bool? assumeEncrypted,
+  }) async {
     if (_isInitialized) return;
 
-    await Hive.initFlutter();
+    if (manageHivePath) {
+      await Hive.initFlutter();
+    }
 
-    // Register adapters
+    _registerAdapters();
+
+    final storage = const FlutterSecureStorage();
+    final List<int> key;
+    final bool alreadyEncrypted;
+
+    if (encryptionKey != null) {
+      key = encryptionKey;
+      alreadyEncrypted = assumeEncrypted ?? false;
+    } else {
+      final storedKey = await storage.read(key: _aesKeyStorageKey);
+      if (storedKey != null) {
+        key = base64Decode(storedKey);
+      } else {
+        key = Hive.generateSecureKey();
+        await storage.write(key: _aesKeyStorageKey, value: base64Encode(key));
+      }
+      alreadyEncrypted = await storage.read(key: _encryptedFlagKey) == 'true';
+    }
+
+    final cipher = HiveAesCipher(key);
+
+    if (!alreadyEncrypted && await _plainBoxesExistOnDisk()) {
+      // Eski kurulum: şifresiz kutular var — verileri şifreli kutulara taşı
+      await _migrateToEncrypted(cipher);
+    } else {
+      await _openEncryptedBoxes(cipher);
+    }
+
+    if (encryptionKey == null) {
+      await storage.write(key: _encryptedFlagKey, value: 'true');
+    }
+
+    _isInitialized = true;
+  }
+
+  void _registerAdapters() {
     if (!Hive.isAdapterRegistered(0)) {
       Hive.registerAdapter(UserProfileAdapter());
     }
@@ -63,15 +120,97 @@ class HiveService {
     if (!Hive.isAdapterRegistered(15)) {
       Hive.registerAdapter(SymptomCategoryAdapter());
     }
+  }
 
-    // Open boxes
-    _userProfileBox =
+  Future<bool> _plainBoxesExistOnDisk() async {
+    // Şifreli açılış bayrağı yoksa ve diskte kutu varsa eski kurulumdur.
+    // Kutu hiç yoksa temiz kurulum: doğrudan şifreli açılır.
+    return await Hive.boxExists(AppConstants.userProfileBox) ||
+        await Hive.boxExists(AppConstants.periodRecordsBox) ||
+        await Hive.boxExists(AppConstants.dailyLogsBox);
+  }
+
+  Future<void> _openEncryptedBoxes(HiveAesCipher cipher) async {
+    _userProfileBox = await Hive.openBox<UserProfile>(
+        AppConstants.userProfileBox,
+        encryptionCipher: cipher);
+    _periodRecordsBox = await Hive.openBox<PeriodRecord>(
+        AppConstants.periodRecordsBox,
+        encryptionCipher: cipher);
+    _dailyLogsBox = await Hive.openBox<DailyLog>(AppConstants.dailyLogsBox,
+        encryptionCipher: cipher);
+  }
+
+  /// Şifresiz kutulardaki veriyi JSON üzerinden şifreli kutulara taşır.
+  /// JSON ara katmanı HiveObject'lerin eski kutuya bağlılığı sorununu
+  /// ortadan kaldırır (aynı nesne iki kutuya konamaz).
+  Future<void> _migrateToEncrypted(HiveAesCipher cipher) async {
+    final plainProfileBox =
         await Hive.openBox<UserProfile>(AppConstants.userProfileBox);
-    _periodRecordsBox =
+    final plainRecordsBox =
         await Hive.openBox<PeriodRecord>(AppConstants.periodRecordsBox);
-    _dailyLogsBox = await Hive.openBox<DailyLog>(AppConstants.dailyLogsBox);
+    final plainLogsBox =
+        await Hive.openBox<DailyLog>(AppConstants.dailyLogsBox);
 
-    _isInitialized = true;
+    final profileJson =
+        plainProfileBox.get(AppConstants.currentUserKey)?.toJson();
+    final recordsJson =
+        plainRecordsBox.values.map((r) => r.toJson()).toList();
+    final logsJson = plainLogsBox.values.map((l) => l.toJson()).toList();
+
+    // Güvenlik anlık görüntüsü: migrasyon yarıda kalırsa veri kurtarılabilir
+    await _writeSafetySnapshot(profileJson, recordsJson, logsJson);
+
+    await plainProfileBox.close();
+    await plainRecordsBox.close();
+    await plainLogsBox.close();
+    await Hive.deleteBoxFromDisk(AppConstants.userProfileBox);
+    await Hive.deleteBoxFromDisk(AppConstants.periodRecordsBox);
+    await Hive.deleteBoxFromDisk(AppConstants.dailyLogsBox);
+
+    await _openEncryptedBoxes(cipher);
+
+    if (profileJson != null) {
+      await _userProfileBox.put(
+          AppConstants.currentUserKey, UserProfile.fromJson(profileJson));
+    }
+    for (final json in recordsJson) {
+      final record = PeriodRecord.fromJson(json);
+      await _periodRecordsBox.put(record.id, record);
+    }
+    for (final json in logsJson) {
+      final log = DailyLog.fromJson(json);
+      await _dailyLogsBox.put(log.dateKey, log);
+    }
+  }
+
+  Future<void> _writeSafetySnapshot(
+    Map<String, dynamic>? profileJson,
+    List<Map<String, dynamic>> recordsJson,
+    List<Map<String, dynamic>> logsJson,
+  ) async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/pre_encryption_backup.json');
+      await file.writeAsString(jsonEncode({
+        'app': 'regl_takip',
+        'version': 1,
+        'exportedAt': DateTime.now().toIso8601String(),
+        'profile': profileJson,
+        'periodRecords': recordsJson,
+        'dailyLogs': logsJson,
+      }));
+    } catch (e) {
+      // Snapshot best-effort: testte path_provider yok, prod'da disk dolu
+      // olabilir — migrasyonu engellemesin
+      debugPrint('[HIVE] safety snapshot failed: $e');
+    }
+  }
+
+  /// Testler için: singleton durumunu sıfırlar (kutular kapatılmaz).
+  @visibleForTesting
+  void resetForTesting() {
+    _isInitialized = false;
   }
 
   // ─── UserProfile CRUD ───────────────────────────────────────────────

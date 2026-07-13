@@ -11,6 +11,7 @@ import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
 import '../../models/daily_log.dart';
 import '../../models/period_record.dart';
+import '../../core/utils/motion.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
@@ -55,7 +56,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         children: [
           GlassCard(
             borderRadius: 24,
-            blur: 10,
+            blur: 0,
             opacity: 0.18,
             margin: const EdgeInsets.symmetric(horizontal: 12),
             child: TableCalendar(
@@ -124,10 +125,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     _buildDayCell(day, profile, records, dailyLogs, true),
               ),
             ),
-          ).animate().fadeIn(duration: 500.ms),
+          ).animateSafe(context).fadeIn(duration: 500.ms),
           const SizedBox(height: 16),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 112),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -137,7 +138,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 _legendItem(AppColors.fertileWindow, l10n.fertile),
               ],
             ),
-          ).animate().fadeIn(delay: 300.ms, duration: 500.ms),
+          ).animateSafe(context).fadeIn(delay: 300.ms, duration: 500.ms),
           const Spacer(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),

@@ -4,6 +4,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/glass_card.dart';
+import '../../../core/utils/motion.dart';
 
 class PredictionCard extends StatelessWidget {
   final IconData icon;
@@ -69,7 +70,7 @@ class PredictionCard extends StatelessWidget {
         onTap: infoText != null ? () => _showInfoDialog(context) : null,
         child: GlassCard(
           borderRadius: 22,
-          blur: 10,
+          blur: 0,
           opacity: 0.18,
           margin: const EdgeInsets.symmetric(horizontal: 4),
           padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
@@ -182,7 +183,7 @@ class PredictionCardsRow extends StatelessWidget {
         ),
       ],
     )
-        .animate()
+        .animateSafe(context)
         .fadeIn(delay: 400.ms, duration: 600.ms)
         .slideY(begin: 0.15, end: 0, delay: 400.ms, duration: 600.ms);
   }

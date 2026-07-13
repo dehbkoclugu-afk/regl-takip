@@ -7,6 +7,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
+import '../../core/utils/motion.dart';
 
 class LogScreen extends ConsumerStatefulWidget {
   const LogScreen({super.key});
@@ -129,7 +130,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
                 ],
               ),
             ),
-          ).animate().fadeIn(delay: (index * 50).ms, duration: 300.ms);
+          ).animateSafe(context).fadeIn(delay: (index * 50).ms, duration: 300.ms);
         },
       ),
     );
@@ -175,7 +176,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
           onTap: cat.onTap,
           child: GlassCard(
             borderRadius: 22,
-            blur: 8,
+            blur: 0,
             opacity: 0.15,
             padding: const EdgeInsets.all(14),
             child: Column(
@@ -229,7 +230,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
               ],
             ),
           ),
-        ).animate()
+        ).animateSafe(context)
             .fadeIn(delay: (index * 50).ms, duration: 300.ms)
             .scale(begin: const Offset(0.95, 0.95), end: const Offset(1, 1),
                 delay: (index * 50).ms, duration: 300.ms);

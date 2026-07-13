@@ -24,6 +24,22 @@ class PeriodRecord extends HiveObject {
     this.notes,
   });
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'startDate': startDate.toIso8601String(),
+        'endDate': endDate?.toIso8601String(),
+        'notes': notes,
+      };
+
+  factory PeriodRecord.fromJson(Map<String, dynamic> json) => PeriodRecord(
+        id: json['id'] as String,
+        startDate: DateTime.parse(json['startDate'] as String),
+        endDate: json['endDate'] != null
+            ? DateTime.tryParse(json['endDate'] as String)
+            : null,
+        notes: json['notes'] as String?,
+      );
+
   int get durationDays {
     if (endDate == null) return DateTime.now().difference(startDate).inDays + 1;
     return endDate!.difference(startDate).inDays + 1;
@@ -55,6 +71,15 @@ class SymptomEntry {
     required this.type,
     this.severity = 1,
   });
+
+  Map<String, dynamic> toJson() => {'type': type.name, 'severity': severity};
+
+  /// Bilinmeyen semptom tipi null döner (kayıt atlanır)
+  static SymptomEntry? fromJson(Map<String, dynamic> json) {
+    final type = enumFromName(SymptomType.values, json['type'] as String?);
+    if (type == null) return null;
+    return SymptomEntry(type: type, severity: json['severity'] as int? ?? 1);
+  }
 }
 
 @HiveType(typeId: 3)
@@ -69,6 +94,14 @@ class MoodEntry {
     required this.type,
     this.note,
   });
+
+  Map<String, dynamic> toJson() => {'type': type.name, 'note': note};
+
+  static MoodEntry? fromJson(Map<String, dynamic> json) {
+    final type = enumFromName(MoodType.values, json['type'] as String?);
+    if (type == null) return null;
+    return MoodEntry(type: type, note: json['note'] as String?);
+  }
 }
 
 @HiveType(typeId: 4)
@@ -87,6 +120,21 @@ class SexualActivityEntry {
     this.orgasm = false,
     this.note,
   });
+
+  Map<String, dynamic> toJson() => {
+        'protectionMethod': protectionMethod.name,
+        'orgasm': orgasm,
+        'note': note,
+      };
+
+  factory SexualActivityEntry.fromJson(Map<String, dynamic> json) =>
+      SexualActivityEntry(
+        protectionMethod: enumFromName(ProtectionMethod.values,
+                json['protectionMethod'] as String?) ??
+            ProtectionMethod.none,
+        orgasm: json['orgasm'] as bool? ?? false,
+        note: json['note'] as String?,
+      );
 }
 
 @HiveType(typeId: 5)
@@ -109,4 +157,19 @@ class MedicationEntry {
     this.taken = false,
     this.reminderTime,
   });
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'dose': dose,
+        'taken': taken,
+        'reminderTime': reminderTime,
+      };
+
+  factory MedicationEntry.fromJson(Map<String, dynamic> json) =>
+      MedicationEntry(
+        name: json['name'] as String? ?? '',
+        dose: json['dose'] as String? ?? '',
+        taken: json['taken'] as bool? ?? false,
+        reminderTime: json['reminderTime'] as String?,
+      );
 }

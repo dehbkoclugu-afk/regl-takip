@@ -11,6 +11,7 @@ import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../models/daily_log.dart';
 import '../../providers/providers.dart';
+import '../../core/utils/motion.dart';
 
 class StatisticsScreen extends ConsumerStatefulWidget {
   const StatisticsScreen({super.key});
@@ -53,7 +54,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 112),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -66,7 +67,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 const SizedBox(width: 8),
                 _filterChip(l10n.last12Months, 12),
               ],
-            ).animate().fadeIn(duration: 400.ms),
+            ).animateSafe(context).fadeIn(duration: 400.ms),
             const SizedBox(height: 20),
             _buildOverviewCard(l10n, avgCycle, avgPeriod, records),
             const SizedBox(height: 16),
@@ -92,14 +93,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 children: [
                   Icon(Icons.info_outline_rounded,
                       size: 14,
-                      color: AppColors.ts(context).withValues(alpha: 0.6)),
+                      color: AppColors.ts(context)),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       l10n.healthDisclaimer,
                       style: TextStyle(
                         fontSize: 11,
-                        color: AppColors.ts(context).withValues(alpha: 0.6),
+                        color: AppColors.ts(context),
                         height: 1.4,
                       ),
                     ),
@@ -116,9 +117,12 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
 
   Widget _filterChip(String label, int months) {
     final isSelected = _filterMonths == months;
-    return GestureDetector(
-      onTap: () => setState(() => _filterMonths = months),
-      child: AnimatedContainer(
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      child: GestureDetector(
+        onTap: () => setState(() => _filterMonths = months),
+        child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
@@ -141,8 +145,43 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               fontWeight: FontWeight.w600,
               color: isSelected ? Colors.white : AppColors.ts(context),
             )),
+        ),
       ),
     );
+  }
+
+  String _symptomName(SymptomType type, AppLocalizations l10n) {
+    final names = {
+      SymptomType.cramp: l10n.cramps, SymptomType.headache: l10n.headache,
+      SymptomType.bloating: l10n.bloating,
+      SymptomType.breastTenderness: l10n.breastTenderness,
+      SymptomType.backPain: l10n.backPain, SymptomType.fatigue: l10n.fatigue,
+      SymptomType.nausea: l10n.nausea, SymptomType.dizziness: l10n.dizziness,
+      SymptomType.stress: l10n.stress, SymptomType.anxiety: l10n.anxiety,
+      SymptomType.irritability: l10n.irritability, SymptomType.crying: l10n.crying,
+      SymptomType.sensitivity: l10n.sensitivity, SymptomType.acne: l10n.acne,
+      SymptomType.oilySkin: l10n.oilySkin, SymptomType.drySkin: l10n.drySkin,
+      SymptomType.glowing: l10n.glowingSkin,
+      SymptomType.constipation: l10n.constipation,
+      SymptomType.diarrhea: l10n.diarrhea, SymptomType.gas: l10n.gas,
+      SymptomType.increasedAppetite: l10n.increasedAppetite,
+      SymptomType.decreasedAppetite: l10n.decreasedAppetite,
+      SymptomType.insomnia: l10n.insomnia, SymptomType.hotFlash: l10n.hotFlash,
+      SymptomType.edema: l10n.swelling, SymptomType.hairLoss: l10n.hairLoss,
+    };
+    return names[type] ?? type.name;
+  }
+
+  String _moodName(MoodType mood, AppLocalizations l10n) {
+    final names = {
+      MoodType.happy: l10n.happy, MoodType.sad: l10n.sad,
+      MoodType.angry: l10n.angry, MoodType.anxious: l10n.anxious,
+      MoodType.calm: l10n.calm, MoodType.energetic: l10n.energetic,
+      MoodType.tired: l10n.tired, MoodType.romantic: l10n.romantic,
+      MoodType.sensitive: l10n.sensitiveM, MoodType.irritable: l10n.irritableM,
+      MoodType.neutral: l10n.neutralM,
+    };
+    return names[mood] ?? mood.name;
   }
 
   Widget _buildOverviewCard(
@@ -150,7 +189,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final isRegular = records.length >= 3;
     return GlassCard(
       borderRadius: 24,
-      blur: 10,
+      blur: 0,
       opacity: 0.18,
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -182,7 +221,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           ),
         ],
       ),
-    ).animate().fadeIn(delay: 100.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
+    ).animateSafe(context).fadeIn(delay: 100.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
   }
 
   Widget _statItem(String label, String value, IconData icon, Color color) {
@@ -229,7 +268,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
 
     return GlassCard(
       borderRadius: 24,
-      blur: 10,
+      blur: 0,
       opacity: 0.18,
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -241,7 +280,13 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   fontWeight: FontWeight.bold,
                   color: AppColors.tp(context))),
           const SizedBox(height: 16),
-          SizedBox(
+          // Ekran okuyucu için grafik verisi metin özeti olarak sunulur
+          Semantics(
+            label: top5
+                .map((e) => '${_symptomName(e.key, l10n)}: ${e.value}')
+                .join(', '),
+            child: ExcludeSemantics(
+              child: SizedBox(
             height: 180,
             child: BarChart(
               BarChartData(
@@ -256,10 +301,11 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                       getTitlesWidget: (value, meta) {
                         final idx = value.toInt();
                         if (idx >= 0 && idx < top5.length) {
+                          final name = _symptomName(top5[idx].key, l10n);
                           return Padding(
                             padding: const EdgeInsets.only(top: 8),
                             child: Text(
-                              top5[idx].key.name.substring(0, 3),
+                              name.length > 4 ? name.substring(0, 4) : name,
                               style: TextStyle(
                                   fontSize: 10, color: AppColors.ts(context)),
                             ),
@@ -299,9 +345,11 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               ),
             ),
           ),
+            ),
+          ),
         ],
       ),
-    ).animate().fadeIn(delay: 200.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
+    ).animateSafe(context).fadeIn(delay: 200.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
   }
 
   Widget _buildMoodChart(AppLocalizations l10n, List<DailyLog> logs) {
@@ -332,7 +380,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
 
     return GlassCard(
       borderRadius: 24,
-      blur: 10,
+      blur: 0,
       opacity: 0.18,
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -344,25 +392,34 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   fontWeight: FontWeight.bold,
                   color: AppColors.tp(context))),
           const SizedBox(height: 16),
-          SizedBox(
-            height: 180,
-            child: PieChart(
-              PieChartData(
-                sectionsSpace: 2,
-                centerSpaceRadius: 40,
-                sections: moodCount.entries.map((e) {
-                  final pct = (e.value / total * 100).toStringAsFixed(0);
-                  return PieChartSectionData(
-                    color: colors[e.key] ?? AppColors.moodNeutral,
-                    value: e.value.toDouble(),
-                    title: '$pct%',
-                    radius: 50,
-                    titleStyle: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  );
-                }).toList(),
+          // Ekran okuyucu için pasta grafiği metin özeti olarak sunulur
+          Semantics(
+            label: moodCount.entries
+                .map((e) =>
+                    '${_moodName(e.key, l10n)}: %${(e.value / total * 100).toStringAsFixed(0)}')
+                .join(', '),
+            child: ExcludeSemantics(
+              child: SizedBox(
+                height: 180,
+                child: PieChart(
+                  PieChartData(
+                    sectionsSpace: 2,
+                    centerSpaceRadius: 40,
+                    sections: moodCount.entries.map((e) {
+                      final pct = (e.value / total * 100).toStringAsFixed(0);
+                      return PieChartSectionData(
+                        color: colors[e.key] ?? AppColors.moodNeutral,
+                        value: e.value.toDouble(),
+                        title: '$pct%',
+                        radius: 50,
+                        titleStyle: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
             ),
           ),
@@ -383,7 +440,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  Text(e.key.name,
+                  Text(_moodName(e.key, l10n),
                       style: TextStyle(
                           fontSize: 11, color: AppColors.ts(context))),
                 ],
@@ -392,7 +449,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           ),
         ],
       ),
-    ).animate().fadeIn(delay: 300.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
+    ).animateSafe(context).fadeIn(delay: 300.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
   }
 
   Widget _buildCycleHistory(AppLocalizations l10n, List<PeriodRecord> records) {
@@ -404,7 +461,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final dateFormat = DateFormat('d MMM yyyy', localeStr);
     return GlassCard(
       borderRadius: 24,
-      blur: 10,
+      blur: 0,
       opacity: 0.18,
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -453,7 +510,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               )),
         ],
       ),
-    ).animate().fadeIn(delay: 400.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
+    ).animateSafe(context).fadeIn(delay: 400.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
   }
 
   Widget _buildTrendChart(
@@ -488,7 +545,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
 
     return GlassCard(
       borderRadius: 24,
-      blur: 10,
+      blur: 0,
       opacity: 0.18,
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -500,7 +557,13 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   fontWeight: FontWeight.bold,
                   color: AppColors.tp(context))),
           const SizedBox(height: 16),
-          SizedBox(
+          // Ekran okuyucu için trend özeti: son / en düşük / en yüksek
+          Semantics(
+            label:
+                '$title: ${spots.last.y.toStringAsFixed(1)} $unit. '
+                'Min ${minY.toStringAsFixed(1)}, Max ${maxY.toStringAsFixed(1)} $unit.',
+            child: ExcludeSemantics(
+              child: SizedBox(
             height: 180,
             child: LineChart(
               LineChartData(
@@ -606,9 +669,11 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               ),
             ),
           ),
+            ),
+          ),
         ],
       ),
-    ).animate().fadeIn(delay: 500.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
+    ).animateSafe(context).fadeIn(delay: 500.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
   }
 
   Widget _emptyCard(String title, String message) {
@@ -616,7 +681,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       width: double.infinity,
       child: GlassCard(
         borderRadius: 24,
-        blur: 8,
+        blur: 0,
         opacity: 0.12,
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -633,6 +698,6 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           ],
         ),
       ),
-    ).animate().fadeIn(duration: 400.ms);
+    ).animateSafe(context).fadeIn(duration: 400.ms);
   }
 }

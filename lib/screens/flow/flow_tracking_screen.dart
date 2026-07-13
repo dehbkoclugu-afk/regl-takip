@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../models/enums.dart';
 import '../../providers/providers.dart';
+import '../../core/utils/motion.dart';
 
 class FlowTrackingScreen extends ConsumerStatefulWidget {
   const FlowTrackingScreen({super.key});
@@ -57,7 +58,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                       style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold,
                           color: AppColors.tp(context)))
-                      .animate().fadeIn(duration: 400.ms),
+                      .animateSafe(context).fadeIn(duration: 400.ms),
                   const SizedBox(height: 16),
                   _buildIntensityRow(l10n),
                   const SizedBox(height: 28),
@@ -65,15 +66,15 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                       style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold,
                           color: AppColors.tp(context)))
-                      .animate().fadeIn(delay: 100.ms, duration: 400.ms),
+                      .animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms),
                   const SizedBox(height: 16),
                   _buildColorRow(l10n),
                   const SizedBox(height: 28),
                   _buildClotsToggle(l10n)
-                      .animate().fadeIn(delay: 200.ms, duration: 400.ms),
+                      .animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
                   const SizedBox(height: 28),
                   _buildPadCounter(l10n)
-                      .animate().fadeIn(delay: 300.ms, duration: 400.ms),
+                      .animateSafe(context).fadeIn(delay: 300.ms, duration: 400.ms),
                 ],
               ),
             ),
@@ -137,7 +138,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
               ],
             ),
           ),
-        ).animate().fadeIn(delay: (i * 60).ms, duration: 300.ms)
+        ).animateSafe(context).fadeIn(delay: (i * 60).ms, duration: 300.ms)
             .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1),
                 delay: (i * 60).ms, duration: 300.ms);
       }).toList(),
@@ -189,7 +190,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                   textAlign: TextAlign.center),
             ],
           ),
-        ).animate().fadeIn(delay: (100 + i * 60).ms, duration: 300.ms);
+        ).animateSafe(context).fadeIn(delay: (100 + i * 60).ms, duration: 300.ms);
       }).toList(),
     );
   }
@@ -197,7 +198,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
   Widget _buildClotsToggle(AppLocalizations l10n) {
     return GlassCard(
       borderRadius: 22,
-      blur: 8,
+      blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
@@ -228,7 +229,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
   Widget _buildPadCounter(AppLocalizations l10n) {
     return GlassCard(
       borderRadius: 22,
-      blur: 8,
+      blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(20),
       child: Column(

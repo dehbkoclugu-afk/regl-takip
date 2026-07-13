@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -6,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/cycle_utils.dart';
+import '../../../core/utils/motion.dart';
 
 class CycleProgressRing extends StatelessWidget {
   final int cycleDay;
@@ -25,13 +25,13 @@ class CycleProgressRing extends StatelessWidget {
   Color get _ringColor {
     switch (phase) {
       case CyclePhase.menstrual:
-        return const Color(0xFFD4607E);
+        return AppColors.ringMenstrual;
       case CyclePhase.follicular:
-        return const Color(0xFFE8944A);
+        return AppColors.ringFollicular;
       case CyclePhase.ovulation:
-        return const Color(0xFF9060A8);
+        return AppColors.ringOvulation;
       case CyclePhase.luteal:
-        return const Color(0xFFE8A830);
+        return AppColors.ringLuteal;
     }
   }
 
@@ -57,12 +57,12 @@ class CycleProgressRing extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final double progress = (cycleDay / cycleLength).clamp(0.0, 1.0);
     final isDark = AppColors.isDark(context);
+    final motion = context.motionEnabled;
 
-    return ClipRRect(
+    // Arkasında kayan içerik yok — BackdropFilter gereksiz maliyetti
+    final ring = ClipRRect(
       borderRadius: BorderRadius.circular(140),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
+      child: Container(
           padding: const EdgeInsets.all(28),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
@@ -86,7 +86,7 @@ class CycleProgressRing extends StatelessWidget {
           child: CircularPercentIndicator(
             radius: 110.0,
             lineWidth: 16.0,
-            animation: true,
+            animation: motion,
             animationDuration: 1500,
             percent: progress,
             center: _buildCenterContent(l10n, context),
@@ -97,16 +97,26 @@ class CycleProgressRing extends StatelessWidget {
             startAngle: 270.0,
           ),
         ),
-      ),
-    )
-        .animate()
+    );
+
+    // Ekran okuyucu için ring tek bir özet olarak duyurulur
+    final labeled = Semantics(
+      label:
+          '${l10n.cycleDay}: $cycleDay / $cycleLength. '
+          '${daysUntilNextPeriod > 0 ? l10n.daysLater(daysUntilNextPeriod) : l10n.todayExclamation}',
+      child: ExcludeSemantics(child: ring),
+    );
+
+    if (!motion) return labeled;
+    return labeled
+        .animateSafe(context)
         .scale(
-          begin: const Offset(0.8, 0.8),
+          begin: const Offset(0.9, 0.9),
           end: const Offset(1.0, 1.0),
-          duration: 800.ms,
-          curve: Curves.elasticOut,
+          duration: 500.ms,
+          curve: Curves.easeOutQuart,
         )
-        .fadeIn(duration: 600.ms);
+        .fadeIn(duration: 500.ms);
   }
 
   Widget _buildCenterContent(AppLocalizations l10n, BuildContext context) {

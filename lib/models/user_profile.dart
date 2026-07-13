@@ -114,6 +114,50 @@ class UserProfile extends HiveObject {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'birthDate': birthDate?.toIso8601String(),
+        'averageCycleLength': averageCycleLength,
+        'averagePeriodLength': averagePeriodLength,
+        'pinEnabled': pinEnabled,
+        'biometricEnabled': biometricEnabled,
+        'onboardingCompleted': onboardingCompleted,
+        'language': language,
+        'lastPeriodStart': lastPeriodStart?.toIso8601String(),
+        'periodReminderEnabled': periodReminderEnabled,
+        'ovulationReminderEnabled': ovulationReminderEnabled,
+        'medicationReminderEnabled': medicationReminderEnabled,
+        'reminderHour': reminderHour,
+        'reminderMinute': reminderMinute,
+        'darkModeEnabled': darkModeEnabled,
+        'waterGoal': waterGoal,
+      };
+
+  factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
+        name: json['name'] as String? ?? '',
+        birthDate: json['birthDate'] != null
+            ? DateTime.tryParse(json['birthDate'] as String)
+            : null,
+        averageCycleLength: json['averageCycleLength'] as int? ?? 28,
+        averagePeriodLength: json['averagePeriodLength'] as int? ?? 5,
+        pinEnabled: json['pinEnabled'] as bool? ?? false,
+        biometricEnabled: json['biometricEnabled'] as bool? ?? false,
+        onboardingCompleted: json['onboardingCompleted'] as bool? ?? false,
+        language: json['language'] as String? ?? 'tr',
+        lastPeriodStart: json['lastPeriodStart'] != null
+            ? DateTime.tryParse(json['lastPeriodStart'] as String)
+            : null,
+        periodReminderEnabled: json['periodReminderEnabled'] as bool? ?? true,
+        ovulationReminderEnabled:
+            json['ovulationReminderEnabled'] as bool? ?? true,
+        medicationReminderEnabled:
+            json['medicationReminderEnabled'] as bool? ?? false,
+        reminderHour: json['reminderHour'] as int? ?? 9,
+        reminderMinute: json['reminderMinute'] as int? ?? 0,
+        darkModeEnabled: json['darkModeEnabled'] as bool? ?? false,
+        waterGoal: json['waterGoal'] as int? ?? 8,
+      );
+
   int? get age {
     if (birthDate == null) return null;
     final now = DateTime.now();

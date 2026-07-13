@@ -5,6 +5,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/providers.dart';
+import '../../core/utils/motion.dart';
 
 class ProfileEditScreen extends ConsumerStatefulWidget {
   const ProfileEditScreen({super.key});
@@ -163,7 +164,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                             horizontal: 16, vertical: 14),
                       ),
                     ),
-                  ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.05),
+                  ).animateSafe(context).fadeIn(duration: 400.ms).slideY(begin: 0.05),
 
                   const SizedBox(height: 12),
 
@@ -178,7 +179,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                       hasValue: _birthDate != null,
                       onTap: () => _pickDate(isBirthDate: true),
                     ),
-                  ).animate().fadeIn(delay: 100.ms, duration: 400.ms).slideY(begin: 0.05),
+                  ).animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms).slideY(begin: 0.05),
 
                   const SizedBox(height: 12),
 
@@ -193,7 +194,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                       hasValue: _lastPeriodDate != null,
                       onTap: () => _pickDate(isBirthDate: false),
                     ),
-                  ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.05),
+                  ).animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.05),
 
                   const SizedBox(height: 12),
 
@@ -209,7 +210,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                       displayText: l10n.nDays(_cycleLength.round()),
                       onChanged: (v) => setState(() => _cycleLength = v),
                     ),
-                  ).animate().fadeIn(delay: 300.ms, duration: 400.ms).slideY(begin: 0.05),
+                  ).animateSafe(context).fadeIn(delay: 300.ms, duration: 400.ms).slideY(begin: 0.05),
 
                   const SizedBox(height: 12),
 
@@ -225,7 +226,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                       displayText: l10n.nDays(_periodLength.round()),
                       onChanged: (v) => setState(() => _periodLength = v),
                     ),
-                  ).animate().fadeIn(delay: 400.ms, duration: 400.ms).slideY(begin: 0.05),
+                  ).animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms).slideY(begin: 0.05),
 
                   const SizedBox(height: 20),
                 ],

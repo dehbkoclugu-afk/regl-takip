@@ -7,6 +7,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/motion.dart';
 import '../../core/utils/pin_utils.dart';
 import '../../providers/providers.dart';
 
@@ -172,12 +173,43 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final profile = ref.watch(userProfileProvider);
+    final motion = context.motionEnabled;
+
+    Widget lockIcon = Icon(Icons.lock_rounded,
+        size: 48, color: Colors.white.withValues(alpha: 0.9));
+    if (motion) {
+      lockIcon = lockIcon
+          .animateSafe(context)
+          .fadeIn(duration: 500.ms)
+          .scale(begin: const Offset(0.5, 0.5));
+    }
+
+    Widget title = Text(
+      l10n.enterPin,
+      style: TextStyle(
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+    );
+    if (motion) title = title.animateSafe(context).fadeIn(delay: 200.ms);
+
+    Widget wrongPinText = Text(
+      l10n.wrongPin,
+      style: TextStyle(
+        fontSize: 14,
+        color: Colors.yellow.shade200,
+      ),
+    );
+    if (motion) {
+      wrongPinText = wrongPinText.animateSafe(context).shakeX(hz: 4, amount: 4);
+    }
 
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.primary, AppColors.secondary],
+            colors: [AppColors.primaryStrong, AppColors.secondaryStrong],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -186,17 +218,9 @@ class _LockScreenState extends ConsumerState<LockScreen> {
           child: Column(
             children: [
               const Spacer(flex: 2),
-              Icon(Icons.lock_rounded, size: 48, color: Colors.white.withValues(alpha: 0.9))
-                  .animate().fadeIn(duration: 500.ms).scale(begin: const Offset(0.5, 0.5)),
+              lockIcon,
               const SizedBox(height: 16),
-              Text(
-                l10n.enterPin,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ).animate().fadeIn(delay: 200.ms),
+              title,
               if (_isLockedOut)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
@@ -211,13 +235,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
               else if (_isError)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    l10n.wrongPin,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.yellow.shade200,
-                    ),
-                  ).animate().shakeX(hz: 4, amount: 4),
+                  child: wrongPinText,
                 ),
               const SizedBox(height: 32),
               _buildPinDots(),
@@ -228,10 +246,10 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                 TextButton.icon(
                   onPressed: _tryBiometric,
                   icon: const Icon(Icons.fingerprint_rounded,
-                      color: Colors.white70, size: 28),
+                      color: Colors.white, size: 28),
                   label: Text(
                     l10n.unlockWithBiometric,
-                    style: TextStyle(color: Colors.white70),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               const SizedBox(height: 24),
@@ -243,6 +261,14 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   }
 
   Widget _buildPinDots() {
+    return Semantics(
+      label: '${_enteredPin.length}/4',
+      liveRegion: true,
+      child: ExcludeSemantics(child: _buildPinDotsRow()),
+    );
+  }
+
+  Widget _buildPinDotsRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(4, (i) {
@@ -287,10 +313,15 @@ class _LockScreenState extends ConsumerState<LockScreen> {
               children: row.map((key) {
                 if (key.isEmpty) return const SizedBox(width: 72);
                 if (key == 'del') {
-                  return _numpadButton(
-                    child: const Icon(Icons.backspace_rounded,
-                        color: Colors.white, size: 24),
-                    onTap: _onDeletePressed,
+                  return Semantics(
+                    button: true,
+                    label: MaterialLocalizations.of(context)
+                        .deleteButtonTooltip,
+                    child: _numpadButton(
+                      child: const Icon(Icons.backspace_rounded,
+                          color: Colors.white, size: 24),
+                      onTap: _onDeletePressed,
+                    ),
                   );
                 }
                 return _numpadButton(

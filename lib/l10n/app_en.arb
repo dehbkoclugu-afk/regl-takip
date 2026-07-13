@@ -368,6 +368,20 @@
       }
     }
   },
+  "backupData": "Back Up (JSON)",
+  "restoreData": "Restore from Backup",
+  "restoreConfirmTitle": "Restore backup?",
+  "restoreConfirmBody": "All current data will be deleted and {count} records from the backup will be restored. This cannot be undone.",
+  "@restoreConfirmBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "restore": "Restore",
+  "backupRestored": "Backup restored",
+  "invalidBackupFile": "Invalid backup file",
   "pinSet": "PIN set successfully",
   "pinRemoved": "PIN removed",
   "unlockWithBiometric": "Unlock with fingerprint or face",

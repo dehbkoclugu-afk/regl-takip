@@ -1865,6 +1865,48 @@ abstract class AppLocalizations {
   /// **'Çok fazla yanlış deneme. {seconds} saniye bekleyin'**
   String tooManyAttempts(int seconds);
 
+  /// No description provided for @backupData.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedek Al (JSON)'**
+  String get backupData;
+
+  /// No description provided for @restoreData.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedekten Geri Yükle'**
+  String get restoreData;
+
+  /// No description provided for @restoreConfirmTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedeği geri yükle?'**
+  String get restoreConfirmTitle;
+
+  /// No description provided for @restoreConfirmBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mevcut tüm veriler silinecek ve yedekteki {count} kayıt geri yüklenecek. Bu işlem geri alınamaz.'**
+  String restoreConfirmBody(int count);
+
+  /// No description provided for @restore.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geri Yükle'**
+  String get restore;
+
+  /// No description provided for @backupRestored.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedek geri yüklendi'**
+  String get backupRestored;
+
+  /// No description provided for @invalidBackupFile.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçersiz yedek dosyası'**
+  String get invalidBackupFile;
+
   /// No description provided for @pinSet.
   ///
   /// In tr, this message translates to:

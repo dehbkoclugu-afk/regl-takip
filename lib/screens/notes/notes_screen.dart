@@ -5,6 +5,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
+import '../../core/utils/motion.dart';
 
 class NotesScreen extends ConsumerStatefulWidget {
   const NotesScreen({super.key});
@@ -52,7 +53,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
               padding: const EdgeInsets.all(20),
               child: GlassCard(
                 borderRadius: 22,
-                blur: 8,
+                blur: 0,
                 opacity: 0.15,
                 padding: const EdgeInsets.all(20),
                 child: Column(
@@ -95,7 +96,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                     ),
                   ],
                 ),
-              ).animate().fadeIn(duration: 500.ms)
+              ).animateSafe(context).fadeIn(duration: 500.ms)
                   .slideY(begin: 0.1, end: 0, duration: 500.ms),
             ),
           ),

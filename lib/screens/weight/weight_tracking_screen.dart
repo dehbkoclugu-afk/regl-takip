@@ -5,6 +5,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
+import '../../core/utils/motion.dart';
 
 class WeightTrackingScreen extends ConsumerStatefulWidget {
   const WeightTrackingScreen({super.key});
@@ -63,14 +64,14 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
                 children: [
                   const SizedBox(height: 16),
                   _buildWeightDisplay()
-                      .animate().fadeIn(duration: 500.ms)
+                      .animateSafe(context).fadeIn(duration: 500.ms)
                       .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1), duration: 500.ms),
                   const SizedBox(height: 28),
                   _buildQuickAdjust(l10n)
-                      .animate().fadeIn(delay: 200.ms, duration: 400.ms),
+                      .animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
                   const SizedBox(height: 20),
                   _buildManualInput(l10n)
-                      .animate().fadeIn(delay: 400.ms, duration: 400.ms),
+                      .animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
                 ],
               ),
             ),
@@ -84,7 +85,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   Widget _buildWeightDisplay() {
     return GlassCard(
       borderRadius: 24,
-      blur: 10,
+      blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -116,7 +117,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   Widget _buildQuickAdjust(AppLocalizations l10n) {
     return GlassCard(
       borderRadius: 22,
-      blur: 8,
+      blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -161,7 +162,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   Widget _buildManualInput(AppLocalizations l10n) {
     return GlassCard(
       borderRadius: 22,
-      blur: 8,
+      blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(20),
       child: Column(

@@ -922,6 +922,29 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get backupData => 'Back Up (JSON)';
+
+  @override
+  String get restoreData => 'Restore from Backup';
+
+  @override
+  String get restoreConfirmTitle => 'Restore backup?';
+
+  @override
+  String restoreConfirmBody(int count) {
+    return 'All current data will be deleted and $count records from the backup will be restored. This cannot be undone.';
+  }
+
+  @override
+  String get restore => 'Restore';
+
+  @override
+  String get backupRestored => 'Backup restored';
+
+  @override
+  String get invalidBackupFile => 'Invalid backup file';
+
+  @override
   String get pinSet => 'PIN set successfully';
 
   @override

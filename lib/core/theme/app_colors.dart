@@ -24,6 +24,10 @@ class AppColors {
   static const Color primary = Color(0xFFE8A0BF);
   static const Color primaryLight = Color(0xFFF2C6DE);
   static const Color primaryDark = Color(0xFFD4789E);
+  // Beyaz metinle >=3:1 kontrast veren etkileşim tonları
+  // (pastel primary beyazla 2.06:1 — buton/appbar zemini olarak kullanılamaz)
+  static const Color primaryStrong = Color(0xFFC2607F);
+  static const Color secondaryStrong = Color(0xFFA370B0);
   static const Color secondary = Color(0xFFBA90C6);
   static const Color secondaryLight = Color(0xFFD4B8DE);
   static const Color accent = Color(0xFFC0DBEA);
@@ -33,6 +37,12 @@ class AppColors {
   static const Color follicular = Color(0xFFFFCBA4);
   static const Color ovulation = Color(0xFFBA90C6);
   static const Color luteal = Color(0xFFFFD9A0);
+
+  // Döngü fazı ring renkleri - koyu/doygun (arka plandan ayrışma için)
+  static const Color ringMenstrual = Color(0xFFD4607E);
+  static const Color ringFollicular = Color(0xFFE8944A);
+  static const Color ringOvulation = Color(0xFF9060A8);
+  static const Color ringLuteal = Color(0xFFE8A830);
 
   // Takvim işaretleri
   static const Color periodDay = Color(0xFFE8A0BF);
@@ -100,9 +110,11 @@ class AppColors {
   static const Color background = Color(0xFFFDF2F8);
   static const Color surface = Color(0xFFFFFBFE);
   static const Color textPrimary = Color(0xFF2D2D3A);
-  static const Color textSecondary = Color(0xFF8E8E9A);
+  // 4.6:1 on background — 14px gövde metni için WCAG AA
+  static const Color textSecondary = Color(0xFF6E6E7A);
   static const Color divider = Color(0xFFF0E8EE);
-  static const Color error = Color(0xFFF0A0A0);
+  // 5.3:1 on surface — hata metni okunabilir olmalı
+  static const Color error = Color(0xFFB04A4A);
   static const Color success = Color(0xFFA8D5BA);
   static const Color warning = Color(0xFFFFD9A0);
 

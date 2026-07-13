@@ -7,6 +7,7 @@ import '../../core/widgets/glass_card.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../providers/providers.dart';
+import '../../core/utils/motion.dart';
 
 class SexualActivityScreen extends ConsumerStatefulWidget {
   const SexualActivityScreen({super.key});
@@ -71,15 +72,15 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
                       style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold,
                           color: AppColors.tp(context)))
-                      .animate().fadeIn(duration: 400.ms),
+                      .animateSafe(context).fadeIn(duration: 400.ms),
                   const SizedBox(height: 16),
                   _buildProtectionChips(l10n),
                   const SizedBox(height: 28),
                   _buildOrgasmToggle(l10n)
-                      .animate().fadeIn(delay: 200.ms, duration: 400.ms),
+                      .animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
                   const SizedBox(height: 28),
                   _buildNoteField(l10n)
-                      .animate().fadeIn(delay: 400.ms, duration: 400.ms),
+                      .animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
                 ],
               ),
             ),
@@ -112,7 +113,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20)),
           onSelected: (_) => setState(() => _protection = method),
-        ).animate().fadeIn(delay: (i * 60).ms, duration: 300.ms);
+        ).animateSafe(context).fadeIn(delay: (i * 60).ms, duration: 300.ms);
       }).toList(),
     );
   }
@@ -120,7 +121,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
   Widget _buildOrgasmToggle(AppLocalizations l10n) {
     return GlassCard(
       borderRadius: 22,
-      blur: 8,
+      blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
@@ -143,7 +144,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
   Widget _buildNoteField(AppLocalizations l10n) {
     return GlassCard(
       borderRadius: 22,
-      blur: 8,
+      blur: 0,
       opacity: 0.15,
       padding: const EdgeInsets.all(20),
       child: Column(
