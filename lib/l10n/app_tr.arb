@@ -368,6 +368,33 @@
       }
     }
   },
+  "smartPrediction": "Akıllı Tahmin",
+  "smartPredictionDesc": "Tahminlerde geçmiş döngülerden öğrenilen ortalama kullanılır",
+  "learnedCycleLength": "Öğrenilen: {days} gün",
+  "@learnedCycleLength": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "irregular": "Düzensiz",
+  "phaseInsights": "Faz İçgörüleri",
+  "noInsightsYet": "İçgörü için henüz yeterli veri yok. Semptom kaydettikçe burada faz bazlı desenler görünecek.",
+  "insightLine": "{symptom} en çok {phase} fazında görülüyor (%{percent})",
+  "@insightLine": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      },
+      "phase": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "backupData": "Yedek Al (JSON)",
   "restoreData": "Yedekten Geri Yükle",
   "restoreConfirmTitle": "Yedeği geri yükle?",

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import '../models/period_record.dart';
 import '../models/user_profile.dart';
 import '../core/constants/app_constants.dart';
 import '../core/utils/cycle_utils.dart';
@@ -252,7 +253,11 @@ class NotificationService {
   }
 
   /// Reschedules all notifications based on profile preferences and cycle data.
-  Future<void> rescheduleAll(UserProfile profile) async {
+  /// [records] verilirse akıllı tahminle öğrenilen döngü uzunluğu kullanılır.
+  Future<void> rescheduleAll(
+    UserProfile profile, {
+    List<PeriodRecord> records = const [],
+  }) async {
     if (!_isInitialized) return;
 
     try {
@@ -263,7 +268,11 @@ class NotificationService {
       final locale = profile.language;
 
       if (profile.lastPeriodStart != null) {
-        final cycleLen = profile.averageCycleLength;
+        final cycleLen = CycleUtils.effectiveCycleLength(
+          profile.averageCycleLength,
+          records,
+          smartEnabled: profile.smartPredictionEnabled,
+        );
         final lastStart = profile.lastPeriodStart!;
         // Geçmişte kalan tahminleri ileri sar, sonra birkaç döngü planla
         final nextPeriod = CycleUtils.nextFuturePeriod(lastStart, cycleLen);

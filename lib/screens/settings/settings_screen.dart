@@ -10,6 +10,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import '../../core/utils/cycle_utils.dart';
 import '../../providers/providers.dart';
 import '../../services/backup_service.dart';
 import '../../services/export_service.dart';
@@ -104,6 +105,16 @@ class SettingsScreen extends ConsumerWidget {
                 ref.read(userProfileProvider.notifier)
                     .saveProfile(darkModeEnabled: val);
               },
+            ),
+            _divider(context),
+            _switchTile(
+              Icons.auto_awesome_rounded,
+              l10n.smartPrediction,
+              profile?.smartPredictionEnabled ?? true,
+              (val) => ref
+                  .read(userProfileProvider.notifier)
+                  .saveProfile(smartPredictionEnabled: val),
+              subtitle: _smartPredictionSubtitle(ref, l10n),
             ),
           ]),
           const SizedBox(height: 16),
@@ -347,6 +358,13 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  String _smartPredictionSubtitle(WidgetRef ref, AppLocalizations l10n) {
+    final learned =
+        CycleUtils.learnedCycleLength(ref.watch(periodRecordsProvider));
+    if (learned != null) return l10n.learnedCycleLength(learned);
+    return l10n.smartPredictionDesc;
+  }
+
   Future<void> _restoreFromBackup(
       BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
     final result = await FilePicker.pickFiles(
@@ -449,7 +467,8 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _switchTile(
-      IconData icon, String title, bool value, ValueChanged<bool> onChanged) {
+      IconData icon, String title, bool value, ValueChanged<bool> onChanged,
+      {String? subtitle}) {
     return ListTile(
       leading: Container(
         width: 40,
@@ -464,6 +483,9 @@ class SettingsScreen extends ConsumerWidget {
       ),
       title: Text(title,
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+      subtitle: subtitle != null
+          ? Text(subtitle, style: TextStyle(fontSize: 12))
+          : null,
       trailing: Switch(
         value: value,
         onChanged: onChanged,

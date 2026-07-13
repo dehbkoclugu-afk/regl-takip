@@ -178,18 +178,15 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     bool isPredicted = false;
 
     if (profile?.lastPeriodStart != null) {
-      final cycleLen = profile!.averageCycleLength as int;
-      final lastStart = profile.lastPeriodStart as DateTime;
+      final cycleLen = ref.read(effectiveCycleLengthProvider);
+      final lastStart = profile!.lastPeriodStart as DateTime;
+      final periodLen = profile.averagePeriodLength as int;
       isOvulation = CycleUtils.isOvulationDay(day, lastStart, cycleLen);
       isFertile = CycleUtils.isInFertileWindow(day, lastStart, cycleLen);
-      final nextPeriod = CycleUtils.predictNextPeriod(lastStart, cycleLen);
-      final periodLen = profile.averagePeriodLength as int;
-      final predictedEnd = nextPeriod.add(Duration(days: periodLen - 1));
-      if (!day.isBefore(nextPeriod) &&
-          !day.isAfter(predictedEnd) &&
-          !isPeriod) {
-        isPredicted = true;
-      }
+      // 3 döngü ileriye tahmini adet günleri
+      isPredicted = !isPeriod &&
+          CycleUtils.isPredictedPeriodDay(
+              day, lastStart, cycleLen, periodLen);
     }
 
     Color? bgColor;

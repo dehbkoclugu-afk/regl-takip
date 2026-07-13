@@ -90,20 +90,29 @@ void main() {
     });
 
     test('follicular between period and fertile window', () {
-      // ovulationDay = 28 - 14 = 14, fertileStart = 9
+      // ovulationDay = 28 - 14 + 1 = 15 (predictOvulation ile aynı gün),
+      // fertileStart = 10
       expect(CycleUtils.phaseForDay(6, 28, 5), CyclePhase.follicular);
-      expect(CycleUtils.phaseForDay(8, 28, 5), CyclePhase.follicular);
+      expect(CycleUtils.phaseForDay(9, 28, 5), CyclePhase.follicular);
     });
 
     test('ovulation phase covers fertile window', () {
-      expect(CycleUtils.phaseForDay(9, 28, 5), CyclePhase.ovulation);
-      expect(CycleUtils.phaseForDay(14, 28, 5), CyclePhase.ovulation);
+      expect(CycleUtils.phaseForDay(10, 28, 5), CyclePhase.ovulation);
       expect(CycleUtils.phaseForDay(15, 28, 5), CyclePhase.ovulation);
+      expect(CycleUtils.phaseForDay(16, 28, 5), CyclePhase.ovulation);
     });
 
     test('luteal after ovulation window', () {
-      expect(CycleUtils.phaseForDay(16, 28, 5), CyclePhase.luteal);
+      expect(CycleUtils.phaseForDay(17, 28, 5), CyclePhase.luteal);
       expect(CycleUtils.phaseForDay(28, 28, 5), CyclePhase.luteal);
+    });
+
+    test('phase day math agrees with date-based ovulation prediction', () {
+      final last = DateTime(2026, 1, 1);
+      final ovulationDate = CycleUtils.predictOvulation(last, 28);
+      final dayOfOvulation =
+          ovulationDate.difference(last).inDays + 1; // 15
+      expect(dayOfOvulation, CycleUtils.ovulationDayNumber(28));
     });
   });
 

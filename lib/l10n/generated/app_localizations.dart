@@ -1865,6 +1865,42 @@ abstract class AppLocalizations {
   /// **'Çok fazla yanlış deneme. {seconds} saniye bekleyin'**
   String tooManyAttempts(int seconds);
 
+  /// No description provided for @smartPrediction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Akıllı Tahmin'**
+  String get smartPrediction;
+
+  /// No description provided for @smartPredictionDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tahminlerde geçmiş döngülerden öğrenilen ortalama kullanılır'**
+  String get smartPredictionDesc;
+
+  /// No description provided for @learnedCycleLength.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrenilen: {days} gün'**
+  String learnedCycleLength(int days);
+
+  /// No description provided for @phaseInsights.
+  ///
+  /// In tr, this message translates to:
+  /// **'Faz İçgörüleri'**
+  String get phaseInsights;
+
+  /// No description provided for @noInsightsYet.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçgörü için henüz yeterli veri yok. Semptom kaydettikçe burada faz bazlı desenler görünecek.'**
+  String get noInsightsYet;
+
+  /// No description provided for @insightLine.
+  ///
+  /// In tr, this message translates to:
+  /// **'{symptom} en çok {phase} fazında görülüyor (%{percent})'**
+  String insightLine(String symptom, String phase, int percent);
+
   /// No description provided for @backupData.
   ///
   /// In tr, this message translates to:

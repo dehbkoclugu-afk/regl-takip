@@ -922,6 +922,28 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get smartPrediction => 'Smart Prediction';
+
+  @override
+  String get smartPredictionDesc => 'Predictions use the average learned from your past cycles';
+
+  @override
+  String learnedCycleLength(int days) {
+    return 'Learned: $days days';
+  }
+
+  @override
+  String get phaseInsights => 'Phase Insights';
+
+  @override
+  String get noInsightsYet => 'Not enough data for insights yet. As you log symptoms, phase-based patterns will appear here.';
+
+  @override
+  String insightLine(String symptom, String phase, int percent) {
+    return '$symptom occurs mostly in the $phase phase ($percent%)';
+  }
+
+  @override
   String get backupData => 'Back Up (JSON)';
 
   @override

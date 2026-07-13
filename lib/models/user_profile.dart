@@ -49,8 +49,15 @@ class UserProfile extends HiveObject {
   @HiveField(14)
   bool darkModeEnabled;
 
-  @HiveField(15)
+  // defaultValue: sonradan eklenen alanlar — eski kayıtlarda null gelir,
+  // anotasyonsuz cast upgrade'de crash olur
+  @HiveField(15, defaultValue: 8)
   int waterGoal;
+
+  /// Tahminlerde elle girilen değer yerine geçmiş kayıtlardan öğrenilen
+  /// döngü uzunluğunu kullan (yeterli veri varsa)
+  @HiveField(16, defaultValue: true)
+  bool smartPredictionEnabled;
 
   UserProfile({
     this.name = '',
@@ -69,6 +76,7 @@ class UserProfile extends HiveObject {
     this.reminderMinute = 0,
     this.darkModeEnabled = false,
     this.waterGoal = 8,
+    this.smartPredictionEnabled = true,
   });
 
   /// Yeni bir kopya döndürür; verilen alanlar güncellenir.
@@ -90,6 +98,7 @@ class UserProfile extends HiveObject {
     int? reminderMinute,
     bool? darkModeEnabled,
     int? waterGoal,
+    bool? smartPredictionEnabled,
   }) {
     return UserProfile(
       name: name ?? this.name,
@@ -111,6 +120,8 @@ class UserProfile extends HiveObject {
       reminderMinute: reminderMinute ?? this.reminderMinute,
       darkModeEnabled: darkModeEnabled ?? this.darkModeEnabled,
       waterGoal: waterGoal ?? this.waterGoal,
+      smartPredictionEnabled:
+          smartPredictionEnabled ?? this.smartPredictionEnabled,
     );
   }
 
@@ -131,6 +142,7 @@ class UserProfile extends HiveObject {
         'reminderMinute': reminderMinute,
         'darkModeEnabled': darkModeEnabled,
         'waterGoal': waterGoal,
+        'smartPredictionEnabled': smartPredictionEnabled,
       };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
@@ -156,6 +168,8 @@ class UserProfile extends HiveObject {
         reminderMinute: json['reminderMinute'] as int? ?? 0,
         darkModeEnabled: json['darkModeEnabled'] as bool? ?? false,
         waterGoal: json['waterGoal'] as int? ?? 8,
+        smartPredictionEnabled:
+            json['smartPredictionEnabled'] as bool? ?? true,
       );
 
   int? get age {

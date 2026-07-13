@@ -368,6 +368,33 @@
       }
     }
   },
+  "smartPrediction": "Smart Prediction",
+  "smartPredictionDesc": "Predictions use the average learned from your past cycles",
+  "learnedCycleLength": "Learned: {days} days",
+  "@learnedCycleLength": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "irregular": "Irregular",
+  "phaseInsights": "Phase Insights",
+  "noInsightsYet": "Not enough data for insights yet. As you log symptoms, phase-based patterns will appear here.",
+  "insightLine": "{symptom} occurs mostly in the {phase} phase ({percent}%)",
+  "@insightLine": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      },
+      "phase": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "backupData": "Back Up (JSON)",
   "restoreData": "Restore from Backup",
   "restoreConfirmTitle": "Restore backup?",

@@ -32,14 +32,15 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       reminderHour: fields[12] as int,
       reminderMinute: fields[13] as int,
       darkModeEnabled: fields[14] as bool,
-      waterGoal: fields[15] as int? ?? 8,
+      waterGoal: fields[15] == null ? 8 : fields[15] as int,
+      smartPredictionEnabled: fields[16] == null ? true : fields[16] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -71,7 +72,9 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(14)
       ..write(obj.darkModeEnabled)
       ..writeByte(15)
-      ..write(obj.waterGoal);
+      ..write(obj.waterGoal)
+      ..writeByte(16)
+      ..write(obj.smartPredictionEnabled);
   }
 
   @override

@@ -81,6 +81,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     int? reminderMinute,
     bool? darkModeEnabled,
     int? waterGoal,
+    bool? smartPredictionEnabled,
   }) async {
     final current = state ?? UserProfile();
     final updated = current.copyWith(
@@ -100,6 +101,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
       reminderMinute: reminderMinute,
       darkModeEnabled: darkModeEnabled,
       waterGoal: waterGoal,
+      smartPredictionEnabled: smartPredictionEnabled,
     );
 
     await _hiveService.saveUserProfile(updated);
@@ -111,9 +113,13 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         medicationReminderEnabled != null ||
         reminderHour != null ||
         reminderMinute != null ||
-        lastPeriodStart != null) {
+        lastPeriodStart != null ||
+        smartPredictionEnabled != null) {
       try {
-        await NotificationService().rescheduleAll(updated);
+        await NotificationService().rescheduleAll(
+          updated,
+          records: _hiveService.getAllPeriodRecords(),
+        );
       } catch (e) {
         debugPrint('[NOTIF] rescheduleAll failed: $e');
       }
@@ -353,12 +359,26 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
 
 // ─── Computed Providers ───────────────────────────────────────────────
 
+/// Tahminlerde kullanılan tek döngü uzunluğu kaynağı:
+/// akıllı tahmin açık + yeterli kayıt varsa öğrenilen, yoksa elle girilen.
+final effectiveCycleLengthProvider = Provider<int>((ref) {
+  final profile = ref.watch(userProfileProvider);
+  final records = ref.watch(periodRecordsProvider);
+  if (profile == null) return 28;
+  return CycleUtils.effectiveCycleLength(
+    profile.averageCycleLength,
+    records,
+    smartEnabled: profile.smartPredictionEnabled,
+  );
+});
+
 final currentCycleDayProvider = Provider<int>((ref) {
   final profile = ref.watch(userProfileProvider);
   if (profile == null || profile.lastPeriodStart == null) return 0;
   final rawDay = CycleUtils.currentCycleDay(profile.lastPeriodStart!);
+  final cycleLength = ref.watch(effectiveCycleLengthProvider);
   // Döngü uzunluğunu aşarsa yeni döngü başlamış demektir
-  return CycleUtils.wrappedCycleDay(rawDay, profile.averageCycleLength);
+  return CycleUtils.wrappedCycleDay(rawDay, cycleLength);
 });
 
 final currentCyclePhaseProvider = Provider<CyclePhase>((ref) {
@@ -391,14 +411,14 @@ final currentCyclePhaseProvider = Provider<CyclePhase>((ref) {
       // so getCurrentPhase won't return menstrual
       return CycleUtils.getCurrentPhase(
         profile.lastPeriodStart!,
-        profile.averageCycleLength,
+        ref.watch(effectiveCycleLengthProvider),
         0,
       );
     }
   }
   return CycleUtils.getCurrentPhase(
     profile.lastPeriodStart!,
-    profile.averageCycleLength,
+    ref.watch(effectiveCycleLengthProvider),
     profile.averagePeriodLength,
   );
 });
@@ -408,7 +428,7 @@ final daysUntilNextPeriodProvider = Provider<int>((ref) {
   if (profile == null || profile.lastPeriodStart == null) return 0;
   return CycleUtils.daysUntilNextPeriod(
     profile.lastPeriodStart!,
-    profile.averageCycleLength,
+    ref.watch(effectiveCycleLengthProvider),
   );
 });
 

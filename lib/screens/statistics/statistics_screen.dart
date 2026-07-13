@@ -75,6 +75,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             const SizedBox(height: 16),
             _buildMoodChart(l10n, filteredLogs),
             const SizedBox(height: 16),
+            _buildPhaseInsights(l10n, filteredLogs, records, profile),
+            const SizedBox(height: 16),
             _buildCycleHistory(l10n, filteredRecords),
             const SizedBox(height: 16),
             _buildTrendChart(
@@ -186,7 +188,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
 
   Widget _buildOverviewCard(
       AppLocalizations l10n, double avgCycle, double avgPeriod, List<PeriodRecord> records) {
-    final isRegular = records.length >= 3;
+    // null = veri yetersiz; aksi halde en uzun/en kısa döngü farkı >= 9 gün
+    // düzensiz sayılır (CycleUtils.isIrregular)
+    final irregular = CycleUtils.isIrregular(records);
     return GlassCard(
       borderRadius: 24,
       blur: 0,
@@ -212,10 +216,19 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     Icons.water_drop_rounded, AppColors.menstrual),
               ),
               Expanded(
-                child: _statItem(l10n.regularity,
-                    isRegular ? l10n.regular : l10n.insufficientData,
-                    Icons.check_circle_rounded,
-                    isRegular ? AppColors.success : AppColors.warning),
+                child: _statItem(
+                    l10n.regularity,
+                    irregular == null
+                        ? l10n.insufficientData
+                        : (irregular ? l10n.irregular : l10n.regular),
+                    irregular == true
+                        ? Icons.warning_amber_rounded
+                        : Icons.check_circle_rounded,
+                    irregular == null
+                        ? AppColors.warning
+                        : (irregular
+                            ? AppColors.error
+                            : AppColors.success)),
               ),
             ],
           ),
@@ -450,6 +463,132 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         ],
       ),
     ).animateSafe(context).fadeIn(delay: 300.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
+  }
+
+  String _phaseNameFor(CyclePhase phase, AppLocalizations l10n) {
+    switch (phase) {
+      case CyclePhase.menstrual:
+        return l10n.menstrualPhase;
+      case CyclePhase.follicular:
+        return l10n.follicularPhase;
+      case CyclePhase.ovulation:
+        return l10n.ovulationPhase;
+      case CyclePhase.luteal:
+        return l10n.lutealPhase;
+    }
+  }
+
+  /// Semptom kayıtlarını döngü fazlarına eşler; her semptomun en sık
+  /// görüldüğü fazı yüzdesiyle listeler.
+  Widget _buildPhaseInsights(
+    AppLocalizations l10n,
+    List<DailyLog> logs,
+    List<PeriodRecord> records,
+    dynamic profile,
+  ) {
+    if (profile == null || records.isEmpty) {
+      return _emptyCard(l10n.phaseInsights, l10n.noInsightsYet);
+    }
+
+    final cycleLen = ref.read(effectiveCycleLengthProvider);
+    final periodLen = profile.averagePeriodLength as int;
+    final sortedStarts = records.map((r) => r.startDate).toList()
+      ..sort();
+
+    // symptomType -> phase -> count
+    final counts = <SymptomType, Map<CyclePhase, int>>{};
+
+    for (final log in logs) {
+      if (log.symptoms.isEmpty) continue;
+      // Log tarihinden önceki en yakın adet başlangıcı bu logun döngüsünü
+      // belirler; öncesinde kayıt yoksa faz bilinemez, atlanır
+      DateTime? anchor;
+      for (final start in sortedStarts) {
+        if (!start.isAfter(log.date)) {
+          anchor = start;
+        } else {
+          break;
+        }
+      }
+      if (anchor == null) continue;
+
+      final rawDay = log.date.difference(
+              DateTime(anchor.year, anchor.month, anchor.day)).inDays + 1;
+      final day = CycleUtils.wrappedCycleDay(rawDay, cycleLen);
+      final phase = CycleUtils.phaseForDay(day, cycleLen, periodLen);
+
+      for (final symptom in log.symptoms) {
+        counts.putIfAbsent(symptom.type, () => {});
+        counts[symptom.type]![phase] =
+            (counts[symptom.type]![phase] ?? 0) + 1;
+      }
+    }
+
+    // En az 3 kez kaydedilmiş semptomlar, toplam sayıya göre ilk 3
+    final insights = <(SymptomType, CyclePhase, int)>[];
+    final eligible = counts.entries
+        .where((e) => e.value.values.fold<int>(0, (a, b) => a + b) >= 3)
+        .toList()
+      ..sort((a, b) => b.value.values
+          .fold<int>(0, (x, y) => x + y)
+          .compareTo(a.value.values.fold<int>(0, (x, y) => x + y)));
+
+    for (final entry in eligible.take(3)) {
+      final total = entry.value.values.fold<int>(0, (a, b) => a + b);
+      final topPhase = entry.value.entries
+          .reduce((a, b) => a.value >= b.value ? a : b);
+      final percent = (topPhase.value / total * 100).round();
+      insights.add((entry.key, topPhase.key, percent));
+    }
+
+    if (insights.isEmpty) {
+      return _emptyCard(l10n.phaseInsights, l10n.noInsightsYet);
+    }
+
+    return GlassCard(
+      borderRadius: 24,
+      blur: 0,
+      opacity: 0.18,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l10n.phaseInsights,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.tp(context))),
+          const SizedBox(height: 12),
+          ...insights.map((insight) {
+            final (symptom, phase, percent) = insight;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.insights_rounded,
+                      size: 18, color: AppColors.secondaryStrong),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      l10n.insightLine(
+                        _symptomName(symptom, l10n),
+                        _phaseNameFor(phase, l10n),
+                        percent,
+                      ),
+                      style: TextStyle(
+                          fontSize: 14,
+                          height: 1.4,
+                          color: AppColors.tp(context)),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    ).animateSafe(context).fadeIn(delay: 350.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
   }
 
   Widget _buildCycleHistory(AppLocalizations l10n, List<PeriodRecord> records) {

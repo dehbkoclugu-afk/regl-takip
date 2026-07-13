@@ -28,7 +28,10 @@ void main() async {
       await notificationService.init();
       await notificationService.requestPermission();
       if (profile != null) {
-        await notificationService.rescheduleAll(profile);
+        await notificationService.rescheduleAll(
+          profile,
+          records: HiveService().getAllPeriodRecords(),
+        );
       }
     } catch (e) {
       // Bildirimler olmadan devam et

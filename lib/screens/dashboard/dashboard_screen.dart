@@ -96,9 +96,10 @@ class DashboardScreen extends ConsumerWidget {
     String ovulationStr = '-';
     String fertileStr = '-';
 
+    final effectiveCycleLen = ref.watch(effectiveCycleLengthProvider);
     if (profile?.lastPeriodStart != null) {
-      final cycleLen = profile!.averageCycleLength;
-      final lastStart = profile.lastPeriodStart!;
+      final cycleLen = effectiveCycleLen;
+      final lastStart = profile!.lastPeriodStart!;
       // Tahmin geçmişte kaldıysa (gecikmiş döngü) ileri sarılmış tarih göster
       final nextPeriod = CycleUtils.nextFuturePeriod(lastStart, cycleLen);
       nextPeriodStr = dateFormat.format(nextPeriod);
@@ -218,7 +219,7 @@ class DashboardScreen extends ConsumerWidget {
               // Progress Ring
               CycleProgressRing(
                 cycleDay: cycleDay,
-                cycleLength: profile?.averageCycleLength ?? 28,
+                cycleLength: effectiveCycleLen,
                 phase: phase,
                 daysUntilNextPeriod: daysUntil,
               ),

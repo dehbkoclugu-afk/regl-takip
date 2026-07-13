@@ -922,6 +922,28 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get smartPrediction => 'Akıllı Tahmin';
+
+  @override
+  String get smartPredictionDesc => 'Tahminlerde geçmiş döngülerden öğrenilen ortalama kullanılır';
+
+  @override
+  String learnedCycleLength(int days) {
+    return 'Öğrenilen: $days gün';
+  }
+
+  @override
+  String get phaseInsights => 'Faz İçgörüleri';
+
+  @override
+  String get noInsightsYet => 'İçgörü için henüz yeterli veri yok. Semptom kaydettikçe burada faz bazlı desenler görünecek.';
+
+  @override
+  String insightLine(String symptom, String phase, int percent) {
+    return '$symptom en çok $phase fazında görülüyor (%$percent)';
+  }
+
+  @override
   String get backupData => 'Yedek Al (JSON)';
 
   @override
