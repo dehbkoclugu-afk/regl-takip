@@ -922,6 +922,48 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get coachMenstrual0 => 'Kanama günlerinde demir kaybı olur — kırmızı et, mercimek ve koyu yeşil yapraklılar iyi gelir.';
+
+  @override
+  String get coachMenstrual1 => 'Kramplar için sıcak uygulama ve hafif esneme, çoğu ağrı kesici kadar etkili olabilir.';
+
+  @override
+  String get coachMenstrual2 => 'Enerjin düşükse bu normal — bugün yoğun antrenman yerine yürüyüş yeterli.';
+
+  @override
+  String get coachFollicular0 => 'Östrojen yükselişte: enerji ve odak genelde bu fazda zirve yapar. Zor işleri bugünlere planla.';
+
+  @override
+  String get coachFollicular1 => 'Cilt bu fazda genelde en iyi halinde — yeni ürün denemek için uygun dönem.';
+
+  @override
+  String get coachFollicular2 => 'Yüksek tempolu egzersizler için vücudun en hazır olduğu dönemdesin.';
+
+  @override
+  String get coachOvulation0 => 'Doğurgan penceredesin — korunma ya da gebelik planı ne ise ona göre davran.';
+
+  @override
+  String get coachOvulation1 => 'Bazı kadınlar ovülasyonda tek taraflı hafif ağrı hisseder (mittelschmerz) — normaldir.';
+
+  @override
+  String get coachOvulation2 => 'Sosyal enerji bu günlerde genelde yüksek — önemli görüşmeler için iyi zamanlama.';
+
+  @override
+  String get coachLuteal0 => 'PMS belirtileri bu fazda başlayabilir — magnezyum ve düzenli uyku belirtileri hafifletebilir.';
+
+  @override
+  String get coachLuteal1 => 'Tatlı isteği artabilir: kan şekerini dengede tutmak için protein ağırlıklı ara öğün dene.';
+
+  @override
+  String get coachLuteal2 => 'Duygusal hassasiyet artabilir — kendine yüklenme, bu hormonal ve geçici.';
+
+  @override
+  String get ovulationConfirmed => 'Ovülasyon ✓';
+
+  @override
+  String get ovulationConfirmedInfo => 'Bu tarih tahmini değil: bazal vücut sıcaklığı ölçümlerinizdeki yükselişten teyit edildi (3-üstü-6 kuralı).';
+
+  @override
   String get premiumSection => 'Premium';
 
   @override

@@ -457,6 +457,28 @@ final daysUntilNextPeriodProvider = Provider<int>((ref) {
   );
 });
 
+/// Mevcut döngüdeki sıcaklık ölçümlerinden teyit edilmiş ovülasyon günü.
+/// Yeterli veri veya belirgin yükseliş yoksa null (tahmin geçerli kalır).
+final confirmedOvulationProvider = Provider<DateTime?>((ref) {
+  final profile = ref.watch(userProfileProvider);
+  final lastStart = profile?.lastPeriodStart;
+  if (lastStart == null) return null;
+
+  final logs = ref.watch(dailyLogProvider);
+  final cycleStart =
+      DateTime(lastStart.year, lastStart.month, lastStart.day);
+
+  final temps = <MapEntry<DateTime, double>>[];
+  for (final log in logs.values) {
+    if (log.temperature == null) continue;
+    final day = DateTime(log.date.year, log.date.month, log.date.day);
+    if (day.isBefore(cycleStart)) continue;
+    temps.add(MapEntry(day, log.temperature!));
+  }
+
+  return CycleUtils.detectOvulationFromBBT(temps);
+});
+
 final ongoingPeriodProvider = Provider<PeriodRecord?>((ref) {
   final records = ref.watch(periodRecordsProvider);
   try {

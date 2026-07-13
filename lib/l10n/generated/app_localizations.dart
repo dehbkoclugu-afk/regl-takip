@@ -1865,6 +1865,90 @@ abstract class AppLocalizations {
   /// **'Çok fazla yanlış deneme. {seconds} saniye bekleyin'**
   String tooManyAttempts(int seconds);
 
+  /// No description provided for @coachMenstrual0.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kanama günlerinde demir kaybı olur — kırmızı et, mercimek ve koyu yeşil yapraklılar iyi gelir.'**
+  String get coachMenstrual0;
+
+  /// No description provided for @coachMenstrual1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kramplar için sıcak uygulama ve hafif esneme, çoğu ağrı kesici kadar etkili olabilir.'**
+  String get coachMenstrual1;
+
+  /// No description provided for @coachMenstrual2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Enerjin düşükse bu normal — bugün yoğun antrenman yerine yürüyüş yeterli.'**
+  String get coachMenstrual2;
+
+  /// No description provided for @coachFollicular0.
+  ///
+  /// In tr, this message translates to:
+  /// **'Östrojen yükselişte: enerji ve odak genelde bu fazda zirve yapar. Zor işleri bugünlere planla.'**
+  String get coachFollicular0;
+
+  /// No description provided for @coachFollicular1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Cilt bu fazda genelde en iyi halinde — yeni ürün denemek için uygun dönem.'**
+  String get coachFollicular1;
+
+  /// No description provided for @coachFollicular2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yüksek tempolu egzersizler için vücudun en hazır olduğu dönemdesin.'**
+  String get coachFollicular2;
+
+  /// No description provided for @coachOvulation0.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğurgan penceredesin — korunma ya da gebelik planı ne ise ona göre davran.'**
+  String get coachOvulation0;
+
+  /// No description provided for @coachOvulation1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bazı kadınlar ovülasyonda tek taraflı hafif ağrı hisseder (mittelschmerz) — normaldir.'**
+  String get coachOvulation1;
+
+  /// No description provided for @coachOvulation2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sosyal enerji bu günlerde genelde yüksek — önemli görüşmeler için iyi zamanlama.'**
+  String get coachOvulation2;
+
+  /// No description provided for @coachLuteal0.
+  ///
+  /// In tr, this message translates to:
+  /// **'PMS belirtileri bu fazda başlayabilir — magnezyum ve düzenli uyku belirtileri hafifletebilir.'**
+  String get coachLuteal0;
+
+  /// No description provided for @coachLuteal1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tatlı isteği artabilir: kan şekerini dengede tutmak için protein ağırlıklı ara öğün dene.'**
+  String get coachLuteal1;
+
+  /// No description provided for @coachLuteal2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Duygusal hassasiyet artabilir — kendine yüklenme, bu hormonal ve geçici.'**
+  String get coachLuteal2;
+
+  /// No description provided for @ovulationConfirmed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ovülasyon ✓'**
+  String get ovulationConfirmed;
+
+  /// No description provided for @ovulationConfirmedInfo.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu tarih tahmini değil: bazal vücut sıcaklığı ölçümlerinizdeki yükselişten teyit edildi (3-üstü-6 kuralı).'**
+  String get ovulationConfirmedInfo;
+
   /// No description provided for @premiumSection.
   ///
   /// In tr, this message translates to:

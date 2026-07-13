@@ -922,6 +922,48 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get coachMenstrual0 => 'Bleeding days mean iron loss — red meat, lentils and dark leafy greens help.';
+
+  @override
+  String get coachMenstrual1 => 'For cramps, heat and gentle stretching can work as well as most painkillers.';
+
+  @override
+  String get coachMenstrual2 => 'Low energy is normal today — a walk beats an intense workout.';
+
+  @override
+  String get coachFollicular0 => 'Estrogen is rising: energy and focus usually peak in this phase. Schedule hard tasks now.';
+
+  @override
+  String get coachFollicular1 => 'Skin is usually at its best in this phase — a good window to try new products.';
+
+  @override
+  String get coachFollicular2 => 'Your body is most ready for high-intensity exercise right now.';
+
+  @override
+  String get coachOvulation0 => 'You\'re in the fertile window — act according to your plan, whether contraception or conception.';
+
+  @override
+  String get coachOvulation1 => 'Some women feel mild one-sided pain at ovulation (mittelschmerz) — it\'s normal.';
+
+  @override
+  String get coachOvulation2 => 'Social energy tends to be high these days — good timing for important conversations.';
+
+  @override
+  String get coachLuteal0 => 'PMS symptoms may start in this phase — magnesium and regular sleep can ease them.';
+
+  @override
+  String get coachLuteal1 => 'Sugar cravings can spike: try protein-heavy snacks to keep blood sugar steady.';
+
+  @override
+  String get coachLuteal2 => 'Emotional sensitivity may rise — go easy on yourself, it\'s hormonal and temporary.';
+
+  @override
+  String get ovulationConfirmed => 'Ovulation ✓';
+
+  @override
+  String get ovulationConfirmedInfo => 'This date is not an estimate: it was confirmed from the rise in your basal body temperature readings (3-over-6 rule).';
+
+  @override
   String get premiumSection => 'Premium';
 
   @override

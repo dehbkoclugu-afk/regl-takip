@@ -167,6 +167,40 @@ class CycleUtils {
     return (diff % cycleLength) + 1;
   }
 
+  /// Bazal vücut sıcaklığından ovülasyon teyidi (FAM "3-üstü-6" kuralı):
+  /// ardışık 3 ölçümün tamamı önceki 6 ölçümün en yükseğinden (coverline)
+  /// yüksekse ve üçüncüsü coverline'ın en az 0.2°C üzerindeyse, yükselişin
+  /// başladığı günün BİR ÖNCEKİ günü ovülasyon kabul edilir.
+  /// [temps] tarih-sıcaklık çiftleri (sırasız olabilir); en az 9 ölçüm ister.
+  /// Teyit yoksa null.
+  static DateTime? detectOvulationFromBBT(
+      List<MapEntry<DateTime, double>> temps) {
+    if (temps.length < 9) return null;
+
+    final sorted = List<MapEntry<DateTime, double>>.from(temps)
+      ..sort((a, b) => a.key.compareTo(b.key));
+
+    for (int i = 6; i + 2 < sorted.length; i++) {
+      double coverline = sorted[i - 6].value;
+      for (int j = i - 5; j < i; j++) {
+        if (sorted[j].value > coverline) coverline = sorted[j].value;
+      }
+
+      final rise1 = sorted[i].value;
+      final rise2 = sorted[i + 1].value;
+      final rise3 = sorted[i + 2].value;
+
+      if (rise1 > coverline &&
+          rise2 > coverline &&
+          rise3 >= coverline + 0.2) {
+        final riseStart = sorted[i].key;
+        return DateTime(riseStart.year, riseStart.month, riseStart.day)
+            .subtract(const Duration(days: 1));
+      }
+    }
+    return null;
+  }
+
   /// Gebelik haftası (1 tabanlı, son adet tarihinden — LMP).
   /// Gelecek tarih verilirse 1 döner; 42 ile sınırlanır.
   static int pregnancyWeek(DateTime pregnancyStart) {

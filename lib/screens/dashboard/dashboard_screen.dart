@@ -99,6 +99,7 @@ class DashboardScreen extends ConsumerWidget {
 
     final effectiveCycleLen = ref.watch(effectiveCycleLengthProvider);
     final mode = profile?.trackingMode ?? TrackingMode.period;
+    final confirmedOvulation = ref.watch(confirmedOvulationProvider);
     if (profile?.lastPeriodStart != null) {
       final cycleLen = effectiveCycleLen;
       final lastStart = profile!.lastPeriodStart!;
@@ -112,6 +113,10 @@ class DashboardScreen extends ConsumerWidget {
           const Duration(days: AppConstants.ovulationDayBeforePeriod));
       if (ovulation.isBefore(today)) {
         ovulation = ovulation.add(Duration(days: cycleLen));
+      }
+      // Sıcaklıktan teyit varsa tahmin yerine ölçülen tarih gösterilir
+      if (confirmedOvulation != null) {
+        ovulation = confirmedOvulation;
       }
       ovulationStr = dateFormat.format(ovulation);
       final fStart = ovulation.subtract(const Duration(days: 5));
@@ -243,7 +248,11 @@ class DashboardScreen extends ConsumerWidget {
                   nextPeriodDate: nextPeriodStr,
                   ovulationDate: ovulationStr,
                   fertileWindowDate: fertileStr,
+                  ovulationConfirmed: confirmedOvulation != null,
                 ),
+                const SizedBox(height: 16),
+                // Günlük faz koçluğu — faza göre pratik ipucu
+                _buildCoachCard(context, phase, l10n),
                 const SizedBox(height: 24),
               ],
               // Action Buttons
@@ -307,6 +316,64 @@ class DashboardScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  String _coachMessage(CyclePhase phase, AppLocalizations l10n) {
+    final messages = switch (phase) {
+      CyclePhase.menstrual => [
+          l10n.coachMenstrual0,
+          l10n.coachMenstrual1,
+          l10n.coachMenstrual2
+        ],
+      CyclePhase.follicular => [
+          l10n.coachFollicular0,
+          l10n.coachFollicular1,
+          l10n.coachFollicular2
+        ],
+      CyclePhase.ovulation => [
+          l10n.coachOvulation0,
+          l10n.coachOvulation1,
+          l10n.coachOvulation2
+        ],
+      CyclePhase.luteal => [
+          l10n.coachLuteal0,
+          l10n.coachLuteal1,
+          l10n.coachLuteal2
+        ],
+    };
+    // Gün bazlı deterministik rotasyon: aynı gün hep aynı mesaj,
+    // ertesi gün değişir
+    final dayOfYear =
+        DateTime.now().difference(DateTime(DateTime.now().year)).inDays;
+    return messages[dayOfYear % messages.length];
+  }
+
+  Widget _buildCoachCard(
+      BuildContext context, CyclePhase phase, AppLocalizations l10n) {
+    return GlassCard(
+      borderRadius: 20,
+      blur: 0,
+      opacity: 0.16,
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.tips_and_updates_rounded,
+              size: 20, color: AppColors.secondaryStrong),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              _coachMessage(phase, l10n),
+              style: TextStyle(
+                fontSize: 13,
+                height: 1.45,
+                color: AppColors.tp(context),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ).animateSafe(context).fadeIn(delay: 450.ms, duration: 500.ms);
   }
 
   Widget _buildPregnancyHero(

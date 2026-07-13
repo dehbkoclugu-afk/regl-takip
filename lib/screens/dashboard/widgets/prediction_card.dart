@@ -148,11 +148,16 @@ class PredictionCardsRow extends StatelessWidget {
   final String ovulationDate;
   final String fertileWindowDate;
 
+  /// Sıcaklık verisinden teyit edildiyse true — ovülasyon kartı
+  /// tahmin değil ölçüm gösterdiğini belli eder
+  final bool ovulationConfirmed;
+
   const PredictionCardsRow({
     super.key,
     required this.nextPeriodDate,
     required this.ovulationDate,
     required this.fertileWindowDate,
+    this.ovulationConfirmed = false,
   });
 
   @override
@@ -168,11 +173,17 @@ class PredictionCardsRow extends StatelessWidget {
           infoText: l10n.nextPeriodInfo,
         ),
         PredictionCard(
-          icon: Icons.egg_rounded,
-          title: l10n.ovulation,
+          icon: ovulationConfirmed
+              ? Icons.verified_rounded
+              : Icons.egg_rounded,
+          title: ovulationConfirmed
+              ? l10n.ovulationConfirmed
+              : l10n.ovulation,
           value: ovulationDate,
           color: AppColors.ovulation,
-          infoText: l10n.ovulationCardInfo,
+          infoText: ovulationConfirmed
+              ? l10n.ovulationConfirmedInfo
+              : l10n.ovulationCardInfo,
         ),
         PredictionCard(
           icon: Icons.favorite_rounded,
