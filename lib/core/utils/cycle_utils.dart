@@ -167,6 +167,21 @@ class CycleUtils {
     return (diff % cycleLength) + 1;
   }
 
+  /// Döngü gününe göre doğurganlık seviyesi (TTC modu):
+  /// ovülasyon günü ve önceki 2 gün en doğurgan (high) — sperm ömrü
+  /// nedeniyle gebelik olasılığı bu 3 günde zirve yapar;
+  /// fertil pencerenin kalanı medium, pencere dışı low.
+  static FertilityLevel fertilityLevelForDay(int cycleDay, int cycleLength) {
+    final ovulationDay = ovulationDayNumber(cycleLength);
+    if (cycleDay >= ovulationDay - 2 && cycleDay <= ovulationDay) {
+      return FertilityLevel.high;
+    }
+    if (cycleDay >= ovulationDay - 5 && cycleDay <= ovulationDay + 1) {
+      return FertilityLevel.medium;
+    }
+    return FertilityLevel.low;
+  }
+
   /// Bazal vücut sıcaklığından ovülasyon teyidi (FAM "3-üstü-6" kuralı):
   /// ardışık 3 ölçümün tamamı önceki 6 ölçümün en yükseğinden (coverline)
   /// yüksekse ve üçüncüsü coverline'ın en az 0.2°C üzerindeyse, yükselişin
@@ -296,3 +311,6 @@ enum CyclePhase {
   ovulation,
   luteal,
 }
+
+/// TTC modu için günlük doğurganlık seviyesi
+enum FertilityLevel { low, medium, high }

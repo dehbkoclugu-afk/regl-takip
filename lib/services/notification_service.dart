@@ -268,9 +268,11 @@ class NotificationService {
       final minute = profile.reminderMinute;
       final locale = profile.language;
 
-      // Hamilelik ve hap modunda regl/ovülasyon tahmin bildirimleri anlamsız
+      // Hamilelik ve hap modunda regl/ovülasyon tahmin bildirimleri anlamsız;
+      // TTC modu regl gibi döngü bildirimi alır
       final cyclePredictionsActive =
-          profile.trackingMode == TrackingMode.period;
+          profile.trackingMode == TrackingMode.period ||
+              profile.trackingMode == TrackingMode.ttc;
 
       if (cyclePredictionsActive && profile.lastPeriodStart != null) {
         final cycleLen = CycleUtils.effectiveCycleLength(

@@ -2033,6 +2033,54 @@ abstract class AppLocalizations {
   /// **'Hap'**
   String get modePill;
 
+  /// No description provided for @modeTtc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bebek Planı'**
+  String get modeTtc;
+
+  /// No description provided for @lhTestTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ovülasyon (LH) Testi'**
+  String get lhTestTitle;
+
+  /// No description provided for @lhPositive.
+  ///
+  /// In tr, this message translates to:
+  /// **'Pozitif'**
+  String get lhPositive;
+
+  /// No description provided for @lhNegative.
+  ///
+  /// In tr, this message translates to:
+  /// **'Negatif'**
+  String get lhNegative;
+
+  /// No description provided for @fertilityToday.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugünkü doğurganlık'**
+  String get fertilityToday;
+
+  /// No description provided for @fertilityHigh.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yüksek'**
+  String get fertilityHigh;
+
+  /// No description provided for @fertilityMedium.
+  ///
+  /// In tr, this message translates to:
+  /// **'Orta'**
+  String get fertilityMedium;
+
+  /// No description provided for @fertilityLow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Düşük'**
+  String get fertilityLow;
+
   /// No description provided for @pregnancyWeekLabel.
   ///
   /// In tr, this message translates to:

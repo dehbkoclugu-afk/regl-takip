@@ -396,6 +396,14 @@
   "modePeriod": "Period",
   "modePregnancy": "Pregnancy",
   "modePill": "Pill",
+  "modeTtc": "Conceive",
+  "lhTestTitle": "Ovulation (LH) Test",
+  "lhPositive": "Positive",
+  "lhNegative": "Negative",
+  "fertilityToday": "Today's fertility",
+  "fertilityHigh": "High",
+  "fertilityMedium": "Medium",
+  "fertilityLow": "Low",
   "pregnancyWeekLabel": "Week {week}",
   "@pregnancyWeekLabel": {
     "placeholders": {

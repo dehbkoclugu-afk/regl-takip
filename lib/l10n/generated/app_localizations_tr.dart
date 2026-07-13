@@ -1006,6 +1006,30 @@ class AppLocalizationsTr extends AppLocalizations {
   String get modePill => 'Hap';
 
   @override
+  String get modeTtc => 'Bebek Planı';
+
+  @override
+  String get lhTestTitle => 'Ovülasyon (LH) Testi';
+
+  @override
+  String get lhPositive => 'Pozitif';
+
+  @override
+  String get lhNegative => 'Negatif';
+
+  @override
+  String get fertilityToday => 'Bugünkü doğurganlık';
+
+  @override
+  String get fertilityHigh => 'Yüksek';
+
+  @override
+  String get fertilityMedium => 'Orta';
+
+  @override
+  String get fertilityLow => 'Düşük';
+
+  @override
   String pregnancyWeekLabel(int week) {
     return '$week. hafta';
   }

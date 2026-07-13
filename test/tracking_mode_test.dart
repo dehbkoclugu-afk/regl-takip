@@ -72,6 +72,28 @@ void main() {
     });
   });
 
+  group('fertilityLevelForDay', () {
+    // Döngü 28: ovülasyon günü 15, pencere 10-16
+    test('high on ovulation day and 2 days before', () {
+      expect(CycleUtils.fertilityLevelForDay(13, 28), FertilityLevel.high);
+      expect(CycleUtils.fertilityLevelForDay(14, 28), FertilityLevel.high);
+      expect(CycleUtils.fertilityLevelForDay(15, 28), FertilityLevel.high);
+    });
+
+    test('medium on remaining fertile window days', () {
+      expect(CycleUtils.fertilityLevelForDay(10, 28), FertilityLevel.medium);
+      expect(CycleUtils.fertilityLevelForDay(12, 28), FertilityLevel.medium);
+      expect(CycleUtils.fertilityLevelForDay(16, 28), FertilityLevel.medium);
+    });
+
+    test('low outside the window', () {
+      expect(CycleUtils.fertilityLevelForDay(1, 28), FertilityLevel.low);
+      expect(CycleUtils.fertilityLevelForDay(9, 28), FertilityLevel.low);
+      expect(CycleUtils.fertilityLevelForDay(17, 28), FertilityLevel.low);
+      expect(CycleUtils.fertilityLevelForDay(28, 28), FertilityLevel.low);
+    });
+  });
+
   group('UserProfile tracking mode JSON', () {
     test('round-trips mode and mode dates', () {
       final profile = UserProfile(

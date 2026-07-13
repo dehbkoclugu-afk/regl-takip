@@ -349,6 +349,12 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     await saveDailyLog(log);
   }
 
+  Future<void> updateOvulationTest(DateTime date, bool? positive) async {
+    final log = _getOrCreateLog(date);
+    log.ovulationTestPositive = positive;
+    await saveDailyLog(log);
+  }
+
   Future<void> updateNotes(DateTime date, String? notes) async {
     final log = _getOrCreateLog(date);
     log.notes = notes;
@@ -457,8 +463,9 @@ final daysUntilNextPeriodProvider = Provider<int>((ref) {
   );
 });
 
-/// Mevcut döngüdeki sıcaklık ölçümlerinden teyit edilmiş ovülasyon günü.
-/// Yeterli veri veya belirgin yükseliş yoksa null (tahmin geçerli kalır).
+/// Mevcut döngüde ölçümle teyit edilmiş ovülasyon günü.
+/// Öncelik: BBT yükselişi (kesin teyit) > pozitif LH testi + 1 gün
+/// (LH piki ovülasyondan 24-36 saat önce gelir). İkisi de yoksa null.
 final confirmedOvulationProvider = Provider<DateTime?>((ref) {
   final profile = ref.watch(userProfileProvider);
   final lastStart = profile?.lastPeriodStart;
@@ -469,14 +476,25 @@ final confirmedOvulationProvider = Provider<DateTime?>((ref) {
       DateTime(lastStart.year, lastStart.month, lastStart.day);
 
   final temps = <MapEntry<DateTime, double>>[];
+  DateTime? latestPositiveLh;
   for (final log in logs.values) {
-    if (log.temperature == null) continue;
     final day = DateTime(log.date.year, log.date.month, log.date.day);
     if (day.isBefore(cycleStart)) continue;
-    temps.add(MapEntry(day, log.temperature!));
+    if (log.temperature != null) {
+      temps.add(MapEntry(day, log.temperature!));
+    }
+    if (log.ovulationTestPositive == true &&
+        (latestPositiveLh == null || day.isAfter(latestPositiveLh))) {
+      latestPositiveLh = day;
+    }
   }
 
-  return CycleUtils.detectOvulationFromBBT(temps);
+  final fromBbt = CycleUtils.detectOvulationFromBBT(temps);
+  if (fromBbt != null) return fromBbt;
+  if (latestPositiveLh != null) {
+    return latestPositiveLh.add(const Duration(days: 1));
+  }
+  return null;
 });
 
 final ongoingPeriodProvider = Provider<PeriodRecord?>((ref) {

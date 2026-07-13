@@ -396,6 +396,14 @@
   "modePeriod": "Regl",
   "modePregnancy": "Hamilelik",
   "modePill": "Hap",
+  "modeTtc": "Bebek Planı",
+  "lhTestTitle": "Ovülasyon (LH) Testi",
+  "lhPositive": "Pozitif",
+  "lhNegative": "Negatif",
+  "fertilityToday": "Bugünkü doğurganlık",
+  "fertilityHigh": "Yüksek",
+  "fertilityMedium": "Orta",
+  "fertilityLow": "Düşük",
   "pregnancyWeekLabel": "{week}. hafta",
   "@pregnancyWeekLabel": {
     "placeholders": {

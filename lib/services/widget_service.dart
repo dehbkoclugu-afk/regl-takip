@@ -68,6 +68,7 @@ class WidgetService {
                   : '${_t(locale, 'pill')} $day/21';
             }
             break;
+          case TrackingMode.ttc:
           case TrackingMode.period:
             if (profile.lastPeriodStart != null) {
               final cycleLen = CycleUtils.effectiveCycleLength(

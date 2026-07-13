@@ -158,6 +158,7 @@ void main() {
         flowColor: FlowColor.darkRed,
         hasClots: true,
         padChangeCount: 4,
+        ovulationTestPositive: true,
       );
 
       final restored = DailyLog.fromJson(
@@ -184,6 +185,7 @@ void main() {
       expect(restored.flowColor, FlowColor.darkRed);
       expect(restored.hasClots, isTrue);
       expect(restored.padChangeCount, 4);
+      expect(restored.ovulationTestPositive, isTrue);
     });
 
     test('unknown enum names are skipped, not fatal', () {

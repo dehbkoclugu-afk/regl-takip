@@ -1006,6 +1006,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get modePill => 'Pill';
 
   @override
+  String get modeTtc => 'Conceive';
+
+  @override
+  String get lhTestTitle => 'Ovulation (LH) Test';
+
+  @override
+  String get lhPositive => 'Positive';
+
+  @override
+  String get lhNegative => 'Negative';
+
+  @override
+  String get fertilityToday => 'Today\'s fertility';
+
+  @override
+  String get fertilityHigh => 'High';
+
+  @override
+  String get fertilityMedium => 'Medium';
+
+  @override
+  String get fertilityLow => 'Low';
+
+  @override
   String pregnancyWeekLabel(int week) {
     return 'Week $week';
   }

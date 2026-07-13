@@ -414,6 +414,8 @@ class TrackingModeAdapter extends TypeAdapter<TrackingMode> {
         return TrackingMode.pregnancy;
       case 2:
         return TrackingMode.pill;
+      case 3:
+        return TrackingMode.ttc;
       default:
         return TrackingMode.period;
     }
@@ -430,6 +432,9 @@ class TrackingModeAdapter extends TypeAdapter<TrackingMode> {
         break;
       case TrackingMode.pill:
         writer.writeByte(2);
+        break;
+      case TrackingMode.ttc:
+        writer.writeByte(3);
         break;
     }
   }

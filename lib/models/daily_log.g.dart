@@ -35,13 +35,14 @@ class DailyLogAdapter extends TypeAdapter<DailyLog> {
       flowColor: fields[15] as FlowColor?,
       hasClots: fields[16] as bool?,
       padChangeCount: fields[17] as int?,
+      ovulationTestPositive: fields[18] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DailyLog obj) {
     writer
-      ..writeByte(18)
+      ..writeByte(19)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -77,7 +78,9 @@ class DailyLogAdapter extends TypeAdapter<DailyLog> {
       ..writeByte(16)
       ..write(obj.hasClots)
       ..writeByte(17)
-      ..write(obj.padChangeCount);
+      ..write(obj.padChangeCount)
+      ..writeByte(18)
+      ..write(obj.ovulationTestPositive);
   }
 
   @override

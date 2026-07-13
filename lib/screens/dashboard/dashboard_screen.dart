@@ -251,6 +251,11 @@ class DashboardScreen extends ConsumerWidget {
                   ovulationConfirmed: confirmedOvulation != null,
                 ),
                 const SizedBox(height: 16),
+                if (mode == TrackingMode.ttc) ...[
+                  _buildTtcCard(context, ref, l10n, cycleDay,
+                      effectiveCycleLen),
+                  const SizedBox(height: 16),
+                ],
                 // Günlük faz koçluğu — faza göre pratik ipucu
                 _buildCoachCard(context, phase, l10n),
                 const SizedBox(height: 24),
@@ -346,6 +351,137 @@ class DashboardScreen extends ConsumerWidget {
     final dayOfYear =
         DateTime.now().difference(DateTime(DateTime.now().year)).inDays;
     return messages[dayOfYear % messages.length];
+  }
+
+  Widget _buildTtcCard(BuildContext context, WidgetRef ref,
+      AppLocalizations l10n, int cycleDay, int cycleLength) {
+    final level = CycleUtils.fertilityLevelForDay(cycleDay, cycleLength);
+    final (levelText, levelColor) = switch (level) {
+      FertilityLevel.high => (l10n.fertilityHigh, AppColors.success),
+      FertilityLevel.medium => (l10n.fertilityMedium, AppColors.warning),
+      FertilityLevel.low => (l10n.fertilityLow, AppColors.textSecondary),
+    };
+
+    final today = DateTime.now();
+    final todayLog = ref.watch(dailyLogProvider)[
+        '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}'];
+    final lhResult = todayLog?.ovulationTestPositive;
+
+    return GlassCard(
+      borderRadius: 20,
+      blur: 0,
+      opacity: 0.18,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.favorite_rounded,
+                  size: 18, color: AppColors.primaryStrong),
+              const SizedBox(width: 8),
+              Text(l10n.fertilityToday,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.tp(context))),
+              const Spacer(),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: levelColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(levelText,
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: levelColor)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(l10n.lhTestTitle,
+              style: TextStyle(
+                  fontSize: 13, color: AppColors.ts(context))),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: _lhButton(
+                  context,
+                  label: l10n.lhPositive,
+                  selected: lhResult == true,
+                  color: AppColors.success,
+                  onTap: () => ref
+                      .read(dailyLogProvider.notifier)
+                      .updateOvulationTest(
+                          today, lhResult == true ? null : true),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _lhButton(
+                  context,
+                  label: l10n.lhNegative,
+                  selected: lhResult == false,
+                  color: AppColors.textSecondary,
+                  onTap: () => ref
+                      .read(dailyLogProvider.notifier)
+                      .updateOvulationTest(
+                          today, lhResult == false ? null : false),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ).animateSafe(context).fadeIn(delay: 420.ms, duration: 500.ms);
+  }
+
+  Widget _lhButton(
+    BuildContext context, {
+    required String label,
+    required bool selected,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: Material(
+        color: selected
+            ? color.withValues(alpha: 0.18)
+            : AppColors.sf(context),
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: selected
+                    ? color
+                    : AppColors.dv(context),
+                width: selected ? 1.5 : 1,
+              ),
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: selected ? color : AppColors.ts(context),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildCoachCard(

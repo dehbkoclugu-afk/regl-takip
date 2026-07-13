@@ -146,6 +146,11 @@ enum TrackingMode {
   pregnancy,
   @HiveField(2)
   pill,
+
+  /// Gebe kalmaya çalışma (trying to conceive): regl takibi + doğurganlık
+  /// odaklı ekstra araçlar (LH testi logu, doğurganlık skoru)
+  @HiveField(3)
+  ttc,
 }
 
 @HiveType(typeId: 15)

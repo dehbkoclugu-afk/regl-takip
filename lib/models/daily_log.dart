@@ -60,6 +60,10 @@ class DailyLog extends HiveObject {
   @HiveField(17)
   int? padChangeCount;
 
+  /// LH (ovülasyon) testi sonucu: true pozitif, false negatif, null test yok
+  @HiveField(18)
+  bool? ovulationTestPositive;
+
   DailyLog({
     required this.id,
     required this.date,
@@ -79,6 +83,7 @@ class DailyLog extends HiveObject {
     this.flowColor,
     this.hasClots,
     this.padChangeCount,
+    this.ovulationTestPositive,
   });
 
   String get dateKey =>
@@ -103,6 +108,7 @@ class DailyLog extends HiveObject {
         'flowColor': flowColor?.name,
         'hasClots': hasClots,
         'padChangeCount': padChangeCount,
+        'ovulationTestPositive': ovulationTestPositive,
       };
 
   factory DailyLog.fromJson(Map<String, dynamic> json) => DailyLog(
@@ -135,5 +141,6 @@ class DailyLog extends HiveObject {
         flowColor: enumFromName(FlowColor.values, json['flowColor'] as String?),
         hasClots: json['hasClots'] as bool?,
         padChangeCount: json['padChangeCount'] as int?,
+        ovulationTestPositive: json['ovulationTestPositive'] as bool?,
       );
 }

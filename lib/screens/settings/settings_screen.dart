@@ -72,20 +72,20 @@ class SettingsScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SegmentedButton<TrackingMode>(
+                    // 4 segment + ikon dar ekranda taşıyor — yalnız etiket
                     segments: [
                       ButtonSegment(
                           value: TrackingMode.period,
-                          label: Text(l10n.modePeriod),
-                          icon: const Icon(Icons.water_drop_rounded, size: 16)),
+                          label: Text(l10n.modePeriod)),
                       ButtonSegment(
                           value: TrackingMode.pregnancy,
-                          label: Text(l10n.modePregnancy),
-                          icon: const Icon(Icons.child_friendly_rounded,
-                              size: 16)),
+                          label: Text(l10n.modePregnancy)),
                       ButtonSegment(
                           value: TrackingMode.pill,
-                          label: Text(l10n.modePill),
-                          icon: const Icon(Icons.medication_rounded, size: 16)),
+                          label: Text(l10n.modePill)),
+                      ButtonSegment(
+                          value: TrackingMode.ttc,
+                          label: Text(l10n.modeTtc)),
                     ],
                     selected: {profile?.trackingMode ?? TrackingMode.period},
                     onSelectionChanged: (selected) =>
@@ -516,6 +516,7 @@ class SettingsScreen extends ConsumerWidget {
       return;
     }
 
+    // period ve ttc: ekstra tarih girdisi gerekmez
     await ref
         .read(userProfileProvider.notifier)
         .saveProfile(trackingMode: mode);
