@@ -922,6 +922,36 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get premiumSection => 'Premium';
+
+  @override
+  String get removeAds => 'Reklamları Kaldır';
+
+  @override
+  String get restorePurchases => 'Satın Alımları Geri Yükle';
+
+  @override
+  String get premiumActive => 'Premium aktif — reklamlar kapalı';
+
+  @override
+  String get storeUnavailable => 'Mağaza şu anda kullanılamıyor';
+
+  @override
+  String get healthSync => 'Health Connect\'e Aktar';
+
+  @override
+  String get healthSyncSuccess => 'Adet verileri aktarıldı';
+
+  @override
+  String get healthSyncDenied => 'Sağlık verisi izni verilmedi';
+
+  @override
+  String get healthSyncUnavailable => 'Bu cihazda sağlık servisi yok';
+
+  @override
+  String get healthSyncFailed => 'Aktarım başarısız oldu';
+
+  @override
   String get trackingModeTitle => 'Takip Modu';
 
   @override

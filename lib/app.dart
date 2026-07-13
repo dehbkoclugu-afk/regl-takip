@@ -7,6 +7,7 @@ import 'core/router/app_router.dart';
 import 'providers/providers.dart';
 import 'screens/lock/lock_screen.dart';
 import 'services/ad_service.dart';
+import 'services/premium_service.dart';
 
 class ReglTakipApp extends ConsumerStatefulWidget {
   const ReglTakipApp({super.key});
@@ -32,6 +33,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
 
   Future<void> _showOpenAd() async {
     if (_openAdShown) return;
+    if (PremiumService().isPremium) return;
     _openAdShown = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Activity/ViewController tamamen hazır olduktan sonra

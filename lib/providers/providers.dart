@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/hive_service.dart';
 import '../services/cycle_service.dart';
 import '../services/notification_service.dart';
+import '../services/widget_service.dart';
 import '../models/user_profile.dart';
 import '../models/period_record.dart';
 import '../models/daily_log.dart';
@@ -131,6 +132,9 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         debugPrint('[NOTIF] rescheduleAll failed: $e');
       }
     }
+
+    await WidgetService.update(
+        updated, _hiveService.getAllPeriodRecords());
   }
 
   void refresh() {
@@ -201,6 +205,8 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
     );
     await _hiveService.savePeriodRecord(record);
     _load();
+    await WidgetService.update(
+        _hiveService.getUserProfile(), state);
     return record;
   }
 
@@ -212,6 +218,8 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
           date.isBefore(record.startDate) ? record.startDate : date;
       await _hiveService.savePeriodRecord(record);
       _load();
+      await WidgetService.update(
+          _hiveService.getUserProfile(), state);
     } catch (_) {
       // Record not found
     }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter/foundation.dart';
+import 'premium_service.dart';
 
 class AdService {
   static bool get _isIOS => !kIsWeb && Platform.isIOS;
@@ -63,6 +64,10 @@ class AdService {
   }
 
   static Future<void> showOpenAd() async {
+    if (PremiumService().isPremium) {
+      debugPrint('[AD] Premium active, skipping ad');
+      return;
+    }
     if (_openAd == null) {
       debugPrint('[AD] Ad not loaded, retrying...');
       await loadOpenAd();

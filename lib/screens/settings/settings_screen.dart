@@ -15,7 +15,9 @@ import '../../models/enums.dart';
 import '../../providers/providers.dart';
 import '../../services/backup_service.dart';
 import '../../services/export_service.dart';
+import '../../services/health_sync_service.dart';
 import '../../services/hive_service.dart';
+import '../../services/premium_service.dart';
 import '../lock/pin_setup_dialog.dart';
 import '../../core/utils/motion.dart';
 
@@ -270,6 +272,44 @@ class SettingsScreen extends ConsumerWidget {
           ]),
           const SizedBox(height: 16),
 
+          // Premium
+          _sectionHeader(context, l10n.premiumSection),
+          ValueListenableBuilder<bool>(
+            valueListenable: PremiumService().isPremiumNotifier,
+            builder: (context, isPremium, _) {
+              if (isPremium) {
+                return _settingsCard(context, [
+                  _infoTile(context, Icons.workspace_premium_rounded,
+                      l10n.premiumSection, l10n.premiumActive),
+                ]);
+              }
+              final service = PremiumService();
+              final priceSuffix = service.product != null
+                  ? ' (${service.product!.price})'
+                  : '';
+              return _settingsCard(context, [
+                _actionTile(context, Icons.workspace_premium_rounded,
+                    '${l10n.removeAds}$priceSuffix', AppColors.warning,
+                    () async {
+                  final started = await service.buy();
+                  if (!started && context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text(l10n.storeUnavailable),
+                          backgroundColor: AppColors.warning),
+                    );
+                  }
+                }),
+                _divider(context),
+                _actionTile(context, Icons.restore_page_rounded,
+                    l10n.restorePurchases, AppColors.secondary, () async {
+                  await service.restore();
+                }),
+              ]);
+            },
+          ),
+          const SizedBox(height: 16),
+
           // Data
           _sectionHeader(context, l10n.dataSection),
           _settingsCard(context, [
@@ -292,6 +332,34 @@ class SettingsScreen extends ConsumerWidget {
             _actionTile(context, Icons.restore_rounded, l10n.restoreData,
                 AppColors.secondary, () async {
               await _restoreFromBackup(context, ref, l10n);
+            }),
+            _divider(context),
+            _actionTile(context, Icons.favorite_rounded, l10n.healthSync,
+                AppColors.error, () async {
+              final result = await HealthSyncService()
+                  .syncPeriods(ref.read(periodRecordsProvider));
+              if (!context.mounted) return;
+              final (message, color) = switch (result) {
+                HealthSyncResult.success => (
+                    l10n.healthSyncSuccess,
+                    AppColors.success
+                  ),
+                HealthSyncResult.permissionDenied => (
+                    l10n.healthSyncDenied,
+                    AppColors.warning
+                  ),
+                HealthSyncResult.unavailable => (
+                    l10n.healthSyncUnavailable,
+                    AppColors.warning
+                  ),
+                HealthSyncResult.error => (
+                    l10n.healthSyncFailed,
+                    AppColors.error
+                  ),
+              };
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message), backgroundColor: color),
+              );
             }),
             _divider(context),
             _actionTile(context, Icons.picture_as_pdf_rounded, l10n.exportPdfReport,

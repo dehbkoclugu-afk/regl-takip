@@ -922,6 +922,36 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get premiumSection => 'Premium';
+
+  @override
+  String get removeAds => 'Remove Ads';
+
+  @override
+  String get restorePurchases => 'Restore Purchases';
+
+  @override
+  String get premiumActive => 'Premium active — ads are off';
+
+  @override
+  String get storeUnavailable => 'Store is currently unavailable';
+
+  @override
+  String get healthSync => 'Sync to Health Connect';
+
+  @override
+  String get healthSyncSuccess => 'Period data synced';
+
+  @override
+  String get healthSyncDenied => 'Health data permission denied';
+
+  @override
+  String get healthSyncUnavailable => 'No health service on this device';
+
+  @override
+  String get healthSyncFailed => 'Sync failed';
+
+  @override
   String get trackingModeTitle => 'Tracking Mode';
 
   @override

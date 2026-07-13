@@ -368,6 +368,16 @@
       }
     }
   },
+  "premiumSection": "Premium",
+  "removeAds": "Reklamları Kaldır",
+  "restorePurchases": "Satın Alımları Geri Yükle",
+  "premiumActive": "Premium aktif — reklamlar kapalı",
+  "storeUnavailable": "Mağaza şu anda kullanılamıyor",
+  "healthSync": "Health Connect'e Aktar",
+  "healthSyncSuccess": "Adet verileri aktarıldı",
+  "healthSyncDenied": "Sağlık verisi izni verilmedi",
+  "healthSyncUnavailable": "Bu cihazda sağlık servisi yok",
+  "healthSyncFailed": "Aktarım başarısız oldu",
   "trackingModeTitle": "Takip Modu",
   "modePeriod": "Regl",
   "modePregnancy": "Hamilelik",

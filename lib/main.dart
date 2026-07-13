@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'services/hive_service.dart';
 import 'services/notification_service.dart';
+import 'services/premium_service.dart';
+import 'services/widget_service.dart';
 import 'providers/providers.dart';
 import 'app.dart';
 
@@ -20,6 +22,11 @@ void main() async {
   await HiveService().init();
 
   final profile = HiveService().getUserProfile();
+
+  // Premium durumu ve widget güncellemesi arka planda
+  unawaited(PremiumService().init());
+  unawaited(
+      WidgetService.update(profile, HiveService().getAllPeriodRecords()));
 
   // Bildirim kurulumu ilk kareyi bloklamasın — arka planda tamamlanır
   final notificationService = NotificationService();

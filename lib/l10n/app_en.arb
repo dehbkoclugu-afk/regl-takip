@@ -368,6 +368,16 @@
       }
     }
   },
+  "premiumSection": "Premium",
+  "removeAds": "Remove Ads",
+  "restorePurchases": "Restore Purchases",
+  "premiumActive": "Premium active — ads are off",
+  "storeUnavailable": "Store is currently unavailable",
+  "healthSync": "Sync to Health Connect",
+  "healthSyncSuccess": "Period data synced",
+  "healthSyncDenied": "Health data permission denied",
+  "healthSyncUnavailable": "No health service on this device",
+  "healthSyncFailed": "Sync failed",
   "trackingModeTitle": "Tracking Mode",
   "modePeriod": "Period",
   "modePregnancy": "Pregnancy",

@@ -1865,6 +1865,66 @@ abstract class AppLocalizations {
   /// **'Çok fazla yanlış deneme. {seconds} saniye bekleyin'**
   String tooManyAttempts(int seconds);
 
+  /// No description provided for @premiumSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium'**
+  String get premiumSection;
+
+  /// No description provided for @removeAds.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reklamları Kaldır'**
+  String get removeAds;
+
+  /// No description provided for @restorePurchases.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satın Alımları Geri Yükle'**
+  String get restorePurchases;
+
+  /// No description provided for @premiumActive.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium aktif — reklamlar kapalı'**
+  String get premiumActive;
+
+  /// No description provided for @storeUnavailable.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mağaza şu anda kullanılamıyor'**
+  String get storeUnavailable;
+
+  /// No description provided for @healthSync.
+  ///
+  /// In tr, this message translates to:
+  /// **'Health Connect\'e Aktar'**
+  String get healthSync;
+
+  /// No description provided for @healthSyncSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adet verileri aktarıldı'**
+  String get healthSyncSuccess;
+
+  /// No description provided for @healthSyncDenied.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sağlık verisi izni verilmedi'**
+  String get healthSyncDenied;
+
+  /// No description provided for @healthSyncUnavailable.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu cihazda sağlık servisi yok'**
+  String get healthSyncUnavailable;
+
+  /// No description provided for @healthSyncFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktarım başarısız oldu'**
+  String get healthSyncFailed;
+
   /// No description provided for @trackingModeTitle.
   ///
   /// In tr, this message translates to:

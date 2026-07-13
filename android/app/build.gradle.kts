@@ -17,7 +17,9 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "com.regl.regl_takip"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
+    // Flutter araç zincirinin NDK'sini kullan — elle pinlenen 27.0.12077973
+    // bu makinede bozuk kurulumdu ve gradle otomatik indirmiyor
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -31,7 +33,8 @@ android {
 
     defaultConfig {
         applicationId = "com.regl.regl_takip"
-        minSdk = flutter.minSdkVersion
+        // health (Health Connect) paketi minimum SDK 26 (Android 8.0) ister
+        minSdk = 26
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -39,17 +42,25 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = file(keystoreProperties["storeFile"] as String)
-            storePassword = keystoreProperties["storePassword"] as String
+        // key.properties sadece imza anahtarı olan makinede bulunur;
+        // yokken (temiz klon, CI) debug anahtarıyla build alınabilmeli
+        if (keystorePropertiesFile.exists()) {
+            create("release") {
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+            }
         }
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = if (keystorePropertiesFile.exists()) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 }
