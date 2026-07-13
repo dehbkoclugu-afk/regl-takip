@@ -10,6 +10,7 @@ import '../../core/utils/cycle_utils.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
 import '../../models/daily_log.dart';
+import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../core/utils/motion.dart';
 
@@ -177,7 +178,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     bool isFertile = false;
     bool isPredicted = false;
 
-    if (profile?.lastPeriodStart != null) {
+    // Hamilelik modunda tahmin/ovülasyon işaretleri yanıltıcı — gösterme
+    final showPredictions =
+        profile?.trackingMode != TrackingMode.pregnancy;
+    if (showPredictions && profile?.lastPeriodStart != null) {
       final cycleLen = ref.read(effectiveCycleLengthProvider);
       final lastStart = profile!.lastPeriodStart as DateTime;
       final periodLen = profile.averagePeriodLength as int;

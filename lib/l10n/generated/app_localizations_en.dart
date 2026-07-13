@@ -922,6 +922,51 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get trackingModeTitle => 'Tracking Mode';
+
+  @override
+  String get modePeriod => 'Period';
+
+  @override
+  String get modePregnancy => 'Pregnancy';
+
+  @override
+  String get modePill => 'Pill';
+
+  @override
+  String pregnancyWeekLabel(int week) {
+    return 'Week $week';
+  }
+
+  @override
+  String get trimester1 => '1st Trimester';
+
+  @override
+  String get trimester2 => '2nd Trimester';
+
+  @override
+  String get trimester3 => '3rd Trimester';
+
+  @override
+  String get pregnancyStartLabel => 'Last period date (pregnancy start)';
+
+  @override
+  String get pregnancyModeInfo => 'Predictions and period reminders are off in pregnancy mode';
+
+  @override
+  String get pillPackStartLabel => 'Pill pack start';
+
+  @override
+  String pillDayLabel(int day) {
+    return 'Pill day $day/21';
+  }
+
+  @override
+  String pillBreakLabel(int day) {
+    return 'Break week • day $day';
+  }
+
+  @override
   String get smartPrediction => 'Smart Prediction';
 
   @override

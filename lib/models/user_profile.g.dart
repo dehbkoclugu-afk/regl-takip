@@ -34,13 +34,17 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       darkModeEnabled: fields[14] as bool,
       waterGoal: fields[15] == null ? 8 : fields[15] as int,
       smartPredictionEnabled: fields[16] == null ? true : fields[16] as bool,
+      trackingMode:
+          fields[17] == null ? TrackingMode.period : fields[17] as TrackingMode,
+      pregnancyStartDate: fields[18] as DateTime?,
+      pillPackStartDate: fields[19] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(17)
+      ..writeByte(20)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -74,7 +78,13 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(15)
       ..write(obj.waterGoal)
       ..writeByte(16)
-      ..write(obj.smartPredictionEnabled);
+      ..write(obj.smartPredictionEnabled)
+      ..writeByte(17)
+      ..write(obj.trackingMode)
+      ..writeByte(18)
+      ..write(obj.pregnancyStartDate)
+      ..writeByte(19)
+      ..write(obj.pillPackStartDate);
   }
 
   @override

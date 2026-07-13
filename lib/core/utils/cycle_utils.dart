@@ -167,6 +167,33 @@ class CycleUtils {
     return (diff % cycleLength) + 1;
   }
 
+  /// Gebelik haftası (1 tabanlı, son adet tarihinden — LMP).
+  /// Gelecek tarih verilirse 1 döner; 42 ile sınırlanır.
+  static int pregnancyWeek(DateTime pregnancyStart) {
+    final now = DateTime.now();
+    final normalizedNow = DateTime(now.year, now.month, now.day);
+    final start = DateTime(
+        pregnancyStart.year, pregnancyStart.month, pregnancyStart.day);
+    final days = normalizedNow.difference(start).inDays;
+    if (days < 0) return 1;
+    return ((days ~/ 7) + 1).clamp(1, 42);
+  }
+
+  /// 21+7 hap döngüsünde paket günü (1..28).
+  /// 1-21 aktif hap, 22-28 ara hafta.
+  static int pillDayInPack(DateTime packStart) {
+    final now = DateTime.now();
+    final normalizedNow = DateTime(now.year, now.month, now.day);
+    final start =
+        DateTime(packStart.year, packStart.month, packStart.day);
+    final days = normalizedNow.difference(start).inDays;
+    if (days < 0) return 1;
+    return (days % 28) + 1;
+  }
+
+  static bool isPillBreakDay(DateTime packStart) =>
+      pillDayInPack(packStart) > 21;
+
   /// Gelecek döngülerde tahmini adet günü mü? (mevcut döngünün gerçek
   /// kayıtları hariç — onları PeriodRecord işaretler)
   static bool isPredictedPeriodDay(

@@ -368,6 +368,40 @@
       }
     }
   },
+  "trackingModeTitle": "Takip Modu",
+  "modePeriod": "Regl",
+  "modePregnancy": "Hamilelik",
+  "modePill": "Hap",
+  "pregnancyWeekLabel": "{week}. hafta",
+  "@pregnancyWeekLabel": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "trimester1": "1. Trimester",
+  "trimester2": "2. Trimester",
+  "trimester3": "3. Trimester",
+  "pregnancyStartLabel": "Son adet tarihi (gebelik başlangıcı)",
+  "pregnancyModeInfo": "Hamilelik modunda tahminler ve regl bildirimleri kapalıdır",
+  "pillPackStartLabel": "Hap paketi başlangıcı",
+  "pillDayLabel": "Hap günü {day}/21",
+  "@pillDayLabel": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "pillBreakLabel": "Ara hafta • gün {day}",
+  "@pillBreakLabel": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
   "smartPrediction": "Akıllı Tahmin",
   "smartPredictionDesc": "Tahminlerde geçmiş döngülerden öğrenilen ortalama kullanılır",
   "learnedCycleLength": "Öğrenilen: {days} gün",

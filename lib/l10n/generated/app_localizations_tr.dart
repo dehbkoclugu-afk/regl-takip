@@ -922,6 +922,51 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get trackingModeTitle => 'Takip Modu';
+
+  @override
+  String get modePeriod => 'Regl';
+
+  @override
+  String get modePregnancy => 'Hamilelik';
+
+  @override
+  String get modePill => 'Hap';
+
+  @override
+  String pregnancyWeekLabel(int week) {
+    return '$week. hafta';
+  }
+
+  @override
+  String get trimester1 => '1. Trimester';
+
+  @override
+  String get trimester2 => '2. Trimester';
+
+  @override
+  String get trimester3 => '3. Trimester';
+
+  @override
+  String get pregnancyStartLabel => 'Son adet tarihi (gebelik başlangıcı)';
+
+  @override
+  String get pregnancyModeInfo => 'Hamilelik modunda tahminler ve regl bildirimleri kapalıdır';
+
+  @override
+  String get pillPackStartLabel => 'Hap paketi başlangıcı';
+
+  @override
+  String pillDayLabel(int day) {
+    return 'Hap günü $day/21';
+  }
+
+  @override
+  String pillBreakLabel(int day) {
+    return 'Ara hafta • gün $day';
+  }
+
+  @override
   String get smartPrediction => 'Akıllı Tahmin';
 
   @override

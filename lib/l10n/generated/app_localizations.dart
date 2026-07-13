@@ -1865,6 +1865,84 @@ abstract class AppLocalizations {
   /// **'Çok fazla yanlış deneme. {seconds} saniye bekleyin'**
   String tooManyAttempts(int seconds);
 
+  /// No description provided for @trackingModeTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Takip Modu'**
+  String get trackingModeTitle;
+
+  /// No description provided for @modePeriod.
+  ///
+  /// In tr, this message translates to:
+  /// **'Regl'**
+  String get modePeriod;
+
+  /// No description provided for @modePregnancy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hamilelik'**
+  String get modePregnancy;
+
+  /// No description provided for @modePill.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hap'**
+  String get modePill;
+
+  /// No description provided for @pregnancyWeekLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'{week}. hafta'**
+  String pregnancyWeekLabel(int week);
+
+  /// No description provided for @trimester1.
+  ///
+  /// In tr, this message translates to:
+  /// **'1. Trimester'**
+  String get trimester1;
+
+  /// No description provided for @trimester2.
+  ///
+  /// In tr, this message translates to:
+  /// **'2. Trimester'**
+  String get trimester2;
+
+  /// No description provided for @trimester3.
+  ///
+  /// In tr, this message translates to:
+  /// **'3. Trimester'**
+  String get trimester3;
+
+  /// No description provided for @pregnancyStartLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son adet tarihi (gebelik başlangıcı)'**
+  String get pregnancyStartLabel;
+
+  /// No description provided for @pregnancyModeInfo.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hamilelik modunda tahminler ve regl bildirimleri kapalıdır'**
+  String get pregnancyModeInfo;
+
+  /// No description provided for @pillPackStartLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hap paketi başlangıcı'**
+  String get pillPackStartLabel;
+
+  /// No description provided for @pillDayLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hap günü {day}/21'**
+  String pillDayLabel(int day);
+
+  /// No description provided for @pillBreakLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ara hafta • gün {day}'**
+  String pillBreakLabel(int day);
+
   /// No description provided for @smartPrediction.
   ///
   /// In tr, this message translates to:

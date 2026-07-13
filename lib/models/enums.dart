@@ -138,6 +138,16 @@ enum ProtectionMethod {
   other,
 }
 
+@HiveType(typeId: 16)
+enum TrackingMode {
+  @HiveField(0)
+  period,
+  @HiveField(1)
+  pregnancy,
+  @HiveField(2)
+  pill,
+}
+
 @HiveType(typeId: 15)
 enum SymptomCategory {
   @HiveField(0)

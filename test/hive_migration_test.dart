@@ -50,6 +50,7 @@ void main() {
     Hive.registerAdapter(MoodTypeAdapter());
     Hive.registerAdapter(ProtectionMethodAdapter());
     Hive.registerAdapter(SymptomCategoryAdapter());
+    Hive.registerAdapter(TrackingModeAdapter());
 
     final plainProfile =
         await Hive.openBox<UserProfile>(AppConstants.userProfileBox);

@@ -120,6 +120,9 @@ class HiveService {
     if (!Hive.isAdapterRegistered(15)) {
       Hive.registerAdapter(SymptomCategoryAdapter());
     }
+    if (!Hive.isAdapterRegistered(16)) {
+      Hive.registerAdapter(TrackingModeAdapter());
+    }
   }
 
   Future<bool> _plainBoxesExistOnDisk() async {

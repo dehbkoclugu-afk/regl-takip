@@ -11,6 +11,7 @@ import 'package:local_auth/local_auth.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import '../../core/utils/cycle_utils.dart';
+import '../../models/enums.dart';
 import '../../providers/providers.dart';
 import '../../services/backup_service.dart';
 import '../../services/export_service.dart';
@@ -55,6 +56,53 @@ class SettingsScreen extends ConsumerWidget {
             _divider(context),
             _actionTile(context, Icons.edit_rounded, l10n.editProfile,
                 AppColors.secondary, () => context.push('/profile-edit')),
+          ]),
+          const SizedBox(height: 16),
+
+          // Tracking mode
+          _sectionHeader(context, l10n.trackingModeTitle),
+          _settingsCard(context, [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SegmentedButton<TrackingMode>(
+                    segments: [
+                      ButtonSegment(
+                          value: TrackingMode.period,
+                          label: Text(l10n.modePeriod),
+                          icon: const Icon(Icons.water_drop_rounded, size: 16)),
+                      ButtonSegment(
+                          value: TrackingMode.pregnancy,
+                          label: Text(l10n.modePregnancy),
+                          icon: const Icon(Icons.child_friendly_rounded,
+                              size: 16)),
+                      ButtonSegment(
+                          value: TrackingMode.pill,
+                          label: Text(l10n.modePill),
+                          icon: const Icon(Icons.medication_rounded, size: 16)),
+                    ],
+                    selected: {profile?.trackingMode ?? TrackingMode.period},
+                    onSelectionChanged: (selected) =>
+                        _onModeChanged(context, ref, selected.first),
+                    style: ButtonStyle(
+                      visualDensity: VisualDensity.compact,
+                      textStyle:
+                          WidgetStateProperty.all(TextStyle(fontSize: 12)),
+                    ),
+                  ),
+                  if (profile?.trackingMode == TrackingMode.pregnancy) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.pregnancyModeInfo,
+                      style: TextStyle(
+                          fontSize: 12, color: AppColors.ts(context)),
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ]),
           const SizedBox(height: 16),
 
@@ -356,6 +404,51 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _onModeChanged(
+      BuildContext context, WidgetRef ref, TrackingMode mode) async {
+    final l10n = AppLocalizations.of(context)!;
+    final profile = ref.read(userProfileProvider);
+
+    if (mode == TrackingMode.pregnancy) {
+      // Gebelik başlangıcı = son adet tarihi; öneri olarak mevcut değer
+      final picked = await showDatePicker(
+        context: context,
+        initialDate: profile?.pregnancyStartDate ??
+            profile?.lastPeriodStart ??
+            DateTime.now(),
+        firstDate: DateTime.now().subtract(const Duration(days: 300)),
+        lastDate: DateTime.now(),
+        helpText: l10n.pregnancyStartLabel,
+      );
+      if (picked == null) return; // vazgeçti — mod değişmesin
+      await ref.read(userProfileProvider.notifier).saveProfile(
+            trackingMode: mode,
+            pregnancyStartDate: picked,
+          );
+      return;
+    }
+
+    if (mode == TrackingMode.pill) {
+      final picked = await showDatePicker(
+        context: context,
+        initialDate: profile?.pillPackStartDate ?? DateTime.now(),
+        firstDate: DateTime.now().subtract(const Duration(days: 28)),
+        lastDate: DateTime.now(),
+        helpText: l10n.pillPackStartLabel,
+      );
+      if (picked == null) return;
+      await ref.read(userProfileProvider.notifier).saveProfile(
+            trackingMode: mode,
+            pillPackStartDate: picked,
+          );
+      return;
+    }
+
+    await ref
+        .read(userProfileProvider.notifier)
+        .saveProfile(trackingMode: mode);
   }
 
   String _smartPredictionSubtitle(WidgetRef ref, AppLocalizations l10n) {

@@ -368,6 +368,40 @@
       }
     }
   },
+  "trackingModeTitle": "Tracking Mode",
+  "modePeriod": "Period",
+  "modePregnancy": "Pregnancy",
+  "modePill": "Pill",
+  "pregnancyWeekLabel": "Week {week}",
+  "@pregnancyWeekLabel": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "trimester1": "1st Trimester",
+  "trimester2": "2nd Trimester",
+  "trimester3": "3rd Trimester",
+  "pregnancyStartLabel": "Last period date (pregnancy start)",
+  "pregnancyModeInfo": "Predictions and period reminders are off in pregnancy mode",
+  "pillPackStartLabel": "Pill pack start",
+  "pillDayLabel": "Pill day {day}/21",
+  "@pillDayLabel": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "pillBreakLabel": "Break week • day {day}",
+  "@pillBreakLabel": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
   "smartPrediction": "Smart Prediction",
   "smartPredictionDesc": "Predictions use the average learned from your past cycles",
   "learnedCycleLength": "Learned: {days} days",

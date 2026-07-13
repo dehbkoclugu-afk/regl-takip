@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'enums.dart';
 
 part 'user_profile.g.dart';
 
@@ -59,6 +60,19 @@ class UserProfile extends HiveObject {
   @HiveField(16, defaultValue: true)
   bool smartPredictionEnabled;
 
+  /// Takip modu: regl (varsayılan), hamilelik veya doğum kontrol hapı
+  @HiveField(17, defaultValue: TrackingMode.period)
+  TrackingMode trackingMode;
+
+  /// Hamilelik modunda gebelik haftası bunun üzerinden hesaplanır
+  /// (son adet tarihi — LMP)
+  @HiveField(18)
+  DateTime? pregnancyStartDate;
+
+  /// Hap modunda 21+7 döngüsünün paket başlangıcı
+  @HiveField(19)
+  DateTime? pillPackStartDate;
+
   UserProfile({
     this.name = '',
     this.birthDate,
@@ -77,6 +91,9 @@ class UserProfile extends HiveObject {
     this.darkModeEnabled = false,
     this.waterGoal = 8,
     this.smartPredictionEnabled = true,
+    this.trackingMode = TrackingMode.period,
+    this.pregnancyStartDate,
+    this.pillPackStartDate,
   });
 
   /// Yeni bir kopya döndürür; verilen alanlar güncellenir.
@@ -99,6 +116,9 @@ class UserProfile extends HiveObject {
     bool? darkModeEnabled,
     int? waterGoal,
     bool? smartPredictionEnabled,
+    TrackingMode? trackingMode,
+    DateTime? pregnancyStartDate,
+    DateTime? pillPackStartDate,
   }) {
     return UserProfile(
       name: name ?? this.name,
@@ -122,6 +142,9 @@ class UserProfile extends HiveObject {
       waterGoal: waterGoal ?? this.waterGoal,
       smartPredictionEnabled:
           smartPredictionEnabled ?? this.smartPredictionEnabled,
+      trackingMode: trackingMode ?? this.trackingMode,
+      pregnancyStartDate: pregnancyStartDate ?? this.pregnancyStartDate,
+      pillPackStartDate: pillPackStartDate ?? this.pillPackStartDate,
     );
   }
 
@@ -143,6 +166,9 @@ class UserProfile extends HiveObject {
         'darkModeEnabled': darkModeEnabled,
         'waterGoal': waterGoal,
         'smartPredictionEnabled': smartPredictionEnabled,
+        'trackingMode': trackingMode.name,
+        'pregnancyStartDate': pregnancyStartDate?.toIso8601String(),
+        'pillPackStartDate': pillPackStartDate?.toIso8601String(),
       };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
@@ -170,6 +196,15 @@ class UserProfile extends HiveObject {
         waterGoal: json['waterGoal'] as int? ?? 8,
         smartPredictionEnabled:
             json['smartPredictionEnabled'] as bool? ?? true,
+        trackingMode: enumFromName(
+                TrackingMode.values, json['trackingMode'] as String?) ??
+            TrackingMode.period,
+        pregnancyStartDate: json['pregnancyStartDate'] != null
+            ? DateTime.tryParse(json['pregnancyStartDate'] as String)
+            : null,
+        pillPackStartDate: json['pillPackStartDate'] != null
+            ? DateTime.tryParse(json['pillPackStartDate'] as String)
+            : null,
       );
 
   int? get age {

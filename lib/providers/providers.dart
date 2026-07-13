@@ -82,6 +82,9 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     bool? darkModeEnabled,
     int? waterGoal,
     bool? smartPredictionEnabled,
+    TrackingMode? trackingMode,
+    DateTime? pregnancyStartDate,
+    DateTime? pillPackStartDate,
   }) async {
     final current = state ?? UserProfile();
     final updated = current.copyWith(
@@ -102,6 +105,9 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
       darkModeEnabled: darkModeEnabled,
       waterGoal: waterGoal,
       smartPredictionEnabled: smartPredictionEnabled,
+      trackingMode: trackingMode,
+      pregnancyStartDate: pregnancyStartDate,
+      pillPackStartDate: pillPackStartDate,
     );
 
     await _hiveService.saveUserProfile(updated);
@@ -114,7 +120,8 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         reminderHour != null ||
         reminderMinute != null ||
         lastPeriodStart != null ||
-        smartPredictionEnabled != null) {
+        smartPredictionEnabled != null ||
+        trackingMode != null) {
       try {
         await NotificationService().rescheduleAll(
           updated,

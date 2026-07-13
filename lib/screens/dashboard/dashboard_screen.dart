@@ -8,6 +8,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/widgets/glass_card.dart';
+import '../../models/enums.dart';
 import '../../providers/providers.dart';
 import 'widgets/cycle_progress_ring.dart';
 import 'widgets/prediction_card.dart';
@@ -97,6 +98,7 @@ class DashboardScreen extends ConsumerWidget {
     String fertileStr = '-';
 
     final effectiveCycleLen = ref.watch(effectiveCycleLengthProvider);
+    final mode = profile?.trackingMode ?? TrackingMode.period;
     if (profile?.lastPeriodStart != null) {
       final cycleLen = effectiveCycleLen;
       final lastStart = profile!.lastPeriodStart!;
@@ -187,79 +189,94 @@ class DashboardScreen extends ConsumerWidget {
                   .fadeIn(duration: 500.ms)
                   .slideY(begin: -0.2, end: 0, duration: 500.ms),
               const SizedBox(height: 8),
-              // Phase name
-              GestureDetector(
-                onTap: () => _showPhaseInfoDialog(context, phase, l10n),
-                child: GlassContainer(
-                  borderRadius: 20,
-                  blur: 0,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        _phaseName(phase, l10n),
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.tp(context),
+              if (mode == TrackingMode.pregnancy) ...[
+                // Hamilelik modu: hafta sayacı hero, tahminler gizli
+                const SizedBox(height: 20),
+                _buildPregnancyHero(context, l10n, profile?.pregnancyStartDate),
+                const SizedBox(height: 24),
+              ] else ...[
+                // Phase name
+                GestureDetector(
+                  onTap: () => _showPhaseInfoDialog(context, phase, l10n),
+                  child: GlassContainer(
+                    borderRadius: 20,
+                    blur: 0,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _phaseName(phase, l10n),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.tp(context),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 6),
-                      Icon(
-                        Icons.info_outline_rounded,
-                        size: 16,
-                        color: AppColors.ts(context),
-                      ),
-                    ],
+                        const SizedBox(width: 6),
+                        Icon(
+                          Icons.info_outline_rounded,
+                          size: 16,
+                          color: AppColors.ts(context),
+                        ),
+                      ],
+                    ),
                   ),
+                ).animateSafe(context).fadeIn(delay: 200.ms, duration: 500.ms),
+                if (mode == TrackingMode.pill &&
+                    profile?.pillPackStartDate != null) ...[
+                  const SizedBox(height: 8),
+                  _buildPillChip(context, l10n, profile!.pillPackStartDate!),
+                ],
+                const SizedBox(height: 28),
+                // Progress Ring
+                CycleProgressRing(
+                  cycleDay: cycleDay,
+                  cycleLength: effectiveCycleLen,
+                  phase: phase,
+                  daysUntilNextPeriod: daysUntil,
                 ),
-              ).animateSafe(context).fadeIn(delay: 200.ms, duration: 500.ms),
-              const SizedBox(height: 28),
-              // Progress Ring
-              CycleProgressRing(
-                cycleDay: cycleDay,
-                cycleLength: effectiveCycleLen,
-                phase: phase,
-                daysUntilNextPeriod: daysUntil,
-              ),
-              const SizedBox(height: 32),
-              // Prediction Cards
-              PredictionCardsRow(
-                nextPeriodDate: nextPeriodStr,
-                ovulationDate: ovulationStr,
-                fertileWindowDate: fertileStr,
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 32),
+                // Prediction Cards
+                PredictionCardsRow(
+                  nextPeriodDate: nextPeriodStr,
+                  ovulationDate: ovulationStr,
+                  fertileWindowDate: fertileStr,
+                ),
+                const SizedBox(height: 24),
+              ],
               // Action Buttons
               Row(
                 children: [
-                  Expanded(
-                    child: _buildActionButton(
-                      context: context,
-                      icon: Icons.water_drop_rounded,
-                      label: ongoingPeriod != null
-                          ? l10n.periodEnded
-                          : l10n.periodStarted,
-                      color: AppColors.menstrual,
-                      onTap: () async {
-                        if (ongoingPeriod != null) {
-                          await ref
-                              .read(periodRecordsProvider.notifier)
-                              .endPeriod(ongoingPeriod.id, DateTime.now());
-                          ref.read(userProfileProvider.notifier).refresh();
-                        } else {
-                          final record = await ref
-                              .read(periodRecordsProvider.notifier)
-                              .startPeriod(DateTime.now());
-                          await ref
-                              .read(userProfileProvider.notifier)
-                              .saveProfile(lastPeriodStart: record.startDate);
-                        }
-                      },
+                  if (mode != TrackingMode.pregnancy) ...[
+                    Expanded(
+                      child: _buildActionButton(
+                        context: context,
+                        icon: Icons.water_drop_rounded,
+                        label: ongoingPeriod != null
+                            ? l10n.periodEnded
+                            : l10n.periodStarted,
+                        color: AppColors.menstrual,
+                        onTap: () async {
+                          if (ongoingPeriod != null) {
+                            await ref
+                                .read(periodRecordsProvider.notifier)
+                                .endPeriod(ongoingPeriod.id, DateTime.now());
+                            ref.read(userProfileProvider.notifier).refresh();
+                          } else {
+                            final record = await ref
+                                .read(periodRecordsProvider.notifier)
+                                .startPeriod(DateTime.now());
+                            await ref
+                                .read(userProfileProvider.notifier)
+                                .saveProfile(lastPeriodStart: record.startDate);
+                          }
+                        },
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
+                    const SizedBox(width: 12),
+                  ],
                   Expanded(
                     child: _buildActionButton(
                       context: context,
@@ -285,6 +302,80 @@ class DashboardScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildPregnancyHero(
+      BuildContext context, AppLocalizations l10n, DateTime? start) {
+    final week = start != null ? CycleUtils.pregnancyWeek(start) : 1;
+    final trimester = week <= 13
+        ? l10n.trimester1
+        : (week <= 27 ? l10n.trimester2 : l10n.trimester3);
+
+    return Semantics(
+      label: '${l10n.modePregnancy}: ${l10n.pregnancyWeekLabel(week)}, $trimester',
+      child: ExcludeSemantics(
+        child: GlassCard(
+          borderRadius: 28,
+          blur: 0,
+          opacity: 0.2,
+          padding: const EdgeInsets.all(28),
+          child: Column(
+            children: [
+              const Text('\u{1F930}', style: TextStyle(fontSize: 40)),
+              const SizedBox(height: 8),
+              Text(
+                l10n.pregnancyWeekLabel(week),
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.tp(context),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                trimester,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.ts(context),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ).animateSafe(context).fadeIn(delay: 200.ms, duration: 500.ms);
+  }
+
+  Widget _buildPillChip(
+      BuildContext context, AppLocalizations l10n, DateTime packStart) {
+    final day = CycleUtils.pillDayInPack(packStart);
+    final isBreak = day > 21;
+    final label =
+        isBreak ? l10n.pillBreakLabel(day - 21) : l10n.pillDayLabel(day);
+
+    return GlassContainer(
+      borderRadius: 20,
+      blur: 0,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.medication_rounded,
+              size: 16,
+              color: isBreak ? AppColors.warning : AppColors.secondaryStrong),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: AppColors.tp(context),
+            ),
+          ),
+        ],
+      ),
+    ).animateSafe(context).fadeIn(delay: 250.ms, duration: 500.ms);
   }
 
   Widget _buildDisclaimer(BuildContext context, AppLocalizations l10n) {

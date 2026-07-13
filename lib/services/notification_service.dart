@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import '../models/enums.dart';
 import '../models/period_record.dart';
 import '../models/user_profile.dart';
 import '../core/constants/app_constants.dart';
@@ -267,7 +268,11 @@ class NotificationService {
       final minute = profile.reminderMinute;
       final locale = profile.language;
 
-      if (profile.lastPeriodStart != null) {
+      // Hamilelik ve hap modunda regl/ovülasyon tahmin bildirimleri anlamsız
+      final cyclePredictionsActive =
+          profile.trackingMode == TrackingMode.period;
+
+      if (cyclePredictionsActive && profile.lastPeriodStart != null) {
         final cycleLen = CycleUtils.effectiveCycleLength(
           profile.averageCycleLength,
           records,

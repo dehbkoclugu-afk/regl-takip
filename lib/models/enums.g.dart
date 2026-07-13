@@ -401,6 +401,50 @@ class ProtectionMethodAdapter extends TypeAdapter<ProtectionMethod> {
           typeId == other.typeId;
 }
 
+class TrackingModeAdapter extends TypeAdapter<TrackingMode> {
+  @override
+  final int typeId = 16;
+
+  @override
+  TrackingMode read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return TrackingMode.period;
+      case 1:
+        return TrackingMode.pregnancy;
+      case 2:
+        return TrackingMode.pill;
+      default:
+        return TrackingMode.period;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, TrackingMode obj) {
+    switch (obj) {
+      case TrackingMode.period:
+        writer.writeByte(0);
+        break;
+      case TrackingMode.pregnancy:
+        writer.writeByte(1);
+        break;
+      case TrackingMode.pill:
+        writer.writeByte(2);
+        break;
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TrackingModeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
 class SymptomCategoryAdapter extends TypeAdapter<SymptomCategory> {
   @override
   final int typeId = 15;
