@@ -41,6 +41,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Adet günlerinizi Sağlık uygulamasına aktarabilmek için izin gerekiyor.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Adet verilerinizi Sağlık uygulamasıyla paylaşabilmek için izin gerekiyor.</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-2554058432197193~3764480294</string>
 	<key>NSUserTrackingUsageDescription</key>

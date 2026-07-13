@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/enum_labels.dart';
 import '../../../models/enums.dart';
 import '../../../providers/providers.dart';
 import '../../../core/utils/motion.dart';
@@ -39,32 +40,8 @@ class QuickStatusCards extends ConsumerWidget {
     }
   }
 
-  String _moodName(MoodType mood, AppLocalizations l10n) {
-    switch (mood) {
-      case MoodType.happy:
-        return l10n.happy;
-      case MoodType.sad:
-        return l10n.sad;
-      case MoodType.angry:
-        return l10n.angry;
-      case MoodType.anxious:
-        return l10n.anxious;
-      case MoodType.calm:
-        return l10n.calm;
-      case MoodType.energetic:
-        return l10n.energetic;
-      case MoodType.tired:
-        return l10n.tired;
-      case MoodType.romantic:
-        return l10n.romantic;
-      case MoodType.sensitive:
-        return l10n.sensitiveM;
-      case MoodType.irritable:
-        return l10n.irritableM;
-      case MoodType.neutral:
-        return l10n.neutralM;
-    }
-  }
+  String _moodName(MoodType mood, AppLocalizations l10n) =>
+      EnumLabels.mood(mood, l10n);
 
   Color _moodColor(MoodType mood) {
     switch (mood) {

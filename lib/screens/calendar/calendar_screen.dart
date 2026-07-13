@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/cycle_utils.dart';
+import '../../core/utils/enum_labels.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
 import '../../models/daily_log.dart';
@@ -325,8 +326,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     if (isPeriod)
                       _chip(Icons.water_drop, l10n.periodDayLabel, AppColors.menstrual),
                     if (log?.mood != null)
-                      _chip(Icons.emoji_emotions,
-                          l10n.moodLabel(log!.mood!.type.name), AppColors.moodHappy),
+                      _chip(
+                          Icons.emoji_emotions,
+                          l10n.moodLabel(
+                              EnumLabels.mood(log!.mood!.type, l10n)),
+                          AppColors.moodHappy),
                     if (log != null && log.symptoms.isNotEmpty)
                       _chip(Icons.monitor_heart,
                           l10n.nSymptoms(log.symptoms.length), AppColors.secondary),
