@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/enum_labels.dart';
 import '../../core/widgets/glass_card.dart';
+import '../../models/daily_log.dart';
 import '../../providers/providers.dart';
 import '../../core/utils/motion.dart';
 
@@ -114,13 +116,20 @@ class _LogScreenState extends ConsumerState<LogScreen> {
               date.month == DateTime.now().month &&
               date.day == DateTime.now().day;
 
-          return GestureDetector(
-            onTap: () {
-              setState(() => _selectedDate = date);
-              // Kategori ekranları bu provider'daki güne kayıt yazar
-              ref.read(selectedDateProvider.notifier).state = date;
-            },
-            child: AnimatedContainer(
+          final locale = Localizations.localeOf(context).toString();
+          return Semantics(
+            button: true,
+            selected: isSelected,
+            label: DateFormat('d MMMM EEEE', locale).format(date),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () {
+                setState(() => _selectedDate = date);
+                // Kategori ekranları bu provider'daki güne kayıt yazar
+                ref.read(selectedDateProvider.notifier).state = date;
+              },
+              child: ExcludeSemantics(
+                child: AnimatedContainer(
               duration: const Duration(milliseconds: 250),
               width: 52,
               margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -163,6 +172,8 @@ class _LogScreenState extends ConsumerState<LogScreen> {
                   ),
                 ],
               ),
+                ),
+              ),
             ),
           ).animateSafe(context).fadeIn(delay: (index * 50).ms, duration: 300.ms);
         },
@@ -170,7 +181,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
     );
   }
 
-  Widget _buildCategoryGrid(dynamic log, AppLocalizations l10n) {
+  Widget _buildCategoryGrid(DailyLog? log, AppLocalizations l10n) {
     final categories = [
       _CategoryItem(Icons.water_drop_rounded, l10n.flow, AppColors.menstrual,
           _getFlowSummary(log, l10n), () => context.push('/flow')),
@@ -206,14 +217,25 @@ class _LogScreenState extends ConsumerState<LogScreen> {
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final cat = categories[index];
-        return GestureDetector(
-          onTap: cat.onTap,
+        return Semantics(
+          button: true,
+          label: cat.summary.isEmpty
+              ? cat.label
+              : '${cat.label}: ${cat.summary}',
           child: GlassCard(
             borderRadius: 20,
             blur: 0,
             opacity: 0.15,
-            padding: const EdgeInsets.all(14),
-            child: Column(
+            padding: EdgeInsets.zero,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: cat.onTap,
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: ExcludeSemantics(
+                    child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -262,6 +284,10 @@ class _LogScreenState extends ConsumerState<LogScreen> {
                   ],
                 ),
               ],
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ).animateSafe(context)
@@ -272,57 +298,63 @@ class _LogScreenState extends ConsumerState<LogScreen> {
     );
   }
 
-  String _getFlowSummary(dynamic log, AppLocalizations l10n) {
-    if (log == null || log.flowIntensity == null) return '';
-    final labels = [l10n.light, l10n.medium, l10n.heavy, l10n.veryHeavy];
-    return labels[log.flowIntensity.index];
+  // Özetler: enum -> etiket eşlemesi EnumLabels üzerinden. Daha önce
+  // `labels[enum.index]` kullanılıyordu; enum'a değer eklendiğinde ya da
+  // sıra değiştiğinde sessizce yanlış etiket (ya da RangeError) veriyordu.
+  String _getFlowSummary(DailyLog? log, AppLocalizations l10n) {
+    final flow = log?.flowIntensity;
+    if (flow == null) return '';
+    return EnumLabels.flow(flow, l10n);
   }
 
-  String _getSymptomSummary(dynamic log, AppLocalizations l10n) {
+  String _getSymptomSummary(DailyLog? log, AppLocalizations l10n) {
     if (log == null || log.symptoms.isEmpty) return '';
     return l10n.nSymptoms(log.symptoms.length);
   }
 
-  String _getMoodSummary(dynamic log, AppLocalizations l10n) {
-    if (log == null || log.mood == null) return '';
-    final labels = [l10n.happy, l10n.sad, l10n.angry, l10n.anxious, l10n.calm,
-        l10n.energetic, l10n.tired, l10n.romantic, l10n.sensitiveM, l10n.irritableM, l10n.neutralM];
-    return labels[log.mood.type.index];
+  String _getMoodSummary(DailyLog? log, AppLocalizations l10n) {
+    final mood = log?.mood;
+    if (mood == null) return '';
+    return EnumLabels.mood(mood.type, l10n);
   }
 
-  String _getTempSummary(dynamic log) {
-    if (log == null || log.temperature == null) return '';
-    return '${log.temperature.toStringAsFixed(1)}°C';
+  String _getTempSummary(DailyLog? log) {
+    final temp = log?.temperature;
+    if (temp == null) return '';
+    return '${temp.toStringAsFixed(1)}°C';
   }
 
-  String _getWeightSummary(dynamic log) {
-    if (log == null || log.weight == null) return '';
-    return '${log.weight.toStringAsFixed(1)} kg';
+  String _getWeightSummary(DailyLog? log) {
+    final weight = log?.weight;
+    if (weight == null) return '';
+    return '${weight.toStringAsFixed(1)} kg';
   }
 
-  String _getWaterSummary(dynamic log, AppLocalizations l10n) {
+  String _getWaterSummary(DailyLog? log, AppLocalizations l10n) {
     if (log == null || log.waterIntake == 0) return '';
     return l10n.nGlasses(log.waterIntake);
   }
 
-  String _getSleepSummary(dynamic log) {
-    if (log == null || log.sleepStart == null) return '';
-    return '${log.sleepStart} - ${log.sleepEnd ?? '?'}';
+  String _getSleepSummary(DailyLog? log) {
+    final start = log?.sleepStart;
+    if (start == null) return '';
+    return '$start - ${log!.sleepEnd ?? '?'}';
   }
 
-  String _getSexualSummary(dynamic log, AppLocalizations l10n) {
-    if (log == null || log.sexualActivity == null) return '';
+  String _getSexualSummary(DailyLog? log, AppLocalizations l10n) {
+    if (log?.sexualActivity == null) return '';
     return l10n.recorded;
   }
 
-  String _getMedSummary(dynamic log, AppLocalizations l10n) {
+  String _getMedSummary(DailyLog? log, AppLocalizations l10n) {
     if (log == null || log.medications.isEmpty) return '';
     return l10n.nMedications(log.medications.length);
   }
 
-  String _getNotesSummary(dynamic log) {
-    if (log == null || log.notes == null || log.notes.isEmpty) return '';
-    return log.notes.length > 20 ? '${log.notes.substring(0, 20)}...' : log.notes;
+  String _getNotesSummary(DailyLog? log) {
+    final notes = log?.notes;
+    if (notes == null || notes.isEmpty) return '';
+    return notes.length > 20 ? '${notes.substring(0, 20)}...' : notes;
   }
 }
 

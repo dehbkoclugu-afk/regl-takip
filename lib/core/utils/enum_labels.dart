@@ -19,6 +19,16 @@ class EnumLabels {
     return names[mood] ?? mood.name;
   }
 
+  static String flow(FlowIntensity intensity, AppLocalizations l10n) {
+    final names = {
+      FlowIntensity.light: l10n.light,
+      FlowIntensity.normal: l10n.medium,
+      FlowIntensity.heavy: l10n.heavy,
+      FlowIntensity.veryHeavy: l10n.veryHeavy,
+    };
+    return names[intensity] ?? intensity.name;
+  }
+
   static String symptom(SymptomType type, AppLocalizations l10n) {
     final names = {
       SymptomType.cramp: l10n.cramps, SymptomType.headache: l10n.headache,

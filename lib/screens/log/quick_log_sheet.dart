@@ -67,11 +67,24 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
 
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
     final notifier = ref.read(dailyLogProvider.notifier);
 
-    if (_flow != null) {
-      await notifier.updateFlow(widget.date, flowIntensity: _flow);
+    final hasExistingLog = notifier.getDailyLog(widget.date) != null;
+    final hasInput =
+        _flow != null || _mood != null || _symptoms.isNotEmpty;
+
+    // Hiçbir şey seçilmediyse ve o güne ait kayıt da yoksa boş bir günlük
+    // yazma — takvimde "kayıt var" noktası çıkarıyordu
+    if (!hasInput && !hasExistingLog) {
+      navigator.pop();
+      return;
     }
+
+    // setFlowIntensity: seçim kaldırıldığında akış da silinmeli.
+    // updateFlow null'ı "dokunma" sayıyor, eski değer kalıyordu.
+    await notifier.setFlowIntensity(widget.date, _flow);
     await notifier.updateMood(
         widget.date, _mood != null ? MoodEntry(type: _mood!) : null);
     await notifier.updateSymptoms(
@@ -82,8 +95,8 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     );
 
     if (!mounted) return;
-    Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
+    navigator.pop();
+    messenger.showSnackBar(
       SnackBar(
           content: Text(l10n.savedGeneric),
           backgroundColor: AppColors.success),
@@ -154,7 +167,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               _sectionLabel(l10n.mood),
               const SizedBox(height: 8),
               SizedBox(
-                height: 40,
+                height: 48,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: MoodType.values.map((m) {
@@ -237,25 +250,27 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
         button: true,
         selected: selected,
         label: label,
-        child: GestureDetector(
-          onTap: () =>
-              setState(() => _flow = selected ? null : intensity),
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 3),
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(
-              color: selected
-                  ? AppColors.menstrual.withValues(alpha: 0.15)
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: selected
-                    ? AppColors.primaryStrong
-                    : AppColors.dv(context),
-                width: selected ? 1.5 : 1,
-              ),
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 3),
+          decoration: BoxDecoration(
+            color: selected
+                ? AppColors.menstrual.withValues(alpha: 0.15)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color:
+                  selected ? AppColors.primaryStrong : AppColors.dv(context),
+              width: selected ? 1.5 : 1,
             ),
-            child: Column(
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => setState(() => _flow = selected ? null : intensity),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -278,7 +293,9 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                         color: selected
                             ? AppColors.primaryStrong
                             : AppColors.ts(context))),
-              ],
+                  ],
+                ),
+              ),
             ),
           ),
         ),
@@ -294,30 +311,35 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     return Semantics(
       button: true,
       selected: selected,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: selected
-                ? AppColors.primaryStrong.withValues(alpha: 0.14)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: selected
-                  ? AppColors.primaryStrong
-                  : AppColors.dv(context),
-              width: selected ? 1.5 : 1,
+      child: Material(
+        color: selected
+            ? AppColors.primaryStrong.withValues(alpha: 0.14)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            // Material minimum dokunma hedefi 48 dp: chip'ler 33 px idi
+            constraints: const BoxConstraints(minHeight: 44),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color:
+                    selected ? AppColors.primaryStrong : AppColors.dv(context),
+                width: selected ? 1.5 : 1,
+              ),
             ),
+            child: Text(label,
+                style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: selected
+                        ? AppColors.primaryStrong
+                        : AppColors.tp(context))),
           ),
-          child: Text(label,
-              style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: selected
-                      ? AppColors.primaryStrong
-                      : AppColors.tp(context))),
         ),
       ),
     );

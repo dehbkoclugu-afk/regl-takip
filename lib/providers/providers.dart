@@ -361,6 +361,7 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     await saveDailyLog(log);
   }
 
+  /// Kısmi güncelleme: null verilen alanlar dokunulmadan kalır.
   Future<void> updateFlow(
     DateTime date, {
     FlowIntensity? flowIntensity,
@@ -373,6 +374,15 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     if (flowColor != null) log.flowColor = flowColor;
     if (hasClots != null) log.hasClots = hasClots;
     if (padChangeCount != null) log.padChangeCount = padChangeCount;
+    await saveDailyLog(log);
+  }
+
+  /// Akış şiddetini doğrudan atar — null geçmek kaydı **siler**.
+  /// [updateFlow] null'ı "dokunma" diye yorumladığı için, kullanıcının
+  /// seçimi kaldırdığı akışlarda (hızlı kayıt) bu kullanılmalı.
+  Future<void> setFlowIntensity(DateTime date, FlowIntensity? intensity) async {
+    final log = _getOrCreateLog(date);
+    log.flowIntensity = intensity;
     await saveDailyLog(log);
   }
 
