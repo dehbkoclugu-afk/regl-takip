@@ -57,9 +57,18 @@ Future<void> _run() async {
       await notificationService.init();
       await notificationService.requestPermission();
       if (profile != null) {
+        // İlaç hatırlatmaları ilaçların kendi saatlerinde kurulur: soğuk
+        // açılışta liste verilmezse yalnız genel hatırlatma planlanıyordu
+        final logsWithMeds = HiveService()
+            .getAllDailyLogs()
+            .where((l) => l.medications.isNotEmpty)
+            .toList()
+          ..sort((a, b) => b.date.compareTo(a.date));
         await notificationService.rescheduleAll(
           profile,
           records: HiveService().getAllPeriodRecords(),
+          medications:
+              logsWithMeds.isEmpty ? const [] : logsWithMeds.first.medications,
         );
       }
     } catch (e) {

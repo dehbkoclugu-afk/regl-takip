@@ -67,15 +67,17 @@ class GlassCard extends StatelessWidget {
 
     return Container(
       margin: margin,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(borderRadius),
-        child: blur > 0
-            ? BackdropFilter(
+      // Opak yolda clip gerekmiyor: zaten yuvarlatılmış dekorasyon var.
+      // Her kart için bir clip katmanı kaydırmada bedava değil.
+      child: blur > 0
+          ? ClipRRect(
+              borderRadius: BorderRadius.circular(borderRadius),
+              child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
                 child: inner,
-              )
-            : inner,
-      ),
+              ),
+            )
+          : inner,
     );
   }
 }
@@ -125,15 +127,17 @@ class GlassContainer extends StatelessWidget {
       margin: margin,
       width: width,
       height: height,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(borderRadius),
-        child: blur > 0
-            ? BackdropFilter(
+      // Opak yolda clip gerekmiyor: zaten yuvarlatılmış dekorasyon var.
+      // Her kart için bir clip katmanı kaydırmada bedava değil.
+      child: blur > 0
+          ? ClipRRect(
+              borderRadius: BorderRadius.circular(borderRadius),
+              child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
                 child: inner,
-              )
-            : inner,
-      ),
+              ),
+            )
+          : inner,
     );
   }
 }

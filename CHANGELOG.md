@@ -80,6 +80,12 @@ Her ekran tek tek UI/UX, kod mimarisi ve veri katmanı açısından denetleniyor
 - Yedekleme/dışa aktarma hataları çeviri metniyle gösteriliyor (ham hata dizgisi yerine)
 - Profil ekranındaki tarih alanı buton oldu, slider'lar değerlerini okuyor
 
+### Kesişen katman (açılış, reklam, kart bileşeni)
+- **Reklam rızası (Google UMP) eklendi**: AB/İngiltere'de kişiselleştirilmiş reklam için zorunlu; rıza akışı takılırsa uygulama kilitlenmeden devam ediyor
+- Soğuk açılışta ilaç hatırlatmaları yeniden kuruluyordu ama ilaç listesi verilmiyordu — kendi saatleri kayboluyordu
+- Kart bileşeni her kart için gereksiz bir kırpma katmanı oluşturuyordu (kaydırma maliyeti)
+- TR/EN çeviri anahtarları birebir eşleşiyor (400/400); yinelenen `delete` anahtarı temizlendi
+
 ## 1.1.0 (2026-07-13)
 
 ### Yeni

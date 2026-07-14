@@ -24,11 +24,49 @@ class AdService {
 
   static Future<void> initialize() async {
     try {
+      // Reklam gösterilmeden önce rıza (UMP): AB/İngiltere kullanıcılarında
+      // kişiselleştirilmiş reklam için Google'ın şartı, aksi halde uygulama
+      // politika ihlali sayılıyor. Bölge dışında form gösterilmez.
+      await _requestConsent();
       await MobileAds.instance.initialize();
       debugPrint('[AD] AdMob initialized successfully');
     } catch (e) {
       debugPrint('[AD] AdMob initialize FAILED: $e');
     }
+  }
+
+  static Future<void> _requestConsent() async {
+    final completer = Completer<void>();
+    ConsentInformation.instance.requestConsentInfoUpdate(
+      ConsentRequestParameters(),
+      () async {
+        try {
+          if (await ConsentInformation.instance.isConsentFormAvailable()) {
+            ConsentForm.loadAndShowConsentFormIfRequired((error) {
+              if (error != null) {
+                debugPrint('[AD] consent form error: ${error.message}');
+              }
+              if (!completer.isCompleted) completer.complete();
+            });
+          } else if (!completer.isCompleted) {
+            completer.complete();
+          }
+        } catch (e) {
+          debugPrint('[AD] consent failed: $e');
+          if (!completer.isCompleted) completer.complete();
+        }
+      },
+      (error) {
+        debugPrint('[AD] consent info update failed: ${error.message}');
+        if (!completer.isCompleted) completer.complete();
+      },
+    );
+
+    // Rıza akışı takılırsa uygulama reklamsız devam eder, kilitlenmez
+    await completer.future.timeout(
+      const Duration(seconds: 8),
+      onTimeout: () => debugPrint('[AD] consent TIMEOUT'),
+    );
   }
 
   static Future<void> loadOpenAd() async {
