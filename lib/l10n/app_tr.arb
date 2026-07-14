@@ -171,6 +171,14 @@
 
   "helloGeneric": "Merhaba!",
   "dayHasRecord": "kayıt var",
+  "increase": "Artır",
+  "decrease": "Azalt",
+  "severityLevel": "şiddet {level}/5",
+  "@severityLevel": {
+    "placeholders": {
+      "level": {"type": "int"}
+    }
+  },
   "pregnancySetStartPrompt": "Gebelik başlangıcını girmek için dokun",
   "helloName": "Merhaba, {name}!",
   "@helloName": {

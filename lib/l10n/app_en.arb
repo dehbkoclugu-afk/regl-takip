@@ -171,6 +171,14 @@
 
   "helloGeneric": "Hello!",
   "dayHasRecord": "has a record",
+  "increase": "Increase",
+  "decrease": "Decrease",
+  "severityLevel": "severity {level}/5",
+  "@severityLevel": {
+    "placeholders": {
+      "level": {"type": "int"}
+    }
+  },
   "pregnancySetStartPrompt": "Tap to set your pregnancy start",
   "helloName": "Hello, {name}!",
   "@helloName": {

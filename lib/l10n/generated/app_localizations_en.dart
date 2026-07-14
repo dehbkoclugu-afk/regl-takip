@@ -506,6 +506,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dayHasRecord => 'has a record';
 
   @override
+  String get increase => 'Increase';
+
+  @override
+  String get decrease => 'Decrease';
+
+  @override
+  String severityLevel(int level) {
+    return 'severity $level/5';
+  }
+
+  @override
   String get pregnancySetStartPrompt => 'Tap to set your pregnancy start';
 
   @override

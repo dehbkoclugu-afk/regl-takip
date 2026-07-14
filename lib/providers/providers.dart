@@ -386,6 +386,23 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     await saveDailyLog(log);
   }
 
+  /// Akış ekranının kaydı: dört alan da olduğu gibi yazılır, null olanlar
+  /// temizlenir (kullanıcı seçimi kaldırmış demektir).
+  Future<void> setFlowDetails(
+    DateTime date, {
+    required FlowIntensity? intensity,
+    required FlowColor? color,
+    required bool hasClots,
+    required int padChangeCount,
+  }) async {
+    final log = _getOrCreateLog(date);
+    log.flowIntensity = intensity;
+    log.flowColor = color;
+    log.hasClots = hasClots;
+    log.padChangeCount = padChangeCount;
+    await saveDailyLog(log);
+  }
+
   Future<void> deleteDailyLog(String dateKey) async {
     await _hiveService.deleteDailyLog(dateKey);
     final newState = Map<String, DailyLog>.from(state);

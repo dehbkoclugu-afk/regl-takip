@@ -506,6 +506,17 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dayHasRecord => 'kayıt var';
 
   @override
+  String get increase => 'Artır';
+
+  @override
+  String get decrease => 'Azalt';
+
+  @override
+  String severityLevel(int level) {
+    return 'şiddet $level/5';
+  }
+
+  @override
   String get pregnancySetStartPrompt => 'Gebelik başlangıcını girmek için dokun';
 
   @override

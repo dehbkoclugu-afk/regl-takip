@@ -25,7 +25,8 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController =
+        TabController(length: SymptomCategory.values.length, vsync: this);
     final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
     if (log != null) {
       for (final entry in log.symptoms) {
@@ -169,15 +170,22 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
         final isSelected = _selectedSymptoms.containsKey(symptom);
         final severity = _selectedSymptoms[symptom] ?? 1;
 
-        return GestureDetector(
-          onTap: () => setState(() {
-            if (isSelected) {
-              _selectedSymptoms.remove(symptom);
-            } else {
-              _selectedSymptoms[symptom] = 1;
-            }
-          }),
-          child: AnimatedContainer(
+        return Semantics(
+          button: true,
+          selected: isSelected,
+          label: isSelected
+              ? '${_symptomName(symptom, l10n)}, ${l10n.severityLevel(severity)}'
+              : _symptomName(symptom, l10n),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(20),
+            onTap: () => setState(() {
+              if (isSelected) {
+                _selectedSymptoms.remove(symptom);
+              } else {
+                _selectedSymptoms[symptom] = 1;
+              }
+            }),
+            child: AnimatedContainer(
             duration: const Duration(milliseconds: 250),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -212,23 +220,40 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
                     textAlign: TextAlign.center, maxLines: 1,
                     overflow: TextOverflow.ellipsis),
                 if (isSelected) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
+                  // Şiddet noktaları 10 px ikon + 2 px boşluktu: dokunma
+                  // hedefi ~14 px. Her nokta artık 28 px'lik alanda.
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(5, (i) => GestureDetector(
-                      onTap: () => setState(() => _selectedSymptoms[symptom] = i + 1),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 2),
-                        child: Icon(
-                          i < severity ? Icons.circle : Icons.circle_outlined,
-                          size: 10, color: AppColors.primary,
+                    children: List.generate(
+                      5,
+                      (i) => Semantics(
+                        button: true,
+                        selected: i < severity,
+                        label: l10n.severityLevel(i + 1),
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: () =>
+                              setState(() => _selectedSymptoms[symptom] = i + 1),
+                          child: SizedBox(
+                            width: 28,
+                            height: 28,
+                            child: Icon(
+                              i < severity
+                                  ? Icons.circle
+                                  : Icons.circle_outlined,
+                              size: 12,
+                              color: AppColors.primary,
+                            ),
+                          ),
                         ),
                       ),
-                    )),
+                    ),
                   ),
                 ],
               ],
             ),
+          ),
           ),
         ).animateSafe(context).fadeIn(delay: (index * 50).ms, duration: 300.ms);
       },
@@ -236,10 +261,19 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
   }
 
   Future<void> _save() async {
+    final notifier = ref.read(dailyLogProvider.notifier);
+    final date = ref.read(selectedDateProvider);
     final entries = _selectedSymptoms.entries
         .map((e) => SymptomEntry(type: e.key, severity: e.value))
         .toList();
-    await ref.read(dailyLogProvider.notifier).updateSymptoms(ref.read(selectedDateProvider), entries);
+
+    // Hiç semptom seçilmediyse ve o güne kayıt da yoksa boş günlük yazma
+    if (entries.isEmpty && notifier.getDailyLog(date) == null) {
+      if (mounted) Navigator.of(context).pop();
+      return;
+    }
+
+    await notifier.updateSymptoms(date, entries);
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(

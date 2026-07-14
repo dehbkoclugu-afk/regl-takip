@@ -99,10 +99,16 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
         final i = entry.key;
         final item = entry.value;
         final isSelected = _intensity == item.$1;
-        return GestureDetector(
-          onTap: () => setState(() =>
-              _intensity = _intensity == item.$1 ? null : item.$1),
-          child: AnimatedContainer(
+        return Semantics(
+          button: true,
+          selected: isSelected,
+          label: item.$2,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () => setState(
+                () => _intensity = _intensity == item.$1 ? null : item.$1),
+            child: ExcludeSemantics(
+              child: AnimatedContainer(
             duration: const Duration(milliseconds: 250),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             decoration: BoxDecoration(
@@ -137,6 +143,8 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                     )),
               ],
             ),
+              ),
+            ),
           ),
         ).animateSafe(context).fadeIn(delay: (i * 60).ms, duration: 300.ms)
             .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1),
@@ -159,10 +167,16 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
         final i = entry.key;
         final item = entry.value;
         final isSelected = _colorSelection == item.$1;
-        return GestureDetector(
-          onTap: () => setState(() =>
-              _colorSelection = _colorSelection == item.$1 ? null : item.$1),
-          child: Column(
+        return Semantics(
+          button: true,
+          selected: isSelected,
+          label: item.$2,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () => setState(() =>
+                _colorSelection = _colorSelection == item.$1 ? null : item.$1),
+            child: ExcludeSemantics(
+              child: Column(
             children: [
               AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
@@ -189,6 +203,8 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                       fontSize: 11, color: AppColors.ts(context)),
                   textAlign: TextAlign.center),
             ],
+          ),
+            ),
           ),
         ).animateSafe(context).fadeIn(delay: (100 + i * 60).ms, duration: 300.ms);
       }).toList(),
@@ -243,16 +259,21 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _counterBtn(Icons.remove, () {
+              _counterBtn(Icons.remove, l10n.decrease, () {
                 if (_padChanges > 0) setState(() => _padChanges--);
               }),
               const SizedBox(width: 32),
-              Text('$_padChanges',
-                  style: TextStyle(
-                      fontSize: 36, fontWeight: FontWeight.bold,
-                      color: AppColors.primary)),
+              Semantics(
+                liveRegion: true,
+                child: Text('$_padChanges',
+                    style: const TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary)),
+              ),
               const SizedBox(width: 32),
-              _counterBtn(Icons.add, () => setState(() => _padChanges++)),
+              _counterBtn(
+                  Icons.add, l10n.increase, () => setState(() => _padChanges++)),
             ],
           ),
         ],
@@ -260,19 +281,22 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
     );
   }
 
-  Widget _counterBtn(IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppColors.primary.withValues(alpha: 0.2), AppColors.primary.withValues(alpha: 0.08)],
-          ),
+  Widget _counterBtn(IconData icon, String label, VoidCallback onTap) {
+    return Semantics(
+      button: true,
+      label: label,
+      child: Material(
+        color: AppColors.primary.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: onTap,
           borderRadius: BorderRadius.circular(12),
+          child: SizedBox(
+            width: 48,
+            height: 48,
+            child: Icon(icon, color: AppColors.primary, size: 24),
+          ),
         ),
-        child: Icon(icon, color: AppColors.primary, size: 24),
       ),
     );
   }
@@ -298,10 +322,26 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
   }
 
   Future<void> _save() async {
-    await ref.read(dailyLogProvider.notifier).updateFlow(
-      ref.read(selectedDateProvider),
-      flowIntensity: _intensity,
-      flowColor: _colorSelection,
+    final notifier = ref.read(dailyLogProvider.notifier);
+    final date = ref.read(selectedDateProvider);
+
+    final hasInput = _intensity != null ||
+        _colorSelection != null ||
+        _hasClots ||
+        _padChanges > 0;
+    // Hiç veri yoksa ve o güne kayıt da yoksa boş günlük yazma
+    if (!hasInput && notifier.getDailyLog(date) == null) {
+      if (mounted) Navigator.of(context).pop();
+      return;
+    }
+
+    // setFlowDetails: seçim kaldırıldıysa alan da silinmeli. updateFlow
+    // null'ı "dokunma" sayıyordu; kullanıcı akışı kaldırıp kaydettiğinde
+    // eski değer kalıyordu.
+    await notifier.setFlowDetails(
+      date,
+      intensity: _intensity,
+      color: _colorSelection,
       hasClots: _hasClots,
       padChangeCount: _padChanges,
     );

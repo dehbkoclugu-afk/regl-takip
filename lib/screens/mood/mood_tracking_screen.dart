@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/enum_labels.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../providers/providers.dart';
@@ -19,6 +20,10 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
   MoodType? _selectedMood;
   final _noteController = TextEditingController();
 
+  /// Ekrana kayıtlı bir ruh haliyle girildiyse true. Kullanıcı seçimi
+  /// kaldırdığında "Kaydet" kapanmamalı — silme de bir kayıttır.
+  bool _hadExistingMood = false;
+
   @override
   void initState() {
     super.initState();
@@ -26,6 +31,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
     if (log?.mood != null) {
       _selectedMood = log!.mood!.type;
       _noteController.text = log.mood!.note ?? '';
+      _hadExistingMood = true;
     }
   }
 
@@ -49,24 +55,9 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
     MoodType.neutral: ('\u{1F610}', AppColors.moodNeutral),
   };
 
-  Map<MoodType, String> _moodLabels(AppLocalizations l10n) => {
-    MoodType.happy: l10n.happy,
-    MoodType.sad: l10n.sad,
-    MoodType.angry: l10n.angry,
-    MoodType.anxious: l10n.anxious,
-    MoodType.calm: l10n.calm,
-    MoodType.energetic: l10n.energetic,
-    MoodType.tired: l10n.tired,
-    MoodType.romantic: l10n.romantic,
-    MoodType.sensitive: l10n.sensitiveM,
-    MoodType.irritable: l10n.irritableM,
-    MoodType.neutral: l10n.neutralM,
-  };
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final labels = _moodLabels(l10n);
     return Scaffold(
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
@@ -102,12 +93,20 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                     itemBuilder: (context, index) {
                       final mood = MoodType.values[index];
                       final emojiData = _moodEmojis[mood]!;
-                      final label = labels[mood]!;
+                      // Etiketler tek kaynaktan (EnumLabels); ekranın kendi
+                      // kopya map'i vardı
+                      final label = EnumLabels.mood(mood, l10n);
                       final isSelected = _selectedMood == mood;
 
-                      return GestureDetector(
+                      return Semantics(
+                        button: true,
+                        selected: isSelected,
+                        label: label,
+                        child: InkWell(
+                        borderRadius: BorderRadius.circular(20),
                         onTap: () => setState(() =>
                             _selectedMood = _selectedMood == mood ? null : mood),
+                        child: ExcludeSemantics(
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 250),
                           decoration: BoxDecoration(
@@ -143,6 +142,8 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                                   )),
                             ],
                           ),
+                        ),
+                        ),
                         ),
                       ).animateSafe(context)
                           .fadeIn(delay: (index * 40).ms, duration: 300.ms)
@@ -181,7 +182,10 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _selectedMood != null ? _save : null,
+                // Kayıtlı ruh hali varken seçim kaldırılırsa kaydetmek
+                // silme anlamına gelir — buton kapanmamalı
+                onPressed:
+                    (_selectedMood != null || _hadExistingMood) ? _save : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
@@ -202,12 +206,18 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
   }
 
   Future<void> _save() async {
-    if (_selectedMood == null) return;
-    final mood = MoodEntry(
-      type: _selectedMood!,
-      note: _noteController.text.isEmpty ? null : _noteController.text,
-    );
-    await ref.read(dailyLogProvider.notifier).updateMood(ref.read(selectedDateProvider), mood);
+    final selected = _selectedMood;
+    final mood = selected == null
+        ? null
+        : MoodEntry(
+            type: selected,
+            note: _noteController.text.trim().isEmpty
+                ? null
+                : _noteController.text.trim(),
+          );
+    await ref
+        .read(dailyLogProvider.notifier)
+        .updateMood(ref.read(selectedDateProvider), mood);
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(

@@ -1085,6 +1085,24 @@ abstract class AppLocalizations {
   /// **'kayıt var'**
   String get dayHasRecord;
 
+  /// No description provided for @increase.
+  ///
+  /// In tr, this message translates to:
+  /// **'Artır'**
+  String get increase;
+
+  /// No description provided for @decrease.
+  ///
+  /// In tr, this message translates to:
+  /// **'Azalt'**
+  String get decrease;
+
+  /// No description provided for @severityLevel.
+  ///
+  /// In tr, this message translates to:
+  /// **'şiddet {level}/5'**
+  String severityLevel(int level);
+
   /// No description provided for @pregnancySetStartPrompt.
   ///
   /// In tr, this message translates to:
