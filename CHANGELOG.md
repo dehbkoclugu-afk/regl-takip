@@ -2,7 +2,11 @@
 
 ## Yayınlanmamış — Sayfa denetimi (2026-07-14)
 
-Her ekran tek tek UI/UX, kod mimarisi ve veri katmanı açısından denetleniyor.
+Uygulamanın 18 ekranı + gezinme, servis ve veri katmanı tek tek UI/UX,
+kod mimarisi ve backend açısından denetlendi. Öne çıkan düzeltmeler:
+kurulumda girilen reglin kayda geçmemesi, akış/ruh hali silmenin çalışmaması,
+ilaç saatlerinin kullanılmaması, su hedefinin veriyi kırpması, PIN'in tuzsuz
+saklanması ve "tüm verileri sil"in bildirim/widget/PIN bırakması.
 
 ### Kurulum (Onboarding)
 - **Girilen son regl artık kayıt olarak da yazılıyor**: daha önce yalnız profile yazılıyordu; takvim, istatistik ve "reglim bitti" akışı kayıtlara baktığı için ilk kullanıcı boş bir takvimle karşılaşıyordu. Regl hâlâ sürüyorsa kayıt açık bırakılıyor, bittiyse kapatılıyor

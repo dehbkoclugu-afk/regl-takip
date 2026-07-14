@@ -54,3 +54,7 @@ flutter_*.log
 # Signing
 android/key.properties
 *.jks
+
+# Gradle OOM heap dumps
+*.hprof
+android/.kotlin/
