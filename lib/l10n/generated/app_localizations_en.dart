@@ -503,6 +503,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helloGeneric => 'Hello!';
 
   @override
+  String get dayHasRecord => 'has a record';
+
+  @override
   String get pregnancySetStartPrompt => 'Tap to set your pregnancy start';
 
   @override

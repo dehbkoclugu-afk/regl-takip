@@ -170,6 +170,7 @@
   "goalReached": "Hedefe ulaşıldı!",
 
   "helloGeneric": "Merhaba!",
+  "dayHasRecord": "kayıt var",
   "pregnancySetStartPrompt": "Gebelik başlangıcını girmek için dokun",
   "helloName": "Merhaba, {name}!",
   "@helloName": {

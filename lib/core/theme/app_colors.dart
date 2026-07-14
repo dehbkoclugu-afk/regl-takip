@@ -53,6 +53,8 @@ class AppColors {
   static const Color ovulationDay = Color(0xFFBA90C6);
   static const Color fertileWindow = Color(0xFFA8D5BA);
   static const Color fertileWindowLight = Color(0xFFD4EDDA);
+  /// Açık yeşil fertil hücrenin üstünde okunan metin (WCAG AA)
+  static const Color fertileWindowText = Color(0xFF1F5B36);
 
   // Akış yoğunluğu
   static const Color flowLight = Color(0xFFF8D0DE);

@@ -503,6 +503,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get helloGeneric => 'Merhaba!';
 
   @override
+  String get dayHasRecord => 'kayıt var';
+
+  @override
   String get pregnancySetStartPrompt => 'Gebelik başlangıcını girmek için dokun';
 
   @override

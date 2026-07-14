@@ -1079,6 +1079,12 @@ abstract class AppLocalizations {
   /// **'Merhaba!'**
   String get helloGeneric;
 
+  /// No description provided for @dayHasRecord.
+  ///
+  /// In tr, this message translates to:
+  /// **'kayıt var'**
+  String get dayHasRecord;
+
   /// No description provided for @pregnancySetStartPrompt.
   ///
   /// In tr, this message translates to:

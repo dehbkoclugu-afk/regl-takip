@@ -14,6 +14,7 @@ import '../log/quick_log_sheet.dart';
 import '../../models/daily_log.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
+import '../../models/user_profile.dart';
 import '../../core/utils/motion.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
@@ -133,7 +134,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           ).animateSafe(context).fadeIn(duration: 500.ms),
           const SizedBox(height: 16),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 112),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -146,7 +147,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           ).animateSafe(context).fadeIn(delay: 300.ms, duration: 500.ms),
           const Spacer(),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            // Alt bar yüzen bir pill: 112 boşluk olmadan uyarı metni
+            // gezinme çubuğunun altında kalıyordu
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 112),
             child: Row(
               children: [
                 Icon(Icons.info_outline_rounded,
@@ -171,8 +174,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
   }
 
-  Widget _buildDayCell(DateTime day, dynamic profile,
+  Widget _buildDayCell(DateTime day, UserProfile? profile,
       List<PeriodRecord> records, Map<String, DailyLog> dailyLogs, bool isToday) {
+    final l10n = AppLocalizations.of(context)!;
     final isPeriod = _isPeriodDay(day, records);
     final dateKey =
         '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
@@ -183,22 +187,23 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     bool isPredicted = false;
 
     // Hamilelik modunda tahmin/ovülasyon işaretleri yanıltıcı — gösterme
-    final showPredictions =
-        profile?.trackingMode != TrackingMode.pregnancy;
-    if (showPredictions && profile?.lastPeriodStart != null) {
+    final showPredictions = profile?.trackingMode != TrackingMode.pregnancy;
+    final lastStart = profile?.lastPeriodStart;
+    if (showPredictions && lastStart != null) {
       final cycleLen = ref.read(effectiveCycleLengthProvider);
-      final lastStart = profile!.lastPeriodStart as DateTime;
-      final periodLen = profile.averagePeriodLength as int;
+      final periodLen = profile!.averagePeriodLength;
       isOvulation = CycleUtils.isOvulationDay(day, lastStart, cycleLen);
       isFertile = CycleUtils.isInFertileWindow(day, lastStart, cycleLen);
       // 3 döngü ileriye tahmini adet günleri
       isPredicted = !isPeriod &&
-          CycleUtils.isPredictedPeriodDay(
-              day, lastStart, cycleLen, periodLen);
+          CycleUtils.isPredictedPeriodDay(day, lastStart, cycleLen, periodLen);
     }
 
     Color? bgColor;
     Color textColor = AppColors.tp(context);
+    // Tahmin günü gerçek regl gününden yalnız renk tonuyla ayrılıyordu:
+    // renk körlüğünde ikisi aynı görünür, kesikli olmayan bir çerçeve ekle
+    Border? border;
 
     if (isPeriod) {
       bgColor = AppColors.periodDay;
@@ -206,48 +211,70 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     } else if (isPredicted) {
       bgColor = AppColors.periodDayLight;
       textColor = AppColors.primaryDark;
+      border = Border.all(color: AppColors.periodDay, width: 1.5);
     } else if (isOvulation) {
       bgColor = AppColors.ovulationDay;
       textColor = Colors.white;
     } else if (isFertile) {
       bgColor = AppColors.fertileWindowLight;
-      textColor = Colors.green.shade800;
+      textColor = AppColors.fertileWindowText;
     } else if (isToday) {
       bgColor = AppColors.primary.withValues(alpha: 0.15);
       textColor = AppColors.primary;
     }
 
-    return Container(
-      margin: const EdgeInsets.all(3),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
-            child: Center(
-              child: Text(
-                '${day.day}',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: isToday ? FontWeight.bold : FontWeight.w600,
-                  color: textColor,
+    // Renk tek başına bilgi taşıyordu: ekran okuyucu yalnız gün sayısını
+    // okuyordu. Durum etiketleri sesli okunsun.
+    final states = <String>[
+      if (isPeriod) l10n.periodDayLabel,
+      if (isPredicted) l10n.predicted,
+      if (isOvulation) l10n.ovulation,
+      if (isFertile) l10n.fertile,
+      if (hasLog) l10n.dayHasRecord,
+    ];
+
+    return Semantics(
+      label: states.isEmpty
+          ? '${day.day}'
+          : '${day.day}, ${states.join(', ')}',
+      child: ExcludeSemantics(
+        child: Container(
+          margin: const EdgeInsets.all(3),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: bgColor,
+                  shape: BoxShape.circle,
+                  border: border,
+                ),
+                child: Center(
+                  child: Text(
+                    '${day.day}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: isToday ? FontWeight.bold : FontWeight.w600,
+                      color: textColor,
+                    ),
+                  ),
                 ),
               ),
-            ),
+              if (hasLog)
+                Positioned(
+                  bottom: 2,
+                  child: Container(
+                    width: 5,
+                    height: 5,
+                    decoration: const BoxDecoration(
+                        color: AppColors.secondary, shape: BoxShape.circle),
+                  ),
+                ),
+            ],
           ),
-          if (hasLog)
-            Positioned(
-              bottom: 2,
-              child: Container(
-                width: 5,
-                height: 5,
-                decoration: const BoxDecoration(
-                    color: AppColors.secondary, shape: BoxShape.circle),
-              ),
-            ),
-        ],
+        ),
       ),
     );
   }

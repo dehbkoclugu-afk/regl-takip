@@ -32,6 +32,12 @@ Her ekran tek tek UI/UX, kod mimarisi ve veri katmanı açısından denetleniyor
 - Faz rozeti, tahmin kartları ve "bugün nasılsın" kartı artık gerçek buton: dokunma efekti var, ekran okuyucu "Sonraki regl: 1 Tem" gibi tek parça okuyor
 - Hamilelik kartındaki emoji yerine ikon (uygulamanın ikon diliyle tutarlı)
 
+### Takvim
+- **Sağlık uyarısı alt gezinme çubuğunun altında kalıyordu** — artık görünür
+- Takvim günleri ekran okuyucuya durumuyla okunuyor: "14, regl günü, kayıt var"
+- Tahmini regl günü gerçek regl gününden yalnız renk tonuyla ayrılıyordu (renk körlüğünde ayırt edilemez); artık çerçeveli
+- Fertil gün metni kontrast token'ına çekildi
+
 ## 1.1.0 (2026-07-13)
 
 ### Yeni
