@@ -73,6 +73,13 @@ Her ekran tek tek UI/UX, kod mimarisi ve veri katmanı açısından denetleniyor
 - Filtre çipleri gerçek buton oldu (dokunma efekti + 48 dp yükseklik)
 - Faz içgörüsü hesabı tip güvenli hale getirildi (`dynamic` + cast kaldırıldı)
 
+### Ayarlar + Profil
+- **"Tüm verileri sil" arkasında iz bırakıyordu**: PIN kayıtlı kalıyor, bildirimler planlı kalıyor, ana ekran widget'ı döngü bilgisini göstermeye devam ediyordu — hepsi temizleniyor
+- **Profilde son regl tarihini değiştirmek takvime yansımıyordu** (kayıt oluşmuyordu) — artık gerekiyorsa kayıt açılıyor/kapanıyor
+- Yedekten geri yüklemede ilaç hatırlatmaları da yeniden kuruluyor
+- Yedekleme/dışa aktarma hataları çeviri metniyle gösteriliyor (ham hata dizgisi yerine)
+- Profil ekranındaki tarih alanı buton oldu, slider'lar değerlerini okuyor
+
 ## 1.1.0 (2026-07-13)
 
 ### Yeni

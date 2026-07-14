@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/cycle_utils.dart';
 import '../../providers/providers.dart';
 import '../../core/utils/motion.dart';
 
@@ -91,12 +92,37 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     setState(() => _isSaving = true);
 
     try {
+      final periodLength = _periodLength.round();
+      final lastPeriod = _lastPeriodDate;
+
+      // Takvim ve istatistikler kayıtlara bakar: profildeki tarihi
+      // değiştirmek yetmez, o güne ait bir regl kaydı da olmalı
+      if (lastPeriod != null) {
+        final records = ref.read(periodRecordsProvider);
+        final alreadyRecorded = records.any((r) =>
+            r.startDate.year == lastPeriod.year &&
+            r.startDate.month == lastPeriod.month &&
+            r.startDate.day == lastPeriod.day);
+        if (!alreadyRecorded) {
+          final record = await ref
+              .read(periodRecordsProvider.notifier)
+              .startPeriod(lastPeriod);
+          final end = CycleUtils.completedPeriodEnd(
+              lastPeriod, periodLength, DateTime.now());
+          if (end != null) {
+            await ref
+                .read(periodRecordsProvider.notifier)
+                .endPeriod(record.id, end);
+          }
+        }
+      }
+
       await ref.read(userProfileProvider.notifier).saveProfile(
             name: _nameController.text.trim(),
             birthDate: _birthDate,
             lastPeriodStart: _lastPeriodDate,
             averageCycleLength: _cycleLength.round(),
-            averagePeriodLength: _periodLength.round(),
+            averagePeriodLength: periodLength,
           );
 
       if (mounted) {
@@ -291,13 +317,21 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     required bool hasValue,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
+    return Semantics(
+      button: true,
+      value: value,
+      child: Material(
+        color: AppColors.isDark(context)
+            ? AppColors.cardDark
+            : Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: AppColors.isDark(context) ? AppColors.cardDark : Colors.grey.shade50,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: hasValue ? AppColors.primary.withValues(alpha: 0.3) : Colors.transparent,
@@ -317,6 +351,8 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
               ),
             ),
           ],
+        ),
+          ),
         ),
       ),
     );
@@ -354,6 +390,9 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
             min: min,
             max: max,
             divisions: divisions,
+            label: displayText,
+            semanticFormatterCallback: (v) =>
+                AppLocalizations.of(context)!.nDays(v.round()),
             onChanged: onChanged,
           ),
         ),

@@ -333,7 +333,7 @@ class SettingsScreen extends ConsumerWidget {
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Backup error: $e'),
+                    SnackBar(content: Text(l10n.errorOccurred(e.toString())),
                         backgroundColor: AppColors.error),
                   );
                 }
@@ -387,7 +387,7 @@ class SettingsScreen extends ConsumerWidget {
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('PDF export error: $e'),
+                    SnackBar(content: Text(l10n.errorOccurred(e.toString())),
                         backgroundColor: AppColors.error),
                   );
                 }
@@ -406,7 +406,7 @@ class SettingsScreen extends ConsumerWidget {
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('CSV export error: $e'),
+                    SnackBar(content: Text(l10n.errorOccurred(e.toString())),
                         backgroundColor: AppColors.error),
                   );
                 }
@@ -437,6 +437,20 @@ class SettingsScreen extends ConsumerWidget {
               );
               if (confirmed == true) {
                 await HiveService().clearAll();
+                // Veri silindi ama kilit, bildirimler ve ana ekran widget'ı
+                // eski veriyle ayakta kalıyordu: PIN hâlâ kurulu, hatırlatmalar
+                // planlı, widget döngü gününü göstermeye devam ediyordu
+                const storage = FlutterSecureStorage();
+                await storage.delete(key: 'app_pin');
+                await storage.delete(key: 'pin_failed_attempts');
+                await storage.delete(key: 'pin_lockout_until');
+                try {
+                  await NotificationService().cancelAll();
+                } catch (_) {
+                  // Bildirim iptali başarısız olsa da silme tamamlanmalı
+                }
+                await WidgetService.update(null, const []);
+
                 ref.read(userProfileProvider.notifier).refresh();
                 ref.read(periodRecordsProvider.notifier).refresh();
                 ref.read(dailyLogProvider.notifier).refresh();
@@ -626,9 +640,17 @@ class SettingsScreen extends ConsumerWidget {
     final restoredProfile = HiveService().getUserProfile();
     if (restoredProfile != null) {
       try {
+        // İlaç hatırlatmaları da yedekteki listeye göre kurulmalı
+        final logsWithMeds = HiveService()
+            .getAllDailyLogs()
+            .where((l) => l.medications.isNotEmpty)
+            .toList()
+          ..sort((a, b) => b.date.compareTo(a.date));
         await NotificationService().rescheduleAll(
           restoredProfile,
           records: HiveService().getAllPeriodRecords(),
+          medications:
+              logsWithMeds.isEmpty ? const [] : logsWithMeds.first.medications,
         );
       } catch (_) {
         // Bildirim kurulamasa da geri yükleme başarılı sayılır
