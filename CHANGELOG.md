@@ -53,6 +53,14 @@ Her ekran tek tek UI/UX, kod mimarisi ve veri katmanı açısından denetleniyor
 - Ruh hali etiketleri ekranın kendi kopya listesinden değil ortak kaynaktan geliyor
 - Tüm seçim kartları (akış şiddeti/rengi, semptom, ruh hali) ekran okuyucuya seçili/seçilmedi bilgisini veriyor; ped sayacı butonları etiketlendi
 
+### Sıcaklık, İlaç, Su, Uyku ekranları
+- **İlaç hatırlatmaları artık her ilacın kendi saatinde geliyor** ve ilacın adını yazıyor; önceden ilaç saatleri hiç kullanılmıyor, tek bir genel bildirim atılıyordu. İlaç listesi değişince hatırlatmalar yeniden kuruluyor
+- **Su takibinde hedefin üstüne çıkılamıyordu** (fazla içilen su kaydedilemiyordu) ve hedefi düşürmek o günün kaydını siliyordu — ikisi de düzeltildi
+- İlaç listesinde bir kaydı silmek yanlış satırı siliyordu (liste anahtarı sıraya bağlıydı)
+- İlaç ekleme sayfası her açılışta iki metin denetleyicisi sızdırıyordu
+- Sıcaklık: yanlış girilen ölçüm artık silinebiliyor (BBT eğrisini ve ovülasyon teyidini bozuyordu); ölçümün nasıl yapılacağı ekranda yazıyor
+- Onay kutusu / saat kartı / yıldız gibi dokunulabilir alanlar 48 dp'ye çıkarıldı ve ekran okuyucuya tanıtıldı
+
 ## 1.1.0 (2026-07-13)
 
 ### Yeni

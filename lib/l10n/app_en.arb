@@ -173,6 +173,9 @@
   "dayHasRecord": "has a record",
   "increase": "Increase",
   "decrease": "Decrease",
+  "bbtHint": "For an accurate reading, measure right after waking, before getting out of bed, at the same time every day. Ovulation confirmation relies on these readings.",
+  "deleteMeasurement": "Delete measurement",
+  "measurementDeleted": "Measurement deleted",
   "severityLevel": "severity {level}/5",
   "@severityLevel": {
     "placeholders": {
@@ -519,7 +522,6 @@
     }
   },
   "deleteAllDataConfirm": "Are you sure you want to delete all data? This action cannot be undone.",
-  "delete": "Delete",
   "dataDeleted": "All data deleted",
   "doseHint": "e.g. 500mg",
   "menstrualPhaseInfo": "The period when menstrual bleeding occurs. Usually lasts 3-7 days. The body sheds the uterine lining.",

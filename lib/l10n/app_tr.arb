@@ -173,6 +173,9 @@
   "dayHasRecord": "kayıt var",
   "increase": "Artır",
   "decrease": "Azalt",
+  "bbtHint": "En doğru sonuç için sabah uyanır uyanmaz, yataktan kalkmadan ve hep aynı saatte ölç. Ovülasyon teyidi bu ölçümlere dayanır.",
+  "deleteMeasurement": "Ölçümü sil",
+  "measurementDeleted": "Ölçüm silindi",
   "severityLevel": "şiddet {level}/5",
   "@severityLevel": {
     "placeholders": {
@@ -519,7 +522,6 @@
     }
   },
   "deleteAllDataConfirm": "Tüm verileri silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
-  "delete": "Sil",
   "dataDeleted": "Tüm veriler silindi",
   "doseHint": "ör. 500mg",
   "menstrualPhaseInfo": "Adet kanamasının yaşandığı dönemdir. Genellikle 3-7 gün sürer. Vücut rahim iç tabakasını atar.",

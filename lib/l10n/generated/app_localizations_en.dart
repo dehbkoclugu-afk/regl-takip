@@ -512,6 +512,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get decrease => 'Decrease';
 
   @override
+  String get bbtHint => 'For an accurate reading, measure right after waking, before getting out of bed, at the same time every day. Ovulation confirmation relies on these readings.';
+
+  @override
+  String get deleteMeasurement => 'Delete measurement';
+
+  @override
+  String get measurementDeleted => 'Measurement deleted';
+
+  @override
   String severityLevel(int level) {
     return 'severity $level/5';
   }

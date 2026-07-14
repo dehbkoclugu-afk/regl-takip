@@ -148,25 +148,41 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
 
   Widget _buildTimeCard(IconData icon, String label, TimeOfDay time,
       VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
+    return Semantics(
+      button: true,
+      label: label,
+      value: time.format(context),
       child: GlassCard(
         borderRadius: 20,
         blur: 0,
         opacity: 0.15,
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          children: [
-            Icon(icon, color: AppColors.sleep, size: 28),
-            const SizedBox(height: 8),
-            Text(label, style: TextStyle(
-                fontSize: 13, color: AppColors.ts(context))),
-            const SizedBox(height: 4),
-            Text(time.format(context),
-                style: TextStyle(
-                    fontSize: 22, fontWeight: FontWeight.bold,
-                    color: AppColors.sleep)),
-          ],
+        padding: EdgeInsets.zero,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(20),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: ExcludeSemantics(
+                child: Column(
+                  children: [
+                    Icon(icon, color: AppColors.sleep, size: 28),
+                    const SizedBox(height: 8),
+                    Text(label,
+                        style: TextStyle(
+                            fontSize: 13, color: AppColors.ts(context))),
+                    const SizedBox(height: 4),
+                    Text(time.format(context),
+                        style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.sleep)),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -190,17 +206,28 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(5, (i) {
               final star = i + 1;
-              return GestureDetector(
-                onTap: () => setState(() => _quality = star),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6),
-                  child: AnimatedScale(
-                    scale: star <= _quality ? 1.1 : 1.0,
-                    duration: const Duration(milliseconds: 200),
-                    child: Icon(
-                      star <= _quality ? Icons.star_rounded : Icons.star_outline_rounded,
-                      color: star <= _quality ? AppColors.sleep : AppColors.ts(context),
-                      size: 40,
+              return Semantics(
+                button: true,
+                selected: star <= _quality,
+                label: l10n.severityLevel(star),
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: () => setState(() => _quality = star),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 6, vertical: 4),
+                    child: AnimatedScale(
+                      scale: star <= _quality ? 1.1 : 1.0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Icon(
+                        star <= _quality
+                            ? Icons.star_rounded
+                            : Icons.star_outline_rounded,
+                        color: star <= _quality
+                            ? AppColors.sleep
+                            : AppColors.ts(context),
+                        size: 40,
+                      ),
                     ),
                   ),
                 ),

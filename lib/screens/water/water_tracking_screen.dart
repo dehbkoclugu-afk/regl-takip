@@ -134,46 +134,57 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
   }
 
   Widget _buildControls(int goal) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _counterBtn(Icons.remove, () {
+        _counterBtn(Icons.remove, l10n.decrease, () {
           if (_glasses > 0) setState(() => _glasses--);
         }),
         const SizedBox(width: 32),
-        GestureDetector(
-          onTap: _showGoalDialog,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: AppColors.water.withValues(alpha: 0.08),
+        Semantics(
+          button: true,
+          label: '${l10n.dailyGoal}: $goal',
+          child: Material(
+            color: AppColors.water.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(12),
+            child: InkWell(
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.water.withValues(alpha: 0.3),
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.edit_rounded,
-                    color: AppColors.water, size: 16),
-                const SizedBox(width: 6),
-                Text(
-                  '${AppLocalizations.of(context)!.dailyGoal}: $goal',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.water,
+              onTap: _showGoalDialog,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppColors.water.withValues(alpha: 0.3),
                   ),
                 ),
-              ],
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.edit_rounded,
+                        color: AppColors.water, size: 16),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${l10n.dailyGoal}: $goal',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.water,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
         const SizedBox(width: 32),
-        _counterBtn(Icons.add, () {
-          if (_glasses < goal) setState(() => _glasses++);
-        }),
+        // Hedefin üstünde içilen su da kayda girmeli: sayaç hedefte
+        // durduruluyordu, fazlası kaydedilemiyordu
+        _counterBtn(Icons.add, l10n.increase,
+            () => setState(() => _glasses++)),
       ],
     );
   }
@@ -238,11 +249,11 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  ref.read(userProfileProvider.notifier)
+                  ref
+                      .read(userProfileProvider.notifier)
                       .saveProfile(waterGoal: tempGoal);
-                  if (_glasses > tempGoal) {
-                    setState(() => _glasses = tempGoal);
-                  }
+                  // Hedef düşürülünce içilen su kırpılıyordu: hedef bir
+                  // hedeftir, kayıtlı veriyi silmez
                   setState(() {});
                   Navigator.pop(ctx);
                 },
@@ -255,19 +266,22 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
     );
   }
 
-  Widget _counterBtn(IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppColors.water.withValues(alpha: 0.2), AppColors.water.withValues(alpha: 0.08)],
-          ),
+  Widget _counterBtn(IconData icon, String label, VoidCallback onTap) {
+    return Semantics(
+      button: true,
+      label: label,
+      child: Material(
+        color: AppColors.water.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
           borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: SizedBox(
+            width: 56,
+            height: 56,
+            child: Icon(icon, color: AppColors.water, size: 28),
+          ),
         ),
-        child: Icon(icon, color: AppColors.water, size: 28),
       ),
     );
   }
@@ -292,7 +306,8 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4, crossAxisSpacing: 12, mainAxisSpacing: 12,
             ),
-            itemCount: goal,
+            // Hedef aşıldıysa fazla bardaklar da görünsün
+            itemCount: _glasses > goal ? _glasses : goal,
             itemBuilder: (context, index) {
               final isFilled = index < _glasses;
               return AnimatedContainer(

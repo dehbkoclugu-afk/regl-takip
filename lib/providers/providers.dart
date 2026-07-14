@@ -38,6 +38,17 @@ final userProfileProvider =
   return UserProfileNotifier(hiveService);
 });
 
+/// Bildirimler için "güncel ilaç listesi": en son ilaç girilen günün kaydı.
+/// İlaçlar güne yazılıyor ama hatırlatma tekrar eden bir kurulum — en yeni
+/// liste esas alınır.
+List<MedicationEntry> _latestMedications(HiveService hive) {
+  final logs = hive.getAllDailyLogs()
+      .where((l) => l.medications.isNotEmpty)
+      .toList()
+    ..sort((a, b) => b.date.compareTo(a.date));
+  return logs.isEmpty ? const [] : logs.first.medications;
+}
+
 class UserProfileNotifier extends StateNotifier<UserProfile?> {
   final HiveService _hiveService;
 
@@ -64,6 +75,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
       await NotificationService().rescheduleAll(
         profile,
         records: _hiveService.getAllPeriodRecords(),
+        medications: _latestMedications(_hiveService),
       );
     } catch (e) {
       debugPrint('[NOTIF] rescheduleAll failed: $e');
@@ -137,6 +149,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         await NotificationService().rescheduleAll(
           updated,
           records: _hiveService.getAllPeriodRecords(),
+          medications: _latestMedications(_hiveService),
         );
       } catch (e) {
         debugPrint('[NOTIF] rescheduleAll failed: $e');
@@ -347,6 +360,20 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     final log = _getOrCreateLog(date);
     log.medications = medications;
     await saveDailyLog(log);
+
+    // İlaç saatleri hatırlatmaları belirliyor: liste değişince yeniden kur
+    final profile = _hiveService.getUserProfile();
+    if (profile != null && profile.medicationReminderEnabled) {
+      try {
+        await NotificationService().rescheduleAll(
+          profile,
+          records: _hiveService.getAllPeriodRecords(),
+          medications: _latestMedications(_hiveService),
+        );
+      } catch (e) {
+        debugPrint('[NOTIF] medication reschedule failed: $e');
+      }
+    }
   }
 
   Future<void> updateOvulationTest(DateTime date, bool? positive) async {

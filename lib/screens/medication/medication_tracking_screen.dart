@@ -80,10 +80,12 @@ class _MedicationTrackingScreenState
         return Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: Dismissible(
-            key: Key('med_${index}_${med.name}'),
+            // Anahtar index'e bağlıydı: bir ilaç silinince altındakilerin
+            // anahtarı kayıyor ve yanlış satır animasyonla siliniyordu
+            key: ObjectKey(med),
             direction: DismissDirection.endToStart,
             onDismissed: (_) {
-              setState(() => _medications.removeAt(index));
+              setState(() => _medications.remove(med));
               _saveAll();
             },
             background: Container(
@@ -102,31 +104,46 @@ class _MedicationTrackingScreenState
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      setState(() => med.taken = !med.taken);
-                      _saveAll();
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        color: med.taken ? AppColors.medication : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: med.taken
-                              ? AppColors.medication
-                              : AppColors.ts(context),
-                          width: 2,
+                  Semantics(
+                    label: med.name,
+                    toggled: med.taken,
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: () {
+                        setState(() => med.taken = !med.taken);
+                        _saveAll();
+                      },
+                      // 28 px kutu tek başına dokunma hedefiydi: 48 px alan
+                      child: SizedBox(
+                        width: 48,
+                        height: 48,
+                        child: Center(
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            width: 28,
+                            height: 28,
+                            decoration: BoxDecoration(
+                              color: med.taken
+                                  ? AppColors.medication
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: med.taken
+                                    ? AppColors.medication
+                                    : AppColors.ts(context),
+                                width: 2,
+                              ),
+                            ),
+                            child: med.taken
+                                ? const Icon(Icons.check,
+                                    color: Colors.white, size: 18)
+                                : null,
+                          ),
                         ),
                       ),
-                      child: med.taken
-                          ? const Icon(Icons.check, color: Colors.white, size: 18)
-                          : null,
                     ),
                   ),
-                  const SizedBox(width: 14),
+                  const SizedBox(width: 6),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -225,28 +242,36 @@ class _MedicationTrackingScreenState
                 ),
               ),
               const SizedBox(height: 12),
-              GestureDetector(
-                onTap: () async {
-                  final picked = await showTimePicker(
-                      context: ctx, initialTime: selectedTime);
-                  if (picked != null) setSheetState(() => selectedTime = picked);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.dv(context)),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.access_time_rounded,
-                          color: AppColors.medication),
-                      const SizedBox(width: 12),
-                      Text(selectedTime.format(ctx),
-                          style: TextStyle(
-                              fontSize: 16, color: AppColors.tp(context))),
-                    ],
+              Semantics(
+                button: true,
+                label: l10n.reminderTime,
+                value: selectedTime.format(ctx),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () async {
+                    final picked = await showTimePicker(
+                        context: ctx, initialTime: selectedTime);
+                    if (picked != null) {
+                      setSheetState(() => selectedTime = picked);
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.dv(context)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.access_time_rounded,
+                            color: AppColors.medication),
+                        const SizedBox(width: 12),
+                        Text(selectedTime.format(ctx),
+                            style: TextStyle(
+                                fontSize: 16, color: AppColors.tp(context))),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -276,7 +301,7 @@ class _MedicationTrackingScreenState
                         borderRadius: BorderRadius.circular(12)),
                   ),
                   child: Text(l10n.add,
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),
@@ -284,7 +309,12 @@ class _MedicationTrackingScreenState
           ),
         ),
       ),
-    );
+    ).whenComplete(() {
+      // Sheet kapanınca controller'lar serbest bırakılmalıydı — her açılışta
+      // yeni bir çift sızıyordu
+      nameCtrl.dispose();
+      doseCtrl.dispose();
+    });
   }
 
   Future<void> _saveAll() async {

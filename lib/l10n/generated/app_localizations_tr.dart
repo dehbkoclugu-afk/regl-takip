@@ -512,6 +512,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get decrease => 'Azalt';
 
   @override
+  String get bbtHint => 'En doğru sonuç için sabah uyanır uyanmaz, yataktan kalkmadan ve hep aynı saatte ölç. Ovülasyon teyidi bu ölçümlere dayanır.';
+
+  @override
+  String get deleteMeasurement => 'Ölçümü sil';
+
+  @override
+  String get measurementDeleted => 'Ölçüm silindi';
+
+  @override
   String severityLevel(int level) {
     return 'şiddet $level/5';
   }

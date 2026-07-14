@@ -1097,6 +1097,24 @@ abstract class AppLocalizations {
   /// **'Azalt'**
   String get decrease;
 
+  /// No description provided for @bbtHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'En doğru sonuç için sabah uyanır uyanmaz, yataktan kalkmadan ve hep aynı saatte ölç. Ovülasyon teyidi bu ölçümlere dayanır.'**
+  String get bbtHint;
+
+  /// No description provided for @deleteMeasurement.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ölçümü sil'**
+  String get deleteMeasurement;
+
+  /// No description provided for @measurementDeleted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ölçüm silindi'**
+  String get measurementDeleted;
+
   /// No description provided for @severityLevel.
   ///
   /// In tr, this message translates to:

@@ -19,6 +19,7 @@ class _TemperatureTrackingScreenState
     extends ConsumerState<TemperatureTrackingScreen> {
   double _temperature = 36.5;
   TimeOfDay _measureTime = TimeOfDay.now();
+  bool _hasExistingMeasurement = false;
 
   @override
   void initState() {
@@ -26,6 +27,7 @@ class _TemperatureTrackingScreenState
     final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
     if (log != null) {
       _temperature = log.temperature ?? 36.5;
+      _hasExistingMeasurement = log.temperature != null;
       if (log.temperatureTime != null) {
         final parts = log.temperatureTime!.split(':');
         if (parts.length == 2) {
@@ -81,6 +83,37 @@ class _TemperatureTrackingScreenState
                   const SizedBox(height: 24),
                   _buildTimeSelector(l10n)
                       .animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
+                  const SizedBox(height: 16),
+                  // Ovülasyon teyidi bu ölçümlere dayanıyor: gün içi rastgele
+                  // ölçüm BBT eğrisini işe yaramaz hale getirir
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.info_outline_rounded,
+                          size: 16, color: AppColors.ts(context)),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          l10n.bbtHint,
+                          style: TextStyle(
+                            fontSize: 12,
+                            height: 1.4,
+                            color: AppColors.ts(context),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ).animateSafe(context).fadeIn(delay: 500.ms, duration: 400.ms),
+                  if (_hasExistingMeasurement) ...[
+                    const SizedBox(height: 8),
+                    TextButton.icon(
+                      onPressed: _delete,
+                      icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                      label: Text(l10n.deleteMeasurement),
+                      style: TextButton.styleFrom(
+                          foregroundColor: AppColors.error),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -151,6 +184,8 @@ class _TemperatureTrackingScreenState
               min: 35.0,
               max: 40.0,
               divisions: 50,
+              label: '${_temperature.toStringAsFixed(1)}°C',
+              semanticFormatterCallback: (v) => '${v.toStringAsFixed(1)}°C',
               onChanged: (v) => setState(() =>
                   _temperature = double.parse(v.toStringAsFixed(1))),
             ),
@@ -161,19 +196,22 @@ class _TemperatureTrackingScreenState
   }
 
   Widget _buildTimeSelector(AppLocalizations l10n) {
-    return GestureDetector(
-      onTap: () async {
-        final picked = await showTimePicker(
-            context: context, initialTime: _measureTime);
-        if (picked != null) setState(() => _measureTime = picked);
-      },
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppColors.sf(context),
+    return Semantics(
+      button: true,
+      label: l10n.measurementTime,
+      value: _measureTime.format(context),
+      child: Material(
+        color: AppColors.sf(context),
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
-        ),
+          onTap: () async {
+            final picked = await showTimePicker(
+                context: context, initialTime: _measureTime);
+            if (picked != null) setState(() => _measureTime = picked);
+          },
+          child: Container(
+        padding: const EdgeInsets.all(20),
         child: Row(
           children: [
             Container(
@@ -205,6 +243,8 @@ class _TemperatureTrackingScreenState
                 color: AppColors.ts(context)),
           ],
         ),
+          ),
+        ),
       ),
     );
   }
@@ -229,6 +269,22 @@ class _TemperatureTrackingScreenState
         ),
       ),
     );
+  }
+
+  /// Yanlışlıkla kaydedilen ölçüm BBT eğrisini (ve ovülasyon teyidini)
+  /// bozar — silinebilmeli.
+  Future<void> _delete() async {
+    await ref
+        .read(dailyLogProvider.notifier)
+        .updateTemperature(ref.read(selectedDateProvider), null);
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          content: Text(l10n.measurementDeleted),
+          backgroundColor: AppColors.success),
+    );
+    Navigator.of(context).pop();
   }
 
   Future<void> _save() async {

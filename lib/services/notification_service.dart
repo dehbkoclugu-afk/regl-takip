@@ -24,6 +24,9 @@ class NotificationService {
   static const int _periodReminderBaseId = 10;
   static const int _ovulationReminderBaseId = 20;
   static const int _medicationReminderId = 3;
+  // İlaç başına ayrı hatırlatma: ID çakışmasın diye ayrı aralık
+  static const int _medicationReminderBaseId = 40;
+  static const int _maxMedicationReminders = 10;
 
   /// Kaç döngü ileriye hatırlatma planlanacağı
   static const int _cyclesToSchedule = 3;
@@ -248,6 +251,74 @@ class NotificationService {
     );
   }
 
+  /// Her ilaç kendi saatinde hatırlatılır.
+  ///
+  /// Önceden yalnız profildeki genel hatırlatma saatinde tek bir bildirim
+  /// atılıyordu: kullanıcı 08:00 ve 20:00 için iki ilaç girse bile ikisi de
+  /// aynı genel saatte tek satır olarak geliyordu, `reminderTime` alanı
+  /// hiç kullanılmıyordu.
+  Future<void> scheduleMedicationReminders(
+    List<MedicationEntry> medications,
+    String locale, {
+    required int fallbackHour,
+    required int fallbackMinute,
+  }) async {
+    final withTime = medications
+        .where((m) => m.reminderTime != null && m.name.trim().isNotEmpty)
+        .take(_maxMedicationReminders)
+        .toList();
+
+    // Saati olan ilaç yoksa eski davranış: tek genel hatırlatma
+    if (withTime.isEmpty) {
+      await scheduleMedicationReminder(fallbackHour, fallbackMinute, locale);
+      return;
+    }
+
+    for (var i = 0; i < withTime.length; i++) {
+      final med = withTime[i];
+      final parts = med.reminderTime!.split(':');
+      final hour = int.tryParse(parts.first);
+      final minute = parts.length > 1 ? int.tryParse(parts[1]) : null;
+      if (hour == null || minute == null) continue;
+
+      final now = DateTime.now();
+      var scheduledDate =
+          tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+      if (scheduledDate.isBefore(tz.TZDateTime.now(tz.local))) {
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      }
+
+      final body =
+          med.dose.isEmpty ? med.name : '${med.name} — ${med.dose}';
+
+      await _plugin.zonedSchedule(
+        _medicationReminderBaseId + i,
+        _t(locale, 'medicationTitle'),
+        body,
+        scheduledDate,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            'medication_reminder',
+            _t(locale, 'medicationChannel'),
+            channelDescription: _t(locale, 'medicationChannelDesc'),
+            importance: Importance.high,
+            priority: Priority.high,
+            icon: '@mipmap/ic_launcher',
+          ),
+          iOS: const DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
+        ),
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time,
+      );
+    }
+  }
+
   /// Cancels all scheduled notifications.
   Future<void> cancelAll() async {
     await _plugin.cancelAll();
@@ -258,6 +329,7 @@ class NotificationService {
   Future<void> rescheduleAll(
     UserProfile profile, {
     List<PeriodRecord> records = const [],
+    List<MedicationEntry> medications = const [],
   }) async {
     if (!_isInitialized) return;
 
@@ -312,7 +384,12 @@ class NotificationService {
       }
 
       if (profile.medicationReminderEnabled) {
-        await scheduleMedicationReminder(hour, minute, locale);
+        await scheduleMedicationReminders(
+          medications,
+          locale,
+          fallbackHour: hour,
+          fallbackMinute: minute,
+        );
       }
     } catch (e) {
       // Bildirim planlaması başarısız — uygulamayı kilitlememek için yutulur
