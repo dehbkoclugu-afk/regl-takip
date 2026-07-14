@@ -68,6 +68,11 @@ Her ekran tek tek UI/UX, kod mimarisi ve veri katmanı açısından denetleniyor
 - Not ekranı her tuş vuruşunda tüm sayfayı yeniden çiziyordu
 - Boş not kaydetmek takvimde sahte "kayıt var" noktası bırakmıyor
 
+### İstatistik
+- **Devam eden regl varken "ortalama regl süresi: 0,0 gün" yazıyordu** — bitmiş kayıt yoksa profil değeri gösteriliyor (testlerle korundu)
+- Filtre çipleri gerçek buton oldu (dokunma efekti + 48 dp yükseklik)
+- Faz içgörüsü hesabı tip güvenli hale getirildi (`dynamic` + cast kaldırıldı)
+
 ## 1.1.0 (2026-07-13)
 
 ### Yeni

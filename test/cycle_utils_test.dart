@@ -186,6 +186,33 @@ void main() {
     });
   });
 
+  group('averagePeriodDuration (istatistik)', () {
+    test('bitmiş kayıtların ortalaması alınır', () {
+      final records = [
+        PeriodRecord(
+            id: '1',
+            startDate: DateTime(2026, 5, 1),
+            endDate: DateTime(2026, 5, 5)), // 5 gün
+        PeriodRecord(
+            id: '2',
+            startDate: DateTime(2026, 6, 1),
+            endDate: DateTime(2026, 6, 3)), // 3 gün
+      ];
+      expect(CycleUtils.averagePeriodDuration(records, 7), 4.0);
+    });
+
+    test('tüm kayıtlar devam ediyorsa profil değeri döner (0 değil)', () {
+      final records = [
+        PeriodRecord(id: '1', startDate: DateTime(2026, 6, 1)),
+      ];
+      expect(CycleUtils.averagePeriodDuration(records, 6), 6.0);
+    });
+
+    test('kayıt yoksa profil değeri döner', () {
+      expect(CycleUtils.averagePeriodDuration(const [], 5), 5.0);
+    });
+  });
+
   group('completedPeriodEnd (onboarding kaydı)', () {
     test('geçmiş regl kapalı kayıt olur', () {
       final start = DateTime(2026, 6, 1);

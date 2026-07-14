@@ -11,6 +11,7 @@ import '../../core/widgets/glass_card.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../models/daily_log.dart';
+import '../../models/user_profile.dart';
 import '../../providers/providers.dart';
 import '../../core/utils/motion.dart';
 
@@ -38,12 +39,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         dailyLogs.values.where((l) => l.date.isAfter(cutoff)).toList();
 
     final avgCycle = CycleUtils.calculateAverageCycleLength(records);
-    final avgPeriod = filteredRecords.isEmpty
-        ? (profile?.averagePeriodLength ?? 5).toDouble()
-        : filteredRecords
-                .where((r) => r.endDate != null)
-                .fold<double>(0, (sum, r) => sum + r.durationDays) /
-            filteredRecords.where((r) => r.endDate != null).length.clamp(1, 999);
+    // Seçili aralıktaki tüm kayıtlar devam ediyorsa (endDate yok) eski
+    // hesap 0/1 = 0 veriyor ve "0,0 gün" yazıyordu — profil değeri kullanılır
+    final avgPeriod = CycleUtils.averagePeriodDuration(
+        filteredRecords, profile?.averagePeriodLength ?? 5);
 
     return Scaffold(
       backgroundColor: AppColors.bg(context),
@@ -123,11 +122,12 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     return Semantics(
       button: true,
       selected: isSelected,
-      child: GestureDetector(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
         onTap: () => setState(() => _filterMonths = months),
         child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           gradient: isSelected
               ? const LinearGradient(
@@ -457,14 +457,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     AppLocalizations l10n,
     List<DailyLog> logs,
     List<PeriodRecord> records,
-    dynamic profile,
+    UserProfile? profile,
   ) {
     if (profile == null || records.isEmpty) {
       return _emptyCard(l10n.phaseInsights, l10n.noInsightsYet);
     }
 
     final cycleLen = ref.read(effectiveCycleLengthProvider);
-    final periodLen = profile.averagePeriodLength as int;
+    final periodLen = profile.averagePeriodLength;
     final sortedStarts = records.map((r) => r.startDate).toList()
       ..sort();
 

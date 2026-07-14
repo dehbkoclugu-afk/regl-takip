@@ -55,6 +55,18 @@ class CycleUtils {
   static int ovulationDayNumber(int cycleLength) =>
       cycleLength - AppConstants.ovulationDayBeforePeriod + 1;
 
+  /// Kayıtlardan ortalama regl süresi. Yalnız bitmiş kayıtlar sayılır;
+  /// hiç bitmiş kayıt yoksa [fallback] döner (aksi halde "0,0 gün" gibi
+  /// anlamsız bir ortalama gösterilir).
+  static double averagePeriodDuration(
+      List<PeriodRecord> records, int fallback) {
+    final completed = records.where((r) => r.endDate != null).toList();
+    if (completed.isEmpty) return fallback.toDouble();
+    final total =
+        completed.fold<int>(0, (sum, r) => sum + r.durationDays);
+    return total / completed.length;
+  }
+
   /// Onboarding'de girilen "son regl başlangıcı" için kayıt bitiş tarihi.
   /// Regl bugün hâlâ sürüyorsa null döner: kayıt açık (isOngoing) kalmalı.
   static DateTime? completedPeriodEnd(
