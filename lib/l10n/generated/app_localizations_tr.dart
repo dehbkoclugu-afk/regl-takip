@@ -838,6 +838,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get selectDateHint => 'Tarih seç';
 
   @override
+  String get selectDateToContinue => 'Devam etmek için bir tarih seç';
+
+  @override
+  String stepOfSteps(int current, int total) {
+    return 'Adım $current / $total';
+  }
+
+  @override
   String get lastPeriodTitle => 'Son Regl Tarihin';
 
   @override

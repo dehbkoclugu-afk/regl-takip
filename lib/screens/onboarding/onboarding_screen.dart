@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/cycle_utils.dart';
 import '../../providers/providers.dart';
 import '../../models/user_profile.dart';
 import 'widgets/onboarding_page.dart';
@@ -53,7 +54,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
+  /// Son regl tarihi olmadan döngü matematiği çalışmaz (tahmin, faz, bildirim
+  /// hepsi lastPeriodStart'a bağlı) — bu adım zorunlu. İsim ve doğum tarihi
+  /// isteğe bağlı: kimliğini paylaşmak istemeyen kullanıcı da geçebilmeli.
+  bool get _canContinue {
+    if (_currentFormStep == 2) return _lastPeriodDate != null;
+    return true;
+  }
+
   void _nextFormStep() {
+    if (!_canContinue) return;
     if (_currentFormStep < _totalFormSteps - 1) {
       _formPageController.nextPage(
         duration: const Duration(milliseconds: 350),
@@ -79,16 +89,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   Future<void> _completeOnboarding() async {
-    if (_isSaving) return;
+    if (_isSaving || _lastPeriodDate == null) return;
     final l10n = AppLocalizations.of(context)!;
 
     // Veri işleme onayı: kabul edilmeden profil oluşturulmaz
     final consented = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.consentTitle),
-        content: Text(l10n.consentBody,
-            style: const TextStyle(fontSize: 14, height: 1.5)),
+        content: SingleChildScrollView(
+          child: Text(l10n.consentBody,
+              style: const TextStyle(fontSize: 14, height: 1.5)),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -106,15 +119,30 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     setState(() => _isSaving = true);
 
     try {
+      final periodLength = _periodLength.round();
+      final lastPeriod = _lastPeriodDate!;
+
+      // Takvim, istatistik ve "reglim bitti" akışı profile'a değil
+      // PeriodRecord'lara bakar — girilen son regl kayıt olarak da yazılmalı,
+      // yoksa kullanıcı boş bir takvimle karşılaşır.
+      final record =
+          await ref.read(periodRecordsProvider.notifier).startPeriod(lastPeriod);
+      final end = CycleUtils.completedPeriodEnd(
+          lastPeriod, periodLength, DateTime.now());
+      if (end != null) {
+        await ref.read(periodRecordsProvider.notifier).endPeriod(record.id, end);
+      }
+
       final profile = UserProfile(
         name: _nameController.text.trim(),
         birthDate: _birthDate,
-        lastPeriodStart: _lastPeriodDate,
+        lastPeriodStart: lastPeriod,
         averageCycleLength: _cycleLength.round(),
-        averagePeriodLength: _periodLength.round(),
+        averagePeriodLength: periodLength,
         onboardingCompleted: true,
       );
 
+      // En son: bildirim ve widget kurulumu kayıtları da görmüş olur
       await ref.read(userProfileProvider.notifier).updateProfile(profile);
 
       if (!mounted) return;
@@ -184,42 +212,51 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppColors.primaryStrong, AppColors.secondaryStrong],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+    // Sistem geri hareketi (Android predictive back) formda bir adım geri
+    // almalı; ilk sayfada uygulamadan çıkışa izin verilir.
+    return PopScope(
+      canPop: _currentMainPage == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop || _isSaving) return;
+        _prevFormStep();
+      },
+      child: Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.primaryStrong, AppColors.secondaryStrong],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              const SizedBox(height: 16),
-              Expanded(
-                child: PageView(
-                  controller: _mainPageController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  onPageChanged: (index) {
-                    setState(() => _currentMainPage = index);
-                  },
-                  children: [
-                    OnboardingPage(
-                      icon: Icons.favorite,
-                      title: l10n.welcomeInfoTitle,
-                      description: l10n.welcomeInfoDesc,
-                      gradientColors: const [
-                        AppColors.primary,
-                        AppColors.primaryDark,
-                      ],
-                    ),
-                    _buildSetupPage(),
-                  ],
+          child: SafeArea(
+            child: Column(
+              children: [
+                const SizedBox(height: 16),
+                Expanded(
+                  child: PageView(
+                    controller: _mainPageController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    onPageChanged: (index) {
+                      setState(() => _currentMainPage = index);
+                    },
+                    children: [
+                      OnboardingPage(
+                        icon: Icons.favorite,
+                        title: l10n.welcomeInfoTitle,
+                        description: l10n.welcomeInfoDesc,
+                        gradientColors: const [
+                          AppColors.primary,
+                          AppColors.primaryDark,
+                        ],
+                      ),
+                      _buildSetupPage(),
+                    ],
+                  ),
                 ),
-              ),
-              _buildBottomControls(),
-            ],
+                _buildBottomControls(),
+              ],
+            ),
           ),
         ),
       ),
@@ -237,7 +274,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       child: SizedBox(
         width: double.infinity,
         height: 56,
-        child: _GlassButton(
+        child: _ActionButton(
           label: l10n.startBtn,
           onPressed: _nextMainPage,
         ),
@@ -289,63 +326,90 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   Widget _buildStepProgress() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Row(
-        children: List.generate(_totalFormSteps, (index) {
-          final isActive = index <= _currentFormStep;
-          return Expanded(
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              height: 4,
-              margin: const EdgeInsets.symmetric(horizontal: 3),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(2),
-                color: isActive
-                    ? Colors.white
-                    : Colors.white.withValues(alpha: 0.25),
+    final l10n = AppLocalizations.of(context)!;
+    return Semantics(
+      label: l10n.stepOfSteps(_currentFormStep + 1, _totalFormSteps),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Row(
+          children: List.generate(_totalFormSteps, (index) {
+            final isActive = index <= _currentFormStep;
+            return Expanded(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                height: 4,
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2),
+                  color: isActive
+                      ? Colors.white
+                      : Colors.white.withValues(alpha: 0.25),
+                ),
               ),
-            ),
-          );
-        }),
+            );
+          }),
+        ),
       ),
     );
   }
 
   Widget _buildFormNavigation() {
     final l10n = AppLocalizations.of(context)!;
-    return Row(
+    final canContinue = _canContinue;
+    return Column(
       children: [
-        SizedBox(
-          height: 52,
-          child: OutlinedButton.icon(
-            onPressed: _prevFormStep,
-            icon: const Icon(Icons.arrow_back_rounded, size: 20),
-            label: Text(l10n.back),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.white,
-              side: BorderSide(
-                color: Colors.white.withValues(alpha: 0.4),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-            ),
-          ),
+        // Zorunlu adımda buton neden kapalı, kullanıcı bilmeli
+        AnimatedSize(
+          duration: const Duration(milliseconds: 200),
+          child: canContinue
+              ? const SizedBox(width: double.infinity)
+              : Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Text(
+                    l10n.selectDateToContinue,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: SizedBox(
-            height: 52,
-            child: _GlassButton(
-              label: _currentFormStep == _totalFormSteps - 1
-                  ? l10n.completeBtn
-                  : l10n.continueBtn,
-              onPressed: _isSaving ? null : _nextFormStep,
-              isLoading: _isSaving,
+        Row(
+          children: [
+            SizedBox(
+              height: 52,
+              child: OutlinedButton.icon(
+                onPressed: _isSaving ? null : _prevFormStep,
+                icon: const Icon(Icons.arrow_back_rounded, size: 20),
+                label: Text(l10n.back),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  disabledForegroundColor: Colors.white.withValues(alpha: 0.5),
+                  side: BorderSide(
+                    color: Colors.white.withValues(alpha: 0.4),
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                ),
+              ),
             ),
-          ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: SizedBox(
+                height: 52,
+                child: _ActionButton(
+                  label: _currentFormStep == _totalFormSteps - 1
+                      ? l10n.completeBtn
+                      : l10n.continueBtn,
+                  onPressed: (_isSaving || !canContinue) ? null : _nextFormStep,
+                  isLoading: _isSaving,
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -354,36 +418,82 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Widget _formCard({required List<Widget> children}) {
     return Center(
       child: SingleChildScrollView(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(28),
-          // Cam bırakıldı: gradyan üstünde opak form kartı
-          child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(28),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(28),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.5),
-                  width: 1,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.06),
-                    blurRadius: 30,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 30,
+                offset: const Offset(0, 10),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: children,
-              ),
-            ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: children,
+          ),
         )
             .animateSafe(context)
             .fadeIn(duration: 350.ms)
             .slideX(begin: 0.05, end: 0, duration: 350.ms),
+      ),
+    );
+  }
+
+  /// Tarih seçici alan: dokunulabilir, ripple'lı, ekran okuyucuya buton
+  /// olarak görünen ortak yapı (iki adım de aynısını kullanıyordu).
+  Widget _dateField({
+    required DateTime? value,
+    required String semanticsLabel,
+    required String hint,
+    required VoidCallback onTap,
+  }) {
+    final formatter =
+        DateFormat('dd MMMM yyyy', Localizations.localeOf(context).toString());
+    final selected = value != null;
+    return Semantics(
+      button: true,
+      label: semanticsLabel,
+      value: selected ? formatter.format(value) : hint,
+      child: Material(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: selected ? AppColors.primary : Colors.transparent,
+                width: 1.5,
+              ),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.calendar_today, color: AppColors.primary),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    selected ? formatter.format(value) : hint,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: selected
+                          ? AppColors.textPrimary
+                          : AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -447,10 +557,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         TextField(
           controller: _nameController,
           textCapitalization: TextCapitalization.words,
+          textInputAction: TextInputAction.next,
+          onSubmitted: (_) => _nextFormStep(),
           style: const TextStyle(fontSize: 18),
           decoration: InputDecoration(
             hintText: l10n.yourName,
-            hintStyle: TextStyle(color: Colors.grey.shade400),
+            hintStyle: const TextStyle(color: AppColors.textSecondary),
             prefixIcon: const Icon(Icons.person, color: AppColors.primary),
             filled: true,
             fillColor: Colors.grey.shade50,
@@ -473,45 +585,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Widget _buildBirthDateStep() {
     final l10n = AppLocalizations.of(context)!;
-    final dateFormatter = DateFormat('dd MMMM yyyy', Localizations.localeOf(context).toString());
     return _formCard(
       children: [
         _stepIcon(Icons.cake_outlined),
         _stepTitle(l10n.yourBirthDate),
         _stepSubtitle(l10n.birthDateHelp),
-        GestureDetector(
+        _dateField(
+          value: _birthDate,
+          semanticsLabel: l10n.yourBirthDate,
+          hint: l10n.selectDateHint,
           onTap: _pickBirthDate,
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: _birthDate != null
-                    ? AppColors.primary
-                    : Colors.transparent,
-                width: 1.5,
-              ),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.calendar_today, color: AppColors.primary),
-                const SizedBox(width: 12),
-                Text(
-                  _birthDate != null
-                      ? dateFormatter.format(_birthDate!)
-                      : l10n.selectDateHint,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: _birthDate != null
-                        ? AppColors.textPrimary
-                        : Colors.grey.shade400,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
       ],
     );
@@ -519,45 +602,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Widget _buildLastPeriodStep() {
     final l10n = AppLocalizations.of(context)!;
-    final dateFormatter = DateFormat('dd MMMM yyyy', Localizations.localeOf(context).toString());
     return _formCard(
       children: [
         _stepIcon(Icons.water_drop_outlined),
         _stepTitle(l10n.lastPeriodTitle),
         _stepSubtitle(l10n.lastPeriodHelp),
-        GestureDetector(
+        _dateField(
+          value: _lastPeriodDate,
+          semanticsLabel: l10n.lastPeriodTitle,
+          hint: l10n.selectDateHint,
           onTap: _pickLastPeriodDate,
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: _lastPeriodDate != null
-                    ? AppColors.primary
-                    : Colors.transparent,
-                width: 1.5,
-              ),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.calendar_today, color: AppColors.primary),
-                const SizedBox(width: 12),
-                Text(
-                  _lastPeriodDate != null
-                      ? dateFormatter.format(_lastPeriodDate!)
-                      : l10n.selectDateHint,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: _lastPeriodDate != null
-                        ? AppColors.textPrimary
-                        : Colors.grey.shade400,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
       ],
     );
@@ -593,6 +647,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             min: 18,
             max: 45,
             divisions: 27,
+            label: l10n.nDays(_cycleLength.round()),
+            semanticFormatterCallback: (v) => l10n.nDays(v.round()),
             onChanged: (v) => setState(() => _cycleLength = v),
           ),
         ),
@@ -601,12 +657,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('18', style: TextStyle(color: Colors.grey.shade500)),
+              const Text('18', style: TextStyle(color: AppColors.textSecondary)),
               Text('28 (${l10n.averageLabel})',
-                  style: TextStyle(
-                      color: Colors.grey.shade500,
+                  style: const TextStyle(
+                      color: AppColors.textSecondary,
                       fontWeight: FontWeight.w500)),
-              Text('45', style: TextStyle(color: Colors.grey.shade500)),
+              const Text('45', style: TextStyle(color: AppColors.textSecondary)),
             ],
           ),
         ),
@@ -644,6 +700,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             min: 2,
             max: 10,
             divisions: 8,
+            label: l10n.nDays(_periodLength.round()),
+            semanticFormatterCallback: (v) => l10n.nDays(v.round()),
             onChanged: (v) => setState(() => _periodLength = v),
           ),
         ),
@@ -652,12 +710,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('2', style: TextStyle(color: Colors.grey.shade500)),
+              const Text('2', style: TextStyle(color: AppColors.textSecondary)),
               Text('5 (${l10n.averageLabel})',
-                  style: TextStyle(
-                      color: Colors.grey.shade500,
+                  style: const TextStyle(
+                      color: AppColors.textSecondary,
                       fontWeight: FontWeight.w500)),
-              Text('10', style: TextStyle(color: Colors.grey.shade500)),
+              const Text('10', style: TextStyle(color: AppColors.textSecondary)),
             ],
           ),
         ),
@@ -666,12 +724,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 }
 
-class _GlassButton extends StatelessWidget {
+/// Gradyan üstünde duran opak beyaz birincil aksiyon butonu.
+class _ActionButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final bool isLoading;
 
-  const _GlassButton({
+  const _ActionButton({
     required this.label,
     required this.onPressed,
     this.isLoading = false,
@@ -679,53 +738,38 @@ class _GlassButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
+    final enabled = onPressed != null && !isLoading;
+    return Material(
+      color: enabled ? Colors.white : Colors.white.withValues(alpha: 0.55),
       borderRadius: BorderRadius.circular(16),
-      // Cam bırakıldı: gradyan üstünde opak beyaz aksiyon butonu
-      child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onPressed,
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: Colors.white,
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.5),
-                  width: 1,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 16,
-                    offset: const Offset(0, 4),
+      elevation: enabled ? 2 : 0,
+      shadowColor: Colors.black.withValues(alpha: 0.2),
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(16),
+        child: Center(
+          child: isLoading
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: AppColors.primary,
                   ),
-                ],
-              ),
-              child: Center(
-                child: isLoading
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          color: AppColors.primary,
-                        ),
-                      )
-                    : Text(
-                        label,
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.primary,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-              ),
-            ),
-          ),
+                )
+              : Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: enabled
+                        ? AppColors.primary
+                        : AppColors.primary.withValues(alpha: 0.6),
+                    letterSpacing: 0.3,
+                  ),
+                ),
         ),
+      ),
     );
   }
 }

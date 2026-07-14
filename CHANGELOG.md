@@ -1,5 +1,17 @@
 # Changelog
 
+## Yayınlanmamış — Sayfa denetimi (2026-07-14)
+
+Her ekran tek tek UI/UX, kod mimarisi ve veri katmanı açısından denetleniyor.
+
+### Kurulum (Onboarding)
+- **Girilen son regl artık kayıt olarak da yazılıyor**: daha önce yalnız profile yazılıyordu; takvim, istatistik ve "reglim bitti" akışı kayıtlara baktığı için ilk kullanıcı boş bir takvimle karşılaşıyordu. Regl hâlâ sürüyorsa kayıt açık bırakılıyor, bittiyse kapatılıyor
+- Son regl tarihi zorunlu hale geldi (tahmin/faz/bildirim tümü buna bağlı); seçilmeden "Devam" kapalı ve nedeni yazıyor. İsim ve doğum tarihi isteğe bağlı kaldı
+- Android sistem geri hareketi formda bir adım geri alıyor (önceden kurulumdan çıkıyordu)
+- Erişilebilirlik: tarih alanları gerçek buton (ripple + ekran okuyucu etiketi), slider'lar değer okuyor, adım göstergesi "Adım 3 / 5" diye anons ediliyor
+- Onay penceresi yanlışlıkla kapatılamıyor ve uzun metinde kaydırılabiliyor
+- İpucu/etiket renkleri token'a çekildi (kontrast), gereksiz katman kaldırıldı
+
 ## 1.1.0 (2026-07-13)
 
 ### Yeni

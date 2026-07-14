@@ -838,6 +838,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectDateHint => 'Select date';
 
   @override
+  String get selectDateToContinue => 'Select a date to continue';
+
+  @override
+  String stepOfSteps(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
   String get lastPeriodTitle => 'Your Last Period';
 
   @override

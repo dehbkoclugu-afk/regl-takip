@@ -55,6 +55,16 @@ class CycleUtils {
   static int ovulationDayNumber(int cycleLength) =>
       cycleLength - AppConstants.ovulationDayBeforePeriod + 1;
 
+  /// Onboarding'de girilen "son regl başlangıcı" için kayıt bitiş tarihi.
+  /// Regl bugün hâlâ sürüyorsa null döner: kayıt açık (isOngoing) kalmalı.
+  static DateTime? completedPeriodEnd(
+      DateTime start, int periodLength, DateTime today) {
+    final s = DateTime(start.year, start.month, start.day);
+    final t = DateTime(today.year, today.month, today.day);
+    final end = s.add(Duration(days: periodLength - 1));
+    return end.isAfter(t) ? null : end;
+  }
+
   /// Belirli bir döngü günü için fazı belirler
   static CyclePhase phaseForDay(
     int cycleDay,

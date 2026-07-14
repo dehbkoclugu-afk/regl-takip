@@ -325,6 +325,14 @@
   "yourBirthDate": "Your Birth Date",
   "birthDateHelp": "Helps us provide age-appropriate suggestions.",
   "selectDateHint": "Select date",
+  "selectDateToContinue": "Select a date to continue",
+  "stepOfSteps": "Step {current} of {total}",
+  "@stepOfSteps": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
   "lastPeriodTitle": "Your Last Period",
   "lastPeriodHelp": "Select the start date of your last period.",
   "cycleLengthTitle": "Cycle Length",

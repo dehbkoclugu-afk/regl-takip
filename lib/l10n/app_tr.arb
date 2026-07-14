@@ -325,6 +325,14 @@
   "yourBirthDate": "Doğum Tarihin",
   "birthDateHelp": "Yaşa uygun öneriler sunmamıza yardımcı olur.",
   "selectDateHint": "Tarih seç",
+  "selectDateToContinue": "Devam etmek için bir tarih seç",
+  "stepOfSteps": "Adım {current} / {total}",
+  "@stepOfSteps": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
   "lastPeriodTitle": "Son Regl Tarihin",
   "lastPeriodHelp": "En son regl döngünün başlangıç tarihini seç.",
   "cycleLengthTitle": "Döngü Süresi",

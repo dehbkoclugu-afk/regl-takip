@@ -1709,6 +1709,18 @@ abstract class AppLocalizations {
   /// **'Tarih seç'**
   String get selectDateHint;
 
+  /// No description provided for @selectDateToContinue.
+  ///
+  /// In tr, this message translates to:
+  /// **'Devam etmek için bir tarih seç'**
+  String get selectDateToContinue;
+
+  /// No description provided for @stepOfSteps.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adım {current} / {total}'**
+  String stepOfSteps(int current, int total);
+
   /// No description provided for @lastPeriodTitle.
   ///
   /// In tr, this message translates to:

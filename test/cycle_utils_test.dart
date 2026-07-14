@@ -185,4 +185,33 @@ void main() {
       expect(next.isBefore(today), isFalse);
     });
   });
+
+  group('completedPeriodEnd (onboarding kaydı)', () {
+    test('geçmiş regl kapalı kayıt olur', () {
+      final start = DateTime(2026, 6, 1);
+      final today = DateTime(2026, 6, 20);
+      expect(CycleUtils.completedPeriodEnd(start, 5, today),
+          DateTime(2026, 6, 5));
+    });
+
+    test('regl bugün hâlâ sürüyorsa kayıt açık kalır', () {
+      final start = DateTime(2026, 6, 18);
+      final today = DateTime(2026, 6, 20);
+      expect(CycleUtils.completedPeriodEnd(start, 5, today), isNull);
+    });
+
+    test('bitiş bugüne denk gelirse kapalı sayılır', () {
+      final start = DateTime(2026, 6, 16);
+      final today = DateTime(2026, 6, 20);
+      expect(CycleUtils.completedPeriodEnd(start, 5, today),
+          DateTime(2026, 6, 20));
+    });
+
+    test('saat bileşeni sonucu bozmaz', () {
+      final start = DateTime(2026, 6, 1, 23, 30);
+      final today = DateTime(2026, 6, 5, 0, 10);
+      expect(CycleUtils.completedPeriodEnd(start, 5, today),
+          DateTime(2026, 6, 5));
+    });
+  });
 }
