@@ -39,6 +39,20 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: isOnboarded ? '/dashboard' : '/onboarding',
+    // Bildirim/widget/deep link doğrudan bir sekmeye atlayabilir: profil
+    // yoksa döngü ekranları boş veriyle açılır. Kurulum tamamlanmadan
+    // hiçbir yere girilemez, tamamlandıysa kuruluma geri dönülemez.
+    redirect: (context, state) {
+      final onboarded =
+          ref.read(userProfileProvider)?.onboardingCompleted ?? false;
+      final atOnboarding = state.matchedLocation == '/onboarding';
+      if (!onboarded && !atOnboarding) return '/onboarding';
+      if (onboarded && atOnboarding) return '/dashboard';
+      return null;
+    },
+    // Bilinmeyen yol (eski bildirim payload'ı, hatalı deep link) kırmızı
+    // hata ekranı yerine ana sayfaya düşer
+    onException: (context, state, router) => router.go('/dashboard'),
     routes: [
       // Onboarding - no shell, full screen
       GoRoute(

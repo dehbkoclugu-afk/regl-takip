@@ -20,6 +20,12 @@ Her ekran tek tek UI/UX, kod mimarisi ve veri katmanı açısından denetleniyor
 - PIN doğrulama arka planda (isolate) çalışıyor, ekran donmuyor
 - Tuş takımı ve nokta göstergesi tek ortak bileşene taşındı (iki ekranda kopya kod yoktu artık)
 
+### Gezinme (shell + router)
+- Kurulum tamamlanmadan hiçbir ekrana girilemiyor: bildirim/widget/deep link doğrudan sekmeye atlayıp boş veriyle ekran açamaz
+- Bilinmeyen adres kırmızı hata ekranı yerine ana sayfaya düşüyor (eski bildirim bağlantıları)
+- Sekme geçiş animasyonu 400 ms'den 250 ms'ye indi; sistem "animasyonları azalt" açıksa anında geçiyor
+- Alt bar ve tablet rail'i artık tek hedef listesinden besleniyor (ikisi ayrı ayrı yazılıyordu)
+
 ## 1.1.0 (2026-07-13)
 
 ### Yeni
