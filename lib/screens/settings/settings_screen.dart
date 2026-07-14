@@ -229,6 +229,10 @@ class SettingsScreen extends ConsumerWidget {
                 } else {
                   const storage = FlutterSecureStorage();
                   await storage.delete(key: 'app_pin');
+                  // Kilitlenme sayacı da gitmeli: PIN yeniden kurulduğunda
+                  // eski yanlış denemeler yüzünden bekleme başlamasın
+                  await storage.delete(key: 'pin_failed_attempts');
+                  await storage.delete(key: 'pin_lockout_until');
                   ref.read(userProfileProvider.notifier)
                       .saveProfile(pinEnabled: false);
                   if (context.mounted) {

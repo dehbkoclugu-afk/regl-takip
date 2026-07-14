@@ -66,11 +66,15 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) {
-      // Re-lock when app goes to background
+    // inactive de dahil: uygulama değiştirici (recents) önizlemesi paused'dan
+    // önce çekilir — yalnız paused'da kilitlersek son ekran orada görünür
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.hidden) {
       final profile = ref.read(userProfileProvider);
-      if ((profile?.pinEnabled == true) || (profile?.biometricEnabled == true)) {
-        setState(() => _isLocked = true);
+      if ((profile?.pinEnabled == true) ||
+          (profile?.biometricEnabled == true)) {
+        if (!_isLocked) setState(() => _isLocked = true);
       }
     }
   }

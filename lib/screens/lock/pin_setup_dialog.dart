@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/pin_utils.dart';
+import 'widgets/pin_pad.dart';
 
 /// Shows a full-screen PIN setup flow. Returns true if PIN was set successfully.
 Future<bool> showPinSetupDialog(BuildContext context) async {
@@ -29,9 +31,10 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
   String? _firstPin;
   bool _isConfirming = false;
   bool _isError = false;
+  bool _isSaving = false;
 
   void _onDigit(String digit) {
-    if (_pin.length >= 4) return;
+    if (_isSaving || _pin.length >= 4) return;
     setState(() {
       _isError = false;
       _pin += digit;
@@ -42,7 +45,7 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
   }
 
   void _onDelete() {
-    if (_pin.isEmpty) return;
+    if (_isSaving || _pin.isEmpty) return;
     setState(() {
       _isError = false;
       _pin = _pin.substring(0, _pin.length - 1);
@@ -51,27 +54,34 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
 
   Future<void> _handlePinComplete() async {
     if (!_isConfirming) {
-      // First entry - save and ask for confirmation
+      // İlk giriş: onay için sakla
       setState(() {
         _firstPin = _pin;
         _pin = '';
         _isConfirming = true;
       });
-    } else {
-      // Confirmation entry
-      if (_pin == _firstPin) {
-        await _storage.write(key: 'app_pin', value: PinUtils.hashPin(_pin));
-        if (mounted) Navigator.of(context).pop(true);
-      } else {
-        HapticFeedback.heavyImpact();
-        setState(() {
-          _isError = true;
-          _pin = '';
-          _firstPin = null;
-          _isConfirming = false;
-        });
-      }
+      return;
     }
+
+    if (_pin != _firstPin) {
+      HapticFeedback.heavyImpact();
+      setState(() {
+        _isError = true;
+        _pin = '';
+        _firstPin = null;
+        _isConfirming = false;
+      });
+      return;
+    }
+
+    setState(() => _isSaving = true);
+    // PBKDF2 türetmesi isolate'ta: UI donmasın
+    final encoded = await compute(encodePinTask, _pin);
+    await _storage.write(key: 'app_pin', value: encoded);
+    // Yeni PIN kurulduysa eski kilitlenme sayacı da sıfırlanmalı
+    await _storage.delete(key: 'pin_failed_attempts');
+    await _storage.delete(key: 'pin_lockout_until');
+    if (mounted) Navigator.of(context).pop(true);
   }
 
   @override
@@ -93,9 +103,11 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
               Align(
                 alignment: Alignment.topLeft,
                 child: IconButton(
-                  onPressed: () => Navigator.of(context).pop(false),
+                  onPressed:
+                      _isSaving ? null : () => Navigator.of(context).pop(false),
                   icon: const Icon(Icons.close_rounded,
                       color: Colors.white, size: 28),
+                  tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                 ),
               ),
               const Spacer(flex: 2),
@@ -107,7 +119,7 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
               const SizedBox(height: 16),
               Text(
                 _isConfirming ? l10n.confirmPin : l10n.createPin,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -125,116 +137,16 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
                   ),
                 ),
               const SizedBox(height: 32),
-              _buildPinDots(),
+              PinDots(filled: _pin.length, isError: _isError),
               const Spacer(),
-              _buildNumpad(),
+              PinPad(
+                onDigit: _onDigit,
+                onDelete: _onDelete,
+                enabled: !_isSaving,
+              ),
               const SizedBox(height: 40),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPinDots() {
-    return Semantics(
-      label: '${_pin.length}/4',
-      liveRegion: true,
-      child: ExcludeSemantics(child: _buildPinDotsRow()),
-    );
-  }
-
-  Widget _buildPinDotsRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(4, (i) {
-        final isFilled = i < _pin.length;
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.symmetric(horizontal: 10),
-          width: isFilled ? 18 : 14,
-          height: isFilled ? 18 : 14,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: _isError
-                ? Colors.yellow.shade200
-                : isFilled
-                    ? Colors.white
-                    : Colors.white.withValues(alpha: 0.3),
-            border: !isFilled
-                ? Border.all(
-                    color: Colors.white.withValues(alpha: 0.5), width: 2)
-                : null,
-          ),
-        );
-      }),
-    );
-  }
-
-  Widget _buildNumpad() {
-    final digits = [
-      ['1', '2', '3'],
-      ['4', '5', '6'],
-      ['7', '8', '9'],
-      ['', '0', 'del'],
-    ];
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40),
-      child: Column(
-        children: digits.map((row) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: row.map((key) {
-                if (key.isEmpty) return const SizedBox(width: 72);
-                if (key == 'del') {
-                  return Semantics(
-                    button: true,
-                    label: MaterialLocalizations.of(context)
-                        .deleteButtonTooltip,
-                    child: _numpadButton(
-                      child: const Icon(Icons.backspace_rounded,
-                          color: Colors.white, size: 24),
-                      onTap: _onDelete,
-                    ),
-                  );
-                }
-                return _numpadButton(
-                  child: Text(key,
-                      style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white)),
-                  onTap: () => _onDigit(key),
-                );
-              }).toList(),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _numpadButton({required Widget child, required VoidCallback onTap}) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          HapticFeedback.lightImpact();
-          onTap();
-        },
-        borderRadius: BorderRadius.circular(36),
-        splashColor: Colors.white24,
-        child: Container(
-          width: 72,
-          height: 72,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white.withValues(alpha: 0.1),
-          ),
-          child: Center(child: child),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +11,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/motion.dart';
 import '../../core/utils/pin_utils.dart';
 import '../../providers/providers.dart';
+import 'widgets/pin_pad.dart';
 
 class LockScreen extends ConsumerStatefulWidget {
   final VoidCallback onUnlocked;
@@ -24,6 +26,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   final _localAuth = LocalAuthentication();
   String _enteredPin = '';
   bool _isError = false;
+  bool _isVerifying = false;
 
   // Brute-force koruması: 5 yanlış denemeden sonra artan bekleme süresi
   static const _maxFreeAttempts = 5;
@@ -31,11 +34,15 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   static const _lockoutKey = 'pin_lockout_until';
   int _lockoutRemainingSeconds = 0;
   Timer? _lockoutTimer;
+  // Kalan bekleme süresi diskten okunana kadar giriş kabul edilmez, yoksa
+  // uygulamayı yeniden başlatmak bekleme süresini atlatmanın yolu olur
+  bool _lockoutRestored = false;
 
   @override
   void initState() {
     super.initState();
     _restoreLockout();
+    _recoverIfPinMissing();
     _tryBiometric();
   }
 
@@ -46,15 +53,35 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   }
 
   bool get _isLockedOut => _lockoutRemainingSeconds > 0;
+  bool get _acceptsInput =>
+      _lockoutRestored && !_isLockedOut && !_isVerifying;
+
+  /// Hive geri yüklendiği hâlde secure storage boşsa (cihaz yedeğinden
+  /// dönüş, Keystore sıfırlanması) `pinEnabled` açık ama PIN yok olur —
+  /// kullanıcı asla giremeyeceği bir ekranda kilitli kalır. Böyle bir
+  /// durumda kilidi kapat ve içeri al.
+  Future<void> _recoverIfPinMissing() async {
+    final profile = ref.read(userProfileProvider);
+    if (profile?.pinEnabled != true) return;
+    final stored = await _storage.read(key: 'app_pin');
+    if (stored != null || !mounted) return;
+    await ref.read(userProfileProvider.notifier).saveProfile(pinEnabled: false);
+    if (!mounted) return;
+    // Biyometri hâlâ açıksa kilit ekranı orada kalır; değilse içeri gir
+    final p = ref.read(userProfileProvider);
+    if (p?.biometricEnabled != true) widget.onUnlocked();
+  }
 
   Future<void> _restoreLockout() async {
     final stored = await _storage.read(key: _lockoutKey);
     final until = int.tryParse(stored ?? '');
-    if (until == null) return;
-    final remainingMs = until - DateTime.now().millisecondsSinceEpoch;
-    if (remainingMs > 0 && mounted) {
+    if (!mounted) return;
+    final remainingMs =
+        until == null ? 0 : until - DateTime.now().millisecondsSinceEpoch;
+    if (remainingMs > 0) {
       _startLockoutCountdown((remainingMs / 1000).ceil());
     }
+    setState(() => _lockoutRestored = true);
   }
 
   void _startLockoutCountdown(int seconds) {
@@ -116,6 +143,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
         ),
       );
       if (authenticated && mounted) {
+        await _clearFailedAttempts();
         widget.onUnlocked();
       }
     } catch (_) {
@@ -124,7 +152,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   }
 
   void _onDigitPressed(String digit) {
-    if (_isLockedOut) return;
+    if (!_acceptsInput) return;
     if (_enteredPin.length >= 4) return;
     setState(() {
       _isError = false;
@@ -136,7 +164,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   }
 
   void _onDeletePressed() {
-    if (_enteredPin.isEmpty) return;
+    if (!_acceptsInput || _enteredPin.isEmpty) return;
     setState(() {
       _isError = false;
       _enteredPin = _enteredPin.substring(0, _enteredPin.length - 1);
@@ -144,21 +172,32 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   }
 
   Future<void> _verifyPin() async {
-    final stored = await _storage.read(key: 'app_pin');
-    final enteredHash = PinUtils.hashPin(_enteredPin);
+    if (_isLockedOut) return;
+    setState(() => _isVerifying = true);
+    final entered = _enteredPin;
 
-    // Yeni format: hash karşılaştır. Eski format: düz PIN — eşleşirse
-    // hash'e yükselt (geçmiş sürümden gelen kullanıcılar kilitlenmesin).
-    final isLegacyMatch = stored != null && stored == _enteredPin;
-    final isMatch = stored != null && (stored == enteredHash || isLegacyMatch);
-
-    if (isMatch) {
-      if (isLegacyMatch) {
-        await _storage.write(key: 'app_pin', value: enteredHash);
+    try {
+      final stored = await _storage.read(key: 'app_pin');
+      if (stored == null) {
+        // PIN kaydı yok: _recoverIfPinMissing devrede, burada kilitleme
+        return;
       }
-      await _clearFailedAttempts();
-      widget.onUnlocked();
-    } else {
+
+      // PBKDF2 50k tur — UI thread'i kilitlememek için isolate'ta
+      final isMatch = await compute(verifyPinTask, [stored, entered]);
+
+      if (isMatch) {
+        if (!PinUtils.isModern(stored)) {
+          // Eski format (düz metin / tuzsuz SHA-256) → tuzlu PBKDF2'ye yükselt
+          final upgraded = await compute(encodePinTask, entered);
+          await _storage.write(key: 'app_pin', value: upgraded);
+        }
+        await _clearFailedAttempts();
+        if (!mounted) return;
+        widget.onUnlocked();
+        return;
+      }
+
       HapticFeedback.heavyImpact();
       await _registerFailedAttempt();
       if (!mounted) return;
@@ -166,6 +205,8 @@ class _LockScreenState extends ConsumerState<LockScreen> {
         _isError = true;
         _enteredPin = '';
       });
+    } finally {
+      if (mounted) setState(() => _isVerifying = false);
     }
   }
 
@@ -186,7 +227,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
 
     Widget title = Text(
       l10n.enterPin,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 22,
         fontWeight: FontWeight.bold,
         color: Colors.white,
@@ -238,9 +279,13 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                   child: wrongPinText,
                 ),
               const SizedBox(height: 32),
-              _buildPinDots(),
+              PinDots(filled: _enteredPin.length, isError: _isError),
               const Spacer(),
-              _buildNumpad(),
+              PinPad(
+                onDigit: _onDigitPressed,
+                onDelete: _onDeletePressed,
+                enabled: _acceptsInput,
+              ),
               const SizedBox(height: 16),
               if (profile?.biometricEnabled == true)
                 TextButton.icon(
@@ -249,115 +294,12 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                       color: Colors.white, size: 28),
                   label: Text(
                     l10n.unlockWithBiometric,
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               const SizedBox(height: 24),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPinDots() {
-    return Semantics(
-      label: '${_enteredPin.length}/4',
-      liveRegion: true,
-      child: ExcludeSemantics(child: _buildPinDotsRow()),
-    );
-  }
-
-  Widget _buildPinDotsRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(4, (i) {
-        final isFilled = i < _enteredPin.length;
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.symmetric(horizontal: 10),
-          width: isFilled ? 18 : 14,
-          height: isFilled ? 18 : 14,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: _isError
-                ? Colors.yellow.shade200
-                : isFilled
-                    ? Colors.white
-                    : Colors.white.withValues(alpha: 0.3),
-            border: !isFilled
-                ? Border.all(color: Colors.white.withValues(alpha: 0.5), width: 2)
-                : null,
-          ),
-        );
-      }),
-    );
-  }
-
-  Widget _buildNumpad() {
-    final digits = [
-      ['1', '2', '3'],
-      ['4', '5', '6'],
-      ['7', '8', '9'],
-      ['', '0', 'del'],
-    ];
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40),
-      child: Column(
-        children: digits.map((row) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: row.map((key) {
-                if (key.isEmpty) return const SizedBox(width: 72);
-                if (key == 'del') {
-                  return Semantics(
-                    button: true,
-                    label: MaterialLocalizations.of(context)
-                        .deleteButtonTooltip,
-                    child: _numpadButton(
-                      child: const Icon(Icons.backspace_rounded,
-                          color: Colors.white, size: 24),
-                      onTap: _onDeletePressed,
-                    ),
-                  );
-                }
-                return _numpadButton(
-                  child: Text(key,
-                      style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white)),
-                  onTap: () => _onDigitPressed(key),
-                );
-              }).toList(),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _numpadButton({required Widget child, required VoidCallback onTap}) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          HapticFeedback.lightImpact();
-          onTap();
-        },
-        borderRadius: BorderRadius.circular(36),
-        splashColor: Colors.white24,
-        child: Container(
-          width: 72,
-          height: 72,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white.withValues(alpha: 0.1),
-          ),
-          child: Center(child: child),
         ),
       ),
     );

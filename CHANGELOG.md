@@ -12,6 +12,14 @@ Her ekran tek tek UI/UX, kod mimarisi ve veri katmanı açısından denetleniyor
 - Onay penceresi yanlışlıkla kapatılamıyor ve uzun metinde kaydırılabiliyor
 - İpucu/etiket renkleri token'a çekildi (kontrast), gereksiz katman kaldırıldı
 
+### Kilit ekranı
+- **PIN artık tuzlu PBKDF2 (50.000 tur) ile saklanıyor**: tuzsuz tek tur SHA-256, 4 haneli bir PIN'i hazır tablolarla anında çözülebilir yapıyordu. Eski kayıtlar ilk doğru girişte sessizce yükseltiliyor
+- **Kalıcı kilitlenme düzeltildi**: cihaz yedeğinden dönüşte veriler geri gelip PIN kaydı kaybolabiliyordu; artık bu durumda kilit kendini kapatıyor
+- Bekleme süresi diskten okunmadan giriş kabul edilmiyor (yeniden başlatarak bekleme atlatılamaz); PIN kaldırılınca/yenilenince yanlış deneme sayacı sıfırlanıyor
+- Uygulama arka plana alınırken (recents önizlemesi dahil) kilit hemen devreye giriyor
+- PIN doğrulama arka planda (isolate) çalışıyor, ekran donmuyor
+- Tuş takımı ve nokta göstergesi tek ortak bileşene taşındı (iki ekranda kopya kod yoktu artık)
+
 ## 1.1.0 (2026-07-13)
 
 ### Yeni
