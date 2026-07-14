@@ -1085,6 +1085,24 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get notContraceptionWarning => 'Tahminler bilgilendirme amaçlıdır. Bu uygulama bir doğum kontrol yöntemi DEĞİLDİR ve gebelikten korunma amacıyla kullanılamaz.';
+
+  @override
+  String get privacyPolicy => 'Gizlilik Politikası';
+
+  @override
+  String get aboutSection => 'Hakkında';
+
+  @override
+  String get consentTitle => 'Verileriniz ve Gizlilik';
+
+  @override
+  String get consentBody => 'Tüm verileriniz yalnızca bu cihazda, şifrelenmiş olarak saklanır; hiçbir sunucuya gönderilmez. Gizlilik politikasını Ayarlar > Hakkında bölümünden okuyabilirsiniz. Devam ederek verilerinizin cihazınızda bu şekilde işlenmesini kabul etmiş olursunuz.';
+
+  @override
+  String get consentAccept => 'Kabul Ediyorum';
+
+  @override
   String get quickLog => 'Hızlı Kayıt';
 
   @override

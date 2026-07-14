@@ -1,4 +1,39 @@
 workflows:
+  android-workflow:
+    name: Android Build
+    max_build_duration: 60
+    environment:
+      # Yerel geliştirme 3.29 beta ile yapılıyor; health/home_widget
+      # bağımlılıkları eski stable'da çözülmeyebilir
+      flutter: beta
+      java: 17
+    scripts:
+      - name: Install dependencies
+        script: |
+          flutter pub get
+      - name: Generate localizations
+        script: |
+          flutter gen-l10n
+      - name: Analyze
+        script: |
+          flutter analyze
+      - name: Tests
+        script: |
+          flutter test
+      - name: Build APK
+        script: |
+          # key.properties CI'da yoksa gradle guard'ı debug anahtarıyla imzalar
+          flutter build apk --release
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
+    publishing:
+      email:
+        recipients:
+          - dehbkoclugu@gmail.com
+        notify:
+          success: true
+          failure: true
+
   ios-workflow:
     name: iOS Build
     max_build_duration: 120
@@ -11,7 +46,7 @@ workflows:
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
-      flutter: 3.27.4
+      flutter: beta
       xcode: latest
       cocoapods: default
     scripts:
@@ -21,6 +56,12 @@ workflows:
       - name: Generate localizations
         script: |
           flutter gen-l10n
+      - name: Analyze
+        script: |
+          flutter analyze
+      - name: Tests
+        script: |
+          flutter test
       - name: Install CocoaPods
         script: |
           cd ios && pod install

@@ -451,7 +451,11 @@ class SettingsScreen extends ConsumerWidget {
           // About
           _sectionHeader(context, l10n.about),
           _settingsCard(context, [
-            _infoTile(context, Icons.info_rounded, l10n.version, '1.0.0'),
+            _infoTile(context, Icons.info_rounded, l10n.version, '1.1.0'),
+            _divider(context),
+            _actionTile(context, Icons.privacy_tip_rounded,
+                l10n.privacyPolicy, AppColors.secondary,
+                () => _showPrivacyPolicy(context, l10n)),
           ]),
           const SizedBox(height: 16),
           Padding(
@@ -476,6 +480,35 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showPrivacyPolicy(
+      BuildContext context, AppLocalizations l10n) async {
+    final text = await DefaultAssetBundle.of(context)
+        .loadString('assets/legal/privacy_policy_tr.md');
+    if (!context.mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.privacyPolicy),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: Text(
+              text,
+              style: TextStyle(
+                  fontSize: 13, height: 1.5, color: AppColors.tp(ctx)),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.done),
+          ),
         ],
       ),
     );

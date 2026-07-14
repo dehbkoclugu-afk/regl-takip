@@ -461,6 +461,12 @@
       }
     }
   },
+  "notContraceptionWarning": "Predictions are for informational purposes only. This app is NOT a contraceptive method and must not be used to prevent pregnancy.",
+  "privacyPolicy": "Privacy Policy",
+  "aboutSection": "About",
+  "consentTitle": "Your Data & Privacy",
+  "consentBody": "All your data is stored encrypted on this device only; nothing is sent to any server. You can read the privacy policy under Settings > About. By continuing you accept that your data is processed on your device this way.",
+  "consentAccept": "I Accept",
   "quickLog": "Quick Log",
   "allTrackers": "All tracker types",
   "savedGeneric": "Saved",

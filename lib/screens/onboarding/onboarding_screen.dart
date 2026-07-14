@@ -80,8 +80,30 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Future<void> _completeOnboarding() async {
     if (_isSaving) return;
-    setState(() => _isSaving = true);
     final l10n = AppLocalizations.of(context)!;
+
+    // Veri işleme onayı: kabul edilmeden profil oluşturulmaz
+    final consented = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.consentTitle),
+        content: Text(l10n.consentBody,
+            style: const TextStyle(fontSize: 14, height: 1.5)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.consentAccept),
+          ),
+        ],
+      ),
+    );
+    if (consented != true || !mounted) return;
+
+    setState(() => _isSaving = true);
 
     try {
       final profile = UserProfile(

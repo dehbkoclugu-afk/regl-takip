@@ -1085,6 +1085,24 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get notContraceptionWarning => 'Predictions are for informational purposes only. This app is NOT a contraceptive method and must not be used to prevent pregnancy.';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get aboutSection => 'About';
+
+  @override
+  String get consentTitle => 'Your Data & Privacy';
+
+  @override
+  String get consentBody => 'All your data is stored encrypted on this device only; nothing is sent to any server. You can read the privacy policy under Settings > About. By continuing you accept that your data is processed on your device this way.';
+
+  @override
+  String get consentAccept => 'I Accept';
+
+  @override
   String get quickLog => 'Quick Log';
 
   @override

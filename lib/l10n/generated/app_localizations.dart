@@ -2171,6 +2171,42 @@ abstract class AppLocalizations {
   /// **'{symptom} en çok {phase} fazında görülüyor (%{percent})'**
   String insightLine(String symptom, String phase, int percent);
 
+  /// No description provided for @notContraceptionWarning.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tahminler bilgilendirme amaçlıdır. Bu uygulama bir doğum kontrol yöntemi DEĞİLDİR ve gebelikten korunma amacıyla kullanılamaz.'**
+  String get notContraceptionWarning;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gizlilik Politikası'**
+  String get privacyPolicy;
+
+  /// No description provided for @aboutSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hakkında'**
+  String get aboutSection;
+
+  /// No description provided for @consentTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verileriniz ve Gizlilik'**
+  String get consentTitle;
+
+  /// No description provided for @consentBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tüm verileriniz yalnızca bu cihazda, şifrelenmiş olarak saklanır; hiçbir sunucuya gönderilmez. Gizlilik politikasını Ayarlar > Hakkında bölümünden okuyabilirsiniz. Devam ederek verilerinizin cihazınızda bu şekilde işlenmesini kabul etmiş olursunuz.'**
+  String get consentBody;
+
+  /// No description provided for @consentAccept.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kabul Ediyorum'**
+  String get consentAccept;
+
   /// No description provided for @quickLog.
   ///
   /// In tr, this message translates to:

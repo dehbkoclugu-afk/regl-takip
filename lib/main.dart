@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'services/hive_service.dart';
 import 'services/notification_service.dart';
 import 'services/premium_service.dart';
@@ -8,7 +9,28 @@ import 'services/widget_service.dart';
 import 'providers/providers.dart';
 import 'app.dart';
 
-void main() async {
+/// Crash raporlama DSN'i build sırasında verilir:
+///   flutter build apk --dart-define=SENTRY_DSN=https://...
+/// Boşsa Sentry tamamen devre dışı — telemetri gönderilmez (gizlilik
+/// hassas ürün: DSN eklenirse de PII gönderimi kapalı tutulmalı).
+const _sentryDsn = String.fromEnvironment('SENTRY_DSN');
+
+Future<void> main() async {
+  if (_sentryDsn.isEmpty) {
+    await _run();
+    return;
+  }
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = _sentryDsn;
+      options.sendDefaultPii = false;
+      options.tracesSampleRate = 0.0; // yalnız crash, performans izleme yok
+    },
+    appRunner: _run,
+  );
+}
+
+Future<void> _run() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Set preferred orientations

@@ -587,20 +587,44 @@ class DashboardScreen extends ConsumerWidget {
   Widget _buildDisclaimer(BuildContext context, AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Row(
+      child: Column(
         children: [
-          Icon(Icons.info_outline_rounded,
-              size: 14, color: AppColors.ts(context)),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Text(
-              l10n.healthDisclaimer,
-              style: TextStyle(
-                fontSize: 11,
-                color: AppColors.ts(context),
-                height: 1.4,
+          Row(
+            children: [
+              Icon(Icons.info_outline_rounded,
+                  size: 14, color: AppColors.ts(context)),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  l10n.healthDisclaimer,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: AppColors.ts(context),
+                    height: 1.4,
+                  ),
+                ),
               ),
-            ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          // Yasal zorunluluk düzeyinde uyarı: tahminler korunma aracı değil
+          Row(
+            children: [
+              Icon(Icons.gpp_maybe_rounded,
+                  size: 14, color: AppColors.error),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  l10n.notContraceptionWarning,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.ts(context),
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
