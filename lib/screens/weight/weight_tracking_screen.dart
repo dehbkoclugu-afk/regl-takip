@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/input_parsing.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
 import '../../core/utils/motion.dart';
@@ -17,6 +18,9 @@ class WeightTrackingScreen extends ConsumerStatefulWidget {
 class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   double _weight = 60.0;
   final _controller = TextEditingController();
+  bool _hasExistingWeight = false;
+
+  static double? _parseWeight(String raw) => InputParsing.weightKg(raw);
 
   @override
   void initState() {
@@ -24,6 +28,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
     final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
     if (log?.weight != null) {
       _weight = log!.weight!;
+      _hasExistingWeight = true;
     }
     _controller.text = _weight.toStringAsFixed(1);
   }
@@ -143,18 +148,26 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   }
 
   Widget _adjustBtn(String label, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.weightColor.withValues(alpha: 0.12),
+    return Semantics(
+      button: true,
+      label: '$label kg',
+      child: Material(
+        color: AppColors.weightColor.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
           borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 48),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(label,
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.weightColor)),
+          ),
         ),
-        child: Text(label,
-            style: TextStyle(
-                fontSize: 16, fontWeight: FontWeight.w700,
-                color: AppColors.weightColor)),
       ),
     );
   }
@@ -192,12 +205,22 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
                       color: AppColors.weightColor, width: 2)),
             ),
             onChanged: (v) {
-              final parsed = double.tryParse(v);
-              if (parsed != null && parsed >= 20 && parsed <= 300) {
-                setState(() => _weight = double.parse(parsed.toStringAsFixed(1)));
-              }
+              final parsed = _parseWeight(v);
+              if (parsed != null) setState(() => _weight = parsed);
             },
           ),
+          if (_hasExistingWeight) ...[
+            const SizedBox(height: 4),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: _delete,
+                icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                label: Text(l10n.deleteRecord),
+                style: TextButton.styleFrom(foregroundColor: AppColors.error),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -225,15 +248,38 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
     );
   }
 
+  Future<void> _delete() async {
+    await ref
+        .read(dailyLogProvider.notifier)
+        .updateWeight(ref.read(selectedDateProvider), null);
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          content: Text(l10n.recordDeleted),
+          backgroundColor: AppColors.success),
+    );
+    Navigator.of(context).pop();
+  }
+
   Future<void> _save() async {
-    // Controller'dan son değeri al
-    final parsed = double.tryParse(_controller.text);
-    if (parsed != null && parsed >= 20 && parsed <= 300) {
-      _weight = double.parse(parsed.toStringAsFixed(1));
+    final l10n = AppLocalizations.of(context)!;
+    // Geçersiz giriş sessizce eski değeri kaydediyordu — kullanıcıya söyle
+    final parsed = _parseWeight(_controller.text);
+    if (parsed == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(l10n.invalidWeight),
+            backgroundColor: AppColors.error),
+      );
+      return;
     }
-    await ref.read(dailyLogProvider.notifier).updateWeight(ref.read(selectedDateProvider), _weight);
+    _weight = parsed;
+
+    await ref
+        .read(dailyLogProvider.notifier)
+        .updateWeight(ref.read(selectedDateProvider), _weight);
     if (mounted) {
-      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.weightSaved),
             backgroundColor: AppColors.success),

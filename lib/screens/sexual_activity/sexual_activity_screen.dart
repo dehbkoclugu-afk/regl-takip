@@ -21,6 +21,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
   ProtectionMethod _protection = ProtectionMethod.none;
   bool _orgasm = false;
   final _noteController = TextEditingController();
+  bool _hasExistingEntry = false;
 
   Map<ProtectionMethod, String> _protectionLabels(AppLocalizations l10n) => {
     ProtectionMethod.condom: l10n.condom,
@@ -38,6 +39,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
       _protection = log!.sexualActivity!.protectionMethod;
       _orgasm = log.sexualActivity!.orgasm;
       _noteController.text = log.sexualActivity!.note ?? '';
+      _hasExistingEntry = true;
     }
   }
 
@@ -178,24 +180,51 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
 
   Widget _buildSaveButton(AppLocalizations l10n) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: _save,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.moodRomantic,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)),
+      padding: EdgeInsets.fromLTRB(20, 12, 20, 12 + MediaQuery.of(context).padding.bottom),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _save,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.moodRomantic,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+              ),
+              child: Text(l10n.save,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
           ),
-          child: Text(l10n.save,
-              style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.bold)),
-        ),
+          // Girilen kayıt geri alınamıyordu
+          if (_hasExistingEntry)
+            TextButton.icon(
+              onPressed: _delete,
+              icon: const Icon(Icons.delete_outline_rounded, size: 18),
+              label: Text(l10n.deleteRecord),
+              style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            ),
+        ],
       ),
     );
+  }
+
+  Future<void> _delete() async {
+    final l10n = AppLocalizations.of(context)!;
+    await ref
+        .read(dailyLogProvider.notifier)
+        .updateSexualActivity(ref.read(selectedDateProvider), null);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          content: Text(l10n.recordDeleted),
+          backgroundColor: AppColors.success),
+    );
+    Navigator.of(context).pop();
   }
 
   Future<void> _save() async {

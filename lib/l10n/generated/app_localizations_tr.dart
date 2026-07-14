@@ -521,6 +521,24 @@ class AppLocalizationsTr extends AppLocalizations {
   String get measurementDeleted => 'Ölçüm silindi';
 
   @override
+  String get deleteRecord => 'Kaydı sil';
+
+  @override
+  String get recordDeleted => 'Kayıt silindi';
+
+  @override
+  String get invalidWeight => 'Geçerli bir kilo gir (20-300 kg)';
+
+  @override
+  String get discardChangesTitle => 'Kaydedilmemiş değişiklik';
+
+  @override
+  String get discardChangesBody => 'Notun kaydedilmedi. Çıkarsan yazdıkların kaybolacak.';
+
+  @override
+  String get discard => 'Vazgeç';
+
+  @override
   String severityLevel(int level) {
     return 'şiddet $level/5';
   }

@@ -1115,6 +1115,42 @@ abstract class AppLocalizations {
   /// **'Ölçüm silindi'**
   String get measurementDeleted;
 
+  /// No description provided for @deleteRecord.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydı sil'**
+  String get deleteRecord;
+
+  /// No description provided for @recordDeleted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kayıt silindi'**
+  String get recordDeleted;
+
+  /// No description provided for @invalidWeight.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçerli bir kilo gir (20-300 kg)'**
+  String get invalidWeight;
+
+  /// No description provided for @discardChangesTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydedilmemiş değişiklik'**
+  String get discardChangesTitle;
+
+  /// No description provided for @discardChangesBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Notun kaydedilmedi. Çıkarsan yazdıkların kaybolacak.'**
+  String get discardChangesBody;
+
+  /// No description provided for @discard.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vazgeç'**
+  String get discard;
+
   /// No description provided for @severityLevel.
   ///
   /// In tr, this message translates to:

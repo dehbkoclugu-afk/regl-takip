@@ -521,6 +521,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get measurementDeleted => 'Measurement deleted';
 
   @override
+  String get deleteRecord => 'Delete record';
+
+  @override
+  String get recordDeleted => 'Record deleted';
+
+  @override
+  String get invalidWeight => 'Enter a valid weight (20-300 kg)';
+
+  @override
+  String get discardChangesTitle => 'Unsaved changes';
+
+  @override
+  String get discardChangesBody => 'Your note is not saved. Leaving now discards it.';
+
+  @override
+  String get discard => 'Discard';
+
+  @override
   String severityLevel(int level) {
     return 'severity $level/5';
   }

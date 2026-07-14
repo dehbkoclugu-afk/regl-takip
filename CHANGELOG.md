@@ -61,6 +61,13 @@ Her ekran tek tek UI/UX, kod mimarisi ve veri katmanı açısından denetleniyor
 - Sıcaklık: yanlış girilen ölçüm artık silinebiliyor (BBT eğrisini ve ovülasyon teyidini bozuyordu); ölçümün nasıl yapılacağı ekranda yazıyor
 - Onay kutusu / saat kartı / yıldız gibi dokunulabilir alanlar 48 dp'ye çıkarıldı ve ekran okuyucuya tanıtıldı
 
+### Kilo, Not, Cinsel Aktivite ekranları
+- **Kilo virgülle yazılınca (60,5) girdi sessizce yok sayılıyor, eski değer kaydediliyordu** — artık virgül de kabul ediliyor, geçersiz girişte uyarı çıkıyor (testlerle korundu)
+- Kilo ve cinsel aktivite kayıtları silinebiliyor (girildikten sonra geri alınamıyordu)
+- Not yazıp kaydetmeden geri dönünce metin sessizce siliniyordu; artık soruyor
+- Not ekranı her tuş vuruşunda tüm sayfayı yeniden çiziyordu
+- Boş not kaydetmek takvimde sahte "kayıt var" noktası bırakmıyor
+
 ## 1.1.0 (2026-07-13)
 
 ### Yeni

@@ -176,6 +176,12 @@
   "bbtHint": "For an accurate reading, measure right after waking, before getting out of bed, at the same time every day. Ovulation confirmation relies on these readings.",
   "deleteMeasurement": "Delete measurement",
   "measurementDeleted": "Measurement deleted",
+  "deleteRecord": "Delete record",
+  "recordDeleted": "Record deleted",
+  "invalidWeight": "Enter a valid weight (20-300 kg)",
+  "discardChangesTitle": "Unsaved changes",
+  "discardChangesBody": "Your note is not saved. Leaving now discards it.",
+  "discard": "Discard",
   "severityLevel": "severity {level}/5",
   "@severityLevel": {
     "placeholders": {

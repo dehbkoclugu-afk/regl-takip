@@ -176,6 +176,12 @@
   "bbtHint": "En doğru sonuç için sabah uyanır uyanmaz, yataktan kalkmadan ve hep aynı saatte ölç. Ovülasyon teyidi bu ölçümlere dayanır.",
   "deleteMeasurement": "Ölçümü sil",
   "measurementDeleted": "Ölçüm silindi",
+  "deleteRecord": "Kaydı sil",
+  "recordDeleted": "Kayıt silindi",
+  "invalidWeight": "Geçerli bir kilo gir (20-300 kg)",
+  "discardChangesTitle": "Kaydedilmemiş değişiklik",
+  "discardChangesBody": "Notun kaydedilmedi. Çıkarsan yazdıkların kaybolacak.",
+  "discard": "Vazgeç",
   "severityLevel": "şiddet {level}/5",
   "@severityLevel": {
     "placeholders": {

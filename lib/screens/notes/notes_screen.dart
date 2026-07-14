@@ -17,6 +17,10 @@ class NotesScreen extends ConsumerStatefulWidget {
 class _NotesScreenState extends ConsumerState<NotesScreen> {
   final _controller = TextEditingController();
   static const int _maxChars = 2000;
+  String _initialText = '';
+  bool _dirty = false;
+
+  bool get _isDirty => _controller.text != _initialText;
 
   @override
   void initState() {
@@ -24,7 +28,33 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
     final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
     if (log?.notes != null) {
       _controller.text = log!.notes!;
+      _initialText = log.notes!;
     }
+  }
+
+  /// Not yazıp kaydetmeden geri dönmek metni sessizce çöpe atıyordu
+  Future<bool> _confirmDiscard() async {
+    if (!_isDirty) return true;
+    final l10n = AppLocalizations.of(context)!;
+    final discard = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.discardChangesTitle),
+        content: Text(l10n.discardChangesBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: Text(l10n.discard),
+          ),
+        ],
+      ),
+    );
+    return discard == true;
   }
 
   @override
@@ -36,7 +66,14 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
+    final navigator = Navigator.of(context);
+    return PopScope(
+      canPop: !_dirty,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
+        if (await _confirmDiscard()) navigator.pop();
+      },
+      child: Scaffold(
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
         title: Text(l10n.dailyNote,
@@ -75,7 +112,14 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                       controller: _controller,
                       maxLines: 14,
                       maxLength: _maxChars,
-                      onChanged: (_) => setState(() {}),
+                      // Karakter sayacını TextField kendi güncelliyor; her
+                      // tuşta tüm ekranı yeniden kurmak gereksizdi. Yalnız
+                      // "kaydedilmemiş değişiklik" durumu değişince rebuild.
+                      onChanged: (_) {
+                        if (_isDirty != _dirty) {
+                          setState(() => _dirty = _isDirty);
+                        }
+                      },
                       style: TextStyle(
                           fontSize: 15, color: AppColors.tp(context),
                           height: 1.5),
@@ -102,6 +146,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
           ),
           _buildSaveButton(l10n),
         ],
+      ),
       ),
     );
   }
@@ -130,10 +175,21 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
 
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context)!;
-    await ref.read(dailyLogProvider.notifier).updateNotes(
-      ref.read(selectedDateProvider),
-      _controller.text.isEmpty ? null : _controller.text,
-    );
+    final notifier = ref.read(dailyLogProvider.notifier);
+    final date = ref.read(selectedDateProvider);
+    final text = _controller.text.trim();
+
+    // Boş notu boş güne yazmak sahte "kayıt var" işareti bırakıyordu
+    if (text.isEmpty && notifier.getDailyLog(date) == null) {
+      _initialText = '';
+      if (mounted) Navigator.of(context).pop();
+      return;
+    }
+
+    await notifier.updateNotes(date, text.isEmpty ? null : text);
+    // Kaydettikten sonra "kaydedilmemiş değişiklik" uyarısı çıkmasın
+    _initialText = _controller.text;
+    _dirty = false;
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.noteSaved),
