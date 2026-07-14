@@ -169,6 +169,8 @@
   "bmi": "BMI",
   "goalReached": "Hedefe ulaşıldı!",
 
+  "helloGeneric": "Merhaba!",
+  "pregnancySetStartPrompt": "Gebelik başlangıcını girmek için dokun",
   "helloName": "Merhaba, {name}!",
   "@helloName": {
     "placeholders": {

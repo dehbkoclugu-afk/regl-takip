@@ -500,6 +500,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get goalReached => 'Goal reached!';
 
   @override
+  String get helloGeneric => 'Hello!';
+
+  @override
+  String get pregnancySetStartPrompt => 'Tap to set your pregnancy start';
+
+  @override
   String helloName(String name) {
     return 'Hello, $name!';
   }

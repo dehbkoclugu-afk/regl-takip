@@ -122,33 +122,32 @@ class QuickStatusCards extends ConsumerWidget {
 
   Widget _buildEmptyState(
       BuildContext context, WidgetRef ref, AppLocalizations l10n) {
-    return GestureDetector(
-      onTap: () {
-        // Dashboard'dan kayıt her zaman bugüne girilir
-        ref.read(selectedDateProvider.notifier).state = DateTime.now();
-        context.push('/log');
-      },
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppColors.sf(context),
+    return Semantics(
+      button: true,
+      label: '${l10n.howAreYouFeeling}. ${l10n.logMoodAndSymptoms}',
+      child: Material(
+        color: AppColors.sf(context),
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: AppColors.primaryLight.withValues(alpha: 0.3),
-            width: 1.5,
-            strokeAlign: BorderSide.strokeAlignInside,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.06),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
+          onTap: () {
+            // Dashboard'dan kayıt her zaman bugüne girilir
+            ref.read(selectedDateProvider.notifier).state = DateTime.now();
+            context.push('/log');
+          },
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: AppColors.primaryLight.withValues(alpha: 0.3),
+                width: 1.5,
+                strokeAlign: BorderSide.strokeAlignInside,
+              ),
             ),
-          ],
-        ),
-        child: Row(
-          children: [
+            child: Row(
+              children: [
             Container(
               width: 52,
               height: 52,
@@ -199,7 +198,9 @@ class QuickStatusCards extends ConsumerWidget {
               color: AppColors.ts(context).withValues(alpha: 0.5),
               size: 24,
             ),
-          ],
+              ],
+            ),
+          ),
         ),
       ),
     );

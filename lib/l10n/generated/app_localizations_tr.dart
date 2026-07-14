@@ -500,6 +500,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get goalReached => 'Hedefe ulaşıldı!';
 
   @override
+  String get helloGeneric => 'Merhaba!';
+
+  @override
+  String get pregnancySetStartPrompt => 'Gebelik başlangıcını girmek için dokun';
+
+  @override
   String helloName(String name) {
     return 'Merhaba, $name!';
   }

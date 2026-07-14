@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:go_router/go_router.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../../core/constants/app_constants.dart';
@@ -181,9 +182,11 @@ class DashboardScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              // Greeting
+              // Greeting — isim isteğe bağlı, boşsa "Merhaba, !" yazmasın
               Text(
-                l10n.helloName(profile?.name ?? ''),
+                (profile?.name.trim().isNotEmpty ?? false)
+                    ? l10n.helloName(profile!.name.trim())
+                    : l10n.helloGeneric,
                 style: TextStyle(
                   // Display anı: gövdeden (w500) net ayrışan ağırlık
                   fontSize: 26,
@@ -201,32 +204,39 @@ class DashboardScreen extends ConsumerWidget {
                 _buildPregnancyHero(context, l10n, profile?.pregnancyStartDate),
                 const SizedBox(height: 24),
               ] else ...[
-                // Phase name
-                GestureDetector(
-                  onTap: () => _showPhaseInfoDialog(context, phase, l10n),
-                  child: GlassContainer(
-                    borderRadius: 16,
-                    blur: 0,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          _phaseName(phase, l10n),
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.tp(context),
-                          ),
+                // Phase name — faz bilgisini açan buton
+                Semantics(
+                  button: true,
+                  label: _phaseName(phase, l10n),
+                  child: Material(
+                    color: AppColors.sf(context),
+                    borderRadius: BorderRadius.circular(16),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: () => _showPhaseInfoDialog(context, phase, l10n),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              _phaseName(phase, l10n),
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.tp(context),
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Icon(
+                              Icons.info_outline_rounded,
+                              size: 16,
+                              color: AppColors.ts(context),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 6),
-                        Icon(
-                          Icons.info_outline_rounded,
-                          size: 16,
-                          color: AppColors.ts(context),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ).animateSafe(context).fadeIn(delay: 200.ms, duration: 500.ms),
@@ -512,13 +522,50 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildPregnancyHero(
       BuildContext context, AppLocalizations l10n, DateTime? start) {
-    final week = start != null ? CycleUtils.pregnancyWeek(start) : 1;
+    // Başlangıç tarihi yoksa "1. hafta" göstermek uydurma bilgi olur:
+    // kullanıcıyı tarihi gireceği yere yönlendir
+    if (start == null) {
+      return Semantics(
+        button: true,
+        label: l10n.pregnancySetStartPrompt,
+        child: Material(
+          color: AppColors.sf(context),
+          borderRadius: BorderRadius.circular(28),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(28),
+            onTap: () => GoRouter.of(context).go('/settings'),
+            child: Padding(
+              padding: const EdgeInsets.all(28),
+              child: Column(
+                children: [
+                  const Icon(Icons.pregnant_woman_rounded,
+                      size: 40, color: AppColors.secondaryStrong),
+                  const SizedBox(height: 12),
+                  Text(
+                    l10n.pregnancySetStartPrompt,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.tp(context),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ).animateSafe(context).fadeIn(delay: 200.ms, duration: 500.ms);
+    }
+
+    final week = CycleUtils.pregnancyWeek(start);
     final trimester = week <= 13
         ? l10n.trimester1
         : (week <= 27 ? l10n.trimester2 : l10n.trimester3);
 
     return Semantics(
-      label: '${l10n.modePregnancy}: ${l10n.pregnancyWeekLabel(week)}, $trimester',
+      label:
+          '${l10n.modePregnancy}: ${l10n.pregnancyWeekLabel(week)}, $trimester',
       child: ExcludeSemantics(
         child: GlassCard(
           borderRadius: 28,
@@ -527,7 +574,8 @@ class DashboardScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(28),
           child: Column(
             children: [
-              const Text('\u{1F930}', style: TextStyle(fontSize: 40)),
+              const Icon(Icons.pregnant_woman_rounded,
+                  size: 40, color: AppColors.secondaryStrong),
               const SizedBox(height: 8),
               Text(
                 l10n.pregnancyWeekLabel(week),

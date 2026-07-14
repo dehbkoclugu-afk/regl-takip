@@ -65,18 +65,30 @@ class PredictionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Kart ekran okuyucuya tek parça okunur ("Sonraki regl: 1 Tem") ve
+    // bilgi metni varsa buton gibi davranır — dokunuşta ripple verir
     return Expanded(
-      child: GestureDetector(
-        onTap: infoText != null ? () => _showInfoDialog(context) : null,
+      child: Semantics(
+        button: infoText != null,
+        label: '$title: $value',
         child: GlassCard(
           borderRadius: 20,
           blur: 0,
           opacity: 0.18,
           margin: const EdgeInsets.symmetric(horizontal: 4),
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+          padding: EdgeInsets.zero,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: infoText != null ? () => _showInfoDialog(context) : null,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+                child: ExcludeSemantics(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
               Container(
                 width: 44,
                 height: 44,
@@ -135,7 +147,11 @@ class PredictionCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-            ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ),

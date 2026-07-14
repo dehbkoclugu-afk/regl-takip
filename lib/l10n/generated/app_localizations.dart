@@ -1073,6 +1073,18 @@ abstract class AppLocalizations {
   /// **'Hedefe ulaşıldı!'**
   String get goalReached;
 
+  /// No description provided for @helloGeneric.
+  ///
+  /// In tr, this message translates to:
+  /// **'Merhaba!'**
+  String get helloGeneric;
+
+  /// No description provided for @pregnancySetStartPrompt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gebelik başlangıcını girmek için dokun'**
+  String get pregnancySetStartPrompt;
+
   /// No description provided for @helloName.
   ///
   /// In tr, this message translates to:

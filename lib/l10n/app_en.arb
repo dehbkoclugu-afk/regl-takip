@@ -169,6 +169,8 @@
   "bmi": "BMI",
   "goalReached": "Goal reached!",
 
+  "helloGeneric": "Hello!",
+  "pregnancySetStartPrompt": "Tap to set your pregnancy start",
   "helloName": "Hello, {name}!",
   "@helloName": {
     "placeholders": {

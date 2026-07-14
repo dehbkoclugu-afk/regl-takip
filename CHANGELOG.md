@@ -26,6 +26,12 @@ Her ekran tek tek UI/UX, kod mimarisi ve veri katmanı açısından denetleniyor
 - Sekme geçiş animasyonu 400 ms'den 250 ms'ye indi; sistem "animasyonları azalt" açıksa anında geçiyor
 - Alt bar ve tablet rail'i artık tek hedef listesinden besleniyor (ikisi ayrı ayrı yazılıyordu)
 
+### Ana sayfa (dashboard)
+- İsim girilmediyse "Merhaba, !" yerine "Merhaba!" yazıyor
+- **Hamilelik modu**: başlangıç tarihi girilmemişken "1. hafta" uydurmuyor; tarihi girmeye yönlendiren bir kart gösteriyor
+- Faz rozeti, tahmin kartları ve "bugün nasılsın" kartı artık gerçek buton: dokunma efekti var, ekran okuyucu "Sonraki regl: 1 Tem" gibi tek parça okuyor
+- Hamilelik kartındaki emoji yerine ikon (uygulamanın ikon diliyle tutarlı)
+
 ## 1.1.0 (2026-07-13)
 
 ### Yeni
