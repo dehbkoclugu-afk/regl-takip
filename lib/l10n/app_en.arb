@@ -514,6 +514,8 @@
   "restore": "Restore",
   "backupRestored": "Backup restored",
   "invalidBackupFile": "Invalid backup file",
+  "dataResetTitle": "Your data could not be read",
+  "dataResetBody": "App data could not be decrypted on this device. This usually happens after switching phones or restoring a system backup: data is encrypted with a device-specific key that cannot move to a new device. The app has started fresh.\n\nTo move your data between devices, export a JSON backup regularly via Settings > Back up data.",
   "pinSet": "PIN set successfully",
   "pinRemoved": "PIN removed",
   "unlockWithBiometric": "Unlock with fingerprint or face",

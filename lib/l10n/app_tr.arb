@@ -514,6 +514,8 @@
   "restore": "Geri Yükle",
   "backupRestored": "Yedek geri yüklendi",
   "invalidBackupFile": "Geçersiz yedek dosyası",
+  "dataResetTitle": "Verileriniz okunamadı",
+  "dataResetBody": "Uygulama verileri bu cihazda çözülemedi. Bu genellikle telefon değişiminde veya sistem yedeğinden geri yüklemede olur: veriler cihaza özel bir anahtarla şifrelenir ve bu anahtar yeni cihaza taşınamaz. Uygulama sıfırdan başlatıldı.\n\nVerilerinizi cihazlar arasında taşımak için Ayarlar > Verileri Yedekle ile düzenli JSON yedeği alın.",
   "pinSet": "PIN başarıyla ayarlandı",
   "pinRemoved": "PIN kaldırıldı",
   "unlockWithBiometric": "Parmak izi veya yüz ile kilidi açın",

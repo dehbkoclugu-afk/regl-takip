@@ -10,6 +10,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../providers/providers.dart';
 import '../../models/user_profile.dart';
+import '../../services/hive_service.dart';
 import 'widgets/onboarding_page.dart';
 import '../../core/utils/motion.dart';
 
@@ -36,6 +37,38 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   double _periodLength = 5;
 
   bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Açılışta kutular çözülemeyip sıfırdan başlandıysa (cihaz/yedek
+    // geçişi) kullanıcı ilk burada karşılanır — nedeni açıklanmalı
+    if (HiveService().dataResetPerformed) {
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => _showDataResetNotice());
+    }
+  }
+
+  Future<void> _showDataResetNotice() async {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.dataResetTitle),
+        content: SingleChildScrollView(
+          child: Text(l10n.dataResetBody,
+              style: const TextStyle(fontSize: 14, height: 1.5)),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.done),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   void dispose() {

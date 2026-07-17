@@ -25,8 +25,13 @@ class HiveService {
   late Box<DailyLog> _dailyLogsBox;
 
   bool _isInitialized = false;
+  bool _dataResetPerformed = false;
 
   bool get isInitialized => _isInitialized;
+
+  /// Açılışta kutular çözülemeyip karantinaya alındıysa ve sıfırdan
+  /// başlandıysa true — UI tek seferlik açıklama göstermek için okur.
+  bool get dataResetPerformed => _dataResetPerformed;
 
   /// [encryptionKey] testlerde enjekte edilir; prod'da secure storage'dan
   /// okunur/üretilir. [manageHivePath] false ise Hive.init çağıranın
@@ -67,20 +72,44 @@ class HiveService {
     final cipher = HiveAesCipher(key);
     var encryptionSucceeded = true;
 
-    if (!alreadyEncrypted && await _plainBoxesExistOnDisk()) {
-      // Eski kurulum: şifresiz kutular var — verileri şifreli kutulara taşı.
-      // Migrasyon patlarsa uygulama açılmaz olur; düz kutulara düşüp
-      // veriyi erişilebilir tutmak şifrelemeden daha öncelikli.
-      try {
-        await _migrateToEncrypted(cipher);
-      } catch (e) {
-        debugPrint('[HIVE] encryption migration failed, '
-            'falling back to plain boxes: $e');
-        encryptionSucceeded = false;
-        await _openPlainBoxes();
+    try {
+      if (!alreadyEncrypted && await _plainBoxesExistOnDisk()) {
+        // Eski kurulum: şifresiz kutular var — verileri şifreli kutulara taşı.
+        // Migrasyon patlarsa uygulama açılmaz olur; düz kutulara düşüp
+        // veriyi erişilebilir tutmak şifrelemeden daha öncelikli.
+        try {
+          await _migrateToEncrypted(cipher);
+        } catch (e) {
+          debugPrint('[HIVE] encryption migration failed, '
+              'falling back to plain boxes: $e');
+          encryptionSucceeded = false;
+          await _openPlainBoxes();
+        }
+      } else {
+        await _openEncryptedBoxes(cipher);
       }
-    } else {
-      await _openEncryptedBoxes(cipher);
+    } catch (e) {
+      // Kutular hiçbir yolla açılamıyor. En yaygın senaryo cihaz/yedek
+      // geçişi: Hive dosyaları geri gelir ama AES anahtarı Keystore'a
+      // bağlıdır ve yeni cihaza taşınmaz — eldeki şifreli dosya artık
+      // hiçbir anahtarla çözülemez. Çökme döngüsü yerine kutular
+      // karantinaya alınır, temiz başlanır ve UI'a tek seferlik bir
+      // açıklama bayrağı bırakılır.
+      debugPrint('[HIVE] boxes unreadable, quarantining and '
+          'starting fresh: $e');
+      _dataResetPerformed = true;
+      await Hive.close();
+      await _quarantineBoxes();
+      try {
+        await _openEncryptedBoxes(cipher);
+      } catch (e2) {
+        // Karantina dosyayı taşıyamadıysa (ör. açık dosya tanıtıcısı) son
+        // çare Hive'ın yerinde budayarak açması: dosya zaten çözülemiyordu,
+        // önemli olan uygulamanın açılması ve kullanıcının bilgilenmesi.
+        debugPrint('[HIVE] fresh open failed, forcing crash recovery: $e2');
+        await _openEncryptedBoxes(cipher, crashRecovery: true);
+      }
+      encryptionSucceeded = true;
     }
 
     // Bayrak yalnız şifreli açılış gerçekten başarılıysa yazılır;
@@ -92,12 +121,19 @@ class HiveService {
     _isInitialized = true;
   }
 
+  // crashRecovery: false — Hive'ın varsayılan "kurtarması", çözülemeyen
+  // frame'lerde kutuyu sessizce BOŞALTIP açar (yanlış anahtarda tüm veri
+  // iz bırakmadan gider). Kapalıyken hata fırlar; init'teki catch dosyayı
+  // budanmadan karantinaya alır ve kullanıcıya haber verir.
   Future<void> _openPlainBoxes() async {
-    _userProfileBox =
-        await Hive.openBox<UserProfile>(AppConstants.userProfileBox);
-    _periodRecordsBox =
-        await Hive.openBox<PeriodRecord>(AppConstants.periodRecordsBox);
-    _dailyLogsBox = await Hive.openBox<DailyLog>(AppConstants.dailyLogsBox);
+    _userProfileBox = await Hive.openBox<UserProfile>(
+        AppConstants.userProfileBox,
+        crashRecovery: false);
+    _periodRecordsBox = await Hive.openBox<PeriodRecord>(
+        AppConstants.periodRecordsBox,
+        crashRecovery: false);
+    _dailyLogsBox = await Hive.openBox<DailyLog>(AppConstants.dailyLogsBox,
+        crashRecovery: false);
   }
 
   void _registerAdapters() {
@@ -145,6 +181,40 @@ class HiveService {
     }
   }
 
+  /// Açılamayan kutu dosyalarını silmek yerine yeniden adlandırır:
+  /// içerik anahtarsız çözülemez ama en azından yok edilmemiş olur.
+  /// Yol bilinmiyorsa (test ortamı) Hive'ın kendi silme yoluna düşer.
+  Future<void> _quarantineBoxes() async {
+    const names = [
+      AppConstants.userProfileBox,
+      AppConstants.periodRecordsBox,
+      AppConstants.dailyLogsBox,
+    ];
+    final stamp = DateTime.now().millisecondsSinceEpoch;
+    for (final name in names) {
+      var renamed = false;
+      try {
+        final dir = await getApplicationDocumentsDirectory();
+        final file = File('${dir.path}/$name.hive');
+        if (await file.exists()) {
+          await file.rename('${file.path}.corrupt-$stamp');
+          renamed = true;
+        }
+        final lock = File('${dir.path}/$name.lock');
+        if (await lock.exists()) await lock.delete();
+      } catch (e) {
+        debugPrint('[HIVE] quarantine failed for $name: $e');
+      }
+      if (!renamed) {
+        try {
+          await Hive.deleteBoxFromDisk(name);
+        } catch (e) {
+          debugPrint('[HIVE] deleteBoxFromDisk failed for $name: $e');
+        }
+      }
+    }
+  }
+
   Future<bool> _plainBoxesExistOnDisk() async {
     // Şifreli açılış bayrağı yoksa ve diskte kutu varsa eski kurulumdur.
     // Kutu hiç yoksa temiz kurulum: doğrudan şifreli açılır.
@@ -153,27 +223,36 @@ class HiveService {
         await Hive.boxExists(AppConstants.dailyLogsBox);
   }
 
-  Future<void> _openEncryptedBoxes(HiveAesCipher cipher) async {
+  Future<void> _openEncryptedBoxes(HiveAesCipher cipher,
+      {bool crashRecovery = false}) async {
     _userProfileBox = await Hive.openBox<UserProfile>(
         AppConstants.userProfileBox,
-        encryptionCipher: cipher);
+        encryptionCipher: cipher,
+        crashRecovery: crashRecovery);
     _periodRecordsBox = await Hive.openBox<PeriodRecord>(
         AppConstants.periodRecordsBox,
-        encryptionCipher: cipher);
+        encryptionCipher: cipher,
+        crashRecovery: crashRecovery);
     _dailyLogsBox = await Hive.openBox<DailyLog>(AppConstants.dailyLogsBox,
-        encryptionCipher: cipher);
+        encryptionCipher: cipher,
+        crashRecovery: crashRecovery);
   }
 
   /// Şifresiz kutulardaki veriyi JSON üzerinden şifreli kutulara taşır.
   /// JSON ara katmanı HiveObject'lerin eski kutuya bağlılığı sorununu
   /// ortadan kaldırır (aynı nesne iki kutuya konamaz).
   Future<void> _migrateToEncrypted(HiveAesCipher cipher) async {
-    final plainProfileBox =
-        await Hive.openBox<UserProfile>(AppConstants.userProfileBox);
-    final plainRecordsBox =
-        await Hive.openBox<PeriodRecord>(AppConstants.periodRecordsBox);
-    final plainLogsBox =
-        await Hive.openBox<DailyLog>(AppConstants.dailyLogsBox);
+    // crashRecovery: false — bkz. _openPlainBoxes. Yedekten dönen şifreli
+    // dosyayı düz sanıp "kurtarmak" veriyi sessizce boşaltır.
+    final plainProfileBox = await Hive.openBox<UserProfile>(
+        AppConstants.userProfileBox,
+        crashRecovery: false);
+    final plainRecordsBox = await Hive.openBox<PeriodRecord>(
+        AppConstants.periodRecordsBox,
+        crashRecovery: false);
+    final plainLogsBox = await Hive.openBox<DailyLog>(
+        AppConstants.dailyLogsBox,
+        crashRecovery: false);
 
     final profileJson =
         plainProfileBox.get(AppConstants.currentUserKey)?.toJson();
@@ -234,6 +313,7 @@ class HiveService {
   @visibleForTesting
   void resetForTesting() {
     _isInitialized = false;
+    _dataResetPerformed = false;
   }
 
   // ─── UserProfile CRUD ───────────────────────────────────────────────

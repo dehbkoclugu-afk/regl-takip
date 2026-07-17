@@ -1193,6 +1193,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invalidBackupFile => 'Invalid backup file';
 
   @override
+  String get dataResetTitle => 'Your data could not be read';
+
+  @override
+  String get dataResetBody => 'App data could not be decrypted on this device. This usually happens after switching phones or restoring a system backup: data is encrypted with a device-specific key that cannot move to a new device. The app has started fresh.\n\nTo move your data between devices, export a JSON backup regularly via Settings > Back up data.';
+
+  @override
   String get pinSet => 'PIN set successfully';
 
   @override

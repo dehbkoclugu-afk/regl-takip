@@ -1193,6 +1193,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get invalidBackupFile => 'Geçersiz yedek dosyası';
 
   @override
+  String get dataResetTitle => 'Verileriniz okunamadı';
+
+  @override
+  String get dataResetBody => 'Uygulama verileri bu cihazda çözülemedi. Bu genellikle telefon değişiminde veya sistem yedeğinden geri yüklemede olur: veriler cihaza özel bir anahtarla şifrelenir ve bu anahtar yeni cihaza taşınamaz. Uygulama sıfırdan başlatıldı.\n\nVerilerinizi cihazlar arasında taşımak için Ayarlar > Verileri Yedekle ile düzenli JSON yedeği alın.';
+
+  @override
   String get pinSet => 'PIN başarıyla ayarlandı';
 
   @override

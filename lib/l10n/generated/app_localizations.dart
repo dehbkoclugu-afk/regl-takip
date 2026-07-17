@@ -2375,6 +2375,18 @@ abstract class AppLocalizations {
   /// **'Geçersiz yedek dosyası'**
   String get invalidBackupFile;
 
+  /// No description provided for @dataResetTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verileriniz okunamadı'**
+  String get dataResetTitle;
+
+  /// No description provided for @dataResetBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Uygulama verileri bu cihazda çözülemedi. Bu genellikle telefon değişiminde veya sistem yedeğinden geri yüklemede olur: veriler cihaza özel bir anahtarla şifrelenir ve bu anahtar yeni cihaza taşınamaz. Uygulama sıfırdan başlatıldı.\n\nVerilerinizi cihazlar arasında taşımak için Ayarlar > Verileri Yedekle ile düzenli JSON yedeği alın.'**
+  String get dataResetBody;
+
   /// No description provided for @pinSet.
   ///
   /// In tr, this message translates to:
