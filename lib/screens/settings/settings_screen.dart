@@ -437,6 +437,9 @@ class SettingsScreen extends ConsumerWidget {
               );
               if (confirmed == true) {
                 await HiveService().clearAll();
+                // Migrasyondan kalan düz metin anlık görüntü de "tüm veri"nin
+                // parçası — kutularla birlikte gitmeli
+                await HiveService().deleteLegacyPlaintextSnapshot();
                 // Veri silindi ama kilit, bildirimler ve ana ekran widget'ı
                 // eski veriyle ayakta kalıyordu: PIN hâlâ kurulu, hatırlatmalar
                 // planlı, widget döngü gününü göstermeye devam ediyordu

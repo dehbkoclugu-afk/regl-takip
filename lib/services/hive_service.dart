@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -118,7 +119,30 @@ class HiveService {
       await storage.write(key: _encryptedFlagKey, value: 'true');
     }
 
+    // Migrasyonun düz metin güvenlik anlık görüntüsü yalnız migrasyon
+    // açılışında gereklidir; bir SONRAKİ başarılı şifreli açılışta artık
+    // sigorta değil sızıntıdır (tüm sağlık verisi şifresiz diskte) — sil.
+    if (alreadyEncrypted && encryptionSucceeded && manageHivePath) {
+      unawaited(deleteLegacyPlaintextSnapshot());
+    }
+
     _isInitialized = true;
+  }
+
+  /// Şifreleme migrasyonundan kalan düz metin `pre_encryption_backup.json`
+  /// dosyasını siler (varsa). Başarılı şifreli açılışta ve "tüm verileri
+  /// sil"de çağrılır.
+  Future<void> deleteLegacyPlaintextSnapshot() async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/pre_encryption_backup.json');
+      if (await file.exists()) {
+        await file.delete();
+        debugPrint('[HIVE] legacy plaintext snapshot deleted');
+      }
+    } catch (e) {
+      debugPrint('[HIVE] snapshot cleanup failed: $e');
+    }
   }
 
   // crashRecovery: false — Hive'ın varsayılan "kurtarması", çözülemeyen

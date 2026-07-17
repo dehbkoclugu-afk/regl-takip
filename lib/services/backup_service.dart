@@ -65,15 +65,6 @@ class BackupService {
     return file.path;
   }
 
-  /// Migrasyon öncesi güvenlik anlık görüntüsü — belgeler dizinine yazar.
-  Future<String> writeSafetySnapshot() async {
-    final json = buildBackupJson();
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/pre_encryption_backup.json');
-    await file.writeAsString(json);
-    return file.path;
-  }
-
   /// JSON string'i doğrular ve BackupData'ya çözer.
   /// Bozuk/yabancı dosyada [BackupException] fırlatır.
   BackupData parseBackup(String jsonString) {
