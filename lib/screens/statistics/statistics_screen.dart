@@ -393,15 +393,21 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     centerSpaceRadius: 40,
                     sections: moodCount.entries.map((e) {
                       final pct = (e.value / total * 100).toStringAsFixed(0);
+                      final sliceColor = colors[e.key] ?? AppColors.moodNeutral;
+                      // Soluk pastel dilimde beyaz yüzde okunmuyor (~1.4:1):
+                      // dilimin parlaklığına göre koyu/beyaz metin seçilir
+                      final titleColor = sliceColor.computeLuminance() > 0.5
+                          ? AppColors.textPrimary
+                          : Colors.white;
                       return PieChartSectionData(
-                        color: colors[e.key] ?? AppColors.moodNeutral,
+                        color: sliceColor,
                         value: e.value.toDouble(),
                         title: '$pct%',
                         radius: 50,
                         titleStyle: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                            color: titleColor),
                       );
                     }).toList(),
                   ),

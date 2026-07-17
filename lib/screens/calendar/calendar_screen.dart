@@ -412,9 +412,14 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           children: [
             Icon(icon, color: color, size: 18),
             const SizedBox(width: 8),
+            // Metin token renginin kendisiyle yazılmaz (moodHappy sarısı
+            // gibi pasteller açık zeminde okunmuyor) — ikon rengi taşır,
+            // metin standart birincil renkte kalır
             Text(label,
                 style: TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w600, color: color)),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.tp(context))),
           ],
         ),
       ),

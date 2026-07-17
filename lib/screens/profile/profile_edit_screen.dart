@@ -375,7 +375,9 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: AppColors.primary,
+            color: AppColors.isDark(context)
+                ? AppColors.primaryLight
+                : AppColors.primaryStrong,
           ),
         ),
         SliderTheme(
@@ -410,12 +412,15 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
         child: ElevatedButton(
           onPressed: _isSaving ? null : _save,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
+            // primaryStrong: pastel primary beyaz metinle 2.06:1 —
+            // app_colors.dart'taki notun ta kendisi; CTA zemini olamaz
+            backgroundColor: AppColors.primaryStrong,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.5),
+            disabledBackgroundColor:
+                AppColors.primaryStrong.withValues(alpha: 0.5),
           ),
           child: _isSaving
               ? const SizedBox(

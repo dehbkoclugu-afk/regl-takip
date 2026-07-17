@@ -401,10 +401,25 @@ class DashboardScreen extends ConsumerWidget {
   Widget _buildTtcCard(BuildContext context, WidgetRef ref,
       AppLocalizations l10n, int cycleDay, int cycleLength) {
     final level = CycleUtils.fertilityLevelForDay(cycleDay, cycleLength);
-    final (levelText, levelColor) = switch (level) {
-      FertilityLevel.high => (l10n.fertilityHigh, AppColors.success),
-      FertilityLevel.medium => (l10n.fertilityMedium, AppColors.warning),
-      FertilityLevel.low => (l10n.fertilityLow, AppColors.textSecondary),
+    final isDark = AppColors.isDark(context);
+    // Rozet METNİ pastel durum rengiyle yazılamaz (açık zeminde ~2:1):
+    // açık temada koyu metin tonu, zemin tonu pastel kalır
+    final (levelText, levelColor, levelTextColor) = switch (level) {
+      FertilityLevel.high => (
+          l10n.fertilityHigh,
+          AppColors.success,
+          isDark ? AppColors.success : AppColors.fertileWindowText
+        ),
+      FertilityLevel.medium => (
+          l10n.fertilityMedium,
+          AppColors.warning,
+          isDark ? AppColors.warning : AppColors.warningText
+        ),
+      FertilityLevel.low => (
+          l10n.fertilityLow,
+          AppColors.textSecondary,
+          AppColors.ts(context)
+        ),
     };
 
     final today = DateTime.now();
@@ -442,7 +457,7 @@ class DashboardScreen extends ConsumerWidget {
                     style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: levelColor)),
+                        color: levelTextColor)),
               ),
             ],
           ),
@@ -458,7 +473,9 @@ class DashboardScreen extends ConsumerWidget {
                   context,
                   label: l10n.lhPositive,
                   selected: lhResult == true,
-                  color: AppColors.success,
+                  color: AppColors.isDark(context)
+                      ? AppColors.success
+                      : AppColors.fertileWindowText,
                   onTap: () => ref
                       .read(dailyLogProvider.notifier)
                       .updateOvulationTest(

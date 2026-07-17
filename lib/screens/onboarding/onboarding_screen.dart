@@ -662,7 +662,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           l10n.nDays(_cycleLength.round()),
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.primary,
+                color: AppColors.primaryStrong,
               ),
         ),
         const SizedBox(height: 12),
@@ -715,7 +715,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           l10n.nDays(_periodLength.round()),
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.primary,
+                color: AppColors.primaryStrong,
               ),
         ),
         const SizedBox(height: 12),
@@ -787,17 +787,19 @@ class _ActionButton extends StatelessWidget {
                   height: 24,
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
-                    color: AppColors.primary,
+                    color: AppColors.primaryStrong,
                   ),
                 )
               : Text(
                   label,
+                  // primaryStrong: pastel primary beyaz zeminde 2.06:1 —
+                  // buton metni okunmuyordu
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
                     color: enabled
-                        ? AppColors.primary
-                        : AppColors.primary.withValues(alpha: 0.6),
+                        ? AppColors.primaryStrong
+                        : AppColors.primaryStrong.withValues(alpha: 0.6),
                     letterSpacing: 0.3,
                   ),
                 ),

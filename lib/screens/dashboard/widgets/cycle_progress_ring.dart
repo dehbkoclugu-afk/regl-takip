@@ -78,6 +78,23 @@ class CycleProgressRing extends StatelessWidget {
     }
   }
 
+  /// Merkezdeki METİN için renk: açık zeminde ring tonları (özellikle
+  /// folliküler/luteal turuncu-amber) 3:1'in bile altında kalıyordu —
+  /// açık temada koyulaştırılmış metin tonu, koyu temada ring tonu.
+  Color _textColor(bool isDark) {
+    if (isDark) return _ringColor;
+    switch (phase) {
+      case CyclePhase.menstrual:
+        return AppColors.menstrualText;
+      case CyclePhase.follicular:
+        return AppColors.follicularText;
+      case CyclePhase.ovulation:
+        return AppColors.ovulationText;
+      case CyclePhase.luteal:
+        return AppColors.lutealText;
+    }
+  }
+
   IconData get _phaseIcon {
     switch (phase) {
       case CyclePhase.menstrual:
@@ -155,6 +172,7 @@ class CycleProgressRing extends StatelessWidget {
   }
 
   Widget _buildCenterContent(AppLocalizations l10n, BuildContext context) {
+    final textColor = _textColor(AppColors.isDark(context));
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -165,7 +183,7 @@ class CycleProgressRing extends StatelessWidget {
           style: TextStyle(
             fontSize: 48,
             fontWeight: FontWeight.w800,
-            color: _ringColor,
+            color: textColor,
             height: 1.0,
           ),
         ),
@@ -193,7 +211,7 @@ class CycleProgressRing extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
-              color: _ringColor,
+              color: textColor,
             ),
           ),
         ),

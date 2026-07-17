@@ -46,6 +46,16 @@ class AppColors {
   // Fertil bant: takvimdeki soluk yeşilin ring'de okunan doygun hali
   static const Color ringFertile = Color(0xFF5E9C78);
 
+  // Metin-güvenli faz/durum tonları (açık zeminde >=4.5:1).
+  // Kural: pastel ve ring tonları YÜZEY/vurgu içindir, METİN rengi olamaz
+  // (primary'nin beyazla 2.06:1 olduğu nota bakın). Açık temada metin bu
+  // tonları kullanır; koyu temada parlak ring tonları zaten okunur.
+  static const Color menstrualText = Color(0xFFA83A58);
+  static const Color follicularText = Color(0xFF9C5510);
+  static const Color ovulationText = Color(0xFF71458A);
+  static const Color lutealText = Color(0xFF8A6510);
+  static const Color warningText = Color(0xFF8A6510);
+
   // Takvim işaretleri
   static const Color periodDay = Color(0xFFE8A0BF);
   static const Color periodDayLight = Color(0xFFFCE4EC);

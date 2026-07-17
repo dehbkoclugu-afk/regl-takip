@@ -808,7 +808,9 @@ class SettingsScreen extends ConsumerWidget {
           style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: AppColors.primary)),
+              color: AppColors.isDark(context)
+                  ? AppColors.primaryLight
+                  : AppColors.primaryStrong)),
     );
   }
 
