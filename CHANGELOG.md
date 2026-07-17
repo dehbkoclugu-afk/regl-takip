@@ -1,5 +1,14 @@
 # Changelog
 
+## Yayınlanmamış — İnceleme düzeltmeleri: yakın altılısı (2026-07-17)
+
+- **Kilit artık geçici odak kayıplarında inmiyor**: bildirim çekmecesi, izin diyaloğu, paylaşım sayfası kilidi tetiklemiyor (yalnız arka plana geçişte); recents önizlemesi ve ekran görüntüsü FLAG_SECURE ile engelleniyor (kilit açıkken); kilit ekranı uygulamanın üstüne biniyor — yazılan not, kaydırma konumu kilitten dönüşte aynen duruyor
+- **Kontrast taraması**: pastel/ring tonları metin ve buton zemini olarak temizlendi (ring merkezi, doğurganlık rozeti, takvim detay çipleri, profil kaydet butonu ve slider'lar, kurulum butonu, pasta yüzdeleri, hatırlatma saati) — açık temada AA metin tonları eklendi
+- **Gizli mod bildirimleri de kapsıyor**: "Notlar" kılığındayken kilit ekranına düşen hatırlatmalar nötr metinle geliyor ("Adet Hatırlatması" yerine "Hatırlatma"); ilaç adları da gizleniyor
+- **Tema artık sistemi izleyebiliyor**: Sistem/Açık/Koyu üçlü tercih (yeni kullanıcıda varsayılan sistem); mevcut kullanıcının seçimi korunuyor
+- **Saatli + saatsiz ilaç karışımında** saatsiz ilaçlar için genel saat hatırlatması da kuruluyor (önceden sessizce kapsam dışıydı)
+- **İngilizce gizlilik politikası** eklendi (arayüz dilini izliyor); iki politikada da üçüncü taraf bölümü gerçeğe çekildi (AdMob ve çökme raporlama şeffaf biçimde açıklandı)
+
 ## Yayınlanmamış — İnceleme düzeltmeleri: veri güvenliği dörtlüsü (2026-07-17)
 
 Kapsamlı inceleme raporunun (docs/reviews/2026-07-16) "Hemen" öncelikli dört bulgusu:
