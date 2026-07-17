@@ -1,5 +1,14 @@
 # Changelog
 
+## Yayınlanmamış — İnceleme düzeltmeleri: sağlamlaştırma beşlisi (2026-07-17)
+
+- **Dışa aktarım artık gerçekten rapor**: CSV/PDF başlıkları ve değerler uygulama dilini izliyor (İngilizce'ye çakılıydı); semptomlar sayı yerine ad listesi olarak, ilaçlar da CSV'ye yazılıyor
+- **İstatistik dürüstlüğü**: filtre çipleri kartın tamamına işliyor (önceden yarısına), semptom çubuklarında kalıcı sayı etiketi + tam adlar (4 harfe kırpılmıyor), trend grafiklerinde x ekseni gerçek zaman (seyrek ölçüm eğriyi çarpıtmıyor)
+- **Bayrak kaybı artık veri kaybı değil**: yalnız şifreleme bayrağı kaybolduğunda (anahtar sağlamken) kutular karantinaya alınmadan önce normal şifreli açılış deneniyor — testler bu açığı yakaladı, düzeltildi
+- **Tema tek üreticiden**: açık/koyu kopyası eritildi; ölü konfigürasyon (cardTheme, bottomNavigationBarTheme, kullanılmayan animasyon sabitleri) temizlendi; koyu temadaki yarı saydam yüzey kalıntıları opaklaştırıldı
+- **Ortak TrackerScaffold**: 10 takip ekranının kopyala-yapıştır iskeleti tek bileşene indi; **kaydedilmemiş değişiklik koruması artık her ekranda** (önceden yalnız Notlar'da) — seçim yapıp kaydetmeden çıkan kullanıcıya soruluyor
+- 5 yeni regresyon testi (114 toplam)
+
 ## Yayınlanmamış — İnceleme düzeltmeleri: yakın altılısı (2026-07-17)
 
 - **Kilit artık geçici odak kayıplarında inmiyor**: bildirim çekmecesi, izin diyaloğu, paylaşım sayfası kilidi tetiklemiyor (yalnız arka plana geçişte); recents önizlemesi ve ekran görüntüsü FLAG_SECURE ile engelleniyor (kilit açıkken); kilit ekranı uygulamanın üstüne biniyor — yazılan not, kaydırma konumu kilitten dönüşte aynen duruyor
