@@ -8,6 +8,7 @@ import 'providers/providers.dart';
 import 'screens/lock/lock_screen.dart';
 import 'services/ad_service.dart';
 import 'services/premium_service.dart';
+import 'services/privacy_screen_service.dart';
 
 class ReglTakipApp extends ConsumerStatefulWidget {
   const ReglTakipApp({super.key});
@@ -62,19 +63,28 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
       _needsLock = needs;
       _isLocked = needs;
     });
+    // Recents önizlemesi ve ekran görüntüsü FLAG_SECURE ile engellenir —
+    // kilidi geçici odak kayıplarında indirmeye gerek kalmaz
+    PrivacyScreenService.setSecureScreen(needs);
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // inactive de dahil: uygulama değiştirici (recents) önizlemesi paused'dan
-    // önce çekilir — yalnız paused'da kilitlersek son ekran orada görünür
+    // Yalnız paused/hidden: `inactive` bildirim çekmecesi, izin diyaloğu,
+    // paylaşım sayfası gibi geçici odak kayıplarında da gelir — orada
+    // kilitlemek her seferinde PIN + (eski davranışta) state kaybı demekti.
+    // Recents önizleme sızıntısını FLAG_SECURE çözer (PrivacyScreenService).
     if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.inactive ||
         state == AppLifecycleState.hidden) {
       final profile = ref.read(userProfileProvider);
       if ((profile?.pinEnabled == true) ||
           (profile?.biometricEnabled == true)) {
-        if (!_isLocked) setState(() => _isLocked = true);
+        if (!_isLocked) {
+          // Kilit örtüsü inerken alttaki alan odağı bırakmalı (klavye açık
+          // kalmasın, tuş vuruşları alta gitmesin)
+          FocusManager.instance.primaryFocus?.unfocus();
+          setState(() => _isLocked = true);
+        }
       }
     }
   }
@@ -101,6 +111,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
               _needsLock = needs;
               if (!needs) _isLocked = false;
             });
+            PrivacyScreenService.setSecureScreen(needs);
           }
         }
       });
@@ -125,10 +136,17 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
       ],
       routerConfig: router,
       builder: (context, child) {
-        if (_isLocked && _needsLock) {
-          return LockScreen(onUnlocked: _onUnlocked);
-        }
-        return child ?? const SizedBox.shrink();
+        // Kilit, child'ın YERİNE değil ÜSTÜNE gelir: alttaki Navigator
+        // ağacı yaşamaya devam eder — kaydırma konumu, açık sheet, yazılan
+        // not kilitten dönüşte aynen durur. (Eski davranış child'ı ağaçtan
+        // söküyordu; bildirim çekmecesine bir bakış her şeyi sıfırlıyordu.)
+        return Stack(
+          children: [
+            child ?? const SizedBox.shrink(),
+            if (_isLocked && _needsLock)
+              LockScreen(onUnlocked: _onUnlocked),
+          ],
+        );
       },
     );
   }
