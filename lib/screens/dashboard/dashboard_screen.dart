@@ -20,6 +20,7 @@ import '../log/quick_log_sheet.dart';
 import 'widgets/cycle_progress_ring.dart';
 import 'widgets/prediction_card.dart';
 import 'widgets/quick_status_cards.dart';
+import 'widgets/week_strip.dart';
 import '../../core/utils/motion.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -293,7 +294,13 @@ class DashboardScreen extends ConsumerWidget {
                   daysUntilNextPeriod: daysUntil,
                   lastPeriodStart: profile?.lastPeriodStart,
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 20),
+                // 7 günlük mini şerit: dün/bugün/yarın bağlamı takvime
+                // inmeden — imza faz haritasının beşinci yüzeyi
+                const WeekStrip()
+                    .animateSafe(context)
+                    .fadeIn(delay: 150.ms, duration: 400.ms),
+                const SizedBox(height: 24),
                 // Aksiyonlar ringin hemen altında: göz ring'den iner inmez
                 // bir numaralı iş ("Reglim başladı") elin altında —
                 // tahminler bilgidir, aşağıda yaşayabilir
