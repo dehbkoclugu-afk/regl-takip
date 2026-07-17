@@ -149,15 +149,61 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
             _divider(context),
-            _switchTile(
-              Icons.dark_mode_rounded,
-              l10n.darkTheme,
-              ref.watch(darkModeProvider),
-              (val) {
-                ref.read(darkModeProvider.notifier).state = val;
-                ref.read(userProfileProvider.notifier)
-                    .saveProfile(darkModeEnabled: val);
-              },
+            // Üç durumlu tema: sistem tercihi birinci sınıf seçenek —
+            // ikili anahtar sistemi koyu kullananı el ile ayara mecbur
+            // bırakıyordu
+            ListTile(
+              leading: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.primary.withValues(alpha: 0.25),
+                      AppColors.primary.withValues(alpha: 0.1),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.dark_mode_rounded,
+                    color: AppColors.primary, size: 22),
+              ),
+              title: Text(l10n.theme,
+                  style: TextStyle(fontWeight: FontWeight.w600)),
+              trailing: SegmentedButton<String>(
+                segments: [
+                  ButtonSegment(
+                      value: 'system', label: Text(l10n.themeSystem)),
+                  ButtonSegment(value: 'light', label: Text(l10n.themeLight)),
+                  ButtonSegment(value: 'dark', label: Text(l10n.themeDark)),
+                ],
+                selected: {
+                  switch (profile?.themePreference ?? 'system') {
+                    'dark' => 'dark',
+                    'light' => 'light',
+                    'system' => 'system',
+                    // '' = eski kayıt: o günkü açık/koyu seçimi
+                    _ => (profile?.darkModeEnabled ?? false)
+                        ? 'dark'
+                        : 'light',
+                  }
+                },
+                onSelectionChanged: (selected) {
+                  final value = selected.first;
+                  ref.read(themeModeProvider.notifier).state = switch (value) {
+                    'dark' => ThemeMode.dark,
+                    'light' => ThemeMode.light,
+                    _ => ThemeMode.system,
+                  };
+                  ref
+                      .read(userProfileProvider.notifier)
+                      .saveProfile(themePreference: value);
+                },
+                style: ButtonStyle(
+                  visualDensity: VisualDensity.compact,
+                  textStyle: WidgetStateProperty.all(TextStyle(fontSize: 12)),
+                ),
+              ),
             ),
             _divider(context),
             _switchTile(

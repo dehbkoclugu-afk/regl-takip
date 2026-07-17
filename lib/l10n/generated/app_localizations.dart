@@ -2381,6 +2381,24 @@ abstract class AppLocalizations {
   /// **'Geçersiz yedek dosyası'**
   String get invalidBackupFile;
 
+  /// No description provided for @themeSystem.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sistem'**
+  String get themeSystem;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In tr, this message translates to:
+  /// **'Koyu'**
+  String get themeDark;
+
   /// No description provided for @undo.
   ///
   /// In tr, this message translates to:

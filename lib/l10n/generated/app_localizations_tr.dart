@@ -1196,6 +1196,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get invalidBackupFile => 'Geçersiz yedek dosyası';
 
   @override
+  String get themeSystem => 'Sistem';
+
+  @override
+  String get themeLight => 'Açık';
+
+  @override
+  String get themeDark => 'Koyu';
+
+  @override
   String get undo => 'Geri al';
 
   @override

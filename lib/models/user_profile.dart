@@ -73,6 +73,14 @@ class UserProfile extends HiveObject {
   @HiveField(19)
   DateTime? pillPackStartDate;
 
+  /// Tema tercihi: 'system' / 'light' / 'dark'.
+  /// '' (defaultValue) = alan eklenmeden önceki kayıt; etkin mod
+  /// darkModeEnabled'dan türetilir (eski kullanıcının seçimi korunur,
+  /// yeni kullanıcı sistem temasını izler). Eşleme providers'ta:
+  /// themeModeFromProfile.
+  @HiveField(20, defaultValue: '')
+  String themePreference;
+
   UserProfile({
     this.name = '',
     this.birthDate,
@@ -94,6 +102,7 @@ class UserProfile extends HiveObject {
     this.trackingMode = TrackingMode.period,
     this.pregnancyStartDate,
     this.pillPackStartDate,
+    this.themePreference = 'system',
   });
 
   /// Yeni bir kopya döndürür; verilen alanlar güncellenir.
@@ -119,6 +128,7 @@ class UserProfile extends HiveObject {
     TrackingMode? trackingMode,
     DateTime? pregnancyStartDate,
     DateTime? pillPackStartDate,
+    String? themePreference,
   }) {
     return UserProfile(
       name: name ?? this.name,
@@ -145,6 +155,7 @@ class UserProfile extends HiveObject {
       trackingMode: trackingMode ?? this.trackingMode,
       pregnancyStartDate: pregnancyStartDate ?? this.pregnancyStartDate,
       pillPackStartDate: pillPackStartDate ?? this.pillPackStartDate,
+      themePreference: themePreference ?? this.themePreference,
     );
   }
 
@@ -169,6 +180,7 @@ class UserProfile extends HiveObject {
         'trackingMode': trackingMode.name,
         'pregnancyStartDate': pregnancyStartDate?.toIso8601String(),
         'pillPackStartDate': pillPackStartDate?.toIso8601String(),
+        'themePreference': themePreference,
       };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
@@ -205,6 +217,9 @@ class UserProfile extends HiveObject {
         pillPackStartDate: json['pillPackStartDate'] != null
             ? DateTime.tryParse(json['pillPackStartDate'] as String)
             : null,
+        // Eski yedekte alan yok: kullanıcının o günkü seçimi korunur
+        themePreference: json['themePreference'] as String? ??
+            ((json['darkModeEnabled'] as bool? ?? false) ? 'dark' : 'light'),
       );
 
   int? get age {

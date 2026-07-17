@@ -38,13 +38,14 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
           fields[17] == null ? TrackingMode.period : fields[17] as TrackingMode,
       pregnancyStartDate: fields[18] as DateTime?,
       pillPackStartDate: fields[19] as DateTime?,
+      themePreference: fields[20] == null ? '' : fields[20] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(20)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -84,7 +85,9 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(18)
       ..write(obj.pregnancyStartDate)
       ..writeByte(19)
-      ..write(obj.pillPackStartDate);
+      ..write(obj.pillPackStartDate)
+      ..writeByte(20)
+      ..write(obj.themePreference);
   }
 
   @override

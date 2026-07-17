@@ -81,7 +81,7 @@ Future<void> _run() async {
     ProviderScope(
       overrides: [
         if (profile != null) ...[
-          darkModeProvider.overrideWith((ref) => profile.darkModeEnabled),
+          themeModeProvider.overrideWith((ref) => themeModeFromProfile(profile)),
           localeProvider.overrideWith((ref) => Locale(profile.language)),
         ],
       ],

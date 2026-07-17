@@ -26,8 +26,22 @@ final localeProvider = StateProvider<Locale>((ref) {
   return const Locale('tr');
 });
 
-final darkModeProvider = StateProvider<bool>((ref) {
-  return false;
+/// Profildeki tema tercihini ThemeMode'a çevirir.
+/// '' = themePreference alanı eklenmeden önceki kayıt: kullanıcının o
+/// günkü açık/koyu seçimi (darkModeEnabled) korunur. Yeni kullanıcı ve
+/// profili olmayan açılış sistem temasını izler.
+ThemeMode themeModeFromProfile(UserProfile? profile) {
+  if (profile == null) return ThemeMode.system;
+  return switch (profile.themePreference) {
+    'dark' => ThemeMode.dark,
+    'light' => ThemeMode.light,
+    'system' => ThemeMode.system,
+    _ => profile.darkModeEnabled ? ThemeMode.dark : ThemeMode.light,
+  };
+}
+
+final themeModeProvider = StateProvider<ThemeMode>((ref) {
+  return ThemeMode.system;
 });
 
 // ─── UserProfile Provider ─────────────────────────────────────────────
@@ -104,6 +118,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     TrackingMode? trackingMode,
     DateTime? pregnancyStartDate,
     DateTime? pillPackStartDate,
+    String? themePreference,
   }) async {
     final current = state ?? UserProfile();
     final updated = current.copyWith(
@@ -121,12 +136,16 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
       medicationReminderEnabled: medicationReminderEnabled,
       reminderHour: reminderHour,
       reminderMinute: reminderMinute,
-      darkModeEnabled: darkModeEnabled,
+      // Tema tercihi değişince eski bool da senkron tutulur: eski sürüme
+      // taşınan yedek kullanıcının açık/koyu seçimini kaybetmesin
+      darkModeEnabled: darkModeEnabled ??
+          (themePreference == null ? null : themePreference == 'dark'),
       waterGoal: waterGoal,
       smartPredictionEnabled: smartPredictionEnabled,
       trackingMode: trackingMode,
       pregnancyStartDate: pregnancyStartDate,
       pillPackStartDate: pillPackStartDate,
+      themePreference: themePreference,
     );
 
     await _hiveService.saveUserProfile(updated);

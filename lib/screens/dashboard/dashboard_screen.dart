@@ -157,19 +157,25 @@ class DashboardScreen extends ConsumerWidget {
                     child: Semantics(
                       button: true,
                       label: l10n.darkTheme,
-                      toggled: ref.watch(darkModeProvider),
+                      toggled: AppColors.isDark(context),
                       child: InkWell(
                       borderRadius: BorderRadius.circular(12),
+                      // Hızlı geçiş etkin parlaklığa göre açık/koyu yazar;
+                      // "sistem" tercihine dönüş ayarlardaki üçlü seçimde
                       onTap: () {
-                        final current = ref.read(darkModeProvider);
-                        ref.read(darkModeProvider.notifier).state = !current;
+                        final target =
+                            AppColors.isDark(context) ? 'light' : 'dark';
+                        ref.read(themeModeProvider.notifier).state =
+                            target == 'dark'
+                                ? ThemeMode.dark
+                                : ThemeMode.light;
                         ref.read(userProfileProvider.notifier)
-                            .saveProfile(darkModeEnabled: !current);
+                            .saveProfile(themePreference: target);
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(10),
                         child: Icon(
-                          ref.watch(darkModeProvider)
+                          AppColors.isDark(context)
                               ? Icons.light_mode_rounded
                               : Icons.dark_mode_rounded,
                           color: AppColors.tp(context),

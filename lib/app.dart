@@ -93,7 +93,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   Widget build(BuildContext context) {
     final locale = ref.watch(localeProvider);
     final router = ref.watch(routerProvider);
-    final isDarkMode = ref.watch(darkModeProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     // Watch profile changes to detect lock settings changes
     final profile = ref.watch(userProfileProvider);
@@ -122,7 +122,9 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      // Üç durumlu tercih (sistem/açık/koyu); varsayılan sistem —
+      // sistemi koyu kullanan kullanıcı ilk açılışta kör edilmez
+      themeMode: themeMode,
       locale: locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
