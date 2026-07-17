@@ -28,9 +28,4 @@ class AppConstants {
 
   // Hive keys
   static const String currentUserKey = 'current_user';
-
-  // Animasyon süreleri
-  static const Duration quickAnimation = Duration(milliseconds: 200);
-  static const Duration normalAnimation = Duration(milliseconds: 400);
-  static const Duration slowAnimation = Duration(milliseconds: 800);
 }
