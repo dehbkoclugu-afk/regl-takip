@@ -1,5 +1,13 @@
 # Changelog
 
+## Yayınlanmamış — Yılım, tam kılık ve Premium (2026-07-17)
+
+- **"Yılım" halkası**: istatistikte son 12 ay tek çember — gerçek regl günleri koyu, fazlar soluk tonlarda, ay etiketleri ve merkezde döngü sayısı; düzensizlik bir bakışta görünür
+- **Tam kılık (decoy)**: gizli modda uygulama artık gerçekten çalışan bir "Notlar" defteri olarak açılıyor (not ekle/düzenle/sil, nötr tema); gerçek uygulamaya dönüş başlığa uzun basışla, kilit açıksa PIN sorulur; arka plana gidince kılık geri gelir, soğuk açılışta gerçek arayüz bir kare bile görünmez
+- **Premium modeli**: ilk 30 gün her şey ücretsiz ve reklamsız; sonrasında aylık ₺29 veya yıllık ₺199 abonelik. Abonelik yoksa uygulama çekirdeğe döner: regl başlat/bitir, takvim, tahminler, hatırlatmalar ve yedekleme açık kalır; günlük takipler, istatistikler (Yılım dahil), kişisel içgörüler, dışa aktarma, Health Connect, gizli mod ve özel modlar Premium'da. Veri asla silinmez — abonelikte kaldığı yerden devam eder. Eski "reklamsız" alıcılarının hakkı korunur; gizli mod kapatma her zaman serbest (kimse kılıkta mahsur kalmaz)
+- Paywall ekranı (mağaza fiyatlarıyla plan kartları, geri yükleme, "ücretsiz devam et") ve ana sayfada deneme sayacı / ücretsiz sürüm çipi
+- 11 yeni test (125 toplam)
+
 ## Yayınlanmamış — Görsel imza ve akıllı özellikler (2026-07-17)
 
 - **Faz haritası artık her yerde**: takvimde ayın altında ince faz şeridi (gerçek regl günleri + tahmin, "buradasın" noktasıyla); ana ekran widget'ında metnin yanında mini faz ring'i — uygulamanın imza görseli cebe taşındı (gizli modda ikisi de gizli)
