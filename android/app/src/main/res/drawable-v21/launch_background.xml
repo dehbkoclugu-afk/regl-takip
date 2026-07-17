@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Markalı açılış: zemin uygulamanın açık zemin tonu, merkezde ring
-     silueti. Gizli mod alias'ı bunu KULLANMAZ (NeutralLaunchTheme) —
-     kılık ilk kareden korunur. -->
+     silueti. Gizli mod alias'ı bunu KULLANMAZ (NeutralLaunchTheme). -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="#FDF2F8" />
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FDF2F8" />
+        </shape>
+    </item>
     <item android:gravity="center" android:drawable="@drawable/launch_ring" />
 </layer-list>
