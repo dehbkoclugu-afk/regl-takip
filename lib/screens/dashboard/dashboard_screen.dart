@@ -291,6 +291,7 @@ class DashboardScreen extends ConsumerWidget {
                   periodLength: profile?.averagePeriodLength ?? 5,
                   phase: phase,
                   daysUntilNextPeriod: daysUntil,
+                  lastPeriodStart: profile?.lastPeriodStart,
                 ),
                 const SizedBox(height: 32),
                 // Aksiyonlar ringin hemen altında: göz ring'den iner inmez

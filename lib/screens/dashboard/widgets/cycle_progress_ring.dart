@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -12,12 +14,16 @@ import '../../../core/widgets/phase_glyph.dart';
 
 export '../../../core/utils/ring_segments.dart' show RingSegment, ringSegmentsFor;
 
-class CycleProgressRing extends StatelessWidget {
+class CycleProgressRing extends StatefulWidget {
   final int cycleDay;
   final int cycleLength;
   final int periodLength;
   final CyclePhase phase;
   final int daysUntilNextPeriod;
+
+  /// Segment dokunuşunda tarih aralığı gösterebilmek için: döngü günü 1'in
+  /// takvim karşılığı. null ise gün numarası aralığı gösterilir.
+  final DateTime? lastPeriodStart;
 
   const CycleProgressRing({
     super.key,
@@ -26,11 +32,30 @@ class CycleProgressRing extends StatelessWidget {
     this.periodLength = 5,
     required this.phase,
     required this.daysUntilNextPeriod,
+    this.lastPeriodStart,
   });
+
+  @override
+  State<CycleProgressRing> createState() => _CycleProgressRingState();
+}
+
+class _CycleProgressRingState extends State<CycleProgressRing> {
+  static const _size = 264.0;
+  static const _inset = 22.0; // painter ile aynı: yay merkezi mesafesi
+
+  /// Dokunuşla seçilen segment; null = normal merkez içerik
+  RingSegment? _selected;
+  Timer? _revertTimer;
+
+  @override
+  void dispose() {
+    _revertTimer?.cancel();
+    super.dispose();
+  }
 
   /// Daha koyu/doygun ring rengi - arka plandan ayrışması için
   Color get _ringColor {
-    switch (phase) {
+    switch (widget.phase) {
       case CyclePhase.menstrual:
         return AppColors.ringMenstrual;
       case CyclePhase.follicular:
@@ -47,7 +72,7 @@ class CycleProgressRing extends StatelessWidget {
   /// açık temada koyulaştırılmış metin tonu, koyu temada ring tonu.
   Color _textColor(bool isDark) {
     if (isDark) return _ringColor;
-    switch (phase) {
+    switch (widget.phase) {
       case CyclePhase.menstrual:
         return AppColors.menstrualText;
       case CyclePhase.follicular:
@@ -59,11 +84,63 @@ class CycleProgressRing extends StatelessWidget {
     }
   }
 
+  /// Segment rengi -> okunur metin tonu (açık tema); koyu temada rengin kendisi
+  Color _segmentTextColor(RingSegment s, bool isDark) {
+    if (isDark) return s.color;
+    if (s.color == AppColors.ringMenstrual) return AppColors.menstrualText;
+    if (s.color == AppColors.ringFollicular) return AppColors.follicularText;
+    if (s.color == AppColors.ringFertile) return AppColors.fertileWindowText;
+    return AppColors.lutealText;
+  }
+
+  String _segmentName(RingSegment s, AppLocalizations l10n) {
+    if (s.color == AppColors.ringMenstrual) return l10n.menstrualPhase;
+    if (s.color == AppColors.ringFollicular) return l10n.follicularPhase;
+    if (s.color == AppColors.ringFertile) return l10n.fertileWindow;
+    return l10n.lutealPhase;
+  }
+
+  void _handleTap(TapUpDetails details, List<RingSegment> segments) {
+    final local = details.localPosition;
+    const center = Offset(_size / 2, _size / 2);
+    final d = local - center;
+    final dist = d.distance;
+    const bandRadius = _size / 2 - _inset;
+    // Bant çevresinde cömert dokunma alanı (±28px)
+    if (dist < bandRadius - 28 || dist > bandRadius + 28) {
+      _clearSelection();
+      return;
+    }
+    // Açı -> döngü günü: gün 1 saat 12'den başlar, saat yönünde
+    var angle = math.atan2(d.dy, d.dx) + math.pi / 2;
+    if (angle < 0) angle += 2 * math.pi;
+    final day =
+        (angle / (2 * math.pi) * widget.cycleLength).floor() + 1;
+    final hit = segments.where(
+        (s) => day >= s.startDay && day <= s.endDay);
+    if (hit.isEmpty) return;
+    final segment = hit.first;
+    if (_selected == segment) {
+      _clearSelection();
+      return;
+    }
+    setState(() => _selected = segment);
+    _revertTimer?.cancel();
+    _revertTimer = Timer(const Duration(seconds: 5), _clearSelection);
+  }
+
+  void _clearSelection() {
+    _revertTimer?.cancel();
+    if (_selected != null && mounted) setState(() => _selected = null);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isDark = AppColors.isDark(context);
     final motion = context.motionEnabled;
+    final segments =
+        ringSegmentsFor(widget.cycleLength, widget.periodLength);
 
     // Faz değişiminde (ör. "Reglim başladı") ışıma ve merkez renkleri
     // atlamaz, yeni faza yumuşakça akar — motion bütçesi asıl bu ana
@@ -74,8 +151,8 @@ class CycleProgressRing extends StatelessWidget {
     final ring = AnimatedContainer(
       duration: phaseShift,
       curve: Curves.easeOutQuart,
-      width: 264,
-      height: 264,
+      width: _size,
+      height: _size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: isDark
@@ -99,24 +176,41 @@ class CycleProgressRing extends StatelessWidget {
       ),
       child: CustomPaint(
         painter: _SegmentedRingPainter(
-          segments: ringSegmentsFor(cycleLength, periodLength),
-          cycleLength: cycleLength,
-          todayDay: cycleDay,
-          ovulationDay: CycleUtils.ovulationDayNumber(cycleLength),
+          segments: segments,
+          cycleLength: widget.cycleLength,
+          todayDay: widget.cycleDay,
+          ovulationDay: CycleUtils.ovulationDayNumber(widget.cycleLength),
           trackColor: isDark
               ? Colors.white.withValues(alpha: 0.08)
               : Colors.black.withValues(alpha: 0.05),
+          highlighted: _selected,
         ),
-        child: Center(child: _buildCenterContent(l10n, context)),
+        child: Center(
+          child: AnimatedSwitcher(
+            duration: motion
+                ? const Duration(milliseconds: 200)
+                : Duration.zero,
+            child: _selected == null
+                ? _buildCenterContent(l10n, context)
+                : _buildSegmentDetail(l10n, context, _selected!, isDark),
+          ),
+        ),
       ),
+    );
+
+    // Ring artık dokunulabilir harita: segmente dokun -> faz + tarih aralığı
+    final tappable = GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapUp: (details) => _handleTap(details, segments),
+      child: ring,
     );
 
     // Ekran okuyucu için ring tek bir özet olarak duyurulur
     final labeled = Semantics(
       label:
-          '${l10n.cycleDay}: $cycleDay / $cycleLength. '
-          '${daysUntilNextPeriod > 0 ? l10n.daysLater(daysUntilNextPeriod) : l10n.todayExclamation}',
-      child: ExcludeSemantics(child: ring),
+          '${l10n.cycleDay}: ${widget.cycleDay} / ${widget.cycleLength}. '
+          '${widget.daysUntilNextPeriod > 0 ? l10n.daysLater(widget.daysUntilNextPeriod) : l10n.todayExclamation}',
+      child: ExcludeSemantics(child: tappable),
     );
 
     if (!motion) return labeled;
@@ -131,16 +225,80 @@ class CycleProgressRing extends StatelessWidget {
         .fadeIn(duration: 500.ms);
   }
 
+  /// Segment dokunuş detayı: faz adı + takvimdeki karşılığı.
+  /// Görsel imzanın etkileşim imzasına dönüşen hali.
+  Widget _buildSegmentDetail(AppLocalizations l10n, BuildContext context,
+      RingSegment s, bool isDark) {
+    final textColor = _segmentTextColor(s, isDark);
+    String range;
+    final start = widget.lastPeriodStart;
+    if (start != null) {
+      final locale = Localizations.localeOf(context).toString();
+      final fmt = DateFormat('d MMM', locale);
+      final from = start.add(Duration(days: s.startDay - 1));
+      final to = start.add(Duration(days: s.endDay - 1));
+      range = s.startDay == s.endDay
+          ? fmt.format(from)
+          : '${fmt.format(from)} – ${fmt.format(to)}';
+    } else {
+      range = '${l10n.day} ${s.startDay}–${s.endDay}';
+    }
+    return Column(
+      key: ValueKey(s.startDay),
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          width: 14,
+          height: 14,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: s.color),
+        ),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: Text(
+            _segmentName(s, l10n),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: textColor,
+            ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          range,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: AppColors.tp(context),
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '${s.endDay - s.startDay + 1} ${l10n.days}',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.ts(context),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildCenterContent(AppLocalizations l10n, BuildContext context) {
     final textColor = _textColor(AppColors.isDark(context));
     final phaseShift = context.motionEnabled
         ? const Duration(milliseconds: 600)
         : Duration.zero;
     return Column(
+      key: const ValueKey('center'),
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // Özel faz glifi: Material genel setinden markanın alfabesine
-        PhaseGlyph(phase: phase, size: 24, color: _ringColor),
+        PhaseGlyph(phase: widget.phase, size: 24, color: _ringColor),
         const SizedBox(height: 6),
         AnimatedDefaultTextStyle(
           duration: phaseShift,
@@ -150,7 +308,7 @@ class CycleProgressRing extends StatelessWidget {
               .textTheme
               .displayLarge!
               .copyWith(color: textColor),
-          child: Text('$cycleDay'),
+          child: Text('${widget.cycleDay}'),
         ),
         const SizedBox(height: 2),
         Text(
@@ -180,8 +338,8 @@ class CycleProgressRing extends StatelessWidget {
               color: textColor,
             ),
             child: Text(
-              daysUntilNextPeriod > 0
-                  ? l10n.daysLater(daysUntilNextPeriod)
+              widget.daysUntilNextPeriod > 0
+                  ? l10n.daysLater(widget.daysUntilNextPeriod)
                   : l10n.todayExclamation,
             ),
           ),
@@ -198,6 +356,9 @@ class _SegmentedRingPainter extends CustomPainter {
   final int ovulationDay;
   final Color trackColor;
 
+  /// Dokunuşla seçilen segment: kalınlaşarak "seni duydum" der
+  final RingSegment? highlighted;
+
   static const _stroke = 16.0;
   static const _inset = 22.0; // dış kenardan yay merkezine mesafe
   static const _gapRadians = 0.035; // segmentler arası nefes boşluğu
@@ -208,6 +369,7 @@ class _SegmentedRingPainter extends CustomPainter {
     required this.todayDay,
     required this.ovulationDay,
     required this.trackColor,
+    this.highlighted,
   });
 
   /// Gün -> açı: gün 1 üstten (saat 12) başlar, saat yönünde ilerler.
@@ -233,9 +395,13 @@ class _SegmentedRingPainter extends CustomPainter {
       final start = _dayStartAngle(segment.startDay) + _gapRadians / 2;
       final end = _dayStartAngle(segment.endDay + 1) - _gapRadians / 2;
       if (end <= start) continue;
+      final isHighlighted = identical(segment, highlighted) ||
+          (highlighted != null &&
+              segment.startDay == highlighted!.startDay &&
+              segment.endDay == highlighted!.endDay);
       final paint = Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = _stroke
+        ..strokeWidth = isHighlighted ? _stroke + 5 : _stroke
         ..strokeCap = StrokeCap.round
         ..color = segment.color;
       canvas.drawArc(rect, start, end - start, false, paint);
@@ -276,5 +442,6 @@ class _SegmentedRingPainter extends CustomPainter {
   bool shouldRepaint(_SegmentedRingPainter oldDelegate) =>
       oldDelegate.todayDay != todayDay ||
       oldDelegate.cycleLength != cycleLength ||
-      oldDelegate.trackColor != trackColor;
+      oldDelegate.trackColor != trackColor ||
+      oldDelegate.highlighted != highlighted;
 }
