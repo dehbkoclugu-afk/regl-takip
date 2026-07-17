@@ -2387,6 +2387,42 @@ abstract class AppLocalizations {
   /// **'Tarih'**
   String get dateLabel;
 
+  /// No description provided for @cycleComparison.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son Döngün'**
+  String get cycleComparison;
+
+  /// No description provided for @lastCycleLength.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son döngü: {days} gün'**
+  String lastCycleLength(int days);
+
+  /// No description provided for @lastPeriodLength.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son regl: {days} gün'**
+  String lastPeriodLength(int days);
+
+  /// No description provided for @vsAverageMore.
+  ///
+  /// In tr, this message translates to:
+  /// **'ortalamandan {days} gün uzun'**
+  String vsAverageMore(int days);
+
+  /// No description provided for @vsAverageLess.
+  ///
+  /// In tr, this message translates to:
+  /// **'ortalamandan {days} gün kısa'**
+  String vsAverageLess(int days);
+
+  /// No description provided for @vsAverageSame.
+  ///
+  /// In tr, this message translates to:
+  /// **'ortalamanla aynı'**
+  String get vsAverageSame;
+
   /// No description provided for @coachPersonalInsight.
   ///
   /// In tr, this message translates to:

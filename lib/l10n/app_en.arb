@@ -516,6 +516,16 @@
   "backupRestored": "Backup restored",
   "invalidBackupFile": "Invalid backup file",
   "dateLabel": "Date",
+  "cycleComparison": "Your Last Cycle",
+  "lastCycleLength": "Last cycle: {days} days",
+  "@lastCycleLength": {"placeholders": {"days": {"type": "int"}}},
+  "lastPeriodLength": "Last period: {days} days",
+  "@lastPeriodLength": {"placeholders": {"days": {"type": "int"}}},
+  "vsAverageMore": "{days} days longer than your average",
+  "@vsAverageMore": {"placeholders": {"days": {"type": "int"}}},
+  "vsAverageLess": "{days} days shorter than your average",
+  "@vsAverageLess": {"placeholders": {"days": {"type": "int"}}},
+  "vsAverageSame": "same as your average",
   "coachPersonalInsight": "Based on your logs, most common in this phase: {symptom} ({percent}%)",
   "@coachPersonalInsight": {
     "placeholders": {

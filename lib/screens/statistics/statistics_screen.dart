@@ -75,6 +75,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             const SizedBox(height: 20),
             _buildOverviewCard(l10n, avgCycle, avgPeriod, filteredRecords),
             const SizedBox(height: 16),
+            // "Son döngün normaline göre nasıldı?" — filtreden bağımsız:
+            // "son" ve "ortalaman" kişisel normun tamamından hesaplanır
+            _buildComparisonCard(l10n, records, profile),
+            const SizedBox(height: 16),
             _buildSymptomChart(l10n, filteredLogs),
             const SizedBox(height: 16),
             _buildMoodChart(l10n, filteredLogs),
@@ -155,6 +159,93 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         ),
       ),
     );
+  }
+
+  /// Son döngü ve son regl, kullanıcının kendi ortalamasıyla kıyaslanır
+  /// (Clue'nun sevilen deseni: "normalin nasıl?" sorusuna tek bakış).
+  Widget _buildComparisonCard(
+      AppLocalizations l10n, List<PeriodRecord> records, UserProfile? profile) {
+    // Son tamamlanmış döngü = son iki başlangıç arası
+    final starts = records.map((r) => r.startDate).toList()..sort();
+    if (starts.length < 2) return const SizedBox.shrink();
+
+    final lastGap =
+        starts[starts.length - 1].difference(starts[starts.length - 2]).inDays;
+    final avgCycleAll = CycleUtils.calculateAverageCycleLength(records);
+    final avgPeriodAll = CycleUtils.averagePeriodDuration(
+        records, profile?.averagePeriodLength ?? 5);
+
+    PeriodRecord? lastCompleted;
+    for (final r in records) {
+      if (r.endDate != null &&
+          (lastCompleted == null ||
+              r.startDate.isAfter(lastCompleted.startDate))) {
+        lastCompleted = r;
+      }
+    }
+
+    String diffText(num value, double average) {
+      final diff = (value - average).round();
+      if (diff > 0) return l10n.vsAverageMore(diff);
+      if (diff < 0) return l10n.vsAverageLess(-diff);
+      return l10n.vsAverageSame;
+    }
+
+    Widget line(IconData icon, Color color, String text) => Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, size: 18, color: color),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(text,
+                    style: TextStyle(
+                        fontSize: 14,
+                        height: 1.4,
+                        color: AppColors.tp(context))),
+              ),
+            ],
+          ),
+        );
+
+    return GlassCard(
+      borderRadius: 20,
+      blur: 0,
+      opacity: 0.18,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l10n.cycleComparison,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.tp(context))),
+          const SizedBox(height: 12),
+          line(
+            Icons.loop_rounded,
+            AppColors.isDark(context)
+                ? AppColors.primaryLight
+                : AppColors.primaryStrong,
+            '${l10n.lastCycleLength(lastGap)} — '
+            '${diffText(lastGap, avgCycleAll)}',
+          ),
+          if (lastCompleted != null)
+            line(
+              Icons.water_drop_rounded,
+              AppColors.isDark(context)
+                  ? AppColors.menstrual
+                  : AppColors.menstrualText,
+              '${l10n.lastPeriodLength(lastCompleted.durationDays)} — '
+              '${diffText(lastCompleted.durationDays, avgPeriodAll)}',
+            ),
+        ],
+      ),
+    )
+        .animateSafe(context)
+        .fadeIn(delay: 90.ms, duration: 400.ms)
+        .slideY(begin: 0.1, end: 0);
   }
 
   String _symptomName(SymptomType type, AppLocalizations l10n) =>

@@ -1199,6 +1199,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dateLabel => 'Date';
 
   @override
+  String get cycleComparison => 'Your Last Cycle';
+
+  @override
+  String lastCycleLength(int days) {
+    return 'Last cycle: $days days';
+  }
+
+  @override
+  String lastPeriodLength(int days) {
+    return 'Last period: $days days';
+  }
+
+  @override
+  String vsAverageMore(int days) {
+    return '$days days longer than your average';
+  }
+
+  @override
+  String vsAverageLess(int days) {
+    return '$days days shorter than your average';
+  }
+
+  @override
+  String get vsAverageSame => 'same as your average';
+
+  @override
   String coachPersonalInsight(String symptom, int percent) {
     return 'Based on your logs, most common in this phase: $symptom ($percent%)';
   }

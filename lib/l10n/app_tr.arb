@@ -516,6 +516,16 @@
   "backupRestored": "Yedek geri yüklendi",
   "invalidBackupFile": "Geçersiz yedek dosyası",
   "dateLabel": "Tarih",
+  "cycleComparison": "Son Döngün",
+  "lastCycleLength": "Son döngü: {days} gün",
+  "@lastCycleLength": {"placeholders": {"days": {"type": "int"}}},
+  "lastPeriodLength": "Son regl: {days} gün",
+  "@lastPeriodLength": {"placeholders": {"days": {"type": "int"}}},
+  "vsAverageMore": "ortalamandan {days} gün uzun",
+  "@vsAverageMore": {"placeholders": {"days": {"type": "int"}}},
+  "vsAverageLess": "ortalamandan {days} gün kısa",
+  "@vsAverageLess": {"placeholders": {"days": {"type": "int"}}},
+  "vsAverageSame": "ortalamanla aynı",
   "coachPersonalInsight": "Kayıtlarına göre bu fazda en sık: {symptom} (%{percent})",
   "@coachPersonalInsight": {
     "placeholders": {

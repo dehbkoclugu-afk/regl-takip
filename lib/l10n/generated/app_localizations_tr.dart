@@ -1199,6 +1199,32 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dateLabel => 'Tarih';
 
   @override
+  String get cycleComparison => 'Son Döngün';
+
+  @override
+  String lastCycleLength(int days) {
+    return 'Son döngü: $days gün';
+  }
+
+  @override
+  String lastPeriodLength(int days) {
+    return 'Son regl: $days gün';
+  }
+
+  @override
+  String vsAverageMore(int days) {
+    return 'ortalamandan $days gün uzun';
+  }
+
+  @override
+  String vsAverageLess(int days) {
+    return 'ortalamandan $days gün kısa';
+  }
+
+  @override
+  String get vsAverageSame => 'ortalamanla aynı';
+
+  @override
   String coachPersonalInsight(String symptom, int percent) {
     return 'Kayıtlarına göre bu fazda en sık: $symptom (%$percent)';
   }
