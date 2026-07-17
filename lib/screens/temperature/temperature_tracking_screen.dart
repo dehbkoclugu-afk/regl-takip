@@ -136,9 +136,11 @@ class _TemperatureTrackingScreenState
             duration: const Duration(milliseconds: 300),
             builder: (context, value, _) => Text(
               '${value.toStringAsFixed(1)}°C',
-              style: TextStyle(
-                  fontSize: 48, fontWeight: FontWeight.bold,
-                  color: _getTempColor()),
+              // Tabular metrik ölçeği: sayaç akarken genişlik zıplamaz
+              style: Theme.of(context)
+                  .textTheme
+                  .displayLarge!
+                  .copyWith(color: _getTempColor()),
             ),
           ),
           const SizedBox(height: 8),

@@ -105,9 +105,10 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                         color: AppColors.water, size: 36),
                     const SizedBox(height: 8),
                     Text('$_glasses/$goal',
-                        style: TextStyle(
-                            fontSize: 36, fontWeight: FontWeight.bold,
-                            color: AppColors.water)),
+                        style: Theme.of(context)
+                            .textTheme
+                            .displayMedium!
+                            .copyWith(color: AppColors.water)),
                     Text(l10n.glasses,
                         style: TextStyle(
                             fontSize: 14, color: AppColors.ts(context))),
@@ -208,11 +209,10 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                     const SizedBox(width: 16),
                     Text(
                       '$tempGoal',
-                      style: TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.water,
-                      ),
+                      style: Theme.of(context)
+                          .textTheme
+                          .displayMedium!
+                          .copyWith(color: AppColors.water),
                     ),
                     const SizedBox(width: 16),
                     IconButton(

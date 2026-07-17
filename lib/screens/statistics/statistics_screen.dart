@@ -299,10 +299,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('$cyclesInYear',
-                              style: TextStyle(
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.tp(context))),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .displayMedium!
+                                  .copyWith(color: AppColors.tp(context))),
                           Text(l10n.yearRingCycles,
                               style: TextStyle(
                                   fontSize: 12,

@@ -155,12 +155,11 @@ class CycleProgressRing extends StatelessWidget {
         AnimatedDefaultTextStyle(
           duration: phaseShift,
           curve: Curves.easeOutQuart,
-          style: TextStyle(
-            fontSize: 48,
-            fontWeight: FontWeight.w800,
-            color: textColor,
-            height: 1.0,
-          ),
+          // Metrik ölçeği temadan (tabular w800) — kahraman sayı dili
+          style: Theme.of(context)
+              .textTheme
+              .displayLarge!
+              .copyWith(color: textColor),
           child: Text('$cycleDay'),
         ),
         const SizedBox(height: 2),

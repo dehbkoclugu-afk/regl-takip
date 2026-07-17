@@ -96,9 +96,10 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text(_weight.toStringAsFixed(1),
-                  style: TextStyle(
-                      fontSize: 48, fontWeight: FontWeight.bold,
-                      color: AppColors.weightColor)),
+                  style: Theme.of(context)
+                      .textTheme
+                      .displayLarge!
+                      .copyWith(color: AppColors.weightColor)),
               const SizedBox(width: 4),
               Text('kg',
                   style: TextStyle(

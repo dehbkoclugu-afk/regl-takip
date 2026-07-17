@@ -12,6 +12,7 @@ import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_insights.dart';
 import '../../core/widgets/glass_card.dart';
+import '../../core/widgets/pressable_scale.dart';
 import '../../models/enums.dart';
 import '../../providers/providers.dart';
 import '../log/quick_log_sheet.dart';
@@ -234,7 +235,8 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(height: 24),
               ] else ...[
                 // Phase name — faz bilgisini açan buton
-                Semantics(
+                PressableScale(
+                    child: Semantics(
                   button: true,
                   label: _phaseName(phase, l10n),
                   child: Material(
@@ -268,7 +270,7 @@ class DashboardScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                ).animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms),
+                )).animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms),
                 if (mode == TrackingMode.pill &&
                     profile?.pillPackStartDate != null) ...[
                   const SizedBox(height: 8),
@@ -756,11 +758,10 @@ class DashboardScreen extends ConsumerWidget {
               const SizedBox(height: 8),
               Text(
                 l10n.pregnancyWeekLabel(week),
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.tp(context),
-                ),
+                style: Theme.of(context)
+                    .textTheme
+                    .displayMedium!
+                    .copyWith(color: AppColors.tp(context)),
               ),
               const SizedBox(height: 4),
               Text(
@@ -863,7 +864,8 @@ class DashboardScreen extends ConsumerWidget {
     required Color color,
     required VoidCallback onTap,
   }) {
-    return GlassCard(
+    return PressableScale(
+        child: GlassCard(
       borderRadius: 20,
       blur: 0,
       opacity: 0.2,
@@ -903,6 +905,6 @@ class DashboardScreen extends ConsumerWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 }

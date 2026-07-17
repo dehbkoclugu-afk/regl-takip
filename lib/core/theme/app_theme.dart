@@ -49,6 +49,30 @@ class AppTheme {
       scaffoldBackgroundColor:
           isDark ? AppColors.backgroundDark : AppColors.background,
       textTheme: TextTheme(
+        // Metrik sesi: bu uygulama sayı anlatır ("14. gün", "%72",
+        // "28 gün"). Kahraman sayılar tek ölçekten (display*) gelir:
+        // w800 + tabular rakam (sayaç değişirken genişlik zıplamaz).
+        displayLarge: TextStyle(
+          fontSize: 48,
+          fontWeight: FontWeight.w800,
+          height: 1.0,
+          color: ink,
+          fontFeatures: const [FontFeature.tabularFigures()],
+        ),
+        displayMedium: TextStyle(
+          fontSize: 36,
+          fontWeight: FontWeight.w800,
+          height: 1.0,
+          color: ink,
+          fontFeatures: const [FontFeature.tabularFigures()],
+        ),
+        displaySmall: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w800,
+          height: 1.1,
+          color: ink,
+          fontFeatures: const [FontFeature.tabularFigures()],
+        ),
         headlineLarge: style(28, FontWeight.w800, ink),
         headlineMedium: style(24, FontWeight.w800, ink),
         headlineSmall: style(20, FontWeight.w600, ink),
