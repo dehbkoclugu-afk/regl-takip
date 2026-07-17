@@ -90,25 +90,34 @@ class HiveService {
         await _openEncryptedBoxes(cipher);
       }
     } catch (e) {
-      // Kutular hiçbir yolla açılamıyor. En yaygın senaryo cihaz/yedek
-      // geçişi: Hive dosyaları geri gelir ama AES anahtarı Keystore'a
-      // bağlıdır ve yeni cihaza taşınmaz — eldeki şifreli dosya artık
-      // hiçbir anahtarla çözülemez. Çökme döngüsü yerine kutular
-      // karantinaya alınır, temiz başlanır ve UI'a tek seferlik bir
-      // açıklama bayrağı bırakılır.
-      debugPrint('[HIVE] boxes unreadable, quarantining and '
-          'starting fresh: $e');
-      _dataResetPerformed = true;
+      debugPrint('[HIVE] boxes unreadable on first attempt: $e');
       await Hive.close();
-      await _quarantineBoxes();
       try {
+        // Önce şifreli açılışı dene: yalnız secure-storage BAYRAĞI
+        // kaybolduysa (anahtar sağlam, kutular şifreli) migrasyon yolu
+        // düz açmayı deneyip patlar — ama veri aslında yerli yerindedir.
+        // Karantina bu durumda veri kaybı olurdu.
         await _openEncryptedBoxes(cipher);
-      } catch (e2) {
-        // Karantina dosyayı taşıyamadıysa (ör. açık dosya tanıtıcısı) son
-        // çare Hive'ın yerinde budayarak açması: dosya zaten çözülemiyordu,
-        // önemli olan uygulamanın açılması ve kullanıcının bilgilenmesi.
-        debugPrint('[HIVE] fresh open failed, forcing crash recovery: $e2');
-        await _openEncryptedBoxes(cipher, crashRecovery: true);
+      } catch (_) {
+        // Kutular gerçekten çözülemiyor. En yaygın senaryo cihaz/yedek
+        // geçişi: Hive dosyaları geri gelir ama AES anahtarı Keystore'a
+        // bağlıdır ve taşınmaz. Çökme döngüsü yerine kutular karantinaya
+        // alınır, temiz başlanır ve UI'a tek seferlik açıklama bayrağı
+        // bırakılır.
+        debugPrint('[HIVE] boxes undecryptable, quarantining and '
+            'starting fresh');
+        _dataResetPerformed = true;
+        await Hive.close();
+        await _quarantineBoxes();
+        try {
+          await _openEncryptedBoxes(cipher);
+        } catch (e2) {
+          // Karantina dosyayı taşıyamadıysa (ör. açık dosya tanıtıcısı) son
+          // çare Hive'ın yerinde budayarak açması: dosya zaten çözülemiyordu,
+          // önemli olan uygulamanın açılması ve kullanıcının bilgilenmesi.
+          debugPrint('[HIVE] fresh open failed, forcing crash recovery: $e2');
+          await _openEncryptedBoxes(cipher, crashRecovery: true);
+        }
       }
       encryptionSucceeded = true;
     }

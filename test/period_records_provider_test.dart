@@ -100,6 +100,54 @@ void main() {
     });
   });
 
+  group('startPeriod matrisi', () {
+    test('aynı gün tekrar başlatma yeni kayıt açmaz, mevcut kaydı döndürür',
+        () async {
+      final notifier = PeriodRecordsNotifier(service);
+      final first = await notifier.startPeriod(DateTime(2026, 7, 10));
+      final second = await notifier.startPeriod(DateTime(2026, 7, 10));
+      expect(second.id, first.id);
+      expect(notifier.state.length, 1);
+    });
+
+    test('yeni başlangıç süren kaydı bir gün öncesiyle kapatır', () async {
+      final notifier = PeriodRecordsNotifier(service);
+      await notifier.startPeriod(DateTime(2026, 7, 1));
+      await notifier.startPeriod(DateTime(2026, 7, 28));
+
+      expect(notifier.state.length, 2);
+      final closed =
+          notifier.state.firstWhere((r) => r.startDate.day == 1);
+      expect(closed.endDate, DateTime(2026, 7, 27));
+      final ongoing =
+          notifier.state.firstWhere((r) => r.startDate.day == 28);
+      expect(ongoing.isOngoing, isTrue);
+    });
+
+    test('birden fazla süren kayıt varsa hepsi kapatılır', () async {
+      final notifier = PeriodRecordsNotifier(service);
+      // Bozuk durum simülasyonu: iki açık kayıt
+      await notifier.addRecord(
+          PeriodRecord(id: 'a', startDate: DateTime(2026, 6, 1)));
+      await notifier.addRecord(
+          PeriodRecord(id: 'b', startDate: DateTime(2026, 6, 20)));
+
+      await notifier.startPeriod(DateTime(2026, 7, 15));
+
+      final stillOngoing =
+          notifier.state.where((r) => r.isOngoing).toList();
+      expect(stillOngoing.length, 1);
+      expect(stillOngoing.single.startDate, DateTime(2026, 7, 15));
+    });
+
+    test('endPeriod bitişi başlangıçtan öncesine izin vermez', () async {
+      final notifier = PeriodRecordsNotifier(service);
+      final record = await notifier.startPeriod(DateTime(2026, 7, 10));
+      await notifier.endPeriod(record.id, DateTime(2026, 7, 5));
+      expect(notifier.state.single.endDate, notifier.state.single.startDate);
+    });
+  });
+
   group('kayıt düzenleyici primitifleri', () {
     test('updateRecordDates tarihleri normalize eder, bitişi kelepçeler',
         () async {
