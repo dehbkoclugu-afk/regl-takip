@@ -8,6 +8,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
+import '../../core/utils/ring_segments.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
 import '../log/quick_log_sheet.dart';
@@ -83,7 +84,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               onFormatChanged: (format) {
                 setState(() => _calendarFormat = format);
               },
-              onPageChanged: (focusedDay) => _focusedDay = focusedDay,
+              // setState: alttaki faz şeridi görünen aya göre çiziliyor
+              onPageChanged: (focusedDay) =>
+                  setState(() => _focusedDay = focusedDay),
               headerStyle: HeaderStyle(
                 formatButtonVisible: false,
                 titleCentered: true,
@@ -132,7 +135,13 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               ),
             ),
           ).animateSafe(context).fadeIn(duration: 500.ms),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
+          // Ring'in faz haritası dili takvimde: görünen ayın günleri faz
+          // renkleriyle ince bir şerit — ay bir bakışta "nasıl akacak"
+          _buildMonthPhaseStrip(profile, records)
+              .animateSafe(context)
+              .fadeIn(delay: 150.ms, duration: 400.ms),
+          const SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
@@ -277,6 +286,102 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         ),
       ),
     );
+  }
+
+  /// Görünen ayın faz şeridi: ring segment renkleriyle gün gün ince bant,
+  /// gerçek regl günleri kayıtlardan, bugün üstte nokta ile işaretli.
+  /// Dekoratif (gün hücreleri + lejant zaten anlatıyor) — semantics dışı.
+  Widget _buildMonthPhaseStrip(
+      UserProfile? profile, List<PeriodRecord> records) {
+    final lastStart = profile?.lastPeriodStart;
+    if (profile == null ||
+        lastStart == null ||
+        profile.trackingMode == TrackingMode.pregnancy) {
+      return const SizedBox.shrink();
+    }
+
+    final cycleLen = ref.watch(effectiveCycleLengthProvider);
+    final segments = ringSegmentsFor(cycleLen, profile.averagePeriodLength);
+    final daysInMonth =
+        DateUtils.getDaysInMonth(_focusedDay.year, _focusedDay.month);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final trackColor = AppColors.dv(context);
+
+    return ExcludeSemantics(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 6,
+              child: Row(
+                children: [
+                  for (var d = 1; d <= daysInMonth; d++)
+                    Expanded(
+                      child: Center(
+                        child: DateTime(_focusedDay.year, _focusedDay.month,
+                                    d) ==
+                                today
+                            ? Container(
+                                width: 4,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: AppColors.tp(context),
+                                  shape: BoxShape.circle,
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 2),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(3),
+              child: SizedBox(
+                height: 5,
+                child: Row(
+                  children: [
+                    for (var d = 1; d <= daysInMonth; d++)
+                      Expanded(
+                        child: Container(
+                          margin:
+                              const EdgeInsets.symmetric(horizontal: 0.5),
+                          color: _stripColorFor(
+                            DateTime(_focusedDay.year, _focusedDay.month, d),
+                            records,
+                            lastStart,
+                            cycleLen,
+                            segments,
+                            trackColor,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _stripColorFor(
+    DateTime date,
+    List<PeriodRecord> records,
+    DateTime lastStart,
+    int cycleLen,
+    List<RingSegment> segments,
+    Color trackColor,
+  ) {
+    // Gerçek regl günü tahminin önünde
+    if (_isPeriodDay(date, records)) return AppColors.ringMenstrual;
+    final day = CycleUtils.dayInCycleFor(date, lastStart, cycleLen);
+    if (day == null) return trackColor;
+    return segmentColorForDay(segments, day);
   }
 
   Widget _legendItem(Color color, String label) {

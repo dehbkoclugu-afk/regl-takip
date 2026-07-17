@@ -2,24 +2,41 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:gravity="center"
     android:padding="12dp"
     android:background="@drawable/cycle_widget_bg">
 
-    <TextView
-        android:id="@+id/widget_line1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#2D2D3A" />
+    <!-- Mini faz ring'i: Dart tarafında çizilip PNG olarak geçirilir
+         (ring_path). Veri yokken / gizli modda gizlenir. -->
+    <ImageView
+        android:id="@+id/widget_ring"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="10dp"
+        android:visibility="gone"
+        android:contentDescription="@null" />
 
-    <TextView
-        android:id="@+id/widget_line2"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:textSize="13sp"
-        android:textColor="#6E6E7A" />
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/widget_line1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#2D2D3A" />
+
+        <TextView
+            android:id="@+id/widget_line2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="13sp"
+            android:textColor="#6E6E7A" />
+    </LinearLayout>
 </LinearLayout>
