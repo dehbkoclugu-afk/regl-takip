@@ -435,7 +435,7 @@ class SettingsScreen extends ConsumerWidget {
               if (p == null) return;
               try {
                 final path = await exportService.exportPdf(
-                    p, periods, dailyLogs, locale.languageCode);
+                    p, periods, dailyLogs, l10n);
                 await exportService.shareFile(path);
               } catch (e) {
                 if (context.mounted) {
@@ -454,7 +454,7 @@ class SettingsScreen extends ConsumerWidget {
               final dailyLogs = ref.read(dailyLogProvider);
               try {
                 final path = await exportService.exportCsv(
-                    periods, dailyLogs, locale.languageCode);
+                    periods, dailyLogs, l10n);
                 await exportService.shareFile(path);
               } catch (e) {
                 if (context.mounted) {

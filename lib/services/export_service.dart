@@ -4,8 +4,10 @@ import 'package:csv/csv.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
+import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
+import '../core/utils/enum_labels.dart';
 import '../models/period_record.dart';
 import '../models/daily_log.dart';
 import '../models/user_profile.dart';
@@ -21,23 +23,27 @@ class ExportService {
   }
 
   /// Exports daily log data as a CSV file. Returns the file path.
+  /// Başlıklar ve enum değerleri arayüz dilini izler; semptomlar sayı
+  /// değil ad listesi olarak yazılır (doktor çıktısında "3 semptom"ın
+  /// bilgi değeri yoktu), ilaç adları da eklenir.
   Future<String> exportCsv(
     List<PeriodRecord> periods,
     Map<String, DailyLog> dailyLogs,
-    String locale,
+    AppLocalizations l10n,
   ) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
 
     final headers = [
-      'Date',
-      'Flow',
-      'Mood',
-      'Symptoms',
-      'Temperature',
-      'Weight',
-      'Water',
-      'Sleep Quality',
-      'Notes',
+      l10n.dateLabel,
+      l10n.flow,
+      l10n.mood,
+      l10n.symptoms,
+      l10n.temperature,
+      l10n.weight,
+      l10n.waterIntake,
+      l10n.sleepQuality,
+      l10n.medication,
+      l10n.notes,
     ];
 
     // Sort daily logs by date
@@ -47,15 +53,22 @@ class ExportService {
     final rows = <List<dynamic>>[headers];
 
     for (final log in sortedLogs) {
+      final symptomNames =
+          log.symptoms.map((s) => EnumLabels.symptom(s.type, l10n)).join('; ');
+      final medicationNames =
+          log.medications.map((m) => m.name).where((n) => n.isNotEmpty).join('; ');
       rows.add([
         dateFormat.format(log.date),
-        log.flowIntensity?.name ?? '',
-        log.mood?.type.name ?? '',
-        log.symptoms.length,
+        log.flowIntensity != null
+            ? EnumLabels.flow(log.flowIntensity!, l10n)
+            : '',
+        log.mood != null ? EnumLabels.mood(log.mood!.type, l10n) : '',
+        sanitizeCsvCell(symptomNames),
         log.temperature?.toStringAsFixed(1) ?? '',
         log.weight?.toStringAsFixed(1) ?? '',
         log.waterIntake,
         log.sleepQuality ?? '',
+        sanitizeCsvCell(medicationNames),
         sanitizeCsvCell(log.notes ?? ''),
       ]);
     }
@@ -75,7 +88,7 @@ class ExportService {
     UserProfile profile,
     List<PeriodRecord> periods,
     Map<String, DailyLog> dailyLogs,
-    String locale,
+    AppLocalizations l10n,
   ) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
 
@@ -113,35 +126,35 @@ class ExportService {
           pw.Header(
             level: 0,
             child: pw.Text(
-              'Period Tracker Report',
+              l10n.reportTitle,
               style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
             ),
           ),
           pw.Text(
-            'Generated: ${dateFormat.format(now)}',
+            '${l10n.reportGenerated}: ${dateFormat.format(now)}',
             style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700),
           ),
           pw.SizedBox(height: 20),
 
           // Profile summary
-          pw.Header(level: 1, text: 'Profile Summary'),
-          _buildProfileTable(profile),
+          pw.Header(level: 1, text: l10n.profileSummary),
+          _buildProfileTable(profile, l10n),
           pw.SizedBox(height: 20),
 
           // Period history
-          pw.Header(level: 1, text: 'Period History'),
+          pw.Header(level: 1, text: l10n.periodHistory),
           if (sortedPeriods.isEmpty)
-            pw.Text('No period records found.')
+            pw.Text(l10n.noCycleData)
           else
-            _buildPeriodTable(sortedPeriods, dateFormat),
+            _buildPeriodTable(sortedPeriods, dateFormat, l10n),
           pw.SizedBox(height: 20),
 
           // Last 30 days
-          pw.Header(level: 1, text: 'Last 30 Days Summary'),
+          pw.Header(level: 1, text: l10n.last30DaysSummary),
           if (recentLogs.isEmpty)
-            pw.Text('No daily logs in the last 30 days.')
+            pw.Text(l10n.noDataYet)
           else
-            _buildDailyLogTable(recentLogs, dateFormat),
+            _buildDailyLogTable(recentLogs, dateFormat, l10n),
         ],
       ),
     );
@@ -161,15 +174,15 @@ class ExportService {
 
   // --- Private helpers ---
 
-  pw.Widget _buildProfileTable(UserProfile profile) {
+  pw.Widget _buildProfileTable(UserProfile profile, AppLocalizations l10n) {
     return pw.TableHelper.fromTextArray(
       headerCount: 0,
       cellAlignment: pw.Alignment.centerLeft,
       cellPadding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       data: [
-        ['Name', profile.name.isNotEmpty ? profile.name : '-'],
-        ['Average Cycle Length', '${profile.averageCycleLength} days'],
-        ['Average Period Length', '${profile.averagePeriodLength} days'],
+        [l10n.name, profile.name.isNotEmpty ? profile.name : '-'],
+        [l10n.cycleDuration, l10n.nDays(profile.averageCycleLength)],
+        [l10n.periodDuration, l10n.nDays(profile.averagePeriodLength)],
       ],
     );
   }
@@ -177,16 +190,17 @@ class ExportService {
   pw.Widget _buildPeriodTable(
     List<PeriodRecord> periods,
     DateFormat dateFormat,
+    AppLocalizations l10n,
   ) {
     return pw.TableHelper.fromTextArray(
       headerAlignment: pw.Alignment.centerLeft,
       cellAlignment: pw.Alignment.centerLeft,
       cellPadding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      headers: ['Start Date', 'End Date', 'Duration (days)'],
+      headers: [l10n.startDateLabel, l10n.endDateLabel, l10n.durationDaysHeader],
       data: periods.map((p) {
         return [
           dateFormat.format(p.startDate),
-          p.endDate != null ? dateFormat.format(p.endDate!) : 'Ongoing',
+          p.endDate != null ? dateFormat.format(p.endDate!) : l10n.ongoing,
           '${p.durationDays}',
         ];
       }).toList(),
@@ -196,6 +210,7 @@ class ExportService {
   pw.Widget _buildDailyLogTable(
     List<DailyLog> logs,
     DateFormat dateFormat,
+    AppLocalizations l10n,
   ) {
     return pw.TableHelper.fromTextArray(
       headerAlignment: pw.Alignment.centerLeft,
@@ -203,13 +218,27 @@ class ExportService {
       cellPadding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
       cellStyle: const pw.TextStyle(fontSize: 8),
       headerStyle: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold),
-      headers: ['Date', 'Flow', 'Mood', 'Symptoms', 'Temp', 'Notes'],
+      headers: [
+        l10n.dateLabel,
+        l10n.flow,
+        l10n.mood,
+        l10n.symptoms,
+        l10n.temperature,
+        l10n.notes,
+      ],
       data: logs.map((log) {
+        // Semptomlar ad olarak: "3" doktora hiçbir şey söylemiyordu.
+        // Hücre metni pdf tablosunda kendiliğinden sarılır.
+        final symptomNames = log.symptoms
+            .map((s) => EnumLabels.symptom(s.type, l10n))
+            .join(', ');
         return [
           dateFormat.format(log.date),
-          log.flowIntensity?.name ?? '-',
-          log.mood?.type.name ?? '-',
-          log.symptoms.length.toString(),
+          log.flowIntensity != null
+              ? EnumLabels.flow(log.flowIntensity!, l10n)
+              : '-',
+          log.mood != null ? EnumLabels.mood(log.mood!.type, l10n) : '-',
+          symptomNames.isEmpty ? '-' : symptomNames,
           log.temperature?.toStringAsFixed(1) ?? '-',
           (log.notes ?? '-').length > 30
               ? '${log.notes!.substring(0, 30)}...'

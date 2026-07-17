@@ -1196,6 +1196,27 @@ class AppLocalizationsTr extends AppLocalizations {
   String get invalidBackupFile => 'Geçersiz yedek dosyası';
 
   @override
+  String get dateLabel => 'Tarih';
+
+  @override
+  String get reportTitle => 'Döngü Sağlık Raporu';
+
+  @override
+  String get reportGenerated => 'Oluşturma';
+
+  @override
+  String get profileSummary => 'Profil Özeti';
+
+  @override
+  String get periodHistory => 'Regl Geçmişi';
+
+  @override
+  String get last30DaysSummary => 'Son 30 Gün Özeti';
+
+  @override
+  String get durationDaysHeader => 'Süre (gün)';
+
+  @override
   String get themeSystem => 'Sistem';
 
   @override

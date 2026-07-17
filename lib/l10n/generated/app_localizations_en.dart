@@ -1196,6 +1196,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invalidBackupFile => 'Invalid backup file';
 
   @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get reportTitle => 'Cycle Health Report';
+
+  @override
+  String get reportGenerated => 'Generated';
+
+  @override
+  String get profileSummary => 'Profile Summary';
+
+  @override
+  String get periodHistory => 'Period History';
+
+  @override
+  String get last30DaysSummary => 'Last 30 Days Summary';
+
+  @override
+  String get durationDaysHeader => 'Duration (days)';
+
+  @override
   String get themeSystem => 'System';
 
   @override

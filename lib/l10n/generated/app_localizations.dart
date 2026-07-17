@@ -2381,6 +2381,48 @@ abstract class AppLocalizations {
   /// **'Geçersiz yedek dosyası'**
   String get invalidBackupFile;
 
+  /// No description provided for @dateLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tarih'**
+  String get dateLabel;
+
+  /// No description provided for @reportTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Döngü Sağlık Raporu'**
+  String get reportTitle;
+
+  /// No description provided for @reportGenerated.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oluşturma'**
+  String get reportGenerated;
+
+  /// No description provided for @profileSummary.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profil Özeti'**
+  String get profileSummary;
+
+  /// No description provided for @periodHistory.
+  ///
+  /// In tr, this message translates to:
+  /// **'Regl Geçmişi'**
+  String get periodHistory;
+
+  /// No description provided for @last30DaysSummary.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son 30 Gün Özeti'**
+  String get last30DaysSummary;
+
+  /// No description provided for @durationDaysHeader.
+  ///
+  /// In tr, this message translates to:
+  /// **'Süre (gün)'**
+  String get durationDaysHeader;
+
   /// No description provided for @themeSystem.
   ///
   /// In tr, this message translates to:
