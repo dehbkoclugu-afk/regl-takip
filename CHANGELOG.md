@@ -1,5 +1,18 @@
 # Changelog
 
+## Yayınlanmamış — Görsel kimlik geçişi: 10 temel (2026-07-17)
+
+- **Tek vurgu ailesi**: mor marka rengi olmaktan çıktı (yalnız ovülasyon fazı ve semptom kategorisinde yaşıyor); pembe ailesine bordo uç (primaryDeep) eklendi — gradyanlar, vurgu ikonları, ayar renkleri tek aileden
+- **Yüzey merdiveni**: zemin → yüzey → yükseltilmiş yüzey tek kaynaktan; kartlardaki başıboş beyazlar ve gri form dolguları marka tonlarına bağlandı
+- **Sayı tipografisi**: kahraman sayılar (ring günü, Yılım, sıcaklık, kilo, su, gebelik haftası) temadaki tabular metrik ölçeğinden — sayaç akarken genişlik zıplamıyor
+- **Basılı his**: dokunulabilir kartlar basılıyken hafifçe küçülüyor (0.98) — ripple + ölçek birlikte
+- **Faz glifleri**: damla/filiz/parıltı/hilal — dört özel çizim; ring merkezi, faz çipi ve koç satırı markanın kendi alfabesini konuşuyor
+- **Boş durum dili**: yumuşak daire + ikon + başlık + yönlendirme kompozisyonu (istatistik ve ilaç boşlukları)
+- **Kart perhizi**: koç bloğu kart kabuğundan çıktı — yalnız dokunulabilir olan kart
+- **Faz-adaptif bugün**: takvimdeki "bugün" işareti güncel fazın rengini giyiyor
+- **Gece sahnesi**: daha derin koyu zemin, dark'ta kısılmış ring ışıması
+- **Markalı açılış**: pembe zemin + dört yaylı ring silueti (gece varyantıyla); gizli mod alias'ı nötr açılış kullanıyor — kılık ilk kareden korunuyor
+
 ## Yayınlanmamış — Yılım, tam kılık ve Premium (2026-07-17)
 
 - **"Yılım" halkası**: istatistikte son 12 ay tek çember — gerçek regl günleri koyu, fazlar soluk tonlarda, ay etiketleri ve merkezde döngü sayısı; düzensizlik bir bakışta görünür
