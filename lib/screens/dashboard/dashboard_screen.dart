@@ -12,6 +12,7 @@ import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_insights.dart';
 import '../../core/widgets/glass_card.dart';
+import '../../core/widgets/phase_glyph.dart';
 import '../../core/widgets/pressable_scale.dart';
 import '../../models/enums.dart';
 import '../../providers/providers.dart';
@@ -251,6 +252,11 @@ class DashboardScreen extends ConsumerWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            PhaseGlyph(
+                                phase: phase,
+                                size: 15,
+                                color: AppColors.primaryDeep),
+                            const SizedBox(width: 7),
                             Text(
                               _phaseName(phase, l10n),
                               style: TextStyle(
@@ -643,11 +649,11 @@ class DashboardScreen extends ConsumerWidget {
         ? null
         : topInsightForPhase(ref.watch(phaseInsightsProvider), phase);
 
-    return GlassCard(
-      borderRadius: 20,
-      blur: 0,
-      opacity: 0.16,
-      padding: const EdgeInsets.all(16),
+    // Kart perhizi: koç bilgi bloğudur, dokunulmaz — kart kabuğu yerine
+    // çıplak blok (her şey kart olunca hiçbir şey kart değildi).
+    // Faz glifi bloğun kimliği; kişisel içgörü aynı hizada ikinci satır.
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -656,7 +662,7 @@ class DashboardScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(Icons.insights_rounded,
-                    size: 20, color: AppColors.primaryDeep),
+                    size: 18, color: AppColors.primaryDeep),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -679,8 +685,11 @@ class DashboardScreen extends ConsumerWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.tips_and_updates_rounded,
-                  size: 20, color: AppColors.primaryDeep),
+              Padding(
+                padding: const EdgeInsets.only(top: 1),
+                child: PhaseGlyph(
+                    phase: phase, size: 17, color: AppColors.primaryDeep),
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(

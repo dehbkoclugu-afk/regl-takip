@@ -143,8 +143,10 @@ class AppColors {
   static const Color success = Color(0xFFA8D5BA);
   static const Color warning = Color(0xFFFFD9A0);
 
-  // Genel - Dark
-  static const Color backgroundDark = Color(0xFF1A1020);
+  // Genel - Dark. Gerçek senaryo gece yatakta kayıt: zemin bir kademe
+  // derin (morlaştırılmış açık tema değil, kendi gece sahnesi);
+  // parlak öğeler (ring ışıması) dark'ta kısılır.
+  static const Color backgroundDark = Color(0xFF140C1A);
   static const Color surfaceDark = Color(0xFF251A30);
   static const Color cardDark = Color(0xFF302240);
   static const Color textPrimaryDark = Color(0xFFE8E0F0);

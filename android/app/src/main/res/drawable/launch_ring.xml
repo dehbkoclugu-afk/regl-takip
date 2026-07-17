@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Açılış ring silueti: uygulamanın imza görseli (segmentli faz haritası)
+     ilk kareden itibaren markayı taşır. Dört yay = dört faz. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- menstrual (üst-sağ yay) -->
+    <path
+        android:pathData="M 56.96 20.13 A 34 34 0 0 1 87.87 51.04"
+        android:strokeColor="#D4607E"
+        android:strokeWidth="9"
+        android:strokeLineCap="round" />
+    <!-- fertile (sağ-alt yay) -->
+    <path
+        android:pathData="M 87.87 56.96 A 34 34 0 0 1 56.96 87.87"
+        android:strokeColor="#5E9C78"
+        android:strokeWidth="9"
+        android:strokeLineCap="round" />
+    <!-- luteal (alt-sol yay) -->
+    <path
+        android:pathData="M 51.04 87.87 A 34 34 0 0 1 20.13 56.96"
+        android:strokeColor="#E8A830"
+        android:strokeWidth="9"
+        android:strokeLineCap="round" />
+    <!-- follicular (sol-üst yay) -->
+    <path
+        android:pathData="M 20.13 51.04 A 34 34 0 0 1 51.04 20.13"
+        android:strokeColor="#E8944A"
+        android:strokeWidth="9"
+        android:strokeLineCap="round" />
+</vector>

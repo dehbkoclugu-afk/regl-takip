@@ -38,6 +38,25 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     return false;
   }
 
+  // Faz-adaptif vurgu (kontrollü): "bugün" işareti güncel fazın rengini
+  // giyer — uygulama yaşayan bir döngüyü izlediğini hissettirir.
+  // Kapsam bilinçli dar: yalnız bugün vurgusu; gerisi nötr kalır.
+  Color _phaseRingColor(CyclePhase phase) => switch (phase) {
+        CyclePhase.menstrual => AppColors.ringMenstrual,
+        CyclePhase.follicular => AppColors.ringFollicular,
+        CyclePhase.ovulation => AppColors.ringOvulation,
+        CyclePhase.luteal => AppColors.ringLuteal,
+      };
+
+  Color _phaseTextColor(CyclePhase phase, bool isDark) => isDark
+      ? _phaseRingColor(phase)
+      : switch (phase) {
+          CyclePhase.menstrual => AppColors.menstrualText,
+          CyclePhase.follicular => AppColors.follicularText,
+          CyclePhase.ovulation => AppColors.ovulationText,
+          CyclePhase.luteal => AppColors.lutealText,
+        };
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -118,11 +137,15 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 weekendTextStyle: TextStyle(
                     fontWeight: FontWeight.w600, color: AppColors.tp(context)),
                 todayDecoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.15),
+                  color: _phaseRingColor(ref.watch(currentCyclePhaseProvider))
+                      .withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
                 todayTextStyle: TextStyle(
-                    fontWeight: FontWeight.bold, color: AppColors.primary),
+                    fontWeight: FontWeight.bold,
+                    color: _phaseTextColor(
+                        ref.watch(currentCyclePhaseProvider),
+                        AppColors.isDark(context))),
                 selectedDecoration: const BoxDecoration(
                     color: AppColors.primary, shape: BoxShape.circle),
                 selectedTextStyle: TextStyle(
@@ -229,8 +252,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       bgColor = AppColors.fertileWindowLight;
       textColor = AppColors.fertileWindowText;
     } else if (isToday) {
-      bgColor = AppColors.primary.withValues(alpha: 0.15);
-      textColor = AppColors.primary;
+      final currentPhase = ref.watch(currentCyclePhaseProvider);
+      bgColor = _phaseRingColor(currentPhase).withValues(alpha: 0.15);
+      textColor = _phaseTextColor(currentPhase, AppColors.isDark(context));
     }
 
     // Renk tek başına bilgi taşıyordu: ekran okuyucu yalnız gün sayısını

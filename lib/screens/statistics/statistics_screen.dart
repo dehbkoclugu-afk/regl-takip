@@ -13,6 +13,7 @@ import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_insights.dart';
 import '../../core/utils/ring_segments.dart';
+import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
@@ -1316,19 +1317,11 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         borderRadius: 20,
         blur: 0,
         opacity: 0.12,
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Text(title,
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.tp(context))),
-            const SizedBox(height: 12),
-            Text(message,
-                style: TextStyle(
-                    fontSize: 14, color: AppColors.ts(context))),
-          ],
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        child: EmptyState(
+          icon: Icons.insights_rounded,
+          title: title,
+          message: message,
         ),
       ),
     ).animateSafe(context).fadeIn(duration: 400.ms);

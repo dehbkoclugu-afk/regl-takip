@@ -8,6 +8,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/cycle_utils.dart';
 import '../../../core/utils/motion.dart';
 import '../../../core/utils/ring_segments.dart';
+import '../../../core/widgets/phase_glyph.dart';
 
 export '../../../core/utils/ring_segments.dart' show RingSegment, ringSegmentsFor;
 
@@ -58,19 +59,6 @@ class CycleProgressRing extends StatelessWidget {
     }
   }
 
-  IconData get _phaseIcon {
-    switch (phase) {
-      case CyclePhase.menstrual:
-        return Icons.water_drop_rounded;
-      case CyclePhase.follicular:
-        return Icons.spa_rounded;
-      case CyclePhase.ovulation:
-        return Icons.auto_awesome_rounded;
-      case CyclePhase.luteal:
-        return Icons.nightlight_round;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -99,11 +87,12 @@ class CycleProgressRing extends StatelessWidget {
               : Colors.white.withValues(alpha: 0.8),
           width: 1.5,
         ),
-        // Hero ışıması: yalnız ring'de — yumuşak, faz renginde hale
+        // Hero ışıması: yalnız ring'de — yumuşak, faz renginde hale.
+        // Gece sahnesinde kısık: karanlık odada parlama rahatsız eder.
         boxShadow: [
           BoxShadow(
-            color: _ringColor.withValues(alpha: 0.18),
-            blurRadius: 28,
+            color: _ringColor.withValues(alpha: isDark ? 0.10 : 0.18),
+            blurRadius: isDark ? 20 : 28,
             spreadRadius: 2,
           ),
         ],
@@ -150,8 +139,9 @@ class CycleProgressRing extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(_phaseIcon, size: 26, color: _ringColor),
-        const SizedBox(height: 4),
+        // Özel faz glifi: Material genel setinden markanın alfabesine
+        PhaseGlyph(phase: phase, size: 24, color: _ringColor),
+        const SizedBox(height: 6),
         AnimatedDefaultTextStyle(
           duration: phaseShift,
           curve: Curves.easeOutQuart,

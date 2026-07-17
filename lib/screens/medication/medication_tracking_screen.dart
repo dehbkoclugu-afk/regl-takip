@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/tracker_scaffold.dart';
 import '../../models/period_record.dart';
@@ -47,20 +48,11 @@ class _MedicationTrackingScreenState
 
   Widget _buildEmpty(AppLocalizations l10n) {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.medication_rounded, size: 64,
-              color: AppColors.ts(context).withValues(alpha: 0.3)),
-          const SizedBox(height: 16),
-          Text(l10n.noMedicationsYet,
-              style: TextStyle(
-                  fontSize: 16, color: AppColors.ts(context))),
-          const SizedBox(height: 8),
-          Text(l10n.tapToAdd,
-              style: TextStyle(
-                  fontSize: 13, color: AppColors.ts(context))),
-        ],
+      child: EmptyState(
+        icon: Icons.medication_rounded,
+        title: l10n.noMedicationsYet,
+        message: l10n.tapToAdd,
+        accent: AppColors.medication,
       ),
     ).animateSafe(context).fadeIn(duration: 400.ms);
   }

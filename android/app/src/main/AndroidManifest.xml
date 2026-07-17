@@ -63,6 +63,7 @@
             android:enabled="false"
             android:label="@string/disguised_name"
             android:icon="@drawable/ic_disguised"
+            android:theme="@style/NeutralLaunchTheme"
             android:targetActivity=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

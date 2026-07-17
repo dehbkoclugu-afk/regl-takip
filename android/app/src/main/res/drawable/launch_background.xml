@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Modify this file to customize your launch splash screen -->
+<!-- Markalı açılış: zemin uygulamanın açık zemin tonu, merkezde ring
+     silueti. Gizli mod alias'ı bunu KULLANMAZ (NeutralLaunchTheme) —
+     kılık ilk kareden korunur. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@android:color/white" />
-
-    <!-- You can insert your own image assets here -->
-    <!-- <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@mipmap/launch_image" />
-    </item> -->
+    <item android:drawable="#FDF2F8" />
+    <item android:gravity="center" android:drawable="@drawable/launch_ring" />
 </layer-list>
