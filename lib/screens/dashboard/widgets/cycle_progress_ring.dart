@@ -77,7 +77,15 @@ class CycleProgressRing extends StatelessWidget {
     final isDark = AppColors.isDark(context);
     final motion = context.motionEnabled;
 
-    final ring = Container(
+    // Faz değişiminde (ör. "Reglim başladı") ışıma ve merkez renkleri
+    // atlamaz, yeni faza yumuşakça akar — motion bütçesi asıl bu ana
+    final phaseShift = motion
+        ? const Duration(milliseconds: 600)
+        : Duration.zero;
+
+    final ring = AnimatedContainer(
+      duration: phaseShift,
+      curve: Curves.easeOutQuart,
       width: 264,
       height: 264,
       decoration: BoxDecoration(
@@ -136,19 +144,24 @@ class CycleProgressRing extends StatelessWidget {
 
   Widget _buildCenterContent(AppLocalizations l10n, BuildContext context) {
     final textColor = _textColor(AppColors.isDark(context));
+    final phaseShift = context.motionEnabled
+        ? const Duration(milliseconds: 600)
+        : Duration.zero;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(_phaseIcon, size: 26, color: _ringColor),
         const SizedBox(height: 4),
-        Text(
-          '$cycleDay',
+        AnimatedDefaultTextStyle(
+          duration: phaseShift,
+          curve: Curves.easeOutQuart,
           style: TextStyle(
             fontSize: 48,
             fontWeight: FontWeight.w800,
             color: textColor,
             height: 1.0,
           ),
+          child: Text('$cycleDay'),
         ),
         const SizedBox(height: 2),
         Text(
@@ -161,20 +174,26 @@ class CycleProgressRing extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
+        AnimatedContainer(
+          duration: phaseShift,
+          curve: Curves.easeOutQuart,
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
           decoration: BoxDecoration(
             color: _ringColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(16),
           ),
-          child: Text(
-            daysUntilNextPeriod > 0
-                ? l10n.daysLater(daysUntilNextPeriod)
-                : l10n.todayExclamation,
+          child: AnimatedDefaultTextStyle(
+            duration: phaseShift,
+            curve: Curves.easeOutQuart,
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
               color: textColor,
+            ),
+            child: Text(
+              daysUntilNextPeriod > 0
+                  ? l10n.daysLater(daysUntilNextPeriod)
+                  : l10n.todayExclamation,
             ),
           ),
         ),

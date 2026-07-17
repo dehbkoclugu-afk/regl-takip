@@ -210,7 +210,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           ),
         ],
       ),
-    ).animateSafe(context).fadeIn(delay: 100.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
+    ).animateSafe(context).fadeIn(delay: 60.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
   Widget _statItem(String label, String value, IconData icon, Color color) {
@@ -368,7 +368,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           ),
         ],
       ),
-    ).animateSafe(context).fadeIn(delay: 200.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
+    ).animateSafe(context).fadeIn(delay: 120.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
   Widget _buildMoodChart(AppLocalizations l10n, List<DailyLog> logs) {
@@ -474,7 +474,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           ),
         ],
       ),
-    ).animateSafe(context).fadeIn(delay: 300.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
+    ).animateSafe(context).fadeIn(delay: 180.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
   String _phaseNameFor(CyclePhase phase, AppLocalizations l10n) {
@@ -600,7 +600,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           }),
         ],
       ),
-    ).animateSafe(context).fadeIn(delay: 350.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
+    ).animateSafe(context).fadeIn(delay: 220.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
   Widget _buildCycleHistory(AppLocalizations l10n, List<PeriodRecord> records) {
@@ -678,7 +678,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               )),
         ],
       ),
-    ).animateSafe(context).fadeIn(delay: 400.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
+    ).animateSafe(context).fadeIn(delay: 260.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
   /// Düzenleme/silme sonrası profil tarihi kayıtların türevi olarak
@@ -1067,7 +1067,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           ),
         ],
       ),
-    ).animateSafe(context).fadeIn(delay: 500.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
+    ).animateSafe(context).fadeIn(delay: 300.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
   Widget _emptyCard(String title, String message) {

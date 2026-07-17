@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
@@ -125,7 +126,13 @@ class DashboardScreen extends ConsumerWidget {
       fertileStr = '${dateFormat.format(fStart)} - ${dateFormat.format(fEnd)}';
     }
 
-    return Container(
+    // Faz değişince zemin rengi atlamak yerine yumuşakça akar
+    // (AnimatedContainer gradyanı kendisi lerp'ler)
+    return AnimatedContainer(
+      duration: context.motionEnabled
+          ? const Duration(milliseconds: 600)
+          : Duration.zero,
+      curve: Curves.easeOutQuart,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -201,8 +208,8 @@ class DashboardScreen extends ConsumerWidget {
                 ),
               )
                   .animateSafe(context)
-                  .fadeIn(duration: 500.ms)
-                  .slideY(begin: -0.2, end: 0, duration: 500.ms),
+                  .fadeIn(duration: 350.ms)
+                  .slideY(begin: -0.2, end: 0, duration: 350.ms),
               const SizedBox(height: 8),
               if (mode == TrackingMode.pregnancy) ...[
                 // Hamilelik modu: hafta sayacı hero, tahminler gizli
@@ -245,7 +252,7 @@ class DashboardScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                ).animateSafe(context).fadeIn(delay: 200.ms, duration: 500.ms),
+                ).animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms),
                 if (mode == TrackingMode.pill &&
                     profile?.pillPackStartDate != null) ...[
                   const SizedBox(height: 8),
@@ -300,6 +307,10 @@ class DashboardScreen extends ConsumerWidget {
                               ref.read(userProfileProvider.notifier);
                           final prevProfile = ref.read(userProfileProvider);
 
+                          // Uygulamanın en önemli veri anı: dokunuşa
+                          // fiziksel teyit eşlik eder (ring + zemin de
+                          // yeni faza yumuşakça akar)
+                          HapticFeedback.mediumImpact();
                           if (ongoingPeriod != null) {
                             final recordId = ongoingPeriod.id;
                             await recordsNotifier.endPeriod(
@@ -359,9 +370,9 @@ class DashboardScreen extends ConsumerWidget {
                 ],
               )
                   .animateSafe(context)
-                  .fadeIn(delay: 500.ms, duration: 600.ms)
+                  .fadeIn(delay: 250.ms, duration: 400.ms)
                   .slideY(
-                      begin: 0.15, end: 0, delay: 500.ms, duration: 600.ms),
+                      begin: 0.15, end: 0, delay: 250.ms, duration: 400.ms),
               const SizedBox(height: 24),
               const QuickStatusCards(),
               const SizedBox(height: 16),
@@ -505,7 +516,7 @@ class DashboardScreen extends ConsumerWidget {
           ),
         ],
       ),
-    ).animateSafe(context).fadeIn(delay: 420.ms, duration: 500.ms);
+    ).animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms);
   }
 
   Widget _lhButton(
@@ -577,7 +588,7 @@ class DashboardScreen extends ConsumerWidget {
           ),
         ],
       ),
-    ).animateSafe(context).fadeIn(delay: 450.ms, duration: 500.ms);
+    ).animateSafe(context).fadeIn(delay: 250.ms, duration: 400.ms);
   }
 
   Widget _buildPregnancyHero(
@@ -615,7 +626,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
           ),
         ),
-      ).animateSafe(context).fadeIn(delay: 200.ms, duration: 500.ms);
+      ).animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms);
     }
 
     final week = CycleUtils.pregnancyWeek(start);
@@ -658,7 +669,7 @@ class DashboardScreen extends ConsumerWidget {
           ),
         ),
       ),
-    ).animateSafe(context).fadeIn(delay: 200.ms, duration: 500.ms);
+    ).animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms);
   }
 
   Widget _buildPillChip(
@@ -689,7 +700,7 @@ class DashboardScreen extends ConsumerWidget {
           ),
         ],
       ),
-    ).animateSafe(context).fadeIn(delay: 250.ms, duration: 500.ms);
+    ).animateSafe(context).fadeIn(delay: 120.ms, duration: 400.ms);
   }
 
   Widget _buildDisclaimer(BuildContext context, AppLocalizations l10n) {
