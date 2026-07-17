@@ -1,5 +1,14 @@
 # Changelog
 
+## Yayınlanmamış — Görsel imza ve akıllı özellikler (2026-07-17)
+
+- **Faz haritası artık her yerde**: takvimde ayın altında ince faz şeridi (gerçek regl günleri + tahmin, "buradasın" noktasıyla); ana ekran widget'ında metnin yanında mini faz ring'i — uygulamanın imza görseli cebe taşındı (gizli modda ikisi de gizli)
+- **Motion bütçesi doğru anda**: "Reglim başladı/bitti" artık dokunsal titreşimle ve ring'in yeni faza yumuşak renk geçişiyle yanıt veriyor; zemin gradyanı da faz değişiminde akıyor. Giriş animasyon korosu kısaltıldı (ana sayfa ~1,1 sn → ~0,65 sn)
+- **Kişisel semptom tahmini**: faz-semptom motoru artık proaktif — ana sayfa koçu "kayıtlarına göre bu fazda en sık: X (%Y)" diyor ve luteal faz başlarken kendi geçmişinden gelen "faz ipucu" bildirimi geliyor (gizli modda kurulmaz)
+- **"Son Döngün" kartı**: son döngü ve son regl, kendi ortalamanla kıyaslanıyor ("ortalamandan 2 gün uzun")
+- **Kurulumun ilk sorusu mod seçimi**: Regl / Hamilelik / Hap / Bebek Planı kartları — hamile kullanıcı ilk dakikada doğru akışa giriyor (gebelikte girilen son regl tarihi hafta sayacını hemen doğru başlatıyor)
+- 6 yeni birim testi (120 toplam)
+
 ## Yayınlanmamış — İnceleme düzeltmeleri: sağlamlaştırma beşlisi (2026-07-17)
 
 - **Dışa aktarım artık gerçekten rapor**: CSV/PDF başlıkları ve değerler uygulama dilini izliyor (İngilizce'ye çakılıydı); semptomlar sayı yerine ad listesi olarak, ilaçlar da CSV'ye yazılıyor
