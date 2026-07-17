@@ -40,8 +40,17 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     WidgetsBinding.instance.addObserver(this);
     _checkLockNeeded();
     _resolveDisguise();
+    // Satın alma olayları (mağazadan asenkron gelir) erişim kararlarına
+    // yansımalı: ValueNotifier → Riverpod köprüsü
+    PremiumService().isPremiumNotifier.addListener(_onPremiumChanged);
     // Kilit varsa reklam kilit açıldıktan sonra gösterilir (_onUnlocked)
     if (!_needsLock) _showOpenAd();
+  }
+
+  void _onPremiumChanged() {
+    if (!mounted) return;
+    ref.read(isPremiumProvider.notifier).state =
+        PremiumService().isPremium;
   }
 
   Future<void> _resolveDisguise() async {
@@ -57,6 +66,9 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   Future<void> _showOpenAd() async {
     if (_openAdShown) return;
     if (PremiumService().isPremium) return;
+    // Deneme ayında da reklamsız: "1 ay ücretsiz" vaadinin deneyimi tam
+    // olmalı — reklam yalnız ücretsiz katmanda
+    if (ref.read(accessProvider) != AccessLevel.free) return;
     _openAdShown = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Activity/ViewController tamamen hazır olduktan sonra
@@ -75,6 +87,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    PremiumService().isPremiumNotifier.removeListener(_onPremiumChanged);
     super.dispose();
   }
 

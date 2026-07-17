@@ -1226,6 +1226,76 @@ class AppLocalizationsTr extends AppLocalizations {
   String get modeTtcDesc => 'Doğurganlık odaklı takip';
 
   @override
+  String get paywallTitle => 'Premium\'a Geç';
+
+  @override
+  String paywallTrialSubtitle(int days) {
+    return 'Deneme süren devam ediyor: $days gün kaldı. Premium\'la her şey açık kalır.';
+  }
+
+  @override
+  String get paywallFreeSubtitle => 'Deneme süren bitti. Ücretsiz sürümde regl takibi ve takvim açık; günlük takipler ve içgörüler Premium\'da.';
+
+  @override
+  String get paywallFeatureTrackers => 'Tüm günlük takipler: semptom, ruh hali, su, uyku, kilo, sıcaklık, ilaç, not';
+
+  @override
+  String get paywallFeatureStats => 'İstatistikler, trendler ve Yılım halkası';
+
+  @override
+  String get paywallFeatureInsights => 'Kişisel içgörüler ve faz ipucu bildirimleri';
+
+  @override
+  String get paywallFeatureExport => 'PDF / CSV dışa aktarma';
+
+  @override
+  String get paywallFeatureHealth => 'Health Connect aktarımı';
+
+  @override
+  String get paywallFeatureDisguise => 'Gizli mod ve Notlar kılığı';
+
+  @override
+  String get paywallFeatureNoAds => 'Reklamsız deneyim';
+
+  @override
+  String get planMonthly => 'Aylık';
+
+  @override
+  String get planYearly => 'Yıllık';
+
+  @override
+  String get perMonth => '/ay';
+
+  @override
+  String get perYear => '/yıl';
+
+  @override
+  String get bestValue => 'En avantajlı';
+
+  @override
+  String get continueFreeBtn => 'Şimdilik ücretsiz devam et';
+
+  @override
+  String trialBadge(int days) {
+    return 'Deneme: $days gün kaldı';
+  }
+
+  @override
+  String get freeBadge => 'Ücretsiz sürüm';
+
+  @override
+  String get freeExplain => 'Ücretsiz sürümde regl takibi, takvim ve tahminler açıktır. Günlük takipler, istatistikler, dışa aktarma, Health Connect, gizli mod ve modlar Premium\'dadır.';
+
+  @override
+  String get seePlans => 'Planları Gör';
+
+  @override
+  String get premiumLockedTitle => 'İstatistikler Premium\'da';
+
+  @override
+  String get premiumLockedBody => 'Grafikler, trendler, faz içgörüleri ve Yılım halkası Premium ile açılır. Deneme süresinde girdiğin tüm veriler saklanıyor.';
+
+  @override
   String get yearRingTitle => 'Yılım';
 
   @override

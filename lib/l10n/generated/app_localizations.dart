@@ -2441,6 +2441,138 @@ abstract class AppLocalizations {
   /// **'Doğurganlık odaklı takip'**
   String get modeTtcDesc;
 
+  /// No description provided for @paywallTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium\'a Geç'**
+  String get paywallTitle;
+
+  /// No description provided for @paywallTrialSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Deneme süren devam ediyor: {days} gün kaldı. Premium\'la her şey açık kalır.'**
+  String paywallTrialSubtitle(int days);
+
+  /// No description provided for @paywallFreeSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Deneme süren bitti. Ücretsiz sürümde regl takibi ve takvim açık; günlük takipler ve içgörüler Premium\'da.'**
+  String get paywallFreeSubtitle;
+
+  /// No description provided for @paywallFeatureTrackers.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tüm günlük takipler: semptom, ruh hali, su, uyku, kilo, sıcaklık, ilaç, not'**
+  String get paywallFeatureTrackers;
+
+  /// No description provided for @paywallFeatureStats.
+  ///
+  /// In tr, this message translates to:
+  /// **'İstatistikler, trendler ve Yılım halkası'**
+  String get paywallFeatureStats;
+
+  /// No description provided for @paywallFeatureInsights.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kişisel içgörüler ve faz ipucu bildirimleri'**
+  String get paywallFeatureInsights;
+
+  /// No description provided for @paywallFeatureExport.
+  ///
+  /// In tr, this message translates to:
+  /// **'PDF / CSV dışa aktarma'**
+  String get paywallFeatureExport;
+
+  /// No description provided for @paywallFeatureHealth.
+  ///
+  /// In tr, this message translates to:
+  /// **'Health Connect aktarımı'**
+  String get paywallFeatureHealth;
+
+  /// No description provided for @paywallFeatureDisguise.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gizli mod ve Notlar kılığı'**
+  String get paywallFeatureDisguise;
+
+  /// No description provided for @paywallFeatureNoAds.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reklamsız deneyim'**
+  String get paywallFeatureNoAds;
+
+  /// No description provided for @planMonthly.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aylık'**
+  String get planMonthly;
+
+  /// No description provided for @planYearly.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yıllık'**
+  String get planYearly;
+
+  /// No description provided for @perMonth.
+  ///
+  /// In tr, this message translates to:
+  /// **'/ay'**
+  String get perMonth;
+
+  /// No description provided for @perYear.
+  ///
+  /// In tr, this message translates to:
+  /// **'/yıl'**
+  String get perYear;
+
+  /// No description provided for @bestValue.
+  ///
+  /// In tr, this message translates to:
+  /// **'En avantajlı'**
+  String get bestValue;
+
+  /// No description provided for @continueFreeBtn.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şimdilik ücretsiz devam et'**
+  String get continueFreeBtn;
+
+  /// No description provided for @trialBadge.
+  ///
+  /// In tr, this message translates to:
+  /// **'Deneme: {days} gün kaldı'**
+  String trialBadge(int days);
+
+  /// No description provided for @freeBadge.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ücretsiz sürüm'**
+  String get freeBadge;
+
+  /// No description provided for @freeExplain.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ücretsiz sürümde regl takibi, takvim ve tahminler açıktır. Günlük takipler, istatistikler, dışa aktarma, Health Connect, gizli mod ve modlar Premium\'dadır.'**
+  String get freeExplain;
+
+  /// No description provided for @seePlans.
+  ///
+  /// In tr, this message translates to:
+  /// **'Planları Gör'**
+  String get seePlans;
+
+  /// No description provided for @premiumLockedTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'İstatistikler Premium\'da'**
+  String get premiumLockedTitle;
+
+  /// No description provided for @premiumLockedBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Grafikler, trendler, faz içgörüleri ve Yılım halkası Premium ile açılır. Deneme süresinde girdiğin tüm veriler saklanıyor.'**
+  String get premiumLockedBody;
+
   /// No description provided for @yearRingTitle.
   ///
   /// In tr, this message translates to:

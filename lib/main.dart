@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'services/hive_service.dart';
 import 'services/notification_service.dart';
 import 'services/premium_service.dart';
@@ -45,6 +46,13 @@ Future<void> _run() async {
 
   final profile = HiveService().getUserProfile();
 
+  // Erişim modeli: deneme başlangıcı ilk açılışta sabitlenir (Hive değil
+  // SharedPreferences — "tüm verileri sil" denemeyi sıfırlamaz), premium
+  // önbelleği mağaza cevap vermeden de bilinmeli (kısıt kararları için)
+  final trialStart = await PremiumService.ensureTrialStart();
+  final prefs = await SharedPreferences.getInstance();
+  final cachedPremium = prefs.getBool('premium_active') ?? false;
+
   // Premium durumu ve widget güncellemesi arka planda
   unawaited(PremiumService().init());
   unawaited(
@@ -81,6 +89,8 @@ Future<void> _run() async {
   runApp(
     ProviderScope(
       overrides: [
+        trialStartProvider.overrideWith((ref) => trialStart),
+        isPremiumProvider.overrideWith((ref) => cachedPremium),
         if (profile != null) ...[
           themeModeProvider.overrideWith((ref) => themeModeFromProfile(profile)),
           localeProvider.overrideWith((ref) => Locale(profile.language)),

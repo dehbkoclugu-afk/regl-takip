@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/access.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/ring_segments.dart';
@@ -484,6 +485,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                         child: ElevatedButton.icon(
                           onPressed: () {
                             Navigator.of(sheetContext).pop();
+                            if (!ensurePremiumAccess(context, ref)) return;
                             showQuickLogSheet(context, ref, day);
                           },
                           icon: const Icon(Icons.edit_rounded, size: 18),

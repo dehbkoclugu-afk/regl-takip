@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import '../services/hive_service.dart';
 import '../services/notification_service.dart';
+import '../services/premium_service.dart';
 import '../services/widget_service.dart';
 import '../models/user_profile.dart';
 import '../models/period_record.dart';
@@ -43,6 +44,47 @@ ThemeMode themeModeFromProfile(UserProfile? profile) {
 
 final themeModeProvider = StateProvider<ThemeMode>((ref) {
   return ThemeMode.system;
+});
+
+// ─── Erişim (deneme / premium / ücretsiz) ─────────────────────────────
+
+/// 30 gün tam deneme → abonelik yoksa yalnız regl takibi.
+enum AccessLevel {
+  /// Aktif abonelik (veya eski tek seferlik premium): her şey açık.
+  premium,
+
+  /// Ücretsiz deneme penceresi: her şey açık.
+  trial,
+
+  /// Deneme bitti, abonelik yok: yalnız regl takibi + takvim.
+  free,
+}
+
+/// Çalışma zamanı premium durumu. Başlangıç değeri main'de önbellekten
+/// override edilir; satın alma olayları app.dart köprüsüyle günceller.
+final isPremiumProvider = StateProvider<bool>((ref) => false);
+
+/// Deneme başlangıcı (main'de SharedPreferences'tan override edilir).
+/// null = henüz çözülmedi: kullanıcıyı yanlışlıkla kısıtlamamak için
+/// deneme sayılır.
+final trialStartProvider = StateProvider<DateTime?>((ref) => null);
+
+final accessProvider = Provider<AccessLevel>((ref) {
+  if (ref.watch(isPremiumProvider)) return AccessLevel.premium;
+  final start = ref.watch(trialStartProvider);
+  if (start == null) return AccessLevel.trial;
+  final elapsed = DateTime.now().difference(start).inDays;
+  return elapsed < PremiumService.trialDays
+      ? AccessLevel.trial
+      : AccessLevel.free;
+});
+
+final trialDaysLeftProvider = Provider<int>((ref) {
+  final start = ref.watch(trialStartProvider);
+  if (start == null) return PremiumService.trialDays;
+  final left =
+      PremiumService.trialDays - DateTime.now().difference(start).inDays;
+  return left < 0 ? 0 : left;
 });
 
 // ─── UserProfile Provider ─────────────────────────────────────────────

@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/access.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../models/user_profile.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -336,42 +337,45 @@ class SettingsScreen extends ConsumerWidget {
           ]),
           const SizedBox(height: 16),
 
-          // Premium
+          // Premium: durum + planlar. Erişim kararı accessProvider'da
+          // (premium / deneme N gün / ücretsiz)
           _sectionHeader(context, l10n.premiumSection),
-          ValueListenableBuilder<bool>(
-            valueListenable: PremiumService().isPremiumNotifier,
-            builder: (context, isPremium, _) {
-              if (isPremium) {
-                return _settingsCard(context, [
-                  _infoTile(context, Icons.workspace_premium_rounded,
-                      l10n.premiumSection, l10n.premiumActive),
-                ]);
-              }
-              final service = PremiumService();
-              final priceSuffix = service.product != null
-                  ? ' (${service.product!.price})'
-                  : '';
-              return _settingsCard(context, [
-                _actionTile(context, Icons.workspace_premium_rounded,
-                    '${l10n.removeAds}$priceSuffix', AppColors.warning,
-                    () async {
-                  final started = await service.buy();
-                  if (!started && context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text(l10n.storeUnavailable),
-                          backgroundColor: AppColors.warning),
-                    );
-                  }
-                }),
+          Builder(builder: (context) {
+            final access = ref.watch(accessProvider);
+            final daysLeft = ref.watch(trialDaysLeftProvider);
+            final statusText = switch (access) {
+              AccessLevel.premium => l10n.premiumActive,
+              AccessLevel.trial => l10n.trialBadge(daysLeft),
+              AccessLevel.free => l10n.freeBadge,
+            };
+            return _settingsCard(context, [
+              _infoTile(context, Icons.workspace_premium_rounded,
+                  l10n.premiumSection, statusText),
+              if (access == AccessLevel.free) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                  child: Text(
+                    l10n.freeExplain,
+                    style: TextStyle(
+                        fontSize: 12,
+                        height: 1.4,
+                        color: AppColors.ts(context)),
+                  ),
+                ),
+              ],
+              if (access != AccessLevel.premium) ...[
                 _divider(context),
-                _actionTile(context, Icons.restore_page_rounded,
-                    l10n.restorePurchases, AppColors.secondary, () async {
-                  await service.restore();
-                }),
-              ]);
-            },
-          ),
+                _actionTile(context, Icons.workspace_premium_rounded,
+                    l10n.seePlans, AppColors.warning,
+                    () => context.push('/paywall')),
+              ],
+              _divider(context),
+              _actionTile(context, Icons.restore_page_rounded,
+                  l10n.restorePurchases, AppColors.secondary, () async {
+                await PremiumService().restore();
+              }),
+            ]);
+          }),
           const SizedBox(height: 16),
 
           // Data
@@ -400,6 +404,7 @@ class SettingsScreen extends ConsumerWidget {
             _divider(context),
             _actionTile(context, Icons.favorite_rounded, l10n.healthSync,
                 AppColors.error, () async {
+              if (!ensurePremiumAccess(context, ref)) return;
               final result = await HealthSyncService()
                   .syncPeriods(ref.read(periodRecordsProvider));
               if (!context.mounted) return;
@@ -428,6 +433,7 @@ class SettingsScreen extends ConsumerWidget {
             _divider(context),
             _actionTile(context, Icons.picture_as_pdf_rounded, l10n.exportPdfReport,
                 AppColors.error, () async {
+              if (!ensurePremiumAccess(context, ref)) return;
               final exportService = ExportService();
               final periods = ref.read(periodRecordsProvider);
               final dailyLogs = ref.read(dailyLogProvider);
@@ -449,6 +455,7 @@ class SettingsScreen extends ConsumerWidget {
             _divider(context),
             _actionTile(context,
                 Icons.table_chart_rounded, l10n.exportCsvFile, AppColors.success, () async {
+              if (!ensurePremiumAccess(context, ref)) return;
               final exportService = ExportService();
               final periods = ref.read(periodRecordsProvider);
               final dailyLogs = ref.read(dailyLogProvider);
@@ -595,6 +602,11 @@ class SettingsScreen extends ConsumerWidget {
 
   Future<void> _onModeChanged(
       BuildContext context, WidgetRef ref, TrackingMode mode) async {
+    // Modlar (hamilelik/hap/TTC) premium kapsamı; regl modu her zaman açık
+    if (mode != TrackingMode.period &&
+        !ensurePremiumAccess(context, ref)) {
+      return;
+    }
     final l10n = AppLocalizations.of(context)!;
     final profile = ref.read(userProfileProvider);
 
@@ -876,14 +888,14 @@ class SettingsScreen extends ConsumerWidget {
 
 /// Gizli mod anahtarı: launcher ikonunu/adını "Notlar" kılığına sokar.
 /// Durum platformdan okunur (secure storage değil — gerçek alias durumu).
-class _DisguiseTile extends StatefulWidget {
+class _DisguiseTile extends ConsumerStatefulWidget {
   const _DisguiseTile();
 
   @override
-  State<_DisguiseTile> createState() => _DisguiseTileState();
+  ConsumerState<_DisguiseTile> createState() => _DisguiseTileState();
 }
 
-class _DisguiseTileState extends State<_DisguiseTile> {
+class _DisguiseTileState extends ConsumerState<_DisguiseTile> {
   bool? _enabled;
 
   @override
@@ -922,6 +934,9 @@ class _DisguiseTileState extends State<_DisguiseTile> {
         onChanged: _enabled == null
             ? null
             : (value) async {
+                // Gizli mod premium kapsamı; KAPATMAK her zaman serbest
+                // (aboneliği biten kullanıcı kılıkta mahsur kalmamalı)
+                if (value && !ensurePremiumAccess(context, ref)) return;
                 final ok = await DisguiseService.setDisguise(value);
                 if (!ok) return;
                 // Widget'ı yeni duruma göre hemen yenile: gizliyken nötr

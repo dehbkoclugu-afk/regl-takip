@@ -1226,6 +1226,76 @@ class AppLocalizationsEn extends AppLocalizations {
   String get modeTtcDesc => 'Fertility-focused tracking';
 
   @override
+  String get paywallTitle => 'Go Premium';
+
+  @override
+  String paywallTrialSubtitle(int days) {
+    return 'Your trial is active: $days days left. Premium keeps everything unlocked.';
+  }
+
+  @override
+  String get paywallFreeSubtitle => 'Your trial has ended. The free version keeps period tracking and the calendar; daily tracking and insights are Premium.';
+
+  @override
+  String get paywallFeatureTrackers => 'All daily trackers: symptoms, mood, water, sleep, weight, temperature, medication, notes';
+
+  @override
+  String get paywallFeatureStats => 'Statistics, trends, and the My Year ring';
+
+  @override
+  String get paywallFeatureInsights => 'Personal insights and phase-tip notifications';
+
+  @override
+  String get paywallFeatureExport => 'PDF / CSV export';
+
+  @override
+  String get paywallFeatureHealth => 'Health Connect sync';
+
+  @override
+  String get paywallFeatureDisguise => 'Disguise mode with the Notes decoy';
+
+  @override
+  String get paywallFeatureNoAds => 'Ad-free experience';
+
+  @override
+  String get planMonthly => 'Monthly';
+
+  @override
+  String get planYearly => 'Yearly';
+
+  @override
+  String get perMonth => '/mo';
+
+  @override
+  String get perYear => '/yr';
+
+  @override
+  String get bestValue => 'Best value';
+
+  @override
+  String get continueFreeBtn => 'Continue with free for now';
+
+  @override
+  String trialBadge(int days) {
+    return 'Trial: $days days left';
+  }
+
+  @override
+  String get freeBadge => 'Free version';
+
+  @override
+  String get freeExplain => 'The free version keeps period tracking, the calendar, and predictions. Daily trackers, statistics, export, Health Connect, disguise mode, and modes are Premium.';
+
+  @override
+  String get seePlans => 'See Plans';
+
+  @override
+  String get premiumLockedTitle => 'Statistics is Premium';
+
+  @override
+  String get premiumLockedBody => 'Charts, trends, phase insights, and the My Year ring unlock with Premium. Everything you logged during the trial is kept safe.';
+
+  @override
   String get yearRingTitle => 'My Year';
 
   @override

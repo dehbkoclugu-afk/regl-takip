@@ -7,6 +7,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/access.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_insights.dart';
@@ -102,7 +103,14 @@ class DashboardScreen extends ConsumerWidget {
     String fertileStr = '-';
 
     final effectiveCycleLen = ref.watch(effectiveCycleLengthProvider);
-    final mode = profile?.trackingMode ?? TrackingMode.period;
+    final access = ref.watch(accessProvider);
+    final trialDaysLeft = ref.watch(trialDaysLeftProvider);
+    // Ücretsiz katman yalnız regl takibi: modlara özel arayüz (hamilelik
+    // hero'su, hap çipi, TTC kartı) premium kapsamında — free'de veri
+    // silinmez ama görünüm klasik regl takibine döner
+    final storedMode = profile?.trackingMode ?? TrackingMode.period;
+    final mode =
+        access == AccessLevel.free ? TrackingMode.period : storedMode;
     final confirmedOvulation = ref.watch(confirmedOvulationProvider);
     if (profile?.lastPeriodStart != null) {
       final cycleLen = effectiveCycleLen;
@@ -212,6 +220,12 @@ class DashboardScreen extends ConsumerWidget {
                   .animateSafe(context)
                   .fadeIn(duration: 350.ms)
                   .slideY(begin: -0.2, end: 0, duration: 350.ms),
+              // Deneme/ücretsiz durumu görünür olmalı: kalan gün ve
+              // kapsam bilgisi — dokununca planlar
+              if (access != AccessLevel.premium) ...[
+                const SizedBox(height: 4),
+                _buildAccessChip(context, l10n, access, trialDaysLeft),
+              ],
               const SizedBox(height: 8),
               if (mode == TrackingMode.pregnancy) ...[
                 // Hamilelik modu: hafta sayacı hero, tahminler gizli
@@ -365,8 +379,12 @@ class DashboardScreen extends ConsumerWidget {
                       icon: Icons.add_reaction_rounded,
                       label: l10n.addRecord,
                       color: AppColors.secondary,
-                      onTap: () =>
-                          showQuickLogSheet(context, ref, DateTime.now()),
+                      onTap: () {
+                        // Günlük kayıt premium kapsamı: ücretsiz katman
+                        // yalnız regl takibi
+                        if (!ensurePremiumAccess(context, ref)) return;
+                        showQuickLogSheet(context, ref, DateTime.now());
+                      },
                     ),
                   ),
                 ],
@@ -381,6 +399,54 @@ class DashboardScreen extends ConsumerWidget {
               _buildDisclaimer(context, l10n),
               const SizedBox(height: 24),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAccessChip(BuildContext context, AppLocalizations l10n,
+      AccessLevel access, int daysLeft) {
+    final isFree = access == AccessLevel.free;
+    final label =
+        isFree ? l10n.freeBadge : l10n.trialBadge(daysLeft);
+    return Semantics(
+      button: true,
+      label: label,
+      child: Material(
+        color: AppColors.sf(context),
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: () => GoRouter.of(context).push('/paywall'),
+          child: Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.dv(context)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  isFree
+                      ? Icons.lock_outline_rounded
+                      : Icons.hourglass_bottom_rounded,
+                  size: 14,
+                  color: isFree
+                      ? AppColors.warningText
+                      : AppColors.ts(context),
+                ),
+                const SizedBox(width: 6),
+                Text(label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.ts(context),
+                    )),
+              ],
+            ),
           ),
         ),
       ),
@@ -569,9 +635,11 @@ class DashboardScreen extends ConsumerWidget {
       CyclePhase phase, AppLocalizations l10n) {
     // Genel ipucunun üstüne kişisel içgörü: kullanıcının KENDİ kayıtları
     // bu fazda hangi semptomu gösteriyorsa o söylenir — "uygulama beni
-    // tanıyor" anı (motor: topPhaseSymptoms, istatistikle aynı)
-    final personal =
-        topInsightForPhase(ref.watch(phaseInsightsProvider), phase);
+    // tanıyor" anı (motor: topPhaseSymptoms, istatistikle aynı).
+    // Kişisel içgörü premium kapsamı: ücretsizde genel ipucu kalır.
+    final personal = ref.watch(accessProvider) == AccessLevel.free
+        ? null
+        : topInsightForPhase(ref.watch(phaseInsightsProvider), phase);
 
     return GlassCard(
       borderRadius: 20,

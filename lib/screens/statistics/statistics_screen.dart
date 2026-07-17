@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
@@ -33,6 +34,53 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
+    // İstatistik premium kapsamı. Sekme görünür kalır (kullanıcı neyi
+    // kaçırdığını bilsin) ama içerik kilit ekranına döner.
+    if (ref.watch(accessProvider) == AccessLevel.free) {
+      return Scaffold(
+        backgroundColor: AppColors.bg(context),
+        appBar: AppBar(
+          title: Text(l10n.statistics,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: AppColors.tp(context))),
+          backgroundColor: AppColors.bg(context),
+          elevation: 0,
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.lock_outline_rounded,
+                    size: 56, color: AppColors.ts(context)),
+                const SizedBox(height: 16),
+                Text(l10n.premiumLockedTitle,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.tp(context))),
+                const SizedBox(height: 8),
+                Text(l10n.premiumLockedBody,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 14,
+                        height: 1.45,
+                        color: AppColors.ts(context))),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => context.push('/paywall'),
+                  child: Text(l10n.seePlans),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     final records = ref.watch(periodRecordsProvider);
     final dailyLogs = ref.watch(dailyLogProvider);
     final profile = ref.watch(userProfileProvider);
