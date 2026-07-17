@@ -1217,6 +1217,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get modeTtcDesc => 'Fertility-focused tracking';
 
   @override
+  String get yearRingTitle => 'My Year';
+
+  @override
+  String get yearRingCycles => 'CYCLES';
+
+  @override
+  String yearRingSummary(int count) {
+    return 'Last 12 months: $count cycles';
+  }
+
+  @override
   String get cycleComparison => 'Your Last Cycle';
 
   @override

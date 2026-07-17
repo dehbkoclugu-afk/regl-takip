@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+import 'dart:ui' as ui show TextDirection;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -8,6 +11,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_insights.dart';
+import '../../core/utils/ring_segments.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
@@ -78,6 +82,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             // "Son döngün normaline göre nasıldı?" — filtreden bağımsız:
             // "son" ve "ortalaman" kişisel normun tamamından hesaplanır
             _buildComparisonCard(l10n, records, profile),
+            const SizedBox(height: 16),
+            // "Yılım": son 12 ay tek halka — düzenlilik bir bakışta.
+            // Ring/faz şeridiyle aynı görsel aile (imza dili üçüncü yüzeyde)
+            _buildYearRing(l10n, records, profile),
             const SizedBox(height: 16),
             _buildSymptomChart(l10n, filteredLogs),
             const SizedBox(height: 16),
@@ -159,6 +167,114 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         ),
       ),
     );
+  }
+
+  /// "Yılım" halkası: son 365 gün saat yönünde tek çember. Gerçek regl
+  /// günleri koyu, geçmiş günlerin fazları soluk tonlarda; ilk kayıttan
+  /// önceki dönem boş iz. Düzenli bir yıl eşit aralıklı koyu dilimler
+  /// olarak okunur — düzensizlik kendini gösterir.
+  Widget _buildYearRing(
+      AppLocalizations l10n, List<PeriodRecord> records, UserProfile? profile) {
+    if (records.isEmpty || profile == null) return const SizedBox.shrink();
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final start = today.subtract(const Duration(days: 364));
+    final cycleLen = ref.watch(effectiveCycleLengthProvider);
+    final periodLen = profile.averagePeriodLength;
+    final segments = ringSegmentsFor(cycleLen, periodLen);
+    final sortedStarts = records.map((r) => r.startDate).toList()..sort();
+
+    // Yıl içindeki döngü sayısı (halka merkez özeti)
+    final cyclesInYear = sortedStarts
+        .where((s) => !s.isBefore(start) && !s.isAfter(today))
+        .length;
+
+    Color? colorFor(DateTime date) {
+      if (records.any((r) => r.containsDate(date))) {
+        return AppColors.ringMenstrual;
+      }
+      // Tarihten önceki en yakın gerçek başlangıç o günün döngüsünü belirler
+      DateTime? anchor;
+      for (final s in sortedStarts) {
+        if (!s.isAfter(date)) {
+          anchor = s;
+        } else {
+          break;
+        }
+      }
+      if (anchor == null) return null; // ilk kayıttan önce: bilinmiyor
+      final day = CycleUtils.dayInCycleFor(date, anchor, cycleLen);
+      if (day == null) return null;
+      // Fazlar soluk: gerçek regl günleri baskın kalsın
+      return segmentColorForDay(segments, day).withValues(alpha: 0.35);
+    }
+
+    final dayColors = List<Color?>.generate(
+        365, (i) => colorFor(start.add(Duration(days: i))));
+    final monthLabels = List<String>.generate(12, (i) {
+      final m = DateTime(start.year, start.month + i, 1);
+      return DateFormat('MMM', Localizations.localeOf(context).toString())
+          .format(m);
+    });
+
+    return GlassCard(
+      borderRadius: 20,
+      blur: 0,
+      opacity: 0.18,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l10n.yearRingTitle,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.tp(context))),
+          const SizedBox(height: 16),
+          Semantics(
+            label: l10n.yearRingSummary(cyclesInYear),
+            child: ExcludeSemantics(
+              child: Center(
+                child: SizedBox(
+                  width: 280,
+                  height: 280,
+                  child: CustomPaint(
+                    painter: _YearRingPainter(
+                      dayColors: dayColors,
+                      monthLabels: monthLabels,
+                      trackColor: AppColors.dv(context),
+                      labelColor: AppColors.ts(context),
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('$cyclesInYear',
+                              style: TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.tp(context))),
+                          Text(l10n.yearRingCycles,
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 1.2,
+                                  color: AppColors.ts(context))),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    )
+        .animateSafe(context)
+        .fadeIn(delay: 110.ms, duration: 400.ms)
+        .slideY(begin: 0.1, end: 0);
   }
 
   /// Son döngü ve son regl, kullanıcının kendi ortalamasıyla kıyaslanır
@@ -1143,4 +1259,93 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       ),
     ).animateSafe(context).fadeIn(duration: 400.ms);
   }
+}
+
+/// Son 365 günü saat yönünde tek çember olarak çizer: gün başına ince bir
+/// yay dilimi. Ay başlangıçları dış kenarda kısa adlarla işaretlenir.
+class _YearRingPainter extends CustomPainter {
+  final List<Color?> dayColors;
+  final List<String> monthLabels;
+  final Color trackColor;
+  final Color labelColor;
+
+  static const _stroke = 22.0;
+
+  _YearRingPainter({
+    required this.dayColors,
+    required this.monthLabels,
+    required this.trackColor,
+    required this.labelColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    // Dışta ay etiketlerine yer bırak
+    final radius = size.width / 2 - _stroke / 2 - 18;
+    final rect = Rect.fromCircle(center: center, radius: radius);
+    final total = dayColors.length;
+    final sweepPerDay = 2 * math.pi / total;
+
+    final trackPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = _stroke
+      ..color = trackColor.withValues(alpha: 0.5);
+    canvas.drawCircle(center, radius, trackPaint);
+
+    // Ardışık aynı renkli günleri tek yayda birleştir (365 ayrı çizim
+    // yerine tipik ~40 yay — hem hızlı hem dikişsiz)
+    var runStart = 0;
+    while (runStart < total) {
+      final color = dayColors[runStart];
+      var runEnd = runStart;
+      while (runEnd + 1 < total && dayColors[runEnd + 1] == color) {
+        runEnd++;
+      }
+      if (color != null) {
+        final startAngle = -math.pi / 2 + runStart * sweepPerDay;
+        final sweep = (runEnd - runStart + 1) * sweepPerDay;
+        canvas.drawArc(
+          rect,
+          startAngle,
+          sweep,
+          false,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = _stroke
+            ..color = color,
+        );
+      }
+      runStart = runEnd + 1;
+    }
+
+    // Ay etiketleri: her ayın halkadaki başlangıç açısına
+    final labelRadius = size.width / 2 - 7;
+    for (var i = 0; i < monthLabels.length; i++) {
+      final angle = -math.pi / 2 + (i * total / 12) * sweepPerDay;
+      final pos = Offset(
+        center.dx + labelRadius * math.cos(angle),
+        center.dy + labelRadius * math.sin(angle),
+      );
+      final tp = TextPainter(
+        text: TextSpan(
+          text: monthLabels[i],
+          style: TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w600,
+            color: labelColor,
+          ),
+        ),
+        // intl paketi de TextDirection tanımlıyor — dart:ui'ninki kastedilen
+        textDirection: ui.TextDirection.ltr,
+      )..layout();
+      tp.paint(canvas, pos - Offset(tp.width / 2, tp.height / 2));
+    }
+  }
+
+  @override
+  bool shouldRepaint(_YearRingPainter oldDelegate) =>
+      oldDelegate.dayColors != dayColors ||
+      oldDelegate.trackColor != trackColor ||
+      oldDelegate.labelColor != labelColor;
 }

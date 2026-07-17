@@ -1217,6 +1217,17 @@ class AppLocalizationsTr extends AppLocalizations {
   String get modeTtcDesc => 'Doğurganlık odaklı takip';
 
   @override
+  String get yearRingTitle => 'Yılım';
+
+  @override
+  String get yearRingCycles => 'DÖNGÜ';
+
+  @override
+  String yearRingSummary(int count) {
+    return 'Son 12 ay: $count döngü';
+  }
+
+  @override
   String get cycleComparison => 'Son Döngün';
 
   @override

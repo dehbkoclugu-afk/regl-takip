@@ -2423,6 +2423,24 @@ abstract class AppLocalizations {
   /// **'Doğurganlık odaklı takip'**
   String get modeTtcDesc;
 
+  /// No description provided for @yearRingTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yılım'**
+  String get yearRingTitle;
+
+  /// No description provided for @yearRingCycles.
+  ///
+  /// In tr, this message translates to:
+  /// **'DÖNGÜ'**
+  String get yearRingCycles;
+
+  /// No description provided for @yearRingSummary.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son 12 ay: {count} döngü'**
+  String yearRingSummary(int count);
+
   /// No description provided for @cycleComparison.
   ///
   /// In tr, this message translates to:
