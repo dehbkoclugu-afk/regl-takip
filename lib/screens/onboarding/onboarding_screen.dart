@@ -9,6 +9,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../providers/providers.dart';
+import '../../models/enums.dart';
 import '../../models/user_profile.dart';
 import '../../services/hive_service.dart';
 import 'widgets/onboarding_page.dart';
@@ -29,8 +30,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   int _currentMainPage = 0;
   int _currentFormStep = 0;
   static const int _totalInfoPages = 1;
-  static const int _totalFormSteps = 5;
+  static const int _totalFormSteps = 6;
 
+  // Mod seçimi kurulumun ilk sorusu: hamile bir kullanıcı "döngü tahmini"
+  // sorularıyla değil kendi akışıyla karşılanmalı (önceden ayarlarda
+  // gömülüydü, varlığından haberdar olmak keşif istiyordu)
+  TrackingMode _mode = TrackingMode.period;
   DateTime? _birthDate;
   DateTime? _lastPeriodDate;
   double _cycleLength = 28;
@@ -91,7 +96,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   /// hepsi lastPeriodStart'a bağlı) — bu adım zorunlu. İsim ve doğum tarihi
   /// isteğe bağlı: kimliğini paylaşmak istemeyen kullanıcı da geçebilmeli.
   bool get _canContinue {
-    if (_currentFormStep == 2) return _lastPeriodDate != null;
+    if (_currentFormStep == 3) return _lastPeriodDate != null;
     return true;
   }
 
@@ -155,6 +160,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       final periodLength = _periodLength.round();
       final lastPeriod = _lastPeriodDate!;
 
+      // Hap modu paket başlangıcını ister; iptal edilirse mod hap kalır,
+      // tarih ayarlardan sonradan girilebilir (dashboard chip'i o zamana
+      // kadar görünmez — ayarlardaki akışla aynı davranış)
+      DateTime? pillPackStart;
+      if (_mode == TrackingMode.pill && mounted) {
+        pillPackStart = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime.now().subtract(const Duration(days: 28)),
+          lastDate: DateTime.now(),
+          helpText: l10n.pillPackStartLabel,
+        );
+        if (!mounted) return;
+      }
+
       // Takvim, istatistik ve "reglim bitti" akışı profile'a değil
       // PeriodRecord'lara bakar — girilen son regl kayıt olarak da yazılmalı,
       // yoksa kullanıcı boş bir takvimle karşılaşır.
@@ -173,6 +193,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         averageCycleLength: _cycleLength.round(),
         averagePeriodLength: periodLength,
         onboardingCompleted: true,
+        trackingMode: _mode,
+        // Gebelikte LMP = girilen son regl tarihi: hafta sayacı hemen doğru
+        pregnancyStartDate:
+            _mode == TrackingMode.pregnancy ? lastPeriod : null,
+        pillPackStartDate: pillPackStart,
       );
 
       // En son: bildirim ve widget kurulumu kayıtları da görmüş olur
@@ -343,6 +368,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 setState(() => _currentFormStep = index);
               },
               children: [
+                _buildModeStep(),
                 _buildNameStep(),
                 _buildBirthDateStep(),
                 _buildLastPeriodStep(),
@@ -577,6 +603,102 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               color: AppColors.textSecondary,
             ),
       ),
+    );
+  }
+
+  Widget _buildModeStep() {
+    final l10n = AppLocalizations.of(context)!;
+    final modes = [
+      (TrackingMode.period, Icons.water_drop_rounded, l10n.modePeriod,
+          l10n.modePeriodDesc),
+      (TrackingMode.pregnancy, Icons.pregnant_woman_rounded,
+          l10n.modePregnancy, l10n.modePregnancyDesc),
+      (TrackingMode.pill, Icons.medication_rounded, l10n.modePill,
+          l10n.modePillDesc),
+      (TrackingMode.ttc, Icons.favorite_rounded, l10n.modeTtc,
+          l10n.modeTtcDesc),
+    ];
+
+    return _formCard(
+      children: [
+        _stepIcon(Icons.route_rounded),
+        _stepTitle(l10n.modeStepTitle),
+        _stepSubtitle(l10n.modeStepSubtitle),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 1.25,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+          ),
+          itemCount: modes.length,
+          itemBuilder: (context, index) {
+            final (mode, icon, title, desc) = modes[index];
+            final isSelected = _mode == mode;
+            return Semantics(
+              button: true,
+              selected: isSelected,
+              label: '$title, $desc',
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () => setState(() => _mode = mode),
+                child: ExcludeSemantics(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? AppColors.primary.withValues(alpha: 0.1)
+                          : Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isSelected
+                            ? AppColors.primaryStrong
+                            : Colors.transparent,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(icon,
+                            size: 26,
+                            color: isSelected
+                                ? AppColors.primaryStrong
+                                : AppColors.textSecondary),
+                        const SizedBox(height: 6),
+                        Text(title,
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: isSelected
+                                  ? AppColors.primaryStrong
+                                  : AppColors.textPrimary,
+                            )),
+                        const SizedBox(height: 2),
+                        Text(desc,
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 10.5,
+                              height: 1.2,
+                              color: AppColors.textSecondary,
+                            )),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 

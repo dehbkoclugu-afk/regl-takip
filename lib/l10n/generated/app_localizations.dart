@@ -2387,6 +2387,42 @@ abstract class AppLocalizations {
   /// **'Tarih'**
   String get dateLabel;
 
+  /// No description provided for @modeStepTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ne için kullanacaksın?'**
+  String get modeStepTitle;
+
+  /// No description provided for @modeStepSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonradan Ayarlar\'dan değiştirebilirsin'**
+  String get modeStepSubtitle;
+
+  /// No description provided for @modePeriodDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Döngü takibi ve tahminler'**
+  String get modePeriodDesc;
+
+  /// No description provided for @modePregnancyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hafta hafta gebelik'**
+  String get modePregnancyDesc;
+
+  /// No description provided for @modePillDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'21+7 hap düzeni'**
+  String get modePillDesc;
+
+  /// No description provided for @modeTtcDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğurganlık odaklı takip'**
+  String get modeTtcDesc;
+
   /// No description provided for @cycleComparison.
   ///
   /// In tr, this message translates to:

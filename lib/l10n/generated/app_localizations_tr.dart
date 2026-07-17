@@ -1199,6 +1199,24 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dateLabel => 'Tarih';
 
   @override
+  String get modeStepTitle => 'Ne için kullanacaksın?';
+
+  @override
+  String get modeStepSubtitle => 'Sonradan Ayarlar\'dan değiştirebilirsin';
+
+  @override
+  String get modePeriodDesc => 'Döngü takibi ve tahminler';
+
+  @override
+  String get modePregnancyDesc => 'Hafta hafta gebelik';
+
+  @override
+  String get modePillDesc => '21+7 hap düzeni';
+
+  @override
+  String get modeTtcDesc => 'Doğurganlık odaklı takip';
+
+  @override
   String get cycleComparison => 'Son Döngün';
 
   @override

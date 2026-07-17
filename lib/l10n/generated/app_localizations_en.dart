@@ -1199,6 +1199,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dateLabel => 'Date';
 
   @override
+  String get modeStepTitle => 'What will you use it for?';
+
+  @override
+  String get modeStepSubtitle => 'You can change this later in Settings';
+
+  @override
+  String get modePeriodDesc => 'Cycle tracking and predictions';
+
+  @override
+  String get modePregnancyDesc => 'Week-by-week pregnancy';
+
+  @override
+  String get modePillDesc => '21+7 pill schedule';
+
+  @override
+  String get modeTtcDesc => 'Fertility-focused tracking';
+
+  @override
   String get cycleComparison => 'Your Last Cycle';
 
   @override
