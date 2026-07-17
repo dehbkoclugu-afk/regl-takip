@@ -3,11 +3,14 @@ package com.regl.regl_takip
 import android.content.ComponentName
 import android.content.pm.PackageManager
 import android.view.WindowManager
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
-class MainActivity : FlutterActivity() {
+// FlutterFragmentActivity: local_auth (biyometri) FragmentActivity ister —
+// düz FlutterActivity'de authenticate() "no_fragment_activity" ile düşer
+// ve parmak izi/yüz kilidi hiç çalışmaz.
+class MainActivity : FlutterFragmentActivity() {
     companion object {
         private const val CHANNEL = "regl_takip/disguise"
         private const val PRIVACY_CHANNEL = "regl_takip/privacy"

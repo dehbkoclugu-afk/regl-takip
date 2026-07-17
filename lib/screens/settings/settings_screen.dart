@@ -73,30 +73,41 @@ class SettingsScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SegmentedButton<TrackingMode>(
-                    // 4 segment + ikon dar ekranda taşıyor — yalnız etiket
-                    segments: [
-                      ButtonSegment(
-                          value: TrackingMode.period,
-                          label: Text(l10n.modePeriod)),
-                      ButtonSegment(
-                          value: TrackingMode.pregnancy,
-                          label: Text(l10n.modePregnancy)),
-                      ButtonSegment(
-                          value: TrackingMode.pill,
-                          label: Text(l10n.modePill)),
-                      ButtonSegment(
-                          value: TrackingMode.ttc,
-                          label: Text(l10n.modeTtc)),
+                  // 4 uzun TR etiketi SegmentedButton'a sığmıyordu
+                  // ("Bebek Planı" eziliyor/sarkıyordu) — Wrap + ChoiceChip
+                  // her genişlikte doğru kırılır
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final (mode, label) in [
+                        (TrackingMode.period, l10n.modePeriod),
+                        (TrackingMode.pregnancy, l10n.modePregnancy),
+                        (TrackingMode.pill, l10n.modePill),
+                        (TrackingMode.ttc, l10n.modeTtc),
+                      ])
+                        ChoiceChip(
+                          label: Text(label,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: (profile?.trackingMode ??
+                                            TrackingMode.period) ==
+                                        mode
+                                    ? Colors.white
+                                    : AppColors.tp(context),
+                              )),
+                          selected: (profile?.trackingMode ??
+                                  TrackingMode.period) ==
+                              mode,
+                          selectedColor: AppColors.primaryStrong,
+                          backgroundColor: AppColors.bg(context),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16)),
+                          onSelected: (_) =>
+                              _onModeChanged(context, ref, mode),
+                        ),
                     ],
-                    selected: {profile?.trackingMode ?? TrackingMode.period},
-                    onSelectionChanged: (selected) =>
-                        _onModeChanged(context, ref, selected.first),
-                    style: ButtonStyle(
-                      visualDensity: VisualDensity.compact,
-                      textStyle:
-                          WidgetStateProperty.all(TextStyle(fontSize: 12)),
-                    ),
                   ),
                   if (profile?.trackingMode == TrackingMode.pregnancy) ...[
                     const SizedBox(height: 8),
@@ -171,38 +182,46 @@ class SettingsScreen extends ConsumerWidget {
               ),
               title: Text(l10n.theme,
                   style: TextStyle(fontWeight: FontWeight.w600)),
-              trailing: SegmentedButton<String>(
-                segments: [
-                  ButtonSegment(
-                      value: 'system', label: Text(l10n.themeSystem)),
-                  ButtonSegment(value: 'light', label: Text(l10n.themeLight)),
-                  ButtonSegment(value: 'dark', label: Text(l10n.themeDark)),
-                ],
-                selected: {
-                  switch (profile?.themePreference ?? 'system') {
-                    'dark' => 'dark',
-                    'light' => 'light',
-                    'system' => 'system',
-                    // '' = eski kayıt: o günkü açık/koyu seçimi
-                    _ => (profile?.darkModeEnabled ?? false)
-                        ? 'dark'
-                        : 'light',
-                  }
-                },
-                onSelectionChanged: (selected) {
-                  final value = selected.first;
-                  ref.read(themeModeProvider.notifier).state = switch (value) {
-                    'dark' => ThemeMode.dark,
-                    'light' => ThemeMode.light,
-                    _ => ThemeMode.system,
-                  };
-                  ref
-                      .read(userProfileProvider.notifier)
-                      .saveProfile(themePreference: value);
-                },
-                style: ButtonStyle(
-                  visualDensity: VisualDensity.compact,
-                  textStyle: WidgetStateProperty.all(TextStyle(fontSize: 12)),
+              // Üçlü seçici trailing'e sığmıyordu (başlığı eziyor, dar
+              // ekranda taşıyordu) — satırın altında tam genişlik
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: SegmentedButton<String>(
+                  segments: [
+                    ButtonSegment(
+                        value: 'system', label: Text(l10n.themeSystem)),
+                    ButtonSegment(
+                        value: 'light', label: Text(l10n.themeLight)),
+                    ButtonSegment(value: 'dark', label: Text(l10n.themeDark)),
+                  ],
+                  selected: {
+                    switch (profile?.themePreference ?? 'system') {
+                      'dark' => 'dark',
+                      'light' => 'light',
+                      'system' => 'system',
+                      // '' = eski kayıt: o günkü açık/koyu seçimi
+                      _ => (profile?.darkModeEnabled ?? false)
+                          ? 'dark'
+                          : 'light',
+                    }
+                  },
+                  onSelectionChanged: (selected) {
+                    final value = selected.first;
+                    ref.read(themeModeProvider.notifier).state =
+                        switch (value) {
+                      'dark' => ThemeMode.dark,
+                      'light' => ThemeMode.light,
+                      _ => ThemeMode.system,
+                    };
+                    ref
+                        .read(userProfileProvider.notifier)
+                        .saveProfile(themePreference: value);
+                  },
+                  style: ButtonStyle(
+                    visualDensity: VisualDensity.compact,
+                    textStyle:
+                        WidgetStateProperty.all(TextStyle(fontSize: 12)),
+                  ),
                 ),
               ),
             ),
@@ -779,9 +798,15 @@ class SettingsScreen extends ConsumerWidget {
       ),
       title: Text(title,
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
-      trailing: Text(value,
-          style: TextStyle(
-              fontSize: 14, color: AppColors.ts(context))),
+      // Uzun değerler ("Deneme: 27 gün kaldı", uzun isim) başlığı ezmesin
+      trailing: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 170),
+        child: Text(value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.end,
+            style: TextStyle(fontSize: 14, color: AppColors.ts(context))),
+      ),
     );
   }
 

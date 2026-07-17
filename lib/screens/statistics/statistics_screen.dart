@@ -484,14 +484,20 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           child: Icon(icon, color: color, size: 22),
         ),
         const SizedBox(height: 8),
-        Text(value,
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: AppColors.tp(context))),
+        // "Yetersiz veri" gibi uzun değerler dar sütunda taşıyordu
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(value,
+              maxLines: 1,
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.tp(context))),
+        ),
         Text(label,
-            style: TextStyle(
-                fontSize: 11, color: AppColors.ts(context))),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 11, color: AppColors.ts(context))),
       ],
     );
   }
@@ -572,14 +578,16 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                           return Padding(
                             padding: const EdgeInsets.only(top: 6),
                             child: SizedBox(
-                              width: 60,
+                              // 60 px etiketler 5 çubuklu dar grafikte
+                              // birbirine değiyordu
+                              width: 50,
                               child: Text(
                                 name,
                                 maxLines: 2,
                                 textAlign: TextAlign.center,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                    fontSize: 9,
+                                    fontSize: 8.5,
                                     height: 1.15,
                                     color: AppColors.ts(context)),
                               ),
@@ -860,22 +868,40 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                               shape: BoxShape.circle),
                         ),
                         const SizedBox(width: 12),
-                        Text(dateFormat.format(r.startDate),
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.tp(context))),
-                        if (r.endDate != null) ...[
-                          Text(' - ${dateFormat.format(r.endDate!)}',
-                              style: TextStyle(
-                                  fontSize: 14, color: AppColors.ts(context))),
-                        ] else
-                          Text(' (${l10n.ongoing})',
+                        // Tarih aralığı + süre + kalem dar ekranda taşıyordu:
+                        // tarih bölümü esner, gerekirse kısalır
+                        Expanded(
+                          child: Text.rich(
+                            TextSpan(
+                              text: dateFormat.format(r.startDate),
                               style: TextStyle(
                                   fontSize: 14,
-                                  color: AppColors.menstrual,
-                                  fontStyle: FontStyle.italic)),
-                        const Spacer(),
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.tp(context)),
+                              children: [
+                                if (r.endDate != null)
+                                  TextSpan(
+                                    text:
+                                        ' - ${dateFormat.format(r.endDate!)}',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        color: AppColors.ts(context)),
+                                  )
+                                else
+                                  TextSpan(
+                                    text: ' (${l10n.ongoing})',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        color: AppColors.menstrual,
+                                        fontStyle: FontStyle.italic),
+                                  ),
+                              ],
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
                         Text(l10n.nDays(r.durationDays),
                             style: TextStyle(
                                 fontSize: 13,

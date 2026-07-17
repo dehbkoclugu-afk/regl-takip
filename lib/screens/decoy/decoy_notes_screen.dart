@@ -11,16 +11,44 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Bilinçli sadelik: notlar şifresiz SharedPreferences'ta tutulur —
 /// bunlar kullanıcının sağlık verisi değil, kılığın sahne dekorudur
 /// (ama gerçek not olarak da işe yarar).
-class DecoyNotesScreen extends StatefulWidget {
+class DecoyNotesScreen extends StatelessWidget {
   final VoidCallback onExitRequested;
 
   const DecoyNotesScreen({super.key, required this.onExitRequested});
 
   @override
-  State<DecoyNotesScreen> createState() => _DecoyNotesScreenState();
+  Widget build(BuildContext context) {
+    // Nötr kimlik: marka pembesi YOK — sıradan bir not uygulaması gibi
+    // görünmeli. Kendi küçük teması, uygulama temasından bağımsız.
+    final decoyTheme = ThemeData(
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF546E7A)),
+    );
+
+    // Kendi Navigator'ı şart: bu ekran MaterialApp.builder katmanında,
+    // uygulamanın Navigator'ının DIŞINDA yaşar — sarmalamadan showDialog
+    // Navigator bulamaz ve "yeni not" diyaloğu hiç açılmazdı.
+    return Theme(
+      data: decoyTheme,
+      child: Navigator(
+        onGenerateRoute: (_) => MaterialPageRoute(
+          builder: (_) => _DecoyNotesHome(onExitRequested: onExitRequested),
+        ),
+      ),
+    );
+  }
 }
 
-class _DecoyNotesScreenState extends State<DecoyNotesScreen> {
+class _DecoyNotesHome extends StatefulWidget {
+  final VoidCallback onExitRequested;
+
+  const _DecoyNotesHome({required this.onExitRequested});
+
+  @override
+  State<_DecoyNotesHome> createState() => _DecoyNotesScreenState();
+}
+
+class _DecoyNotesScreenState extends State<_DecoyNotesHome> {
   static const _prefsKey = 'decoy_notes';
   List<String> _notes = [];
   bool _loaded = false;
@@ -93,16 +121,7 @@ class _DecoyNotesScreenState extends State<DecoyNotesScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    // Nötr kimlik: marka pembesi YOK — sıradan bir not uygulaması gibi
-    // görünmeli. Kendi küçük teması, uygulama temasından bağımsız.
-    final decoyTheme = ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF546E7A)),
-    );
-
-    return Theme(
-      data: decoyTheme,
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           // Gerçek uygulamaya dönüş kapısı: başlığa uzun basış.
           // Görsel hiçbir ipucu yok — kapı yalnız bilene açılır.
@@ -149,7 +168,9 @@ class _DecoyNotesScreenState extends State<DecoyNotesScreen> {
                         child: const Icon(Icons.delete, color: Colors.white),
                       ),
                       child: Material(
-                        color: decoyTheme.colorScheme.surfaceContainerHighest,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(12),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(12),
@@ -166,7 +187,6 @@ class _DecoyNotesScreenState extends State<DecoyNotesScreen> {
                       ),
                     ),
                   ),
-      ),
     );
   }
 }

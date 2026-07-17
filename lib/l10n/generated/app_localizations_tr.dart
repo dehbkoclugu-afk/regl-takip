@@ -1170,7 +1170,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get disguiseTitle => 'Gizli Mod';
 
   @override
-  String get disguiseDesc => 'Uygulama çekmecede \"Notlar\" adı ve nötr ikonla görünür; açıldığında gerçek bir not defteri açılır, widget ve bildirimler de nötrlenir. Gerçek uygulamaya dönmek için Notlar başlığına uzun basın (kilit açıksa PIN sorulur). Kısayol kaybolursa uygulamayı çekmeceden yeniden ekleyin.';
+  String get disguiseDesc => 'Uygulama \"Notlar\" kılığına girer: ad, ikon, widget, bildirimler ve açılış nötrleşir. Dönüş: Notlar başlığına uzun basın.';
 
   @override
   String get decoyTitle => 'Notlar';
