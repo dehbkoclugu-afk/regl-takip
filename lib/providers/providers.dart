@@ -233,6 +233,96 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
     return record;
   }
 
+  /// Kayıt düzenleyici: başlangıç/bitiş tarihlerini doğrudan atar.
+  /// Tarihler güne indirgenir; bitiş başlangıçtan önce olamaz.
+  /// [end] null = kayıt devam ediyor.
+  Future<void> updateRecordDates(
+      String recordId, DateTime start, DateTime? end) async {
+    PeriodRecord? record;
+    for (final r in state) {
+      if (r.id == recordId) {
+        record = r;
+        break;
+      }
+    }
+    if (record == null) return;
+    final normalizedStart = DateTime(start.year, start.month, start.day);
+    DateTime? normalizedEnd;
+    if (end != null) {
+      normalizedEnd = DateTime(end.year, end.month, end.day);
+      if (normalizedEnd.isBefore(normalizedStart)) {
+        normalizedEnd = normalizedStart;
+      }
+    }
+    record.startDate = normalizedStart;
+    record.endDate = normalizedEnd;
+    await _hiveService.savePeriodRecord(record);
+    _load();
+    await WidgetService.update(_hiveService.getUserProfile(), state);
+  }
+
+  /// "Reglim bitti"nin geri alınması: kaydı yeniden açık hale getirir.
+  Future<void> reopenRecord(String recordId) async {
+    for (final r in state) {
+      if (r.id == recordId) {
+        r.endDate = null;
+        await _hiveService.savePeriodRecord(r);
+        break;
+      }
+    }
+    _load();
+    await WidgetService.update(_hiveService.getUserProfile(), state);
+  }
+
+  /// Profildeki "son regl tarihi" düzenlendiğinde kayıtları eşitler.
+  ///
+  /// [startPeriod] bu iş için yanlış araç: yeni tarih süren kaydın
+  /// başlangıcından önceyse kayıt açmaz, üstelik mevcut kaydı kırpar —
+  /// profil ile kayıtlar ayrışır (geriye-tarih tuzağı). Burada eski
+  /// profil tarihine karşılık gelen kayıt bulunur ve YERİNDE taşınır;
+  /// yoksa bağımsız yeni bir kayıt açılır. Bitiş, regl bugün hâlâ
+  /// sürüyor olmalı mı sorusuna göre yeniden türetilir.
+  Future<void> syncProfilePeriodRecord({
+    DateTime? previousStart,
+    required DateTime newStart,
+    required int periodLength,
+  }) async {
+    final normalizedNew = DateTime(newStart.year, newStart.month, newStart.day);
+
+    bool sameDay(DateTime a, DateTime b) =>
+        a.year == b.year && a.month == b.month && a.day == b.day;
+
+    // Yeni tarih zaten kayıtlıysa dokunma
+    if (state.any((r) => sameDay(r.startDate, normalizedNew))) return;
+
+    final end = CycleUtils.completedPeriodEnd(
+        normalizedNew, periodLength, DateTime.now());
+
+    PeriodRecord? target;
+    if (previousStart != null) {
+      for (final r in state) {
+        if (sameDay(r.startDate, previousStart)) {
+          target = r;
+          break;
+        }
+      }
+    }
+
+    if (target != null) {
+      // Düzeltme: aynı kaydı taşı, çift kayıt üretme
+      target.startDate = normalizedNew;
+      target.endDate = end;
+      await _hiveService.savePeriodRecord(target);
+      _load();
+    } else {
+      await addRecord(PeriodRecord(
+        id: _uuid.v4(),
+        startDate: normalizedNew,
+        endDate: end,
+      ));
+    }
+  }
+
   Future<void> endPeriod(String recordId, DateTime date) async {
     try {
       final record = state.firstWhere((r) => r.id == recordId);

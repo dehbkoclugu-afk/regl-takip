@@ -1196,6 +1196,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invalidBackupFile => 'Invalid backup file';
 
   @override
+  String get undo => 'Undo';
+
+  @override
+  String get periodMarkedStarted => 'Period start saved';
+
+  @override
+  String get periodMarkedEnded => 'Period end saved';
+
+  @override
+  String get editPeriodRecord => 'Edit period record';
+
+  @override
+  String get startDateLabel => 'Start';
+
+  @override
+  String get endDateLabel => 'End';
+
+  @override
+  String get recordUpdated => 'Record updated';
+
+  @override
   String get dataResetTitle => 'Your data could not be read';
 
   @override

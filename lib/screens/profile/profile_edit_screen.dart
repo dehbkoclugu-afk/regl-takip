@@ -4,7 +4,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/utils/cycle_utils.dart';
 import '../../providers/providers.dart';
 import '../../core/utils/motion.dart';
 
@@ -96,25 +95,17 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       final lastPeriod = _lastPeriodDate;
 
       // Takvim ve istatistikler kayıtlara bakar: profildeki tarihi
-      // değiştirmek yetmez, o güne ait bir regl kaydı da olmalı
+      // değiştirmek yetmez, kayıtlar da eşitlenmeli. startPeriod değil
+      // syncProfilePeriodRecord: geriye tarih düzeltmesi mevcut kaydı
+      // taşımalı, kırpıp çift kayıt üretmemeli.
       if (lastPeriod != null) {
-        final records = ref.read(periodRecordsProvider);
-        final alreadyRecorded = records.any((r) =>
-            r.startDate.year == lastPeriod.year &&
-            r.startDate.month == lastPeriod.month &&
-            r.startDate.day == lastPeriod.day);
-        if (!alreadyRecorded) {
-          final record = await ref
-              .read(periodRecordsProvider.notifier)
-              .startPeriod(lastPeriod);
-          final end = CycleUtils.completedPeriodEnd(
-              lastPeriod, periodLength, DateTime.now());
-          if (end != null) {
-            await ref
-                .read(periodRecordsProvider.notifier)
-                .endPeriod(record.id, end);
-          }
-        }
+        await ref
+            .read(periodRecordsProvider.notifier)
+            .syncProfilePeriodRecord(
+              previousStart: ref.read(userProfileProvider)?.lastPeriodStart,
+              newStart: lastPeriod,
+              periodLength: periodLength,
+            );
       }
 
       await ref.read(userProfileProvider.notifier).saveProfile(
@@ -134,6 +125,17 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
           ),
         );
         Navigator.of(context).pop();
+      }
+    } catch (e) {
+      // Kaydetme hatası sessiz kalmasın (Hive/bildirim istisnaları)
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.errorOccurred(e.toString())),
+            backgroundColor: AppColors.error,
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);

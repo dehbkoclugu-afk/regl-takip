@@ -1196,6 +1196,27 @@ class AppLocalizationsTr extends AppLocalizations {
   String get invalidBackupFile => 'Geçersiz yedek dosyası';
 
   @override
+  String get undo => 'Geri al';
+
+  @override
+  String get periodMarkedStarted => 'Regl başlangıcı kaydedildi';
+
+  @override
+  String get periodMarkedEnded => 'Regl bitişi kaydedildi';
+
+  @override
+  String get editPeriodRecord => 'Regl kaydını düzenle';
+
+  @override
+  String get startDateLabel => 'Başlangıç';
+
+  @override
+  String get endDateLabel => 'Bitiş';
+
+  @override
+  String get recordUpdated => 'Kayıt güncellendi';
+
+  @override
   String get dataResetTitle => 'Verileriniz okunamadı';
 
   @override

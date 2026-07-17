@@ -2381,6 +2381,48 @@ abstract class AppLocalizations {
   /// **'Geçersiz yedek dosyası'**
   String get invalidBackupFile;
 
+  /// No description provided for @undo.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geri al'**
+  String get undo;
+
+  /// No description provided for @periodMarkedStarted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Regl başlangıcı kaydedildi'**
+  String get periodMarkedStarted;
+
+  /// No description provided for @periodMarkedEnded.
+  ///
+  /// In tr, this message translates to:
+  /// **'Regl bitişi kaydedildi'**
+  String get periodMarkedEnded;
+
+  /// No description provided for @editPeriodRecord.
+  ///
+  /// In tr, this message translates to:
+  /// **'Regl kaydını düzenle'**
+  String get editPeriodRecord;
+
+  /// No description provided for @startDateLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Başlangıç'**
+  String get startDateLabel;
+
+  /// No description provided for @endDateLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bitiş'**
+  String get endDateLabel;
+
+  /// No description provided for @recordUpdated.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kayıt güncellendi'**
+  String get recordUpdated;
+
   /// No description provided for @dataResetTitle.
   ///
   /// In tr, this message translates to:

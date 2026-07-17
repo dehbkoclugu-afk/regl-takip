@@ -284,19 +284,56 @@ class DashboardScreen extends ConsumerWidget {
                             ? l10n.periodEnded
                             : l10n.periodStarted,
                         color: AppColors.menstrual,
+                        // Regl geçmişi en değerli veri, dokunuş yanlışlıkla
+                        // olabilir: onay diyaloğu yerine 6 sn'lik Geri Al
                         onTap: () async {
+                          final messenger = ScaffoldMessenger.of(context);
+                          final recordsNotifier =
+                              ref.read(periodRecordsProvider.notifier);
+                          final profileNotifier =
+                              ref.read(userProfileProvider.notifier);
+                          final prevProfile = ref.read(userProfileProvider);
+
                           if (ongoingPeriod != null) {
-                            await ref
-                                .read(periodRecordsProvider.notifier)
-                                .endPeriod(ongoingPeriod.id, DateTime.now());
-                            ref.read(userProfileProvider.notifier).refresh();
+                            final recordId = ongoingPeriod.id;
+                            await recordsNotifier.endPeriod(
+                                recordId, DateTime.now());
+                            profileNotifier.refresh();
+                            messenger.showSnackBar(SnackBar(
+                              content: Text(l10n.periodMarkedEnded),
+                              duration: const Duration(seconds: 6),
+                              action: SnackBarAction(
+                                label: l10n.undo,
+                                onPressed: () async {
+                                  await recordsNotifier.reopenRecord(recordId);
+                                  profileNotifier.refresh();
+                                },
+                              ),
+                            ));
                           } else {
-                            final record = await ref
-                                .read(periodRecordsProvider.notifier)
+                            final record = await recordsNotifier
                                 .startPeriod(DateTime.now());
-                            await ref
-                                .read(userProfileProvider.notifier)
-                                .saveProfile(lastPeriodStart: record.startDate);
+                            await profileNotifier.saveProfile(
+                                lastPeriodStart: record.startDate);
+                            messenger.showSnackBar(SnackBar(
+                              content: Text(l10n.periodMarkedStarted),
+                              duration: const Duration(seconds: 6),
+                              action: SnackBarAction(
+                                label: l10n.undo,
+                                onPressed: () async {
+                                  await recordsNotifier
+                                      .deleteRecord(record.id);
+                                  // Profil (lastPeriodStart dahil) eski haline:
+                                  // updateProfile bildirim/widget'ı da tazeler
+                                  if (prevProfile != null) {
+                                    await profileNotifier
+                                        .updateProfile(prevProfile);
+                                  } else {
+                                    profileNotifier.refresh();
+                                  }
+                                },
+                              ),
+                            ));
                           }
                         },
                       ),

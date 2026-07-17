@@ -1,5 +1,14 @@
 # Changelog
 
+## Yayınlanmamış — İnceleme düzeltmeleri: veri güvenliği dörtlüsü (2026-07-17)
+
+Kapsamlı inceleme raporunun (docs/reviews/2026-07-16) "Hemen" öncelikli dört bulgusu:
+
+- **Cihaz değişimi artık veri faciası değil**: sistem yedeği Hive dosyalarını yeni telefona taşıyor ama şifreleme anahtarı cihazda kalıyordu — Hive çözülemeyen kutuları sessizce boşaltıyordu. Yedekleme kapatıldı (`allowBackup=false`, taşıma yolu uygulama içi JSON yedeği); çözülemeyen kutu artık karantinaya alınıp temiz başlanıyor ve kurulum ekranında nedeni açıklanıyor (regresyon testli)
+- **Düz metin sızıntısı kapatıldı**: şifreleme geçişinin güvenlik kopyası (`pre_encryption_backup.json`) tüm sağlık verisini şifresiz tutup hiç silinmiyordu; artık bir sonraki başarılı açılışta ve "tüm verileri sil"de siliniyor
+- **PIN kaldırmak mevcut PIN'i soruyor** (açık unutulan telefonda tek dokunuşla koruma kalkamaz) ve PIN gidince biyometri de kapanıyor — yedeksiz biyometri kilidi kalıcı kilitlenme riskiydi
+- **Regl kayıtları düzenlenebilir/silinebilir oldu**: istatistikteki döngü geçmişi satırına dokunup başlangıç/bitiş düzeltilebiliyor, kayıt silinebiliyor; profil tarihi en yeni kayıttan türetiliyor. Profilde son regl tarihini geriye çekmek kaydı kırpıp çift kayıt üretiyordu — düzeltildi (regresyon testli). "Reglim başladı/bitti"ye 6 saniyelik **Geri Al** eklendi; profil kaydetme hataları artık ekranda görünüyor
+
 ## Yayınlanmamış — Sayfa denetimi (2026-07-14)
 
 Uygulamanın 18 ekranı + gezinme, servis ve veri katmanı tek tek UI/UX,

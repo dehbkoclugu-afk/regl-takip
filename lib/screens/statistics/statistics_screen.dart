@@ -585,44 +585,280 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   fontWeight: FontWeight.bold,
                   color: AppColors.tp(context))),
           const SizedBox(height: 12),
-          ...records.take(10).map((r) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                          color: AppColors.periodDay, shape: BoxShape.circle),
+          // Kayıtlar salt-okunur değil: yanlış girilen tarih düzeltilebilmeli,
+          // yanlış açılan kayıt silinebilmeli — aksi halde bozuk veri kalıcı
+          // ve tahmin motoru onunla çalışır
+          ...records.take(10).map((r) => Semantics(
+                button: true,
+                label:
+                    '${l10n.editPeriodRecord}: ${dateFormat.format(r.startDate)}',
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () => _showRecordEditor(r),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                              color: AppColors.periodDay,
+                              shape: BoxShape.circle),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(dateFormat.format(r.startDate),
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.tp(context))),
+                        if (r.endDate != null) ...[
+                          Text(' - ${dateFormat.format(r.endDate!)}',
+                              style: TextStyle(
+                                  fontSize: 14, color: AppColors.ts(context))),
+                        ] else
+                          Text(' (${l10n.ongoing})',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.menstrual,
+                                  fontStyle: FontStyle.italic)),
+                        const Spacer(),
+                        Text(l10n.nDays(r.durationDays),
+                            style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.ts(context))),
+                        const SizedBox(width: 8),
+                        Icon(Icons.edit_rounded,
+                            size: 16, color: AppColors.ts(context)),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    Text(dateFormat.format(r.startDate),
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.tp(context))),
-                    if (r.endDate != null) ...[
-                      Text(' - ${dateFormat.format(r.endDate!)}',
-                          style: TextStyle(
-                              fontSize: 14, color: AppColors.ts(context))),
-                    ] else
-                      Text(' (${l10n.ongoing})',
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.menstrual,
-                              fontStyle: FontStyle.italic)),
-                    const Spacer(),
-                    Text(l10n.nDays(r.durationDays),
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.ts(context))),
-                  ],
+                  ),
                 ),
               )),
         ],
       ),
     ).animateSafe(context).fadeIn(delay: 400.ms, duration: 500.ms).slideY(begin: 0.1, end: 0);
+  }
+
+  /// Düzenleme/silme sonrası profil tarihi kayıtların türevi olarak
+  /// eşitlenir: en yeni kaydın başlangıcı = lastPeriodStart. Elle çift
+  /// tutmanın ürettiği ayrışma (B-8) böylece tek yönlü akara bağlanır.
+  Future<void> _syncProfileToNewestRecord() async {
+    final records = ref.read(periodRecordsProvider);
+    if (records.isEmpty) return;
+    final newest = records.first; // provider startDate'e göre azalan sıralı
+    final profile = ref.read(userProfileProvider);
+    final current = profile?.lastPeriodStart;
+    final same = current != null &&
+        current.year == newest.startDate.year &&
+        current.month == newest.startDate.month &&
+        current.day == newest.startDate.day;
+    if (!same) {
+      await ref
+          .read(userProfileProvider.notifier)
+          .saveProfile(lastPeriodStart: newest.startDate);
+    }
+  }
+
+  Future<void> _showRecordEditor(PeriodRecord record) async {
+    final l10n = AppLocalizations.of(context)!;
+    final localeStr = Localizations.localeOf(context).toString();
+    final dateFormat = DateFormat('d MMM yyyy', localeStr);
+    final messenger = ScaffoldMessenger.of(context);
+
+    var start = DateTime(
+        record.startDate.year, record.startDate.month, record.startDate.day);
+    var end = record.endDate != null
+        ? DateTime(record.endDate!.year, record.endDate!.month,
+            record.endDate!.day)
+        : null;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (sheetContext, setSheetState) {
+          Future<void> pickStart() async {
+            final picked = await showDatePicker(
+              context: sheetContext,
+              initialDate: start,
+              firstDate: DateTime(2020),
+              lastDate: DateTime.now(),
+            );
+            if (picked != null) {
+              setSheetState(() {
+                start = DateTime(picked.year, picked.month, picked.day);
+                if (end != null && end!.isBefore(start)) end = start;
+              });
+            }
+          }
+
+          Future<void> pickEnd() async {
+            final picked = await showDatePicker(
+              context: sheetContext,
+              initialDate: end ?? start,
+              firstDate: start,
+              lastDate: DateTime.now(),
+            );
+            if (picked != null) {
+              setSheetState(
+                  () => end = DateTime(picked.year, picked.month, picked.day));
+            }
+          }
+
+          Widget dateTile({
+            required String label,
+            required String value,
+            required VoidCallback onTap,
+            Widget? trailing,
+          }) {
+            return Semantics(
+              button: true,
+              label: label,
+              value: value,
+              child: Material(
+                color: AppColors.bg(sheetContext),
+                borderRadius: BorderRadius.circular(16),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: onTap,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
+                    child: Row(
+                      children: [
+                        Text(label,
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.ts(sheetContext))),
+                        const Spacer(),
+                        Text(value,
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.tp(sheetContext))),
+                        if (trailing != null) trailing,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }
+
+          return Container(
+            decoration: BoxDecoration(
+              color: AppColors.sf(sheetContext),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(28)),
+            ),
+            padding: EdgeInsets.fromLTRB(
+                24, 16, 24, 24 + MediaQuery.viewInsetsOf(sheetContext).bottom),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.dv(sheetContext),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(l10n.editPeriodRecord,
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.tp(sheetContext))),
+                const SizedBox(height: 16),
+                dateTile(
+                  label: l10n.startDateLabel,
+                  value: dateFormat.format(start),
+                  onTap: pickStart,
+                ),
+                const SizedBox(height: 8),
+                dateTile(
+                  label: l10n.endDateLabel,
+                  value: end != null ? dateFormat.format(end!) : l10n.ongoing,
+                  onTap: pickEnd,
+                  trailing: end != null
+                      ? IconButton(
+                          tooltip: l10n.ongoing,
+                          icon: Icon(Icons.close_rounded,
+                              size: 18, color: AppColors.ts(sheetContext)),
+                          onPressed: () => setSheetState(() => end = null),
+                        )
+                      : null,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                    Navigator.of(sheetContext).pop();
+                    await ref
+                        .read(periodRecordsProvider.notifier)
+                        .updateRecordDates(record.id, start, end);
+                    await _syncProfileToNewestRecord();
+                    messenger.showSnackBar(SnackBar(
+                        content: Text(l10n.recordUpdated),
+                        backgroundColor: AppColors.success));
+                  },
+                  child: Text(l10n.save),
+                ),
+                TextButton(
+                  style:
+                      TextButton.styleFrom(foregroundColor: AppColors.error),
+                  onPressed: () async {
+                    final confirmed = await showDialog<bool>(
+                      context: sheetContext,
+                      builder: (ctx) => AlertDialog(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24)),
+                        title: Text(l10n.deleteRecord),
+                        content: Text(end != null
+                            ? '${dateFormat.format(start)} - ${dateFormat.format(end!)}'
+                            : '${dateFormat.format(start)} (${l10n.ongoing})'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: Text(l10n.cancel),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            style: TextButton.styleFrom(
+                                foregroundColor: AppColors.error),
+                            child: Text(l10n.delete),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirmed != true) return;
+                    if (sheetContext.mounted) {
+                      Navigator.of(sheetContext).pop();
+                    }
+                    await ref
+                        .read(periodRecordsProvider.notifier)
+                        .deleteRecord(record.id);
+                    await _syncProfileToNewestRecord();
+                    messenger.showSnackBar(SnackBar(
+                        content: Text(l10n.recordDeleted),
+                        backgroundColor: AppColors.success));
+                  },
+                  child: Text(l10n.deleteRecord),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildTrendChart(
