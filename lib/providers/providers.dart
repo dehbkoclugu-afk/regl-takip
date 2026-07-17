@@ -8,6 +8,7 @@ import '../models/period_record.dart';
 import '../models/daily_log.dart';
 import '../models/enums.dart';
 import '../core/utils/cycle_utils.dart';
+import '../core/utils/phase_insights.dart';
 import 'package:uuid/uuid.dart';
 
 // ─── Service Providers ────────────────────────────────────────────────
@@ -90,6 +91,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         profile,
         records: _hiveService.getAllPeriodRecords(),
         medications: _latestMedications(_hiveService),
+        logs: _hiveService.getAllDailyLogs(),
       );
     } catch (e) {
       debugPrint('[NOTIF] rescheduleAll failed: $e');
@@ -658,6 +660,21 @@ final confirmedOvulationProvider = Provider<DateTime?>((ref) {
     return latestPositiveLh.add(const Duration(days: 1));
   }
   return null;
+});
+
+/// Faz-semptom içgörüleri (tek motor: topPhaseSymptoms). İstatistik
+/// kartı, dashboard koç satırı ve faz-ipucu bildirimi buradan beslenir.
+final phaseInsightsProvider = Provider<List<PhaseInsight>>((ref) {
+  final profile = ref.watch(userProfileProvider);
+  if (profile == null) return const [];
+  final records = ref.watch(periodRecordsProvider);
+  final logs = ref.watch(dailyLogProvider);
+  return topPhaseSymptoms(
+    logs: logs.values.toList(),
+    periodStarts: records.map((r) => r.startDate).toList(),
+    cycleLength: ref.watch(effectiveCycleLengthProvider),
+    periodLength: profile.averagePeriodLength,
+  );
 });
 
 final ongoingPeriodProvider = Provider<PeriodRecord?>((ref) {

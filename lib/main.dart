@@ -69,6 +69,7 @@ Future<void> _run() async {
           records: HiveService().getAllPeriodRecords(),
           medications:
               logsWithMeds.isEmpty ? const [] : logsWithMeds.first.medications,
+          logs: HiveService().getAllDailyLogs(),
         );
       }
     } catch (e) {

@@ -8,6 +8,8 @@ import 'package:intl/intl.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/cycle_utils.dart';
+import '../../core/utils/enum_labels.dart';
+import '../../core/utils/phase_insights.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../models/enums.dart';
 import '../../providers/providers.dart';
@@ -282,7 +284,7 @@ class DashboardScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                 ],
                 // Günlük faz koçluğu — faza göre pratik ipucu
-                _buildCoachCard(context, phase, l10n),
+                _buildCoachCard(context, ref, phase, l10n),
                 const SizedBox(height: 24),
               ],
               // Action Buttons
@@ -563,28 +565,64 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildCoachCard(
-      BuildContext context, CyclePhase phase, AppLocalizations l10n) {
+  Widget _buildCoachCard(BuildContext context, WidgetRef ref,
+      CyclePhase phase, AppLocalizations l10n) {
+    // Genel ipucunun üstüne kişisel içgörü: kullanıcının KENDİ kayıtları
+    // bu fazda hangi semptomu gösteriyorsa o söylenir — "uygulama beni
+    // tanıyor" anı (motor: topPhaseSymptoms, istatistikle aynı)
+    final personal =
+        topInsightForPhase(ref.watch(phaseInsightsProvider), phase);
+
     return GlassCard(
       borderRadius: 20,
       blur: 0,
       opacity: 0.16,
       padding: const EdgeInsets.all(16),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.tips_and_updates_rounded,
-              size: 20, color: AppColors.secondaryStrong),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              _coachMessage(phase, l10n),
-              style: TextStyle(
-                fontSize: 13,
-                height: 1.45,
-                color: AppColors.tp(context),
-              ),
+          if (personal != null) ...[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.insights_rounded,
+                    size: 20, color: AppColors.secondaryStrong),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l10n.coachPersonalInsight(
+                      EnumLabels.symptom(personal.symptom, l10n),
+                      personal.percent,
+                    ),
+                    style: TextStyle(
+                      fontSize: 13,
+                      height: 1.45,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.tp(context),
+                    ),
+                  ),
+                ),
+              ],
             ),
+            const SizedBox(height: 10),
+          ],
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.tips_and_updates_rounded,
+                  size: 20, color: AppColors.secondaryStrong),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  _coachMessage(phase, l10n),
+                  style: TextStyle(
+                    fontSize: 13,
+                    height: 1.45,
+                    color: AppColors.tp(context),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

@@ -1,12 +1,18 @@
+import 'dart:ui' show Locale;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import '../models/daily_log.dart';
 import '../models/enums.dart';
 import '../models/period_record.dart';
 import '../models/user_profile.dart';
 import '../core/constants/app_constants.dart';
 import '../core/utils/cycle_utils.dart';
+import '../core/utils/enum_labels.dart';
+import '../core/utils/phase_insights.dart';
 import 'disguise_service.dart';
 
 class NotificationService {
@@ -28,6 +34,8 @@ class NotificationService {
   // İlaç başına ayrı hatırlatma: ID çakışmasın diye ayrı aralık
   static const int _medicationReminderBaseId = 40;
   static const int _maxMedicationReminders = 10;
+  // Faz ipucu (kişisel semptom tahmini): luteal başlangıcında
+  static const int _insightReminderBaseId = 30;
 
   /// Kaç döngü ileriye hatırlatma planlanacağı
   static const int _cyclesToSchedule = 3;
@@ -349,6 +357,7 @@ class NotificationService {
     UserProfile profile, {
     List<PeriodRecord> records = const [],
     List<MedicationEntry> medications = const [],
+    List<DailyLog> logs = const [],
   }) async {
     if (!_isInitialized) return;
 
@@ -404,6 +413,58 @@ class NotificationService {
               id: _ovulationReminderBaseId + i,
               discreet: discreet,
             );
+          }
+        }
+
+        // Kişisel semptom tahmini: kullanıcının kayıtları luteal fazda
+        // belirgin bir semptom gösteriyorsa, luteal başlarken haber ver.
+        // Gizli modda kurulmaz (nötrlenince bilgi değeri kalmıyor).
+        if (profile.periodReminderEnabled && !discreet && logs.isNotEmpty) {
+          final insights = topPhaseSymptoms(
+            logs: logs,
+            periodStarts: records.map((r) => r.startDate).toList(),
+            cycleLength: cycleLen,
+            periodLength: profile.averagePeriodLength,
+          );
+          final lutealInsight =
+              topInsightForPhase(insights, CyclePhase.luteal);
+          if (lutealInsight != null) {
+            final l10n = lookupAppLocalizations(Locale(locale));
+            final symptomName =
+                EnumLabels.symptom(lutealInsight.symptom, l10n);
+            // Luteal başlangıcı ~ ovülasyon + 2 gün = adet - 12 gün
+            for (int i = 0; i < _cyclesToSchedule; i++) {
+              final periodDate =
+                  nextPeriod.add(Duration(days: cycleLen * i));
+              final lutealStart = periodDate.subtract(const Duration(
+                  days: AppConstants.ovulationDayBeforePeriod - 2));
+              final scheduled = _scheduleFor(lutealStart, hour, minute);
+              if (scheduled == null) continue;
+              await _plugin.zonedSchedule(
+                _insightReminderBaseId + i,
+                l10n.notificationInsightTitle,
+                l10n.notificationInsightBody(symptomName),
+                scheduled,
+                NotificationDetails(
+                  android: AndroidNotificationDetails(
+                    'phase_insight',
+                    l10n.notificationInsightTitle,
+                    channelDescription: l10n.notificationInsightTitle,
+                    importance: Importance.defaultImportance,
+                    priority: Priority.defaultPriority,
+                    icon: '@mipmap/ic_launcher',
+                  ),
+                  iOS: const DarwinNotificationDetails(
+                    presentAlert: true,
+                    presentBadge: false,
+                    presentSound: false,
+                  ),
+                ),
+                androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+                uiLocalNotificationDateInterpretation:
+                    UILocalNotificationDateInterpretation.absoluteTime,
+              );
+            }
           }
         }
       }

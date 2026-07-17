@@ -1199,6 +1199,19 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dateLabel => 'Tarih';
 
   @override
+  String coachPersonalInsight(String symptom, int percent) {
+    return 'Kayıtlarına göre bu fazda en sık: $symptom (%$percent)';
+  }
+
+  @override
+  String get notificationInsightTitle => 'Faz ipucu';
+
+  @override
+  String notificationInsightBody(String symptom) {
+    return 'Luteal faz başlıyor. Kayıtlarına göre bu fazda en sık: $symptom.';
+  }
+
+  @override
   String get reportTitle => 'Döngü Sağlık Raporu';
 
   @override

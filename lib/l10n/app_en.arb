@@ -516,6 +516,20 @@
   "backupRestored": "Backup restored",
   "invalidBackupFile": "Invalid backup file",
   "dateLabel": "Date",
+  "coachPersonalInsight": "Based on your logs, most common in this phase: {symptom} ({percent}%)",
+  "@coachPersonalInsight": {
+    "placeholders": {
+      "symptom": {"type": "String"},
+      "percent": {"type": "int"}
+    }
+  },
+  "notificationInsightTitle": "Phase tip",
+  "notificationInsightBody": "Luteal phase is starting. Based on your logs, your most common symptom in this phase: {symptom}.",
+  "@notificationInsightBody": {
+    "placeholders": {
+      "symptom": {"type": "String"}
+    }
+  },
   "reportTitle": "Cycle Health Report",
   "reportGenerated": "Generated",
   "profileSummary": "Profile Summary",

@@ -7,6 +7,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
+import '../../core/utils/phase_insights.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
@@ -502,56 +503,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       return _emptyCard(l10n.phaseInsights, l10n.noInsightsYet);
     }
 
-    final cycleLen = ref.read(effectiveCycleLengthProvider);
-    final periodLen = profile.averagePeriodLength;
-    final sortedStarts = records.map((r) => r.startDate).toList()
-      ..sort();
-
-    // symptomType -> phase -> count
-    final counts = <SymptomType, Map<CyclePhase, int>>{};
-
-    for (final log in logs) {
-      if (log.symptoms.isEmpty) continue;
-      // Log tarihinden önceki en yakın adet başlangıcı bu logun döngüsünü
-      // belirler; öncesinde kayıt yoksa faz bilinemez, atlanır
-      DateTime? anchor;
-      for (final start in sortedStarts) {
-        if (!start.isAfter(log.date)) {
-          anchor = start;
-        } else {
-          break;
-        }
-      }
-      if (anchor == null) continue;
-
-      final rawDay = log.date.difference(
-              DateTime(anchor.year, anchor.month, anchor.day)).inDays + 1;
-      final day = CycleUtils.wrappedCycleDay(rawDay, cycleLen);
-      final phase = CycleUtils.phaseForDay(day, cycleLen, periodLen);
-
-      for (final symptom in log.symptoms) {
-        counts.putIfAbsent(symptom.type, () => {});
-        counts[symptom.type]![phase] =
-            (counts[symptom.type]![phase] ?? 0) + 1;
-      }
-    }
-
-    // En az 3 kez kaydedilmiş semptomlar, toplam sayıya göre ilk 3
-    final insights = <(SymptomType, CyclePhase, int)>[];
-    final eligible = counts.entries
-        .where((e) => e.value.values.fold<int>(0, (a, b) => a + b) >= 3)
-        .toList()
-      ..sort((a, b) => b.value.values
-          .fold<int>(0, (x, y) => x + y)
-          .compareTo(a.value.values.fold<int>(0, (x, y) => x + y)));
-
-    for (final entry in eligible.take(3)) {
-      final total = entry.value.values.fold<int>(0, (a, b) => a + b);
-      final topPhase = entry.value.entries
-          .reduce((a, b) => a.value >= b.value ? a : b);
-      final percent = (topPhase.value / total * 100).round();
-      insights.add((entry.key, topPhase.key, percent));
-    }
+    // Motor core'da (topPhaseSymptoms): koç satırı ve faz-ipucu bildirimi
+    // ile aynı hesap. Burada filtreli loglar beslenir (ekranın kapsamı).
+    final insights = topPhaseSymptoms(
+      logs: logs,
+      periodStarts: records.map((r) => r.startDate).toList(),
+      cycleLength: ref.watch(effectiveCycleLengthProvider),
+      periodLength: profile.averagePeriodLength,
+    );
 
     if (insights.isEmpty) {
       return _emptyCard(l10n.phaseInsights, l10n.noInsightsYet);
@@ -572,7 +531,6 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   color: AppColors.tp(context))),
           const SizedBox(height: 12),
           ...insights.map((insight) {
-            final (symptom, phase, percent) = insight;
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: Row(
@@ -584,9 +542,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   Expanded(
                     child: Text(
                       l10n.insightLine(
-                        _symptomName(symptom, l10n),
-                        _phaseNameFor(phase, l10n),
-                        percent,
+                        _symptomName(insight.symptom, l10n),
+                        _phaseNameFor(insight.phase, l10n),
+                        insight.percent,
                       ),
                       style: TextStyle(
                           fontSize: 14,

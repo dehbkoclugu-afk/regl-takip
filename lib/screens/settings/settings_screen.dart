@@ -712,6 +712,7 @@ class SettingsScreen extends ConsumerWidget {
           records: HiveService().getAllPeriodRecords(),
           medications:
               logsWithMeds.isEmpty ? const [] : logsWithMeds.first.medications,
+          logs: HiveService().getAllDailyLogs(),
         );
       } catch (_) {
         // Bildirim kurulamasa da geri yükleme başarılı sayılır
@@ -945,6 +946,7 @@ class _DisguiseTileState extends State<_DisguiseTile> {
                       medications: logsWithMeds.isEmpty
                           ? const []
                           : logsWithMeds.first.medications,
+                      logs: HiveService().getAllDailyLogs(),
                     );
                   } catch (_) {
                     // Bildirim kurulamazsa kılık değişimi yine geçerli

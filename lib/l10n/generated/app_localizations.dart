@@ -2387,6 +2387,24 @@ abstract class AppLocalizations {
   /// **'Tarih'**
   String get dateLabel;
 
+  /// No description provided for @coachPersonalInsight.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kayıtlarına göre bu fazda en sık: {symptom} (%{percent})'**
+  String coachPersonalInsight(String symptom, int percent);
+
+  /// No description provided for @notificationInsightTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Faz ipucu'**
+  String get notificationInsightTitle;
+
+  /// No description provided for @notificationInsightBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Luteal faz başlıyor. Kayıtlarına göre bu fazda en sık: {symptom}.'**
+  String notificationInsightBody(String symptom);
+
   /// No description provided for @reportTitle.
   ///
   /// In tr, this message translates to:

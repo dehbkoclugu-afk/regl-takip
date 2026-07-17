@@ -516,6 +516,20 @@
   "backupRestored": "Yedek geri yüklendi",
   "invalidBackupFile": "Geçersiz yedek dosyası",
   "dateLabel": "Tarih",
+  "coachPersonalInsight": "Kayıtlarına göre bu fazda en sık: {symptom} (%{percent})",
+  "@coachPersonalInsight": {
+    "placeholders": {
+      "symptom": {"type": "String"},
+      "percent": {"type": "int"}
+    }
+  },
+  "notificationInsightTitle": "Faz ipucu",
+  "notificationInsightBody": "Luteal faz başlıyor. Kayıtlarına göre bu fazda en sık: {symptom}.",
+  "@notificationInsightBody": {
+    "placeholders": {
+      "symptom": {"type": "String"}
+    }
+  },
   "reportTitle": "Döngü Sağlık Raporu",
   "reportGenerated": "Oluşturma",
   "profileSummary": "Profil Özeti",

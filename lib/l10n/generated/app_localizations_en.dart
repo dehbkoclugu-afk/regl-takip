@@ -1199,6 +1199,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dateLabel => 'Date';
 
   @override
+  String coachPersonalInsight(String symptom, int percent) {
+    return 'Based on your logs, most common in this phase: $symptom ($percent%)';
+  }
+
+  @override
+  String get notificationInsightTitle => 'Phase tip';
+
+  @override
+  String notificationInsightBody(String symptom) {
+    return 'Luteal phase is starting. Based on your logs, your most common symptom in this phase: $symptom.';
+  }
+
+  @override
   String get reportTitle => 'Cycle Health Report';
 
   @override
