@@ -38,7 +38,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final filteredLogs =
         dailyLogs.values.where((l) => l.date.isAfter(cutoff)).toList();
 
-    final avgCycle = CycleUtils.calculateAverageCycleLength(records);
+    // Filtre çipleri KARTIN TAMAMINA işler: önceden Ort. Döngü ve
+    // Düzenlilik tüm kayıtlardan, Ort. Regl filtreden hesaplanıyordu —
+    // aynı kartta iki farklı kapsam (hangi sayının neye baktığı belirsizdi)
+    final avgCycle = CycleUtils.calculateAverageCycleLength(filteredRecords);
     // Seçili aralıktaki tüm kayıtlar devam ediyorsa (endDate yok) eski
     // hesap 0/1 = 0 veriyor ve "0,0 gün" yazıyordu — profil değeri kullanılır
     final avgPeriod = CycleUtils.averagePeriodDuration(
@@ -69,7 +72,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               ],
             ).animateSafe(context).fadeIn(duration: 400.ms),
             const SizedBox(height: 20),
-            _buildOverviewCard(l10n, avgCycle, avgPeriod, records),
+            _buildOverviewCard(l10n, avgCycle, avgPeriod, filteredRecords),
             const SizedBox(height: 16),
             _buildSymptomChart(l10n, filteredLogs),
             const SizedBox(height: 16),
@@ -278,22 +281,52 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
                 maxY: (top5.first.value + 2).toDouble(),
-                barTouchData: BarTouchData(enabled: false),
+                // Değer çubuğun üstünde kalıcı yazılır: dokunma kapalıyken
+                // gören kullanıcı yalnız göreli yükseklik görüyordu (ekran
+                // okuyucu özeti sayı alırken görene sayı yoktu)
+                barTouchData: BarTouchData(
+                  enabled: false,
+                  touchTooltipData: BarTouchTooltipData(
+                    getTooltipColor: (_) => Colors.transparent,
+                    tooltipPadding: EdgeInsets.zero,
+                    tooltipMargin: 2,
+                    getTooltipItem: (group, groupIndex, rod, rodIndex) =>
+                        BarTooltipItem(
+                      rod.toY.round().toString(),
+                      TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.tp(context),
+                      ),
+                    ),
+                  ),
+                ),
                 titlesData: FlTitlesData(
                   show: true,
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
+                      // İki satırlık tam ad için yer; 4 harfe kırpma
+                      // ("Baş ", "Kram") TR'de hiçbir şey ayırt etmiyordu
+                      reservedSize: 40,
                       getTitlesWidget: (value, meta) {
                         final idx = value.toInt();
                         if (idx >= 0 && idx < top5.length) {
                           final name = _symptomName(top5[idx].key, l10n);
                           return Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Text(
-                              name.length > 4 ? name.substring(0, 4) : name,
-                              style: TextStyle(
-                                  fontSize: 10, color: AppColors.ts(context)),
+                            padding: const EdgeInsets.only(top: 6),
+                            child: SizedBox(
+                              width: 60,
+                              child: Text(
+                                name,
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 9,
+                                    height: 1.15,
+                                    color: AppColors.ts(context)),
+                              ),
                             ),
                           );
                         }
@@ -887,9 +920,19 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       return _emptyCard(title, AppLocalizations.of(context)!.noDataYet);
     }
 
-    final spots = dataPoints.asMap().entries.map((e) {
-      return FlSpot(e.key.toDouble(), e.value.value);
-    }).toList();
+    // x = ilk ölçümden itibaren GÜN: önceden x liste indeksiydi, seyrek
+    // veri (bir haftada 3 ölçüm + iki ay boşluk) eşit aralıklı çizilip
+    // eğilimin biçimini çarpıtıyordu
+    final firstDay = DateTime(dataPoints.first.key.year,
+        dataPoints.first.key.month, dataPoints.first.key.day);
+    double dayOf(DateTime d) =>
+        DateTime(d.year, d.month, d.day).difference(firstDay).inDays.toDouble();
+    DateTime dateOf(double x) => firstDay.add(Duration(days: x.round()));
+
+    final spots = dataPoints
+        .map((e) => FlSpot(dayOf(e.key), e.value))
+        .toList();
+    final totalDays = spots.last.x;
 
     final minY = spots.map((s) => s.y).reduce((a, b) => a < b ? a : b);
     final maxY = spots.map((s) => s.y).reduce((a, b) => a > b ? a : b);
@@ -947,20 +990,20 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      interval: (spots.length / 4).ceilToDouble().clamp(1, 100),
+                      interval:
+                          (totalDays / 4).ceilToDouble().clamp(1, 3650),
                       getTitlesWidget: (value, meta) {
-                        final idx = value.toInt();
-                        if (idx >= 0 && idx < dataPoints.length) {
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Text(
-                              dateFormat.format(dataPoints[idx].key),
-                              style: TextStyle(
-                                  fontSize: 9, color: AppColors.ts(context)),
-                            ),
-                          );
+                        if (value < 0 || value > totalDays) {
+                          return const SizedBox();
                         }
-                        return const SizedBox();
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            dateFormat.format(dateOf(value)),
+                            style: TextStyle(
+                                fontSize: 9, color: AppColors.ts(context)),
+                          ),
+                        );
                       },
                     ),
                   ),
@@ -974,12 +1017,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   touchTooltipData: LineTouchTooltipData(
                     getTooltipItems: (spots) {
                       return spots.map((spot) {
-                        final idx = spot.x.toInt();
-                        final date = idx >= 0 && idx < dataPoints.length
-                            ? dateFormat.format(dataPoints[idx].key)
-                            : '';
                         return LineTooltipItem(
-                          '$date\n${spot.y.toStringAsFixed(1)} $unit',
+                          '${dateFormat.format(dateOf(spot.x))}\n'
+                          '${spot.y.toStringAsFixed(1)} $unit',
                           TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
