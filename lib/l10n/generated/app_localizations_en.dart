@@ -969,6 +969,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pinMismatch => 'PINs don\'t match, try again';
 
   @override
+  String get verifyPinTitle => 'Enter your current PIN';
+
+  @override
   String get wrongPin => 'Wrong PIN';
 
   @override

@@ -227,14 +227,21 @@ class SettingsScreen extends ConsumerWidget {
                     }
                   }
                 } else {
+                  // Güvenlik gevşetme mevcut PIN'i ister: kilidi açık
+                  // unutulmuş telefonda tek dokunuşla koruma kalkmasın
+                  final verified = await showPinVerifyDialog(context);
+                  if (!verified) return;
                   const storage = FlutterSecureStorage();
                   await storage.delete(key: 'app_pin');
                   // Kilitlenme sayacı da gitmeli: PIN yeniden kurulduğunda
                   // eski yanlış denemeler yüzünden bekleme başlamasın
                   await storage.delete(key: 'pin_failed_attempts');
                   await storage.delete(key: 'pin_lockout_until');
-                  ref.read(userProfileProvider.notifier)
-                      .saveProfile(pinEnabled: false);
+                  // Biyometri PIN'i fallback olarak şart koşuyor (kurulumda
+                  // zorunlu); PIN gidince biyometri tek başına kalamaz —
+                  // sensör arızasında kalıcı kilitlenme demek olur
+                  await ref.read(userProfileProvider.notifier).saveProfile(
+                      pinEnabled: false, biometricEnabled: false);
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(l10n.pinRemoved),

@@ -387,6 +387,7 @@
   "createPin": "Create PIN",
   "confirmPin": "Confirm PIN",
   "pinMismatch": "PINs don't match, try again",
+  "verifyPinTitle": "Enter your current PIN",
   "wrongPin": "Wrong PIN",
   "tooManyAttempts": "Too many wrong attempts. Wait {seconds} seconds",
   "@tooManyAttempts": {

@@ -387,6 +387,7 @@
   "createPin": "PIN Oluşturun",
   "confirmPin": "PIN Onaylayın",
   "pinMismatch": "PIN'ler eşleşmiyor, tekrar deneyin",
+  "verifyPinTitle": "Mevcut PIN'inizi girin",
   "wrongPin": "Yanlış PIN",
   "tooManyAttempts": "Çok fazla yanlış deneme. {seconds} saniye bekleyin",
   "@tooManyAttempts": {

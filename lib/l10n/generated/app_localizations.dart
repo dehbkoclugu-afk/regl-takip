@@ -1955,6 +1955,12 @@ abstract class AppLocalizations {
   /// **'PIN\'ler eşleşmiyor, tekrar deneyin'**
   String get pinMismatch;
 
+  /// No description provided for @verifyPinTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mevcut PIN\'inizi girin'**
+  String get verifyPinTitle;
+
   /// No description provided for @wrongPin.
   ///
   /// In tr, this message translates to:
