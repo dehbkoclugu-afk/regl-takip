@@ -5,8 +5,10 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'providers/providers.dart';
+import 'screens/decoy/decoy_notes_screen.dart';
 import 'screens/lock/lock_screen.dart';
 import 'services/ad_service.dart';
+import 'services/disguise_service.dart';
 import 'services/premium_service.dart';
 import 'services/privacy_screen_service.dart';
 
@@ -23,13 +25,33 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   bool _needsLock = false;
   bool _pendingLockUpdate = false;
   bool _openAdShown = false;
+
+  // Tam kılık: gizli modda uygulama gerçek bir not defteri olarak açılır;
+  // gerçek uygulamaya yalnız bilinçli çıkış hareketiyle (altta kilit varsa
+  // PIN'le) geçilir. _decoyResolved: soğuk açılışta kılık durumu native
+  // taraftan okunana dek gerçek arayüz BİR KARE bile görünmemeli.
+  bool _decoyActive = false;
+  bool _decoyResolved = false;
+  bool _isDisguisedCached = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _checkLockNeeded();
+    _resolveDisguise();
     // Kilit varsa reklam kilit açıldıktan sonra gösterilir (_onUnlocked)
     if (!_needsLock) _showOpenAd();
+  }
+
+  Future<void> _resolveDisguise() async {
+    final disguised = await DisguiseService.isDisguised();
+    if (!mounted) return;
+    setState(() {
+      _isDisguisedCached = disguised;
+      _decoyActive = disguised;
+      _decoyResolved = true;
+    });
   }
 
   Future<void> _showOpenAd() async {
@@ -86,6 +108,15 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
           setState(() => _isLocked = true);
         }
       }
+      // Kılık tutarlılığı: gizli moddayken arka plana giden uygulama
+      // dönüşte yine "Notlar" olarak açılmalı
+      if (_isDisguisedCached && !_decoyActive) {
+        setState(() => _decoyActive = true);
+      }
+      // Ayarlardan kılık değişmiş olabilir — önbelleği tazele
+      DisguiseService.isDisguised().then((value) {
+        if (mounted) _isDisguisedCached = value;
+      });
     }
   }
 
@@ -138,15 +169,24 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
       ],
       routerConfig: router,
       builder: (context, child) {
-        // Kilit, child'ın YERİNE değil ÜSTÜNE gelir: alttaki Navigator
-        // ağacı yaşamaya devam eder — kaydırma konumu, açık sheet, yazılan
-        // not kilitten dönüşte aynen durur. (Eski davranış child'ı ağaçtan
-        // söküyordu; bildirim çekmecesine bir bakış her şeyi sıfırlıyordu.)
+        // Kılık durumu çözülmeden gerçek arayüz bir kare bile görünmesin
+        if (!_decoyResolved) {
+          return const ColoredBox(color: Colors.white);
+        }
+        // Katman sırası (üstte olan kazanır): decoy > kilit > uygulama.
+        // Decoy'dan çıkış hareketi decoy'u kaldırır; altında kilit varsa
+        // PIN doğal olarak sorulur. Kilit, child'ın YERİNE değil ÜSTÜNE
+        // gelir: alttaki Navigator ağacı yaşamaya devam eder.
         return Stack(
           children: [
             child ?? const SizedBox.shrink(),
             if (_isLocked && _needsLock)
               LockScreen(onUnlocked: _onUnlocked),
+            if (_decoyActive)
+              DecoyNotesScreen(
+                onExitRequested: () =>
+                    setState(() => _decoyActive = false),
+              ),
           ],
         );
       },

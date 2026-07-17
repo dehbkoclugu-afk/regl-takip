@@ -1170,7 +1170,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get disguiseTitle => 'Disguise Mode';
 
   @override
-  String get disguiseDesc => 'The app appears in the drawer as \"Notes\" with a neutral icon; the home widget is neutralized too. Notification contents are NOT hidden — turn reminders off if needed. If the shortcut disappears, re-add the app from the drawer.';
+  String get disguiseDesc => 'The app appears in the drawer as \"Notes\" with a neutral icon; opening it shows a real working notepad, and the widget and notifications are neutralized too. To return to the real app, long-press the Notes title (PIN is asked if the lock is on). If the shortcut disappears, re-add the app from the drawer.';
+
+  @override
+  String get decoyTitle => 'Notes';
+
+  @override
+  String get decoyEmpty => 'No notes yet';
+
+  @override
+  String get decoyHint => 'Write something…';
 
   @override
   String get backupData => 'Back Up (JSON)';

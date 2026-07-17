@@ -1170,7 +1170,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get disguiseTitle => 'Gizli Mod';
 
   @override
-  String get disguiseDesc => 'Uygulama, çekmecede \"Notlar\" adı ve nötr bir ikonla görünür; ana ekran widget\'ı da nötrlenir. Bildirim içerikleri gizlenmez — gerekirse bildirimleri kapatın. Kısayol kaybolursa uygulamayı çekmeceden yeniden ekleyin.';
+  String get disguiseDesc => 'Uygulama çekmecede \"Notlar\" adı ve nötr ikonla görünür; açıldığında gerçek bir not defteri açılır, widget ve bildirimler de nötrlenir. Gerçek uygulamaya dönmek için Notlar başlığına uzun basın (kilit açıksa PIN sorulur). Kısayol kaybolursa uygulamayı çekmeceden yeniden ekleyin.';
+
+  @override
+  String get decoyTitle => 'Notlar';
+
+  @override
+  String get decoyEmpty => 'Henüz not yok';
+
+  @override
+  String get decoyHint => 'Bir şeyler yaz…';
 
   @override
   String get backupData => 'Yedek Al (JSON)';

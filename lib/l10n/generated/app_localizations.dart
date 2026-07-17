@@ -2336,8 +2336,26 @@ abstract class AppLocalizations {
   /// No description provided for @disguiseDesc.
   ///
   /// In tr, this message translates to:
-  /// **'Uygulama, çekmecede \"Notlar\" adı ve nötr bir ikonla görünür; ana ekran widget\'ı da nötrlenir. Bildirim içerikleri gizlenmez — gerekirse bildirimleri kapatın. Kısayol kaybolursa uygulamayı çekmeceden yeniden ekleyin.'**
+  /// **'Uygulama çekmecede \"Notlar\" adı ve nötr ikonla görünür; açıldığında gerçek bir not defteri açılır, widget ve bildirimler de nötrlenir. Gerçek uygulamaya dönmek için Notlar başlığına uzun basın (kilit açıksa PIN sorulur). Kısayol kaybolursa uygulamayı çekmeceden yeniden ekleyin.'**
   String get disguiseDesc;
+
+  /// No description provided for @decoyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Notlar'**
+  String get decoyTitle;
+
+  /// No description provided for @decoyEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz not yok'**
+  String get decoyEmpty;
+
+  /// No description provided for @decoyHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir şeyler yaz…'**
+  String get decoyHint;
 
   /// No description provided for @backupData.
   ///
