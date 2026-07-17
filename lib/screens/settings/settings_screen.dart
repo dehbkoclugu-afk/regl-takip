@@ -878,6 +878,27 @@ class _DisguiseTileState extends State<_DisguiseTile> {
                   HiveService().getUserProfile(),
                   HiveService().getAllPeriodRecords(),
                 );
+                // Planlı bildirimler de kılığa uymalı: gizliyken "Adet
+                // Hatırlatması" kilit ekranına düşerse kılığın anlamı kalmaz
+                final profile = HiveService().getUserProfile();
+                if (profile != null) {
+                  try {
+                    final logsWithMeds = HiveService()
+                        .getAllDailyLogs()
+                        .where((l) => l.medications.isNotEmpty)
+                        .toList()
+                      ..sort((a, b) => b.date.compareTo(a.date));
+                    await NotificationService().rescheduleAll(
+                      profile,
+                      records: HiveService().getAllPeriodRecords(),
+                      medications: logsWithMeds.isEmpty
+                          ? const []
+                          : logsWithMeds.first.medications,
+                    );
+                  } catch (_) {
+                    // Bildirim kurulamazsa kılık değişimi yine geçerli
+                  }
+                }
                 if (mounted) setState(() => _enabled = value);
               },
       ),

@@ -7,6 +7,7 @@ import '../models/period_record.dart';
 import '../models/user_profile.dart';
 import '../core/constants/app_constants.dart';
 import '../core/utils/cycle_utils.dart';
+import 'disguise_service.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -46,6 +47,8 @@ class NotificationService {
       'medicationBody': 'İlacınızı almayı unutmayın!',
       'medicationChannel': 'İlaç Hatırlatması',
       'medicationChannelDesc': 'İlaç hatırlatmaları',
+      'discreetTitle': 'Hatırlatma',
+      'discreetBody': 'Bugün için bir hatırlatman var',
     },
     'en': {
       'periodTitle': 'Period Reminder',
@@ -60,6 +63,8 @@ class NotificationService {
       'medicationBody': 'Don\'t forget to take your medication!',
       'medicationChannel': 'Medication Reminder',
       'medicationChannelDesc': 'Medication reminders',
+      'discreetTitle': 'Reminder',
+      'discreetBody': 'You have a reminder for today',
     },
   };
 
@@ -122,12 +127,15 @@ class NotificationService {
   }
 
   /// Schedules a period reminder 1 day before the predicted next period.
+  /// [discreet]: gizli moddayken kilit ekranına düşen metin döngü bilgisi
+  /// sızdırmamalı — nötr başlık/gövde kullanılır.
   Future<void> schedulePeriodReminder(
     DateTime nextPeriodDate,
     int hour,
     int minute,
     String locale, {
     int id = _periodReminderBaseId,
+    bool discreet = false,
   }) async {
     final reminderDate = nextPeriodDate.subtract(const Duration(days: 1));
 
@@ -140,8 +148,8 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       id,
-      _t(locale, 'periodTitle'),
-      _t(locale, 'periodBody'),
+      _t(locale, discreet ? 'discreetTitle' : 'periodTitle'),
+      _t(locale, discreet ? 'discreetBody' : 'periodBody'),
       scheduledDate,
       NotificationDetails(
         android: AndroidNotificationDetails(
@@ -171,6 +179,7 @@ class NotificationService {
     int minute,
     String locale, {
     int id = _ovulationReminderBaseId,
+    bool discreet = false,
   }) async {
     await _plugin.cancel(id);
 
@@ -179,8 +188,8 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       id,
-      _t(locale, 'ovulationTitle'),
-      _t(locale, 'ovulationBody'),
+      _t(locale, discreet ? 'discreetTitle' : 'ovulationTitle'),
+      _t(locale, discreet ? 'discreetBody' : 'ovulationBody'),
       scheduledDate,
       NotificationDetails(
         android: AndroidNotificationDetails(
@@ -207,8 +216,9 @@ class NotificationService {
   Future<void> scheduleMedicationReminder(
     int hour,
     int minute,
-    String locale,
-  ) async {
+    String locale, {
+    bool discreet = false,
+  }) async {
     await _plugin.cancel(_medicationReminderId);
 
     final now = DateTime.now();
@@ -226,8 +236,8 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       _medicationReminderId,
-      _t(locale, 'medicationTitle'),
-      _t(locale, 'medicationBody'),
+      _t(locale, discreet ? 'discreetTitle' : 'medicationTitle'),
+      _t(locale, discreet ? 'discreetBody' : 'medicationBody'),
       scheduledDate,
       NotificationDetails(
         android: AndroidNotificationDetails(
@@ -262,16 +272,23 @@ class NotificationService {
     String locale, {
     required int fallbackHour,
     required int fallbackMinute,
+    bool discreet = false,
   }) async {
-    final withTime = medications
-        .where((m) => m.reminderTime != null && m.name.trim().isNotEmpty)
+    final named =
+        medications.where((m) => m.name.trim().isNotEmpty).toList();
+    final withTime = named
+        .where((m) => m.reminderTime != null)
         .take(_maxMedicationReminders)
         .toList();
+    // Saati olmayan ilaçlar saatlilerin gölgesinde kalmamalı: onlar için
+    // genel saatte tek bir hatırlatma da kurulur (liste boşken eski
+    // davranış zaten buydu)
+    final hasUntimed = named.any((m) => m.reminderTime == null);
 
-    // Saati olan ilaç yoksa eski davranış: tek genel hatırlatma
-    if (withTime.isEmpty) {
-      await scheduleMedicationReminder(fallbackHour, fallbackMinute, locale);
-      return;
+    if (withTime.isEmpty || hasUntimed) {
+      await scheduleMedicationReminder(fallbackHour, fallbackMinute, locale,
+          discreet: discreet);
+      if (withTime.isEmpty) return;
     }
 
     for (var i = 0; i < withTime.length; i++) {
@@ -288,12 +305,14 @@ class NotificationService {
         scheduledDate = scheduledDate.add(const Duration(days: 1));
       }
 
-      final body =
-          med.dose.isEmpty ? med.name : '${med.name} — ${med.dose}';
+      // Gizli modda ilaç adı da kilit ekranına düşmemeli
+      final body = discreet
+          ? _t(locale, 'discreetBody')
+          : (med.dose.isEmpty ? med.name : '${med.name} — ${med.dose}');
 
       await _plugin.zonedSchedule(
         _medicationReminderBaseId + i,
-        _t(locale, 'medicationTitle'),
+        _t(locale, discreet ? 'discreetTitle' : 'medicationTitle'),
         body,
         scheduledDate,
         NotificationDetails(
@@ -336,6 +355,10 @@ class NotificationService {
     try {
       await cancelAll();
 
+      // Gizli mod: launcher "Notlar" kılığındayken bildirim metni döngü
+      // bilgisi deşifre etmemeli — tüm hatırlatmalar nötr metinle kurulur
+      final discreet = await DisguiseService.isDisguised();
+
       final hour = profile.reminderHour;
       final minute = profile.reminderMinute;
       final locale = profile.language;
@@ -366,6 +389,7 @@ class NotificationService {
               minute,
               locale,
               id: _periodReminderBaseId + i,
+              discreet: discreet,
             );
           }
 
@@ -378,6 +402,7 @@ class NotificationService {
               minute,
               locale,
               id: _ovulationReminderBaseId + i,
+              discreet: discreet,
             );
           }
         }
@@ -389,6 +414,7 @@ class NotificationService {
           locale,
           fallbackHour: hour,
           fallbackMinute: minute,
+          discreet: discreet,
         );
       }
     } catch (e) {
