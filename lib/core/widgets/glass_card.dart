@@ -38,7 +38,7 @@ class GlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? AppColors.cardDark : Colors.white;
+    final bgColor = isDark ? AppColors.cardDark : AppColors.surfaceElevated;
     final border = borderColor ?? AppColors.dv(context);
 
     final inner = Container(
@@ -108,7 +108,7 @@ class GlassContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor =
-        backgroundColor ?? (isDark ? AppColors.cardDark : Colors.white);
+        backgroundColor ?? (isDark ? AppColors.cardDark : AppColors.surfaceElevated);
 
     final inner = Container(
       padding: padding,

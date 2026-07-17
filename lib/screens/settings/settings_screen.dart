@@ -61,7 +61,7 @@ class SettingsScreen extends ConsumerWidget {
                 l10n.nDays(profile?.averagePeriodLength ?? 5)),
             _divider(context),
             _actionTile(context, Icons.edit_rounded, l10n.editProfile,
-                AppColors.secondary, () => context.push('/profile-edit')),
+                AppColors.primary, () => context.push('/profile-edit')),
           ]),
           const SizedBox(height: 16),
 
@@ -132,12 +132,12 @@ class SettingsScreen extends ConsumerWidget {
                 height: 40,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [AppColors.secondary.withValues(alpha: 0.25), AppColors.secondary.withValues(alpha: 0.1)],
+                    colors: [AppColors.primary.withValues(alpha: 0.25), AppColors.primary.withValues(alpha: 0.1)],
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(Icons.language_rounded,
-                    color: AppColors.secondary, size: 22),
+                    color: AppColors.primary, size: 22),
               ),
               title: Text(l10n.language,
                   style: TextStyle(fontWeight: FontWeight.w600)),
@@ -390,7 +390,7 @@ class SettingsScreen extends ConsumerWidget {
               ],
               _divider(context),
               _actionTile(context, Icons.restore_page_rounded,
-                  l10n.restorePurchases, AppColors.secondary, () async {
+                  l10n.restorePurchases, AppColors.primary, () async {
                 await PremiumService().restore();
               }),
             ]);
@@ -401,7 +401,7 @@ class SettingsScreen extends ConsumerWidget {
           _sectionHeader(context, l10n.dataSection),
           _settingsCard(context, [
             _actionTile(context, Icons.backup_rounded, l10n.backupData,
-                AppColors.secondary, () async {
+                AppColors.primary, () async {
               try {
                 final backupService = BackupService(HiveService());
                 final path = await backupService.exportBackup();
@@ -417,7 +417,7 @@ class SettingsScreen extends ConsumerWidget {
             }),
             _divider(context),
             _actionTile(context, Icons.restore_rounded, l10n.restoreData,
-                AppColors.secondary, () async {
+                AppColors.primary, () async {
               await _restoreFromBackup(context, ref, l10n);
             }),
             _divider(context),
@@ -554,7 +554,7 @@ class SettingsScreen extends ConsumerWidget {
             _infoTile(context, Icons.info_rounded, l10n.version, '1.1.0'),
             _divider(context),
             _actionTile(context, Icons.privacy_tip_rounded,
-                l10n.privacyPolicy, AppColors.secondary,
+                l10n.privacyPolicy, AppColors.primary,
                 () => _showPrivacyPolicy(context, l10n)),
           ]),
           const SizedBox(height: 16),

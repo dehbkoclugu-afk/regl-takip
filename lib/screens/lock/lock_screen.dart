@@ -250,7 +250,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.primaryStrong, AppColors.secondaryStrong],
+            colors: [AppColors.primaryStrong, AppColors.primaryDeep],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),

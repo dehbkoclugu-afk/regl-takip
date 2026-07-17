@@ -178,7 +178,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                         hintStyle:
                             TextStyle(color: AppColors.ts(context)),
                         filled: true,
-                        fillColor: AppColors.isDark(context) ? AppColors.cardDark : Colors.grey.shade50,
+                        fillColor: AppColors.isDark(context) ? AppColors.cardDark : AppColors.background,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -325,7 +325,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       child: Material(
         color: AppColors.isDark(context)
             ? AppColors.cardDark
-            : Colors.grey.shade50,
+            : AppColors.background,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),

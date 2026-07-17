@@ -93,7 +93,7 @@ class _PinVerifyScreenState extends State<_PinVerifyScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.primaryStrong, AppColors.secondaryStrong],
+            colors: [AppColors.primaryStrong, AppColors.primaryDeep],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -229,7 +229,7 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.primaryStrong, AppColors.secondaryStrong],
+            colors: [AppColors.primaryStrong, AppColors.primaryDeep],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),

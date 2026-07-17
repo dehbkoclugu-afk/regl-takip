@@ -278,8 +278,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   child: Container(
                     width: 5,
                     height: 5,
+                    // Bordo: pembe regl zemininde de okunur (mor marka
+                    // noktalarından çekildi)
                     decoration: const BoxDecoration(
-                        color: AppColors.secondary, shape: BoxShape.circle),
+                        color: AppColors.primaryDeep, shape: BoxShape.circle),
                   ),
                 ),
             ],

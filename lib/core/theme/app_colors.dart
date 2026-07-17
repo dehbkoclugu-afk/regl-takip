@@ -20,13 +20,20 @@ class AppColors {
   static Color card(BuildContext context) =>
       isDark(context) ? cardDark : surface;
 
-  // Ana renkler - Soft Pastel
+  // Ana renkler — TEK vurgu ailesi: pembe, pastelden bordoya.
+  // Kimlik kararı: mor artık MARKA rengi değil; yalnız ovulasyon fazı ve
+  // semptom kategorisinin aksesuvar rengi olarak yaşar. İki yarım vurgu
+  // (pembe + mor) kimliği sulandırıyordu — tek aile, geniş ton aralığı.
   static const Color primary = Color(0xFFE8A0BF);
   static const Color primaryLight = Color(0xFFF2C6DE);
   static const Color primaryDark = Color(0xFFD4789E);
   // Beyaz metinle >=3:1 kontrast veren etkileşim tonları
   // (pastel primary beyazla 2.06:1 — buton/appbar zemini olarak kullanılamaz)
   static const Color primaryStrong = Color(0xFFC2607F);
+  /// Ailenin bordo ucu: gradyan bitişleri, vurgu ikonları, "ağırlık"
+  /// gereken marka anları. Pastel tek başına şeker duruyordu.
+  static const Color primaryDeep = Color(0xFF9A3F5F);
+  // Mor: marka değil, aksesuvar (semptom kategorisi, ovulasyon komşuluğu)
   static const Color secondaryStrong = Color(0xFFA370B0);
   static const Color secondary = Color(0xFFBA90C6);
   static const Color secondaryLight = Color(0xFFD4B8DE);
@@ -120,9 +127,13 @@ class AppColors {
   static const Color glassBorderDark = Color(0x2EFFFFFF);
   static const Color glassShadow = Color(0x14000000);
 
-  // Genel - Light
+  // Genel - Light. Yüzey merdiveni ÜÇ basamak ve tek kaynak:
+  // background (zemin) -> surface (kart/panel) -> surfaceElevated
+  // (sheet/dialog/öne çıkan kart). İki farklı "beyaz"ın (hardcoded
+  // Colors.white vs surface) yan yana yaşaması ucuz his veriyordu.
   static const Color background = Color(0xFFFDF2F8);
   static const Color surface = Color(0xFFFFFBFE);
+  static const Color surfaceElevated = Color(0xFFFFFFFF);
   static const Color textPrimary = Color(0xFF2D2D3A);
   // 4.6:1 on background — 14px gövde metni için WCAG AA
   static const Color textSecondary = Color(0xFF6E6E7A);

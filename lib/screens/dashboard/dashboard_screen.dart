@@ -378,7 +378,7 @@ class DashboardScreen extends ConsumerWidget {
                       context: context,
                       icon: Icons.add_reaction_rounded,
                       label: l10n.addRecord,
-                      color: AppColors.secondary,
+                      color: AppColors.primaryStrong,
                       onTap: () {
                         // Günlük kayıt premium kapsamı: ücretsiz katman
                         // yalnız regl takibi
@@ -654,7 +654,7 @@ class DashboardScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(Icons.insights_rounded,
-                    size: 20, color: AppColors.secondaryStrong),
+                    size: 20, color: AppColors.primaryDeep),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -678,7 +678,7 @@ class DashboardScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(Icons.tips_and_updates_rounded,
-                  size: 20, color: AppColors.secondaryStrong),
+                  size: 20, color: AppColors.primaryDeep),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -716,7 +716,7 @@ class DashboardScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   const Icon(Icons.pregnant_woman_rounded,
-                      size: 40, color: AppColors.secondaryStrong),
+                      size: 40, color: AppColors.primaryDeep),
                   const SizedBox(height: 12),
                   Text(
                     l10n.pregnancySetStartPrompt,
@@ -752,7 +752,7 @@ class DashboardScreen extends ConsumerWidget {
           child: Column(
             children: [
               const Icon(Icons.pregnant_woman_rounded,
-                  size: 40, color: AppColors.secondaryStrong),
+                  size: 40, color: AppColors.primaryDeep),
               const SizedBox(height: 8),
               Text(
                 l10n.pregnancyWeekLabel(week),
@@ -794,7 +794,7 @@ class DashboardScreen extends ConsumerWidget {
         children: [
           Icon(Icons.medication_rounded,
               size: 16,
-              color: isBreak ? AppColors.warning : AppColors.secondaryStrong),
+              color: isBreak ? AppColors.warning : AppColors.primaryDeep),
           const SizedBox(width: 6),
           Text(
             label,

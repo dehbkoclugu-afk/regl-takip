@@ -41,7 +41,8 @@ class AppTheme {
         seedColor: AppColors.primary,
         brightness: brightness,
         primary: AppColors.primary,
-        secondary: AppColors.secondary,
+        // Tek vurgu ailesi: şemanın ikincili de pembe ailesinden
+        secondary: AppColors.primaryDeep,
         surface: surface,
         error: AppColors.error,
       ),

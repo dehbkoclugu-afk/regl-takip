@@ -800,7 +800,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(Icons.insights_rounded,
-                      size: 18, color: AppColors.secondaryStrong),
+                      size: 18, color: AppColors.primaryDeep),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(

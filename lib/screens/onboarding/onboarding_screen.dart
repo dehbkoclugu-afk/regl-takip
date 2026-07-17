@@ -282,7 +282,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.primaryStrong, AppColors.secondaryStrong],
+              colors: [AppColors.primaryStrong, AppColors.primaryDeep],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -519,7 +519,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       label: semanticsLabel,
       value: selected ? formatter.format(value) : hint,
       child: Material(
-        color: Colors.grey.shade50,
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
           onTap: onTap,
@@ -564,7 +564,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: const LinearGradient(
-          colors: [AppColors.primaryStrong, AppColors.secondaryStrong],
+          colors: [AppColors.primaryStrong, AppColors.primaryDeep],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -651,7 +651,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     decoration: BoxDecoration(
                       color: isSelected
                           ? AppColors.primary.withValues(alpha: 0.1)
-                          : Colors.grey.shade50,
+                          : AppColors.background,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isSelected
@@ -720,7 +720,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             hintStyle: const TextStyle(color: AppColors.textSecondary),
             prefixIcon: const Icon(Icons.person, color: AppColors.primary),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.background,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide.none,
