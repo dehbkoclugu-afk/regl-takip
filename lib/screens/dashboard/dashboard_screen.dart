@@ -94,7 +94,6 @@ class DashboardScreen extends ConsumerWidget {
     final cycleDay = ref.watch(currentCycleDayProvider);
     final phase = ref.watch(currentCyclePhaseProvider);
     final daysUntil = ref.watch(daysUntilNextPeriodProvider);
-    final ongoingPeriod = ref.watch(ongoingPeriodProvider);
     final gradient = _gradientForPhase(phase);
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).toString();
@@ -234,6 +233,8 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(height: 20),
                 _buildPregnancyHero(context, l10n, profile?.pregnancyStartDate),
                 const SizedBox(height: 24),
+                _buildActionRow(context, ref, l10n, mode),
+                const SizedBox(height: 24),
               ] else ...[
                 // Phase name — faz bilgisini açan buton
                 PressableScale(
@@ -292,6 +293,11 @@ class DashboardScreen extends ConsumerWidget {
                   daysUntilNextPeriod: daysUntil,
                 ),
                 const SizedBox(height: 32),
+                // Aksiyonlar ringin hemen altında: göz ring'den iner inmez
+                // bir numaralı iş ("Reglim başladı") elin altında —
+                // tahminler bilgidir, aşağıda yaşayabilir
+                _buildActionRow(context, ref, l10n, mode),
+                const SizedBox(height: 28),
                 // Prediction Cards
                 PredictionCardsRow(
                   nextPeriodDate: nextPeriodStr,
@@ -307,10 +313,23 @@ class DashboardScreen extends ConsumerWidget {
                 ],
                 // Günlük faz koçluğu — faza göre pratik ipucu
                 _buildCoachCard(context, ref, phase, l10n),
-                const SizedBox(height: 24),
               ],
-              // Action Buttons
-              Row(
+              const SizedBox(height: 24),
+              const QuickStatusCards(),
+              const SizedBox(height: 16),
+              _buildDisclaimer(context, l10n),
+              const SizedBox(height: 24),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionRow(BuildContext context, WidgetRef ref,
+      AppLocalizations l10n, TrackingMode mode) {
+    final ongoingPeriod = ref.watch(ongoingPeriodProvider);
+    return Row(
                 children: [
                   if (mode != TrackingMode.pregnancy) ...[
                     Expanded(
@@ -397,20 +416,9 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                 ],
               )
-                  .animateSafe(context)
-                  .fadeIn(delay: 250.ms, duration: 400.ms)
-                  .slideY(
-                      begin: 0.15, end: 0, delay: 250.ms, duration: 400.ms),
-              const SizedBox(height: 24),
-              const QuickStatusCards(),
-              const SizedBox(height: 16),
-              _buildDisclaimer(context, l10n),
-              const SizedBox(height: 24),
-            ],
-          ),
-        ),
-      ),
-    );
+        .animateSafe(context)
+        .fadeIn(delay: 250.ms, duration: 400.ms)
+        .slideY(begin: 0.15, end: 0, delay: 250.ms, duration: 400.ms);
   }
 
   Widget _buildAccessChip(BuildContext context, AppLocalizations l10n,

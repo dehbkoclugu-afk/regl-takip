@@ -226,7 +226,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
             _divider(context),
-            _switchTile(
+            _switchTile(context,
               Icons.auto_awesome_rounded,
               l10n.smartPrediction,
               profile?.smartPredictionEnabled ?? true,
@@ -241,7 +241,7 @@ class SettingsScreen extends ConsumerWidget {
           // Notifications
           _sectionHeader(context, l10n.notifications),
           _settingsCard(context, [
-            _switchTile(
+            _switchTile(context,
               Icons.notifications_rounded,
               l10n.periodReminder,
               profile?.periodReminderEnabled ?? true,
@@ -250,7 +250,7 @@ class SettingsScreen extends ConsumerWidget {
                   .saveProfile(periodReminderEnabled: val),
             ),
             _divider(context),
-            _switchTile(
+            _switchTile(context,
               Icons.egg_rounded,
               l10n.ovulationReminder,
               profile?.ovulationReminderEnabled ?? true,
@@ -259,7 +259,7 @@ class SettingsScreen extends ConsumerWidget {
                   .saveProfile(ovulationReminderEnabled: val),
             ),
             _divider(context),
-            _switchTile(
+            _switchTile(context,
               Icons.medication_rounded,
               l10n.medicationReminder,
               profile?.medicationReminderEnabled ?? false,
@@ -275,7 +275,7 @@ class SettingsScreen extends ConsumerWidget {
           // Security
           _sectionHeader(context, l10n.security),
           _settingsCard(context, [
-            _switchTile(
+            _switchTile(context,
               Icons.pin_rounded,
               l10n.pinLock,
               profile?.pinEnabled ?? false,
@@ -318,7 +318,7 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
             _divider(context),
-            _switchTile(
+            _switchTile(context,
               Icons.fingerprint_rounded,
               l10n.biometricLock,
               profile?.biometricEnabled ?? false,
@@ -810,20 +810,32 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _switchTile(
+  Widget _switchTile(BuildContext context,
       IconData icon, String title, bool value, ValueChanged<bool> onChanged,
       {String? subtitle}) {
+    // İkon durumu taşır: özellik kapalıyken rozet soluklaşır — satırın
+    // açık/kapalı hali switch'e bakmadan, ikondan okunur
+    final iconColor = value ? AppColors.primary : AppColors.ts(context);
     return ListTile(
-      leading: Container(
+      leading: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         width: 40,
         height: 40,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.primary.withValues(alpha: 0.25), AppColors.primary.withValues(alpha: 0.1)],
+            colors: value
+                ? [
+                    AppColors.primary.withValues(alpha: 0.25),
+                    AppColors.primary.withValues(alpha: 0.1)
+                  ]
+                : [
+                    AppColors.ts(context).withValues(alpha: 0.12),
+                    AppColors.ts(context).withValues(alpha: 0.05)
+                  ],
           ),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(icon, color: AppColors.primary, size: 22),
+        child: Icon(icon, color: iconColor, size: 22),
       ),
       title: Text(title,
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
