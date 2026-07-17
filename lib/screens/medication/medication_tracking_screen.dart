@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
+import '../../core/widgets/tracker_scaffold.dart';
 import '../../models/period_record.dart';
 import '../../providers/providers.dart';
 import '../../core/utils/motion.dart';
@@ -32,16 +33,9 @@ class _MedicationTrackingScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: AppColors.bg(context),
-      appBar: AppBar(
-        title: Text(l10n.medicationTracking,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
-        backgroundColor: AppColors.bg(context),
-        elevation: 0,
-        iconTheme: IconThemeData(color: AppColors.tp(context)),
-      ),
+    // Bu ekran canlı kaydeder (_saveAll her değişiklikte) — dirty yok
+    return TrackerScaffold(
+      title: l10n.medicationTracking,
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddSheet,
         backgroundColor: AppColors.medication,

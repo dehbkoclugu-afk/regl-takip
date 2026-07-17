@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
+import '../../core/widgets/tracker_scaffold.dart';
 import '../../providers/providers.dart';
 import '../../core/utils/motion.dart';
 
@@ -21,6 +22,13 @@ class _TemperatureTrackingScreenState
   TimeOfDay _measureTime = TimeOfDay.now();
   bool _hasExistingMeasurement = false;
 
+  // Dirty-guard için giriş anındaki durum
+  double _initialTemperature = 36.5;
+  TimeOfDay? _initialTime;
+
+  bool get _isDirty =>
+      _temperature != _initialTemperature || _measureTime != _initialTime;
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +45,8 @@ class _TemperatureTrackingScreenState
         }
       }
     }
+    _initialTemperature = _temperature;
+    _initialTime = _measureTime;
   }
 
   Color _getTempColor() {
@@ -56,20 +66,10 @@ class _TemperatureTrackingScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: AppColors.bg(context),
-      appBar: AppBar(
-        title: Text(l10n.temperature,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
-        backgroundColor: AppColors.bg(context),
-        elevation: 0,
-        iconTheme: IconThemeData(color: AppColors.tp(context)),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
+    return TrackerScaffold(
+      title: l10n.temperature,
+      isDirty: _isDirty,
+      body: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
@@ -117,10 +117,7 @@ class _TemperatureTrackingScreenState
                 ],
               ),
             ),
-          ),
-          _buildSaveButton(l10n),
-        ],
-      ),
+      bottomBar: _buildSaveButton(l10n),
     );
   }
 
@@ -250,23 +247,19 @@ class _TemperatureTrackingScreenState
   }
 
   Widget _buildSaveButton(AppLocalizations l10n) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: _save,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.temperature,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)),
-          ),
-          child: Text(l10n.save,
-              style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.bold)),
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _save,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.temperature,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
+        child: Text(l10n.save,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       ),
     );
   }

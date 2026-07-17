@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
+import '../../core/widgets/tracker_scaffold.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../providers/providers.dart';
@@ -23,6 +24,17 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
   final _noteController = TextEditingController();
   bool _hasExistingEntry = false;
 
+  // Dirty-guard için giriş anındaki durum
+  ProtectionMethod _initialProtection = ProtectionMethod.none;
+  bool _initialOrgasm = false;
+  String _initialNote = '';
+  bool _noteDirty = false;
+
+  bool get _isDirty =>
+      _protection != _initialProtection ||
+      _orgasm != _initialOrgasm ||
+      _noteController.text.trim() != _initialNote;
+
   Map<ProtectionMethod, String> _protectionLabels(AppLocalizations l10n) => {
     ProtectionMethod.condom: l10n.condom,
     ProtectionMethod.pill: l10n.pill,
@@ -41,6 +53,9 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
       _noteController.text = log.sexualActivity!.note ?? '';
       _hasExistingEntry = true;
     }
+    _initialProtection = _protection;
+    _initialOrgasm = _orgasm;
+    _initialNote = _noteController.text.trim();
   }
 
   @override
@@ -52,20 +67,10 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: AppColors.bg(context),
-      appBar: AppBar(
-        title: Text(l10n.sexualActivity,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
-        backgroundColor: AppColors.bg(context),
-        elevation: 0,
-        iconTheme: IconThemeData(color: AppColors.tp(context)),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
+    return TrackerScaffold(
+      title: l10n.sexualActivity,
+      isDirty: _isDirty,
+      body: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,10 +91,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
                 ],
               ),
             ),
-          ),
-          _buildSaveButton(l10n),
-        ],
-      ),
+      bottomBar: _buildSaveButton(l10n),
     );
   }
 
@@ -160,6 +162,11 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
           TextField(
             controller: _noteController,
             maxLines: 3,
+            // Dirty bayrağı dönünce PopScope tazelensin (her tuşta değil)
+            onChanged: (_) {
+              final dirty = _isDirty;
+              if (dirty != _noteDirty) setState(() => _noteDirty = dirty);
+            },
             style: TextStyle(color: AppColors.tp(context)),
             decoration: InputDecoration(
               hintText: l10n.addNoteHint,
@@ -179,9 +186,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
   }
 
   Widget _buildSaveButton(AppLocalizations l10n) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 12, 20, 12 + MediaQuery.of(context).padding.bottom),
-      child: Column(
+    return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
@@ -209,7 +214,6 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
               style: TextButton.styleFrom(foregroundColor: AppColors.error),
             ),
         ],
-      ),
     );
   }
 

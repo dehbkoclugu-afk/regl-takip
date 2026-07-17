@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
+import '../../core/widgets/tracker_scaffold.dart';
 import '../../providers/providers.dart';
 import '../../core/utils/motion.dart';
 
@@ -32,31 +33,6 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
     }
   }
 
-  /// Not yazıp kaydetmeden geri dönmek metni sessizce çöpe atıyordu
-  Future<bool> _confirmDiscard() async {
-    if (!_isDirty) return true;
-    final l10n = AppLocalizations.of(context)!;
-    final discard = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.discardChangesTitle),
-        content: Text(l10n.discardChangesBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: Text(l10n.discard),
-          ),
-        ],
-      ),
-    );
-    return discard == true;
-  }
-
   @override
   void dispose() {
     _controller.dispose();
@@ -66,27 +42,12 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final navigator = Navigator.of(context);
-    return PopScope(
-      canPop: !_dirty,
-      onPopInvokedWithResult: (didPop, _) async {
-        if (didPop) return;
-        if (await _confirmDiscard()) navigator.pop();
-      },
-      child: Scaffold(
-      backgroundColor: AppColors.bg(context),
-      appBar: AppBar(
-        title: Text(l10n.dailyNote,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
-        backgroundColor: AppColors.bg(context),
-        elevation: 0,
-        iconTheme: IconThemeData(color: AppColors.tp(context)),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
+    // Kaydedilmemiş değişiklik koruması artık ortak iskelette
+    // (TrackerScaffold): buradaki özel PopScope+diyalog kopyası kalktı
+    return TrackerScaffold(
+      title: l10n.dailyNote,
+      isDirty: _dirty,
+      body: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: GlassCard(
                 borderRadius: 20,
@@ -143,32 +104,24 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
               ).animateSafe(context).fadeIn(duration: 500.ms)
                   .slideY(begin: 0.1, end: 0, duration: 500.ms),
             ),
-          ),
-          _buildSaveButton(l10n),
-        ],
-      ),
-      ),
+      bottomBar: _buildSaveButton(l10n),
     );
   }
 
   Widget _buildSaveButton(AppLocalizations l10n) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: _save,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.notesColor,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)),
-          ),
-          child: Text(l10n.save,
-              style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.bold)),
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _save,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.notesColor,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
+        child: Text(l10n.save,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       ),
     );
   }

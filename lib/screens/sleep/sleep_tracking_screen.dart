@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
+import '../../core/widgets/tracker_scaffold.dart';
 import '../../providers/providers.dart';
 import '../../core/utils/motion.dart';
 
@@ -18,6 +19,16 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
   TimeOfDay _bedTime = const TimeOfDay(hour: 23, minute: 0);
   TimeOfDay _wakeTime = const TimeOfDay(hour: 7, minute: 0);
   int _quality = 3;
+
+  // Dirty-guard için giriş anındaki durum
+  TimeOfDay? _initialBed;
+  TimeOfDay? _initialWake;
+  int _initialQuality = 3;
+
+  bool get _isDirty =>
+      _bedTime != _initialBed ||
+      _wakeTime != _initialWake ||
+      _quality != _initialQuality;
 
   @override
   void initState() {
@@ -42,6 +53,9 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
       }
       _quality = log.sleepQuality ?? 3;
     }
+    _initialBed = _bedTime;
+    _initialWake = _wakeTime;
+    _initialQuality = _quality;
   }
 
   String _calculateDuration() {
@@ -66,38 +80,25 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: AppColors.bg(context),
-      appBar: AppBar(
-        title: Text(l10n.sleepTracking,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
-        backgroundColor: AppColors.bg(context),
-        elevation: 0,
-        iconTheme: IconThemeData(color: AppColors.tp(context)),
+    return TrackerScaffold(
+      title: l10n.sleepTracking,
+      isDirty: _isDirty,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            _buildDurationDisplay(l10n)
+                .animateSafe(context).fadeIn(duration: 500.ms),
+            const SizedBox(height: 24),
+            _buildTimeCards(l10n)
+                .animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
+            const SizedBox(height: 24),
+            _buildQualitySection(l10n)
+                .animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
+          ],
+        ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  _buildDurationDisplay(l10n)
-                      .animateSafe(context).fadeIn(duration: 500.ms),
-                  const SizedBox(height: 24),
-                  _buildTimeCards(l10n)
-                      .animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
-                  const SizedBox(height: 24),
-                  _buildQualitySection(l10n)
-                      .animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
-                ],
-              ),
-            ),
-          ),
-          _buildSaveButton(l10n),
-        ],
-      ),
+      bottomBar: _buildSaveButton(l10n),
     );
   }
 
@@ -247,23 +248,19 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
   }
 
   Widget _buildSaveButton(AppLocalizations l10n) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: _save,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.sleep,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)),
-          ),
-          child: Text(l10n.save,
-              style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.bold)),
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _save,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.sleep,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
+        child: Text(l10n.save,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/enum_labels.dart';
+import '../../core/widgets/tracker_scaffold.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../providers/providers.dart';
@@ -24,6 +25,15 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
   /// kaldırdığında "Kaydet" kapanmamalı — silme de bir kayıttır.
   bool _hadExistingMood = false;
 
+  // Dirty-guard için giriş anındaki durum
+  MoodType? _initialMood;
+  String _initialNote = '';
+  bool _noteDirty = false;
+
+  bool get _isDirty =>
+      _selectedMood != _initialMood ||
+      _noteController.text.trim() != _initialNote;
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +43,8 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
       _noteController.text = log.mood!.note ?? '';
       _hadExistingMood = true;
     }
+    _initialMood = _selectedMood;
+    _initialNote = _noteController.text.trim();
   }
 
   @override
@@ -58,20 +70,10 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: AppColors.bg(context),
-      appBar: AppBar(
-        title: Text(l10n.mood,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
-        backgroundColor: AppColors.bg(context),
-        elevation: 0,
-        iconTheme: IconThemeData(color: AppColors.tp(context)),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
+    return TrackerScaffold(
+      title: l10n.mood,
+      isDirty: _isDirty,
+      body: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,6 +163,14 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                   TextField(
                     controller: _noteController,
                     maxLines: 3,
+                    // Dirty durumu değiştiğinde PopScope tazelenmeli; her
+                    // tuş vuruşunda değil, yalnız bayrak dönünce rebuild
+                    onChanged: (_) {
+                      final dirty = _isDirty;
+                      if (dirty != _noteDirty) {
+                        setState(() => _noteDirty = dirty);
+                      }
+                    },
                     decoration: InputDecoration(
                       hintText: l10n.writeAboutToday,
                       hintStyle: TextStyle(color: AppColors.ts(context)),
@@ -176,31 +186,24 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                 ],
               ),
             ),
+      bottomBar: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          // Kayıtlı ruh hali varken seçim kaldırılırsa kaydetmek
+          // silme anlamına gelir — buton kapanmamalı
+          onPressed:
+              (_selectedMood != null || _hadExistingMood) ? _save : null,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primaryStrong,
+            foregroundColor: Colors.white,
+            disabledBackgroundColor: AppColors.dv(context),
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                // Kayıtlı ruh hali varken seçim kaldırılırsa kaydetmek
-                // silme anlamına gelir — buton kapanmamalı
-                onPressed:
-                    (_selectedMood != null || _hadExistingMood) ? _save : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: AppColors.dv(context),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                ),
-                child: Text(l10n.save,
-                    style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold)),
-              ),
-            ),
-          ),
-        ],
+          child: Text(l10n.save,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        ),
       ),
     );
   }

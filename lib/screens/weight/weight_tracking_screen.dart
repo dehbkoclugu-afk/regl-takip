@@ -5,6 +5,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/input_parsing.dart';
 import '../../core/widgets/glass_card.dart';
+import '../../core/widgets/tracker_scaffold.dart';
 import '../../providers/providers.dart';
 import '../../core/utils/motion.dart';
 
@@ -19,6 +20,9 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   double _weight = 60.0;
   final _controller = TextEditingController();
   bool _hasExistingWeight = false;
+  double _initialWeight = 60.0;
+
+  bool get _isDirty => _weight != _initialWeight;
 
   static double? _parseWeight(String raw) => InputParsing.weightKg(raw);
 
@@ -31,6 +35,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
       _hasExistingWeight = true;
     }
     _controller.text = _weight.toStringAsFixed(1);
+    _initialWeight = _weight;
   }
 
   @override
@@ -50,40 +55,27 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: AppColors.bg(context),
-      appBar: AppBar(
-        title: Text(l10n.weight,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
-        backgroundColor: AppColors.bg(context),
-        elevation: 0,
-        iconTheme: IconThemeData(color: AppColors.tp(context)),
+    return TrackerScaffold(
+      title: l10n.weight,
+      isDirty: _isDirty,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            const SizedBox(height: 16),
+            _buildWeightDisplay()
+                .animateSafe(context).fadeIn(duration: 500.ms)
+                .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1), duration: 500.ms),
+            const SizedBox(height: 28),
+            _buildQuickAdjust(l10n)
+                .animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
+            const SizedBox(height: 20),
+            _buildManualInput(l10n)
+                .animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
+          ],
+        ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  const SizedBox(height: 16),
-                  _buildWeightDisplay()
-                      .animateSafe(context).fadeIn(duration: 500.ms)
-                      .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1), duration: 500.ms),
-                  const SizedBox(height: 28),
-                  _buildQuickAdjust(l10n)
-                      .animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
-                  const SizedBox(height: 20),
-                  _buildManualInput(l10n)
-                      .animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
-                ],
-              ),
-            ),
-          ),
-          _buildSaveButton(l10n),
-        ],
-      ),
+      bottomBar: _buildSaveButton(l10n),
     );
   }
 
@@ -227,23 +219,19 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   }
 
   Widget _buildSaveButton(AppLocalizations l10n) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: _save,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.weightColor,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)),
-          ),
-          child: Text(l10n.save,
-              style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.bold)),
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _save,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.weightColor,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
+        child: Text(l10n.save,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       ),
     );
   }

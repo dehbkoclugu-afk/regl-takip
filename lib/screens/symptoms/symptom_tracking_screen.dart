@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/enum_labels.dart';
+import '../../core/widgets/tracker_scaffold.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../providers/providers.dart';
@@ -21,6 +22,15 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final Map<SymptomType, int> _selectedSymptoms = {};
+  final Map<SymptomType, int> _initialSymptoms = {};
+
+  bool get _isDirty {
+    if (_selectedSymptoms.length != _initialSymptoms.length) return true;
+    for (final entry in _selectedSymptoms.entries) {
+      if (_initialSymptoms[entry.key] != entry.value) return true;
+    }
+    return false;
+  }
 
   @override
   void initState() {
@@ -33,6 +43,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
         _selectedSymptoms[entry.type] = entry.severity;
       }
     }
+    _initialSymptoms.addAll(_selectedSymptoms);
   }
 
   @override
@@ -100,58 +111,41 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: AppColors.bg(context),
-      appBar: AppBar(
-        title: Text(l10n.symptomTracking,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
-        backgroundColor: AppColors.bg(context),
-        elevation: 0,
-        iconTheme: IconThemeData(color: AppColors.tp(context)),
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          labelColor: AppColors.primary,
-          unselectedLabelColor: AppColors.ts(context),
-          indicatorColor: AppColors.primary,
-          labelStyle: TextStyle(fontWeight: FontWeight.w700),
-          tabs: [
-            Tab(text: l10n.physical), Tab(text: l10n.emotional), Tab(text: l10n.skinCategory),
-            Tab(text: l10n.digestive), Tab(text: l10n.otherCategory),
-          ],
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: SymptomCategory.values
-                  .map((cat) => _buildCategoryGrid(cat, l10n))
-                  .toList(),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _save,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                ),
-                child: Text(l10n.saveNSymptoms(_selectedSymptoms.length),
-                    style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold)),
-              ),
-            ),
-          ),
+    return TrackerScaffold(
+      title: l10n.symptomTracking,
+      isDirty: _isDirty,
+      appBarBottom: TabBar(
+        controller: _tabController,
+        isScrollable: true,
+        labelColor: AppColors.primary,
+        unselectedLabelColor: AppColors.ts(context),
+        indicatorColor: AppColors.primary,
+        labelStyle: TextStyle(fontWeight: FontWeight.w700),
+        tabs: [
+          Tab(text: l10n.physical), Tab(text: l10n.emotional), Tab(text: l10n.skinCategory),
+          Tab(text: l10n.digestive), Tab(text: l10n.otherCategory),
         ],
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: SymptomCategory.values
+            .map((cat) => _buildCategoryGrid(cat, l10n))
+            .toList(),
+      ),
+      bottomBar: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: _save,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primaryStrong,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          ),
+          child: Text(l10n.saveNSymptoms(_selectedSymptoms.length),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        ),
       ),
     );
   }
