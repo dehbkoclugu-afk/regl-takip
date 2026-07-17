@@ -561,8 +561,13 @@ class SettingsScreen extends ConsumerWidget {
 
   Future<void> _showPrivacyPolicy(
       BuildContext context, AppLocalizations l10n) async {
+    // Yasal metin arayüz dilini izlemeli: EN kullanıcıya (ve mağaza
+    // denetçisine) Türkçe politika gösterilemez
+    final lang = Localizations.localeOf(context).languageCode == 'en'
+        ? 'en'
+        : 'tr';
     final text = await DefaultAssetBundle.of(context)
-        .loadString('assets/legal/privacy_policy_tr.md');
+        .loadString('assets/legal/privacy_policy_$lang.md');
     if (!context.mounted) return;
     await showDialog<void>(
       context: context,

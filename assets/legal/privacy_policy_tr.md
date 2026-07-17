@@ -26,9 +26,11 @@ Verilerinizi hiçbir üçüncü tarafla paylaşmıyoruz. Uygulama, kişisel veri
 
 ## 4. Üçüncü Taraf Hizmetleri
 
-Uygulamamız aşağıdaki üçüncü taraf hizmetlerini kullanabilir:
+Sağlık verileriniz hiçbir üçüncü tarafa gönderilmez. Uygulamanın çalışması için kullanılan üçüncü taraf hizmetleri şunlardır:
 
-- **Google Play Faturalandırma**: Abonelik işlemleri için kullanılır. Bu işlemler Google'ın kendi gizlilik politikasına tabidir.
+- **Google Play Faturalandırma**: Premium satın alma işlemleri için kullanılır. Bu işlemler Google'ın kendi gizlilik politikasına tabidir.
+- **Google AdMob**: Ücretsiz sürümde reklam göstermek için kullanılır. AdMob, reklam sunumu için cihaz tanımlayıcıları gibi teknik veriler işleyebilir; sağlık verilerinize erişemez. AB/Birleşik Krallık kullanıcılarından reklam kişiselleştirme için ayrıca onay istenir. Premium sürümde reklam ve AdMob yoktur.
+- **Çökme raporlama (Sentry)**: Yalnızca etkinleştirilmiş sürümlerde, uygulama çökmelerinde teknik hata bilgisi gönderilir. Kişisel ve sağlık verisi gönderimi kapalıdır.
 
 ## 5. Bildirimler
 

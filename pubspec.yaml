@@ -55,6 +55,7 @@ flutter:
 
   assets:
     - assets/legal/privacy_policy_tr.md
+    - assets/legal/privacy_policy_en.md
 
   fonts:
     - family: Nunito
