@@ -12,6 +12,7 @@ import '../models/user_profile.dart';
 import '../core/constants/app_constants.dart';
 import '../core/utils/cycle_utils.dart';
 import '../core/utils/enum_labels.dart';
+import '../core/utils/language_utils.dart';
 import '../core/utils/phase_insights.dart';
 import 'disguise_service.dart';
 
@@ -370,7 +371,8 @@ class NotificationService {
 
       final hour = profile.reminderHour;
       final minute = profile.reminderMinute;
-      final locale = profile.language;
+      // 'system' tercihi somut dile çözülür (bildirim metinleri için)
+      final locale = resolveLanguageCode(profile.language);
 
       // Hamilelik ve hap modunda regl/ovülasyon tahmin bildirimleri anlamsız;
       // TTC modu regl gibi döngü bildirimi alır

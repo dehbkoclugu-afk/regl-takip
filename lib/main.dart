@@ -95,7 +95,9 @@ Future<void> _run() async {
         phasePatternProvider.overrideWith((ref) => phasePattern),
         if (profile != null) ...[
           themeModeProvider.overrideWith((ref) => themeModeFromProfile(profile)),
-          localeProvider.overrideWith((ref) => Locale(profile.language)),
+          // 'system' = override yok, MaterialApp cihaz dilini izler
+          if (profile.language != 'system')
+            localeProvider.overrideWith((ref) => Locale(profile.language)),
         ],
       ],
       child: const ReglTakipApp(),

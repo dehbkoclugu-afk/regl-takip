@@ -1373,6 +1373,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get themeDark => 'Dark';
 
   @override
+  String get languageSystem => 'System';
+
+  @override
   String get statsSectionOverview => 'OVERVIEW';
 
   @override

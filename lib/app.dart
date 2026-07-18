@@ -176,10 +176,8 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('tr'),
-        Locale('en'),
-      ],
+      // Desteklenen diller arb dosyalarından: tr, en, es, de, fr, ru
+      supportedLocales: AppLocalizations.supportedLocales,
       routerConfig: router,
       builder: (context, child) {
         // Kılık durumu çözülmeden gerçek arayüz bir kare bile görünmesin

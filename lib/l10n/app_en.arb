@@ -586,6 +586,7 @@
   "themeSystem": "System",
   "themeLight": "Light",
   "themeDark": "Dark",
+  "languageSystem": "System",
   "statsSectionOverview": "OVERVIEW",
   "statsSectionCharts": "CHARTS",
   "statsSectionHistory": "HISTORY & TRENDS",

@@ -1,0 +1,1507 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for German (`de`).
+class AppLocalizationsDe extends AppLocalizations {
+  AppLocalizationsDe([String locale = 'de']) : super(locale);
+
+  @override
+  String get appTitle => 'Zyklus-Tracker';
+
+  @override
+  String get home => 'Start';
+
+  @override
+  String get calendar => 'Kalender';
+
+  @override
+  String get log => 'Tagebuch';
+
+  @override
+  String get statistics => 'Statistiken';
+
+  @override
+  String get settings => 'Einstellungen';
+
+  @override
+  String get profile => 'Profil';
+
+  @override
+  String get onboardingWelcome => 'Willkommen!';
+
+  @override
+  String get onboardingWelcomeDesc => 'Der einfachste Weg, deine Gesundheit im Blick zu behalten';
+
+  @override
+  String get onboardingTitle1 => 'Verfolge deinen Zyklus';
+
+  @override
+  String get onboardingDesc1 => 'Trage deine Periode einfach ein und sieh die Vorhersage für die nächste.';
+
+  @override
+  String get onboardingTitle2 => 'Achte auf deine Gesundheit';
+
+  @override
+  String get onboardingDesc2 => 'Erfasse Symptome, Stimmung, Temperatur und mehr.';
+
+  @override
+  String get onboardingTitle3 => 'Sieh deine Auswertungen';
+
+  @override
+  String get onboardingDesc3 => 'Verstehe deinen Zyklus mit detaillierten Diagrammen und Statistiken.';
+
+  @override
+  String get onboardingTitle4 => 'Erhalte Benachrichtigungen';
+
+  @override
+  String get onboardingDesc4 => 'Erinnerungen an Periode und Eisprungtage.';
+
+  @override
+  String get getStarted => 'Loslegen';
+
+  @override
+  String get next => 'Weiter';
+
+  @override
+  String get skip => 'Überspringen';
+
+  @override
+  String get back => 'Zurück';
+
+  @override
+  String get save => 'Speichern';
+
+  @override
+  String get cancel => 'Abbrechen';
+
+  @override
+  String get delete => 'Löschen';
+
+  @override
+  String get edit => 'Bearbeiten';
+
+  @override
+  String get done => 'Fertig';
+
+  @override
+  String get maybeLater => 'Später einrichten';
+
+  @override
+  String get enableBiometric => 'Fingerabdruck / Gesichtserkennung';
+
+  @override
+  String get enablePin => 'Mit PIN sperren';
+
+  @override
+  String get securitySetup => 'Sicherheitseinrichtung';
+
+  @override
+  String get securitySetupDesc => 'Möchtest du die App sperren?';
+
+  @override
+  String get enterName => 'Gib deinen Namen ein';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get birthDate => 'Geburtsdatum';
+
+  @override
+  String get lastPeriodDate => 'Datum der letzten Periode';
+
+  @override
+  String get averageCycleLength => 'Durchschnittliche Zykluslänge';
+
+  @override
+  String get averagePeriodLength => 'Durchschnittliche Periodenlänge';
+
+  @override
+  String get days => 'Tage';
+
+  @override
+  String get day => 'Tag';
+
+  @override
+  String get today => 'Heute';
+
+  @override
+  String get cycleDay => 'Zyklustag';
+
+  @override
+  String get periodIn => 'Periode in';
+
+  @override
+  String daysLeft(int count) {
+    return 'Noch $count Tage';
+  }
+
+  @override
+  String get periodToday => 'Deine Periode könnte heute beginnen';
+
+  @override
+  String get periodOngoing => 'Du hast gerade deine Periode';
+
+  @override
+  String get ovulationDay => 'Eisprungtag';
+
+  @override
+  String get fertileWindow => 'Fruchtbares Fenster';
+
+  @override
+  String get lutealPhase => 'Lutealphase';
+
+  @override
+  String get follicularPhase => 'Follikelphase';
+
+  @override
+  String get periodPhase => 'Menstruationsphase';
+
+  @override
+  String get logPeriod => 'Periode eintragen';
+
+  @override
+  String get periodStarted => 'Periode begonnen';
+
+  @override
+  String get periodEnded => 'Periode beendet';
+
+  @override
+  String get flowIntensity => 'Blutungsstärke';
+
+  @override
+  String get light => 'Leicht';
+
+  @override
+  String get medium => 'Mittel';
+
+  @override
+  String get heavy => 'Stark';
+
+  @override
+  String get veryHeavy => 'Sehr stark';
+
+  @override
+  String get spotting => 'Schmierblutung';
+
+  @override
+  String get symptoms => 'Symptome';
+
+  @override
+  String get mood => 'Stimmung';
+
+  @override
+  String get temperature => 'Temperatur';
+
+  @override
+  String get weight => 'Gewicht';
+
+  @override
+  String get waterIntake => 'Wasser';
+
+  @override
+  String get sleep => 'Schlaf';
+
+  @override
+  String get sexualActivity => 'Sexuelle Aktivität';
+
+  @override
+  String get medication => 'Medikamente';
+
+  @override
+  String get notes => 'Notizen';
+
+  @override
+  String get cramps => 'Krämpfe';
+
+  @override
+  String get headache => 'Kopfschmerzen';
+
+  @override
+  String get bloating => 'Blähbauch';
+
+  @override
+  String get breastTenderness => 'Brustspannen';
+
+  @override
+  String get backPain => 'Rückenschmerzen';
+
+  @override
+  String get fatigue => 'Erschöpfung';
+
+  @override
+  String get nausea => 'Übelkeit';
+
+  @override
+  String get dizziness => 'Schwindel';
+
+  @override
+  String get stress => 'Stress';
+
+  @override
+  String get anxiety => 'Ängstlichkeit';
+
+  @override
+  String get irritability => 'Reizbarkeit';
+
+  @override
+  String get crying => 'Weinen';
+
+  @override
+  String get sensitivity => 'Empfindlichkeit';
+
+  @override
+  String get acne => 'Akne';
+
+  @override
+  String get oilySkin => 'Fettige Haut';
+
+  @override
+  String get drySkin => 'Trockene Haut';
+
+  @override
+  String get constipation => 'Verstopfung';
+
+  @override
+  String get diarrhea => 'Durchfall';
+
+  @override
+  String get gas => 'Blähungen';
+
+  @override
+  String get increasedAppetite => 'Mehr Appetit';
+
+  @override
+  String get decreasedAppetite => 'Weniger Appetit';
+
+  @override
+  String get insomnia => 'Schlaflosigkeit';
+
+  @override
+  String get hotFlash => 'Hitzewallungen';
+
+  @override
+  String get swelling => 'Wassereinlagerungen';
+
+  @override
+  String get hairLoss => 'Haarausfall';
+
+  @override
+  String get happy => 'Glücklich';
+
+  @override
+  String get sad => 'Traurig';
+
+  @override
+  String get angry => 'Wütend';
+
+  @override
+  String get anxious => 'Ängstlich';
+
+  @override
+  String get calm => 'Ruhig';
+
+  @override
+  String get energetic => 'Energiegeladen';
+
+  @override
+  String get tired => 'Müde';
+
+  @override
+  String get romantic => 'Romantisch';
+
+  @override
+  String get confused => 'Verwirrt';
+
+  @override
+  String get confident => 'Selbstsicher';
+
+  @override
+  String get avgCycleLength => 'Ø Zykluslänge';
+
+  @override
+  String get avgPeriodLength => 'Ø Periodenlänge';
+
+  @override
+  String get cycleHistory => 'Zyklusverlauf';
+
+  @override
+  String get symptomFrequency => 'Symptomhäufigkeit';
+
+  @override
+  String get moodDistribution => 'Stimmungsverteilung';
+
+  @override
+  String get temperatureTrend => 'Temperaturverlauf';
+
+  @override
+  String get weightTrend => 'Gewichtsverlauf';
+
+  @override
+  String get last3Months => 'Letzte 3 Monate';
+
+  @override
+  String get last6Months => 'Letzte 6 Monate';
+
+  @override
+  String get last12Months => 'Letzte 12 Monate';
+
+  @override
+  String get exportData => 'Daten exportieren';
+
+  @override
+  String get exportPdf => 'PDF-Bericht';
+
+  @override
+  String get exportCsv => 'CSV-Datei';
+
+  @override
+  String get language => 'Sprache';
+
+  @override
+  String get theme => 'Design';
+
+  @override
+  String get lightTheme => 'Helles Design';
+
+  @override
+  String get darkTheme => 'Dunkles Design';
+
+  @override
+  String get notifications => 'Benachrichtigungen';
+
+  @override
+  String get periodReminder => 'Perioden-Erinnerung';
+
+  @override
+  String get ovulationReminder => 'Eisprung-Erinnerung';
+
+  @override
+  String get medicationReminder => 'Medikamenten-Erinnerung';
+
+  @override
+  String get waterReminder => 'Wasser-Erinnerung';
+
+  @override
+  String get security => 'Sicherheit';
+
+  @override
+  String get pinLock => 'PIN-Sperre';
+
+  @override
+  String get biometricLock => 'Biometrische Sperre';
+
+  @override
+  String get dataBackup => 'Datensicherung';
+
+  @override
+  String get deleteAllData => 'Alle Daten löschen';
+
+  @override
+  String get about => 'Über';
+
+  @override
+  String get version => 'Version';
+
+  @override
+  String get glasses => 'Gläser';
+
+  @override
+  String get dailyGoal => 'Tagesziel';
+
+  @override
+  String get sleepQuality => 'Schlafqualität';
+
+  @override
+  String get bedTime => 'Schlafenszeit';
+
+  @override
+  String get wakeTime => 'Aufwachzeit';
+
+  @override
+  String get totalSleep => 'Gesamtschlaf';
+
+  @override
+  String get hours => 'Stunden';
+
+  @override
+  String get protection => 'Verhütung';
+
+  @override
+  String get condom => 'Kondom';
+
+  @override
+  String get pill => 'Pille';
+
+  @override
+  String get iud => 'Spirale';
+
+  @override
+  String get none => 'Keine';
+
+  @override
+  String get other => 'Andere';
+
+  @override
+  String get medicationName => 'Medikamentenname';
+
+  @override
+  String get dose => 'Dosis';
+
+  @override
+  String get reminderTime => 'Erinnerungszeit';
+
+  @override
+  String get taken => 'Eingenommen';
+
+  @override
+  String get notTaken => 'Nicht eingenommen';
+
+  @override
+  String get addNote => 'Notiz hinzufügen';
+
+  @override
+  String get selectDate => 'Datum wählen';
+
+  @override
+  String get noDataYet => 'Noch keine Daten';
+
+  @override
+  String get predictions => 'Vorhersagen';
+
+  @override
+  String get nextPeriod => 'Nächste Periode';
+
+  @override
+  String get nextOvulation => 'Nächster Eisprung';
+
+  @override
+  String get cycleRegularity => 'Zyklusregelmäßigkeit';
+
+  @override
+  String get regular => 'Regelmäßig';
+
+  @override
+  String get irregular => 'Unregelmäßig';
+
+  @override
+  String get setupComplete => 'Einrichtung abgeschlossen!';
+
+  @override
+  String get letsStart => 'Los geht\'s';
+
+  @override
+  String get bmi => 'BMI';
+
+  @override
+  String get goalReached => 'Ziel erreicht!';
+
+  @override
+  String get helloGeneric => 'Hallo!';
+
+  @override
+  String get dayHasRecord => 'hat einen Eintrag';
+
+  @override
+  String get increase => 'Erhöhen';
+
+  @override
+  String get decrease => 'Verringern';
+
+  @override
+  String get bbtHint => 'Für genaue Werte direkt nach dem Aufwachen messen, noch im Bett, jeden Tag zur gleichen Zeit. Die Eisprung-Bestätigung stützt sich auf diese Messungen.';
+
+  @override
+  String get deleteMeasurement => 'Messung löschen';
+
+  @override
+  String get measurementDeleted => 'Messung gelöscht';
+
+  @override
+  String get deleteRecord => 'Eintrag löschen';
+
+  @override
+  String get recordDeleted => 'Eintrag gelöscht';
+
+  @override
+  String get invalidWeight => 'Gültiges Gewicht eingeben (20-300 kg)';
+
+  @override
+  String get discardChangesTitle => 'Ungespeicherte Änderungen';
+
+  @override
+  String get discardChangesBody => 'Deine Notiz ist nicht gespeichert. Beim Verlassen geht sie verloren.';
+
+  @override
+  String get discard => 'Verwerfen';
+
+  @override
+  String severityLevel(int level) {
+    return 'Stärke $level/5';
+  }
+
+  @override
+  String get pregnancySetStartPrompt => 'Tippe, um den Schwangerschaftsbeginn festzulegen';
+
+  @override
+  String helloName(String name) {
+    return 'Hallo, $name!';
+  }
+
+  @override
+  String get ovulationPhase => 'Eisprungphase';
+
+  @override
+  String get menstrualPhase => 'Menstruationsphase';
+
+  @override
+  String get todaySummary => 'Heutige Übersicht';
+
+  @override
+  String get howAreYouFeeling => 'Wie fühlst du dich heute?';
+
+  @override
+  String get logMoodAndSymptoms => 'Stimmung und Symptome eintragen';
+
+  @override
+  String get addRecord => 'Eintrag hinzufügen';
+
+  @override
+  String nSymptoms(int count) {
+    return '$count Symptome';
+  }
+
+  @override
+  String get periodDayLabel => 'Periodentag';
+
+  @override
+  String get predicted => 'Vorhergesagt';
+
+  @override
+  String get fertile => 'Fruchtbar';
+
+  @override
+  String get ovulation => 'Eisprung';
+
+  @override
+  String moodLabel(String mood) {
+    return 'Stimmung: $mood';
+  }
+
+  @override
+  String nGlassesWater(int count) {
+    return '$count Gläser Wasser';
+  }
+
+  @override
+  String get noRecordForDay => 'Kein Eintrag für diesen Tag.';
+
+  @override
+  String get dailyLog => 'Tagebuch';
+
+  @override
+  String get flow => 'Blutung';
+
+  @override
+  String get recorded => 'Eingetragen';
+
+  @override
+  String nMedications(int count) {
+    return '$count Medikamente';
+  }
+
+  @override
+  String nGlasses(int count) {
+    return '$count Gläser';
+  }
+
+  @override
+  String get flowTracking => 'Blutungs-Tracking';
+
+  @override
+  String get color => 'Farbe';
+
+  @override
+  String get lightRed => 'Hellrot';
+
+  @override
+  String get red => 'Rot';
+
+  @override
+  String get darkRed => 'Dunkel';
+
+  @override
+  String get brown => 'Braun';
+
+  @override
+  String get clots => 'Klümpchen';
+
+  @override
+  String get clotsQuestion => 'Klümpchen vorhanden?';
+
+  @override
+  String get padChange => 'Bindenwechsel';
+
+  @override
+  String get flowSaved => 'Blutung gespeichert';
+
+  @override
+  String get symptomTracking => 'Symptom-Tracking';
+
+  @override
+  String get physical => 'Körperlich';
+
+  @override
+  String get emotional => 'Emotional';
+
+  @override
+  String get skinCategory => 'Haut';
+
+  @override
+  String get digestive => 'Verdauung';
+
+  @override
+  String get otherCategory => 'Sonstiges';
+
+  @override
+  String get glowingSkin => 'Strahlende Haut';
+
+  @override
+  String saveNSymptoms(int count) {
+    return 'Speichern ($count Symptome)';
+  }
+
+  @override
+  String nSymptomsSaved(int count) {
+    return '$count Symptome gespeichert';
+  }
+
+  @override
+  String get addNoteOptional => 'Notiz hinzufügen (optional)';
+
+  @override
+  String get writeAboutToday => 'Schreib etwas über heute...';
+
+  @override
+  String get moodSaved => 'Stimmung gespeichert';
+
+  @override
+  String get sensitiveM => 'Empfindlich';
+
+  @override
+  String get irritableM => 'Gereizt';
+
+  @override
+  String get neutralM => 'Neutral';
+
+  @override
+  String get lowTemp => 'Niedrig';
+
+  @override
+  String get normalTemp => 'Normal';
+
+  @override
+  String get highTemp => 'Hoch';
+
+  @override
+  String get fever => 'Fieber';
+
+  @override
+  String get measurementTime => 'Messzeit';
+
+  @override
+  String get temperatureSaved => 'Temperatur gespeichert';
+
+  @override
+  String get quickAdjust => 'Schnell anpassen';
+
+  @override
+  String get manualEntry => 'Manuelle Eingabe';
+
+  @override
+  String get weightSaved => 'Gewicht gespeichert';
+
+  @override
+  String get waterTracking => 'Wasser-Tracking';
+
+  @override
+  String get waterSaved => 'Wasser gespeichert';
+
+  @override
+  String get sleepTracking => 'Schlaf-Tracking';
+
+  @override
+  String get bedTimeLabel => 'Schlafenszeit';
+
+  @override
+  String get wakeTimeLabel => 'Aufwachzeit';
+
+  @override
+  String get veryBad => 'Sehr schlecht';
+
+  @override
+  String get bad => 'Schlecht';
+
+  @override
+  String get moderate => 'Mittel';
+
+  @override
+  String get good => 'Gut';
+
+  @override
+  String get great => 'Sehr gut';
+
+  @override
+  String get sleepSaved => 'Schlaf gespeichert';
+
+  @override
+  String get protectionMethod => 'Verhütungsmethode';
+
+  @override
+  String get orgasm => 'Orgasmus';
+
+  @override
+  String get noteOptional => 'Notiz (optional)';
+
+  @override
+  String get addNoteHint => 'Notiz hinzufügen...';
+
+  @override
+  String get savedGeneric => 'Gespeichert';
+
+  @override
+  String get medicationTracking => 'Medikamenten-Tracking';
+
+  @override
+  String get addMedication => 'Medikament hinzufügen';
+
+  @override
+  String get noMedicationsYet => 'Noch keine Medikamente';
+
+  @override
+  String get tapToAdd => 'Zum Hinzufügen + tippen';
+
+  @override
+  String get add => 'Hinzufügen';
+
+  @override
+  String get dailyNote => 'Tagesnotiz';
+
+  @override
+  String get myNotes => 'Meine Notizen';
+
+  @override
+  String get notesHint => 'Wie fühlst du dich? Schreib deine Notizen hier...';
+
+  @override
+  String get noteSaved => 'Notiz gespeichert';
+
+  @override
+  String get cycleOverview => 'Zyklusübersicht';
+
+  @override
+  String get avgCycle => 'Ø Zyklus';
+
+  @override
+  String get avgPeriod => 'Ø Periode';
+
+  @override
+  String get regularity => 'Regelmäßigkeit';
+
+  @override
+  String get insufficientData => 'Zu wenige Daten';
+
+  @override
+  String get noSymptomData => 'Noch keine Symptomdaten';
+
+  @override
+  String get noMoodData => 'Noch keine Stimmungsdaten';
+
+  @override
+  String get noCycleData => 'Noch keine Zyklusdaten';
+
+  @override
+  String get ongoing => 'laufend';
+
+  @override
+  String nDays(int count) {
+    return '$count Tage';
+  }
+
+  @override
+  String get profileSection => 'Profil';
+
+  @override
+  String get preferences => 'Einstellungen';
+
+  @override
+  String get age => 'Alter';
+
+  @override
+  String nYearsOld(int count) {
+    return '$count Jahre';
+  }
+
+  @override
+  String get cycleDuration => 'Zykluslänge';
+
+  @override
+  String get periodDuration => 'Periodenlänge';
+
+  @override
+  String get dataSection => 'Daten';
+
+  @override
+  String get exportPdfReport => 'PDF-Bericht exportieren';
+
+  @override
+  String get exportCsvFile => 'CSV exportieren';
+
+  @override
+  String get pdfExportSoon => 'PDF-Export kommt bald!';
+
+  @override
+  String get csvExportSoon => 'CSV-Export kommt bald!';
+
+  @override
+  String get letsKnowYou => 'Lern dich kennen';
+
+  @override
+  String get whatShouldWeCallYou => 'Wie sollen wir dich nennen?';
+
+  @override
+  String get yourName => 'Dein Name';
+
+  @override
+  String get yourBirthDate => 'Dein Geburtsdatum';
+
+  @override
+  String get birthDateHelp => 'Hilft uns, altersgerechte Hinweise zu geben.';
+
+  @override
+  String get selectDateHint => 'Datum wählen';
+
+  @override
+  String get selectDateToContinue => 'Wähle ein Datum, um fortzufahren';
+
+  @override
+  String stepOfSteps(int current, int total) {
+    return 'Schritt $current von $total';
+  }
+
+  @override
+  String get lastPeriodTitle => 'Deine letzte Periode';
+
+  @override
+  String get lastPeriodHelp => 'Wähle den ersten Tag deiner letzten Periode.';
+
+  @override
+  String get cycleLengthTitle => 'Zykluslänge';
+
+  @override
+  String get cycleLengthHelp => 'Wie viele Tage dauert dein Zyklus im Schnitt?\n(Vom ersten Tag einer Periode bis zum ersten Tag der nächsten)';
+
+  @override
+  String get periodLengthTitle => 'Periodenlänge';
+
+  @override
+  String get periodLengthHelp => 'Wie viele Tage dauert deine Periode normalerweise?';
+
+  @override
+  String get averageLabel => 'Durchschnitt';
+
+  @override
+  String get completeBtn => 'Abschließen';
+
+  @override
+  String get continueBtn => 'Weiter';
+
+  @override
+  String errorOccurred(String error) {
+    return 'Ein Fehler ist aufgetreten: $error';
+  }
+
+  @override
+  String get welcomeInfoTitle => 'Willkommen!';
+
+  @override
+  String get welcomeInfoDesc => 'Der einfachste und schönste Weg, deine Gesundheit im Blick zu behalten. Wir begleiten dich durch jeden Schritt deines Zyklus.';
+
+  @override
+  String get trackCycleTitle => 'Verfolge deinen Zyklus';
+
+  @override
+  String get trackCycleDesc => 'Trage Periodendaten, Symptome und Stimmung einfach ein. Alle Daten sind sicher.';
+
+  @override
+  String get getPredictionsTitle => 'Erhalte Vorhersagen';
+
+  @override
+  String get getPredictionsDesc => 'Erfahre mit smarten Vorhersagen deinen nächsten Zyklus und deine fruchtbaren Tage.';
+
+  @override
+  String get startBtn => 'Starten';
+
+  @override
+  String daysLater(int count) {
+    return 'in $count Tagen';
+  }
+
+  @override
+  String get todayExclamation => 'Heute!';
+
+  @override
+  String get spiral => 'Spirale';
+
+  @override
+  String get enterPin => 'PIN eingeben';
+
+  @override
+  String get createPin => 'PIN erstellen';
+
+  @override
+  String get confirmPin => 'PIN bestätigen';
+
+  @override
+  String get pinMismatch => 'PINs stimmen nicht überein, bitte erneut versuchen';
+
+  @override
+  String get verifyPinTitle => 'Aktuelle PIN eingeben';
+
+  @override
+  String get wrongPin => 'Falsche PIN';
+
+  @override
+  String tooManyAttempts(int seconds) {
+    return 'Zu viele Fehlversuche. Warte $seconds Sekunden';
+  }
+
+  @override
+  String get coachMenstrual0 => 'Blutungstage bedeuten Eisenverlust — rotes Fleisch, Linsen und dunkles Blattgemüse helfen.';
+
+  @override
+  String get coachMenstrual1 => 'Gegen Krämpfe wirken Wärme und sanftes Dehnen oft so gut wie viele Schmerzmittel.';
+
+  @override
+  String get coachMenstrual2 => 'Wenig Energie ist heute normal — ein Spaziergang ist besser als ein hartes Workout.';
+
+  @override
+  String get coachFollicular0 => 'Das Östrogen steigt: Energie und Konzentration sind in dieser Phase meist am höchsten. Plane schwierige Aufgaben jetzt.';
+
+  @override
+  String get coachFollicular1 => 'Die Haut ist in dieser Phase meist am besten — ein gutes Fenster für neue Produkte.';
+
+  @override
+  String get coachFollicular2 => 'Dein Körper ist gerade am besten für intensives Training bereit.';
+
+  @override
+  String get coachOvulation0 => 'Du bist im fruchtbaren Fenster — handle nach deinem Plan, ob Verhütung oder Kinderwunsch.';
+
+  @override
+  String get coachOvulation1 => 'Manche Frauen spüren beim Eisprung einen leichten einseitigen Schmerz (Mittelschmerz) — das ist normal.';
+
+  @override
+  String get coachOvulation2 => 'Die soziale Energie ist in diesen Tagen oft hoch — gutes Timing für wichtige Gespräche.';
+
+  @override
+  String get coachLuteal0 => 'In dieser Phase können PMS-Symptome beginnen — Magnesium und regelmäßiger Schlaf lindern sie.';
+
+  @override
+  String get coachLuteal1 => 'Heißhunger auf Süßes kann zunehmen: proteinreiche Snacks halten den Blutzucker stabil.';
+
+  @override
+  String get coachLuteal2 => 'Die emotionale Empfindlichkeit kann steigen — sei nachsichtig mit dir, es ist hormonell und vorübergehend.';
+
+  @override
+  String get ovulationConfirmed => 'Eisprung ✓';
+
+  @override
+  String get ovulationConfirmedInfo => 'Dieses Datum ist keine Schätzung: Es wurde durch den Anstieg deiner Basaltemperatur bestätigt (3-über-6-Regel).';
+
+  @override
+  String get premiumSection => 'Premium';
+
+  @override
+  String get removeAds => 'Werbung entfernen';
+
+  @override
+  String get restorePurchases => 'Käufe wiederherstellen';
+
+  @override
+  String get premiumActive => 'Premium aktiv — Werbung ist aus';
+
+  @override
+  String get storeUnavailable => 'Store derzeit nicht verfügbar';
+
+  @override
+  String get healthSync => 'Mit Health Connect synchronisieren';
+
+  @override
+  String get healthSyncSuccess => 'Periodendaten synchronisiert';
+
+  @override
+  String get healthSyncDenied => 'Zugriff auf Gesundheitsdaten verweigert';
+
+  @override
+  String get healthSyncUnavailable => 'Kein Gesundheitsdienst auf diesem Gerät';
+
+  @override
+  String get healthSyncFailed => 'Synchronisierung fehlgeschlagen';
+
+  @override
+  String get trackingModeTitle => 'Tracking-Modus';
+
+  @override
+  String get modePeriod => 'Periode';
+
+  @override
+  String get modePregnancy => 'Schwangerschaft';
+
+  @override
+  String get modePill => 'Pille';
+
+  @override
+  String get modeTtc => 'Kinderwunsch';
+
+  @override
+  String get lhTestTitle => 'Ovulationstest (LH)';
+
+  @override
+  String get lhPositive => 'Positiv';
+
+  @override
+  String get lhNegative => 'Negativ';
+
+  @override
+  String get fertilityToday => 'Fruchtbarkeit heute';
+
+  @override
+  String get fertilityHigh => 'Hoch';
+
+  @override
+  String get fertilityMedium => 'Mittel';
+
+  @override
+  String get fertilityLow => 'Niedrig';
+
+  @override
+  String pregnancyWeekLabel(int week) {
+    return 'Woche $week';
+  }
+
+  @override
+  String get trimester1 => '1. Trimester';
+
+  @override
+  String get trimester2 => '2. Trimester';
+
+  @override
+  String get trimester3 => '3. Trimester';
+
+  @override
+  String get pregnancyStartLabel => 'Letzte Periode (Schwangerschaftsbeginn)';
+
+  @override
+  String get pregnancyModeInfo => 'Im Schwangerschaftsmodus sind Vorhersagen und Perioden-Erinnerungen aus';
+
+  @override
+  String get pillPackStartLabel => 'Beginn der Pillenpackung';
+
+  @override
+  String pillDayLabel(int day) {
+    return 'Pille Tag $day/21';
+  }
+
+  @override
+  String pillBreakLabel(int day) {
+    return 'Pausenwoche • Tag $day';
+  }
+
+  @override
+  String get smartPrediction => 'Smarte Vorhersage';
+
+  @override
+  String get smartPredictionDesc => 'Vorhersagen nutzen den aus deinen bisherigen Zyklen gelernten Durchschnitt';
+
+  @override
+  String learnedCycleLength(int days) {
+    return 'Gelernt: $days Tage';
+  }
+
+  @override
+  String get phaseInsights => 'Phasen-Muster';
+
+  @override
+  String get noInsightsYet => 'Noch nicht genug Daten. Wenn du Symptome einträgst, erscheinen hier Muster nach Zyklusphase.';
+
+  @override
+  String insightLine(String symptom, String phase, int percent) {
+    return '$symptom tritt vor allem in der Phase $phase auf ($percent%)';
+  }
+
+  @override
+  String get notContraceptionWarning => 'Vorhersagen dienen nur der Information. Diese App ist KEIN Verhütungsmittel und darf nicht zur Schwangerschaftsverhütung verwendet werden.';
+
+  @override
+  String get privacyPolicy => 'Datenschutzerklärung';
+
+  @override
+  String get aboutSection => 'Über';
+
+  @override
+  String get consentTitle => 'Deine Daten & Privatsphäre';
+
+  @override
+  String get consentBody => 'Alle deine Daten werden nur auf diesem Gerät verschlüsselt gespeichert; nichts wird an einen Server gesendet. Die Datenschutzerklärung findest du unter Einstellungen > Über. Mit dem Fortfahren akzeptierst du diese Verarbeitung auf deinem Gerät.';
+
+  @override
+  String get consentAccept => 'Ich akzeptiere';
+
+  @override
+  String get quickLog => 'Schnelleintrag';
+
+  @override
+  String get allTrackers => 'Alle Tracker';
+
+  @override
+  String get disguiseTitle => 'Tarnmodus';
+
+  @override
+  String get disguiseDesc => 'Die App nimmt eine \"Notizen\"-Identität an: Name, Icon, Widget, Benachrichtigungen und Startbildschirm werden neutral. Zurück: Notizen-Titel lange drücken.';
+
+  @override
+  String get decoyTitle => 'Notizen';
+
+  @override
+  String get decoyEmpty => 'Noch keine Notizen';
+
+  @override
+  String get decoyHint => 'Schreib etwas…';
+
+  @override
+  String get backupData => 'Sichern (JSON)';
+
+  @override
+  String get restoreData => 'Aus Sicherung wiederherstellen';
+
+  @override
+  String get restoreConfirmTitle => 'Sicherung wiederherstellen?';
+
+  @override
+  String restoreConfirmBody(int count) {
+    return 'Alle aktuellen Daten werden gelöscht und $count Einträge aus der Sicherung wiederhergestellt. Das kann nicht rückgängig gemacht werden.';
+  }
+
+  @override
+  String get restore => 'Wiederherstellen';
+
+  @override
+  String get backupRestored => 'Sicherung wiederhergestellt';
+
+  @override
+  String get invalidBackupFile => 'Ungültige Sicherungsdatei';
+
+  @override
+  String get dateLabel => 'Datum';
+
+  @override
+  String get modeStepTitle => 'Wofür möchtest du die App nutzen?';
+
+  @override
+  String get modeStepSubtitle => 'Du kannst das später in den Einstellungen ändern';
+
+  @override
+  String get modePeriodDesc => 'Zyklustracking und Vorhersagen';
+
+  @override
+  String get modePregnancyDesc => 'Schwangerschaft Woche für Woche';
+
+  @override
+  String get modePillDesc => '21+7-Pillenschema';
+
+  @override
+  String get modeTtcDesc => 'Fruchtbarkeitsorientiertes Tracking';
+
+  @override
+  String get paywallTitle => 'Premium holen';
+
+  @override
+  String paywallTrialSubtitle(int days) {
+    return 'Deine Testphase läuft: noch $days Tage. Premium hält alles freigeschaltet.';
+  }
+
+  @override
+  String get paywallFreeSubtitle => 'Deine Testphase ist vorbei. Die Gratisversion behält Periodentracking und Kalender; Tagebuch und Auswertungen sind Premium.';
+
+  @override
+  String get paywallFeatureTrackers => 'Alle Tages-Tracker: Symptome, Stimmung, Wasser, Schlaf, Gewicht, Temperatur, Medikamente, Notizen';
+
+  @override
+  String get paywallFeatureStats => 'Statistiken, Trends und der Mein-Jahr-Ring';
+
+  @override
+  String get paywallFeatureInsights => 'Persönliche Muster und Phasen-Tipps';
+
+  @override
+  String get paywallFeatureExport => 'PDF- / CSV-Export';
+
+  @override
+  String get paywallFeatureHealth => 'Health-Connect-Synchronisierung';
+
+  @override
+  String get paywallFeatureDisguise => 'Tarnmodus mit Notizen-App';
+
+  @override
+  String get paywallFeatureNoAds => 'Werbefrei';
+
+  @override
+  String get planMonthly => 'Monatlich';
+
+  @override
+  String get planYearly => 'Jährlich';
+
+  @override
+  String get perMonth => '/Monat';
+
+  @override
+  String get perYear => '/Jahr';
+
+  @override
+  String get bestValue => 'Bestes Angebot';
+
+  @override
+  String get continueFreeBtn => 'Vorerst gratis weitermachen';
+
+  @override
+  String trialBadge(int days) {
+    return 'Test: noch $days Tage';
+  }
+
+  @override
+  String get freeBadge => 'Gratisversion';
+
+  @override
+  String get freeExplain => 'Die Gratisversion behält Periodentracking, Kalender und Vorhersagen. Tages-Tracker, Statistiken, Export, Health Connect, Tarnmodus und Modi sind Premium.';
+
+  @override
+  String get seePlans => 'Pläne ansehen';
+
+  @override
+  String get premiumLockedTitle => 'Statistiken sind Premium';
+
+  @override
+  String get premiumLockedBody => 'Diagramme, Trends, Phasen-Muster und der Mein-Jahr-Ring werden mit Premium freigeschaltet. Alles aus der Testphase bleibt erhalten.';
+
+  @override
+  String get yearRingTitle => 'Mein Jahr';
+
+  @override
+  String get yearRingCycles => 'ZYKLEN';
+
+  @override
+  String yearRingSummary(int count) {
+    return 'Letzte 12 Monate: $count Zyklen';
+  }
+
+  @override
+  String get cycleComparison => 'Dein letzter Zyklus';
+
+  @override
+  String lastCycleLength(int days) {
+    return 'Letzter Zyklus: $days Tage';
+  }
+
+  @override
+  String lastPeriodLength(int days) {
+    return 'Letzte Periode: $days Tage';
+  }
+
+  @override
+  String vsAverageMore(int days) {
+    return '$days Tage länger als dein Durchschnitt';
+  }
+
+  @override
+  String vsAverageLess(int days) {
+    return '$days Tage kürzer als dein Durchschnitt';
+  }
+
+  @override
+  String get vsAverageSame => 'wie dein Durchschnitt';
+
+  @override
+  String coachPersonalInsight(String symptom, int percent) {
+    return 'Laut deinen Einträgen in dieser Phase am häufigsten: $symptom ($percent%)';
+  }
+
+  @override
+  String get notificationInsightTitle => 'Phasen-Tipp';
+
+  @override
+  String notificationInsightBody(String symptom) {
+    return 'Die Lutealphase beginnt. Laut deinen Einträgen ist dein häufigstes Symptom in dieser Phase: $symptom.';
+  }
+
+  @override
+  String get reportTitle => 'Zyklus-Gesundheitsbericht';
+
+  @override
+  String get reportGenerated => 'Erstellt';
+
+  @override
+  String get profileSummary => 'Profilübersicht';
+
+  @override
+  String get periodHistory => 'Periodenverlauf';
+
+  @override
+  String get last30DaysSummary => 'Übersicht der letzten 30 Tage';
+
+  @override
+  String get durationDaysHeader => 'Dauer (Tage)';
+
+  @override
+  String get themeSystem => 'System';
+
+  @override
+  String get themeLight => 'Hell';
+
+  @override
+  String get themeDark => 'Dunkel';
+
+  @override
+  String get languageSystem => 'System';
+
+  @override
+  String get statsSectionOverview => 'ÜBERBLICK';
+
+  @override
+  String get statsSectionCharts => 'DIAGRAMME';
+
+  @override
+  String get statsSectionHistory => 'VERLAUF & TRENDS';
+
+  @override
+  String storySymptomsMore(int recent, int previous) {
+    return 'Die letzten 30 Tage waren anstrengender als der Zeitraum davor ($recent Einträge vs. $previous).';
+  }
+
+  @override
+  String storySymptomsLess(int recent, int previous) {
+    return 'Die letzten 30 Tage waren leichter als der Zeitraum davor ($recent Einträge vs. $previous).';
+  }
+
+  @override
+  String get storySymptomsSame => 'Die Symptomintensität blieb in den letzten beiden Zeiträumen ähnlich.';
+
+  @override
+  String storyTrendUp(String delta, String unit) {
+    return 'Plus $delta $unit in diesem Zeitraum.';
+  }
+
+  @override
+  String storyTrendDown(String delta, String unit) {
+    return 'Minus $delta $unit in diesem Zeitraum.';
+  }
+
+  @override
+  String get storyTrendFlat => 'Keine nennenswerte Veränderung in diesem Zeitraum — der Trend ist flach.';
+
+  @override
+  String get colorBlindPattern => 'Gemusterte Phasenfarben';
+
+  @override
+  String get colorBlindPatternDesc => 'Fügt den Phasenbändern Textur hinzu — hilfreich, wenn Farben schwer zu unterscheiden sind';
+
+  @override
+  String get undo => 'Rückgängig';
+
+  @override
+  String get periodMarkedStarted => 'Periodenbeginn gespeichert';
+
+  @override
+  String get periodMarkedEnded => 'Periodenende gespeichert';
+
+  @override
+  String get editPeriodRecord => 'Periodeneintrag bearbeiten';
+
+  @override
+  String get startDateLabel => 'Beginn';
+
+  @override
+  String get endDateLabel => 'Ende';
+
+  @override
+  String get recordUpdated => 'Eintrag aktualisiert';
+
+  @override
+  String get dataResetTitle => 'Deine Daten konnten nicht gelesen werden';
+
+  @override
+  String get dataResetBody => 'Die App-Daten konnten auf diesem Gerät nicht entschlüsselt werden. Das passiert meist nach einem Gerätewechsel oder einer Systemwiederherstellung: Die Daten sind mit einem gerätespezifischen Schlüssel verschlüsselt, der nicht mitwandern kann. Die App hat neu begonnen.\n\nUm Daten zwischen Geräten zu übertragen, exportiere regelmäßig eine JSON-Sicherung über Einstellungen > Sichern.';
+
+  @override
+  String get pinSet => 'PIN eingerichtet';
+
+  @override
+  String get pinRemoved => 'PIN entfernt';
+
+  @override
+  String get unlockWithBiometric => 'Mit Fingerabdruck oder Gesicht entsperren';
+
+  @override
+  String get biometricNotAvailable => 'Biometrische Authentifizierung auf diesem Gerät nicht verfügbar';
+
+  @override
+  String get editProfile => 'Profil bearbeiten';
+
+  @override
+  String get profileSaved => 'Profil gespeichert';
+
+  @override
+  String sleepDurationShort(int hours, int minutes) {
+    return '$hours Std. $minutes Min.';
+  }
+
+  @override
+  String get deleteAllDataConfirm => 'Wirklich alle Daten löschen? Das kann nicht rückgängig gemacht werden.';
+
+  @override
+  String get dataDeleted => 'Alle Daten gelöscht';
+
+  @override
+  String get doseHint => 'z. B. 500 mg';
+
+  @override
+  String get menstrualPhaseInfo => 'Die Zeit der Menstruationsblutung. Dauert meist 3-7 Tage. Der Körper stößt die Gebärmutterschleimhaut ab.';
+
+  @override
+  String get follicularPhaseInfo => 'Nach der Periode bereiten die Eierstöcke eine neue Eizelle vor. Das Östrogen steigt, die Energie nimmt zu.';
+
+  @override
+  String get ovulationPhaseInfo => 'Die Phase, in der eine Eizelle freigesetzt wird. Die Wahrscheinlichkeit einer Schwangerschaft ist am höchsten.';
+
+  @override
+  String get lutealPhaseInfo => 'Die Phase vom Eisprung bis zur nächsten Periode. Das Progesteron steigt, PMS-Symptome können auftreten.';
+
+  @override
+  String get fertileWindowInfo => 'Die Zeit mit der höchsten Schwangerschaftswahrscheinlichkeit. Beginnt 5 Tage vor dem Eisprung und endet 1 Tag danach.';
+
+  @override
+  String get ovulationCardInfo => 'Der geschätzte Tag, an dem eine Eizelle freigesetzt wird. Liegt etwa in der Zyklusmitte.';
+
+  @override
+  String get nextPeriodInfo => 'Das geschätzte Startdatum deiner nächsten Periode. Berechnet aus deiner Zykluslänge.';
+
+  @override
+  String get phaseInfoTitle => 'Was ist diese Phase?';
+
+  @override
+  String get learnMore => 'Info';
+
+  @override
+  String get healthDisclaimer => 'Diese App ersetzt keinen ärztlichen Rat. Bei gesundheitlichen Fragen wende dich bitte an medizinisches Fachpersonal.';
+}

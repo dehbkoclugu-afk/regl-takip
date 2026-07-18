@@ -24,8 +24,10 @@ final selectedDateProvider = StateProvider<DateTime>((ref) {
   return DateTime.now();
 });
 
-final localeProvider = StateProvider<Locale>((ref) {
-  return const Locale('tr');
+/// null = sistem dili (MaterialApp cihaz dilini kendisi çözer);
+/// somut Locale = kullanıcının elle seçtiği dil
+final localeProvider = StateProvider<Locale?>((ref) {
+  return null;
 });
 
 /// Profildeki tema tercihini ThemeMode'a çevirir.

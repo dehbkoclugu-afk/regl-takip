@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../core/utils/cycle_utils.dart';
+import '../core/utils/language_utils.dart';
 import '../core/utils/ring_segments.dart';
 import '../models/enums.dart';
 import '../models/period_record.dart';
@@ -44,6 +45,50 @@ class WidgetService {
       'ovulation': 'Ovulation',
       'fertile': 'Fertile window',
     },
+    'es': {
+      'day': 'Día',
+      'daysLeft': 'días restantes',
+      'today': '¡Hoy!',
+      'week': 'Semana',
+      'pill': 'Píldora',
+      'breakWeek': 'Semana de descanso',
+      'nextPeriod': 'Próxima regla',
+      'ovulation': 'Ovulación',
+      'fertile': 'Ventana fértil',
+    },
+    'de': {
+      'day': 'Tag',
+      'daysLeft': 'Tage übrig',
+      'today': 'Heute!',
+      'week': 'Woche',
+      'pill': 'Pille',
+      'breakWeek': 'Pausenwoche',
+      'nextPeriod': 'Nächste Periode',
+      'ovulation': 'Eisprung',
+      'fertile': 'Fruchtbares Fenster',
+    },
+    'fr': {
+      'day': 'Jour',
+      'daysLeft': 'jours restants',
+      'today': "Aujourd'hui !",
+      'week': 'Semaine',
+      'pill': 'Pilule',
+      'breakWeek': 'Semaine de pause',
+      'nextPeriod': 'Prochaines règles',
+      'ovulation': 'Ovulation',
+      'fertile': 'Fenêtre fertile',
+    },
+    'ru': {
+      'day': 'День',
+      'daysLeft': 'дн. осталось',
+      'today': 'Сегодня!',
+      'week': 'Неделя',
+      'pill': 'Таблетка',
+      'breakWeek': 'Неделя перерыва',
+      'nextPeriod': 'След. месячные',
+      'ovulation': 'Овуляция',
+      'fertile': 'Фертильное окно',
+    },
   };
 
   static String _t(String locale, String key) =>
@@ -69,7 +114,7 @@ class WidgetService {
         return;
       }
 
-      final locale = profile?.language ?? 'tr';
+      final locale = resolveLanguageCode(profile?.language);
       String line1 = 'Regl Takip';
       String line2 = '';
       String? ringPath;

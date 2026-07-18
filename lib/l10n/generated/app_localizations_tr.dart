@@ -1373,6 +1373,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get themeDark => 'Koyu';
 
   @override
+  String get languageSystem => 'Sistem';
+
+  @override
   String get statsSectionOverview => 'GENEL BAKIŞ';
 
   @override

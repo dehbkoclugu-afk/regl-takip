@@ -89,7 +89,8 @@ class UserProfile extends HiveObject {
     this.pinEnabled = false,
     this.biometricEnabled = false,
     this.onboardingCompleted = false,
-    this.language = 'tr',
+    // 'system' = cihaz dilini izle (desteklenmiyorsa İngilizce)
+    this.language = 'system',
     this.lastPeriodStart,
     this.periodReminderEnabled = true,
     this.ovulationReminderEnabled = true,

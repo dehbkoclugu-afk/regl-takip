@@ -32,7 +32,6 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(userProfileProvider);
-    final locale = ref.watch(localeProvider);
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -144,22 +143,39 @@ class SettingsScreen extends ConsumerWidget {
               ),
               title: Text(l10n.language,
                   style: TextStyle(fontWeight: FontWeight.w600)),
-              trailing: SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(value: 'tr', label: Text('TR')),
-                  ButtonSegment(value: 'en', label: Text('EN')),
+              // 6 dil + sistem: varsayılan cihaz dilini izler
+              trailing: DropdownButton<String>(
+                value: profile?.language ?? 'system',
+                underline: const SizedBox.shrink(),
+                borderRadius: BorderRadius.circular(14),
+                items: [
+                  DropdownMenuItem(
+                      value: 'system', child: Text(l10n.languageSystem)),
+                  const DropdownMenuItem(
+                      value: 'tr', child: Text('Türkçe')),
+                  const DropdownMenuItem(
+                      value: 'en', child: Text('English')),
+                  const DropdownMenuItem(
+                      value: 'es', child: Text('Español')),
+                  const DropdownMenuItem(
+                      value: 'de', child: Text('Deutsch')),
+                  const DropdownMenuItem(
+                      value: 'fr', child: Text('Français')),
+                  const DropdownMenuItem(
+                      value: 'ru', child: Text('Русский')),
                 ],
-                selected: {locale.languageCode},
-                onSelectionChanged: (selected) {
+                onChanged: (value) {
+                  if (value == null) return;
                   ref.read(localeProvider.notifier).state =
-                      Locale(selected.first);
-                  ref.read(userProfileProvider.notifier)
-                      .saveProfile(language: selected.first);
+                      value == 'system' ? null : Locale(value);
+                  ref
+                      .read(userProfileProvider.notifier)
+                      .saveProfile(language: value);
                 },
-                style: ButtonStyle(
-                  visualDensity: VisualDensity.compact,
-                  textStyle: WidgetStateProperty.all(
-                      TextStyle(fontSize: 13)),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.tp(context),
                 ),
               ),
             ),
@@ -605,11 +621,11 @@ class SettingsScreen extends ConsumerWidget {
 
   Future<void> _showPrivacyPolicy(
       BuildContext context, AppLocalizations l10n) async {
-    // Yasal metin arayüz dilini izlemeli: EN kullanıcıya (ve mağaza
-    // denetçisine) Türkçe politika gösterilemez
-    final lang = Localizations.localeOf(context).languageCode == 'en'
-        ? 'en'
-        : 'tr';
+    // Yasal metin arayüz dilini izlemeli; politika dosyası yalnız TR/EN
+    // var — diğer diller İngilizce politikayı görür
+    final lang = Localizations.localeOf(context).languageCode == 'tr'
+        ? 'tr'
+        : 'en';
     final text = await DefaultAssetBundle.of(context)
         .loadString('assets/legal/privacy_policy_$lang.md');
     if (!context.mounted) return;
