@@ -1373,6 +1373,32 @@ class AppLocalizationsTr extends AppLocalizations {
   String get themeDark => 'Koyu';
 
   @override
+  String storySymptomsMore(int recent, int previous) {
+    return 'Son 30 gün önceki döneme göre daha yoğun geçti ($recent kayıt, önceki $previous).';
+  }
+
+  @override
+  String storySymptomsLess(int recent, int previous) {
+    return 'Son 30 gün önceki döneme göre daha rahat geçti ($recent kayıt, önceki $previous).';
+  }
+
+  @override
+  String get storySymptomsSame => 'Belirti yoğunluğu son iki dönemde benzer seyretti.';
+
+  @override
+  String storyTrendUp(String delta, String unit) {
+    return 'Bu dönemde toplam $delta $unit artış var.';
+  }
+
+  @override
+  String storyTrendDown(String delta, String unit) {
+    return 'Bu dönemde toplam $delta $unit azalma var.';
+  }
+
+  @override
+  String get storyTrendFlat => 'Bu dönemde belirgin bir değişim yok — seyir yatay.';
+
+  @override
   String get colorBlindPattern => 'Desenli faz renkleri';
 
   @override

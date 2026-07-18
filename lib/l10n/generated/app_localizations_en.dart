@@ -1373,6 +1373,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get themeDark => 'Dark';
 
   @override
+  String storySymptomsMore(int recent, int previous) {
+    return 'The last 30 days were rougher than the period before ($recent entries vs $previous).';
+  }
+
+  @override
+  String storySymptomsLess(int recent, int previous) {
+    return 'The last 30 days were easier than the period before ($recent entries vs $previous).';
+  }
+
+  @override
+  String get storySymptomsSame => 'Symptom intensity stayed similar across the last two periods.';
+
+  @override
+  String storyTrendUp(String delta, String unit) {
+    return 'Up $delta $unit over this period.';
+  }
+
+  @override
+  String storyTrendDown(String delta, String unit) {
+    return 'Down $delta $unit over this period.';
+  }
+
+  @override
+  String get storyTrendFlat => 'No meaningful change over this period — the trend is flat.';
+
+  @override
   String get colorBlindPattern => 'Patterned phase colors';
 
   @override

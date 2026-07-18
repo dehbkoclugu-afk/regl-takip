@@ -518,6 +518,29 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       return _emptyCard(l10n.symptomFrequency, l10n.noSymptomData);
     }
 
+    // Hikâye cümlesi: son 30 gün vs önceki 30 gün toplam belirti kaydı
+    final now = DateTime.now();
+    var recent = 0;
+    var previous = 0;
+    for (final log in logs) {
+      final age = now.difference(log.date).inDays;
+      if (age < 30) {
+        recent += log.symptoms.length;
+      } else if (age < 60) {
+        previous += log.symptoms.length;
+      }
+    }
+    String? story;
+    if (previous > 0 || recent > 0) {
+      if (recent > previous) {
+        story = l10n.storySymptomsMore(recent, previous);
+      } else if (recent < previous) {
+        story = l10n.storySymptomsLess(recent, previous);
+      } else {
+        story = l10n.storySymptomsSame;
+      }
+    }
+
     return GlassCard(
       borderRadius: 20,
       blur: 0,
@@ -531,6 +554,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.tp(context))),
+          if (story != null) ...[
+            const SizedBox(height: 4),
+            _storyLine(story),
+          ],
           const SizedBox(height: 16),
           // Ekran okuyucu için grafik verisi metin özeti olarak sunulur
           Semantics(
@@ -1180,6 +1207,22 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final localeStr = Localizations.localeOf(context).toString();
     final dateFormat = DateFormat('d/M', localeStr);
 
+    // Hikâye cümlesi: grafik okumayan kullanıcı da değeri alsın —
+    // dönem içi net değişim tek cümlede (küçük dalgalanma "yatay" sayılır)
+    final l10nStory = AppLocalizations.of(context)!;
+    String? story;
+    if (spots.length >= 2) {
+      final delta = spots.last.y - spots.first.y;
+      final threshold = unit == 'kg' ? 0.3 : 0.15;
+      if (delta.abs() < threshold) {
+        story = l10nStory.storyTrendFlat;
+      } else if (delta > 0) {
+        story = l10nStory.storyTrendUp(delta.toStringAsFixed(1), unit);
+      } else {
+        story = l10nStory.storyTrendDown(delta.abs().toStringAsFixed(1), unit);
+      }
+    }
+
     return GlassCard(
       borderRadius: 20,
       blur: 0,
@@ -1193,6 +1236,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.tp(context))),
+          if (story != null) ...[
+            const SizedBox(height: 4),
+            _storyLine(story),
+          ],
           const SizedBox(height: 16),
           // Ekran okuyucu için trend özeti: son / en düşük / en yüksek
           Semantics(
@@ -1308,6 +1355,19 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         ],
       ),
     ).animateSafe(context).fadeIn(delay: 300.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+  }
+
+  /// Grafik kartının başlığı altına veriden türetilmiş tek cümle:
+  /// sayı-anlatıcı kimliğin metin hali
+  Widget _storyLine(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 13,
+        height: 1.35,
+        color: AppColors.ts(context),
+      ),
+    );
   }
 
   Widget _emptyCard(String title, String message) {

@@ -2699,6 +2699,42 @@ abstract class AppLocalizations {
   /// **'Koyu'**
   String get themeDark;
 
+  /// No description provided for @storySymptomsMore.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son 30 gün önceki döneme göre daha yoğun geçti ({recent} kayıt, önceki {previous}).'**
+  String storySymptomsMore(int recent, int previous);
+
+  /// No description provided for @storySymptomsLess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son 30 gün önceki döneme göre daha rahat geçti ({recent} kayıt, önceki {previous}).'**
+  String storySymptomsLess(int recent, int previous);
+
+  /// No description provided for @storySymptomsSame.
+  ///
+  /// In tr, this message translates to:
+  /// **'Belirti yoğunluğu son iki dönemde benzer seyretti.'**
+  String get storySymptomsSame;
+
+  /// No description provided for @storyTrendUp.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu dönemde toplam {delta} {unit} artış var.'**
+  String storyTrendUp(String delta, String unit);
+
+  /// No description provided for @storyTrendDown.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu dönemde toplam {delta} {unit} azalma var.'**
+  String storyTrendDown(String delta, String unit);
+
+  /// No description provided for @storyTrendFlat.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu dönemde belirgin bir değişim yok — seyir yatay.'**
+  String get storyTrendFlat;
+
   /// No description provided for @colorBlindPattern.
   ///
   /// In tr, this message translates to:
