@@ -1,5 +1,16 @@
 # Changelog
 
+## Yayınlanmamış — Telefon testi düzeltmeleri + 6 dil (2026-07-18)
+
+- **Ring dokunuşu düzeltildi**: merkez dışındaki her dokunuş artık segment seçiyor (dar bant hedefini tutturmak zordu)
+- **"Verimli Pencere" kartı**: uzun başlık kesilmek yerine sığacak kadar küçülüyor
+- **Ana sayfa nefes düzeni**: tahmin kartlarından sonra bloklar arası eşit cömert boşluk; alt ölü boşluk kırpıldı
+- **Takvim**: takvim ile faz şeridi arası açıldı; Spacer kalktı — uyarı lejantın hemen altında, sayfa küçük ekranda kaydırılabilir
+- **Takip modu 2×2 kart ızgarası**: taşan chip'ler yerine ikon+etiketli mod kartları (onboarding diliyle)
+- **İstatistik profesyonelleşti**: birleşik segmentli dönem seçici, bölüm başlıkları (GENEL BAKIŞ / GRAFİKLER / GEÇMİŞ VE TRENDLER), genel bakışta kahraman sayılar + küçük birimler
+- **6 dil**: Türkçe, İngilizce, İspanyolca, Almanca, Fransızca, Rusça — tam çeviri (~470 anahtar/dil). Varsayılan: cihaz dili; ayarlarda "Sistem + 6 dil" açılır menüsü. Bildirim ve widget metinleri de 6 dilde. (Arapça bilinçli ertelendi: RTL ayrı düzen turu ister)
+- **Tema**: varsayılan zaten sistem — üçlü seçici duruyor
+
 ## Yayınlanmamış — İkinci tasarım turu: 10 öneri (2026-07-18)
 
 - **Aksiyonlar ringin dibinde**: "Reglim başladı / Kayıt ekle" artık ring'in hemen altında — bir numaralı iş başparmağın menzilinde, tahminler bilgi olarak aşağıda
