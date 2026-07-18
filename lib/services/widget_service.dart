@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../core/utils/cycle_utils.dart';
@@ -18,6 +19,7 @@ import 'disguise_service.dart';
 /// (native tarafta l10n altyapısı yok).
 class WidgetService {
   static const _androidProvider = 'CycleWidgetProvider';
+  static const _androidWideProvider = 'CycleWideWidgetProvider';
 
   static const _strings = {
     'tr': {
@@ -27,6 +29,9 @@ class WidgetService {
       'week': 'hafta',
       'pill': 'Hap',
       'breakWeek': 'Ara hafta',
+      'nextPeriod': 'Sonraki regl',
+      'ovulation': 'Ovülasyon',
+      'fertile': 'Verimli pencere',
     },
     'en': {
       'day': 'Day',
@@ -35,6 +40,9 @@ class WidgetService {
       'week': 'Week',
       'pill': 'Pill',
       'breakWeek': 'Break week',
+      'nextPeriod': 'Next period',
+      'ovulation': 'Ovulation',
+      'fertile': 'Fertile window',
     },
   };
 
@@ -55,7 +63,9 @@ class WidgetService {
         await HomeWidget.saveWidgetData<String>('line1', 'Notlar');
         await HomeWidget.saveWidgetData<String>('line2', '');
         await HomeWidget.saveWidgetData<String>('ring_path', null);
+        await _savePredictions(null, null, null, null);
         await HomeWidget.updateWidget(androidName: _androidProvider);
+        await HomeWidget.updateWidget(androidName: _androidWideProvider);
         return;
       }
 
@@ -63,6 +73,10 @@ class WidgetService {
       String line1 = 'Regl Takip';
       String line2 = '';
       String? ringPath;
+      // Geniş widget'ın tahmin satırları (period/ttc modunda dolar)
+      DateTime? predPeriod;
+      DateTime? predOvulation;
+      DateTime? predFertile;
 
       if (profile != null) {
         switch (profile.trackingMode) {
@@ -106,6 +120,20 @@ class WidgetService {
               // küçük hali) PNG olarak çizilir, native ImageView gösterir
               ringPath = await _renderRingPng(
                   cycleLen, profile.averagePeriodLength, day);
+
+              // Geniş widget: üç tahmin tarihi. Geçmişte kalan
+              // ovülasyon/fertil pencere bir sonraki döngüye kaydırılır.
+              final now = DateTime.now();
+              final today = DateTime(now.year, now.month, now.day);
+              predPeriod = CycleUtils.nextFuturePeriod(
+                  profile.lastPeriodStart!, cycleLen);
+              var ovulation = CycleUtils.predictOvulation(
+                  profile.lastPeriodStart!, cycleLen);
+              while (ovulation.isBefore(today)) {
+                ovulation = ovulation.add(Duration(days: cycleLen));
+              }
+              predOvulation = ovulation;
+              predFertile = ovulation.subtract(const Duration(days: 5));
             }
             break;
         }
@@ -114,11 +142,43 @@ class WidgetService {
       await HomeWidget.saveWidgetData<String>('line1', line1);
       await HomeWidget.saveWidgetData<String>('line2', line2);
       await HomeWidget.saveWidgetData<String>('ring_path', ringPath);
+      await _savePredictions(locale, predPeriod, predOvulation, predFertile);
       await HomeWidget.updateWidget(androidName: _androidProvider);
+      await HomeWidget.updateWidget(androidName: _androidWideProvider);
     } catch (e) {
       // Widget güncellemesi asla akışı bozmasın
       debugPrint('[WIDGET] update failed: $e');
     }
+  }
+
+  /// Geniş widget'ın tahmin satırlarını yazar; null tarih = satır gizli
+  /// (native tarafta boş değerli satırlar GONE olur).
+  static Future<void> _savePredictions(
+    String? locale,
+    DateTime? period,
+    DateTime? ovulation,
+    DateTime? fertile,
+  ) async {
+    final loc = locale ?? 'tr';
+    String fmtDate(DateTime d) {
+      // Locale verisi henüz yüklenmemişse (erken çağrı) sayısal düşüş
+      try {
+        return DateFormat('d MMM', loc).format(d);
+      } catch (_) {
+        return '${d.day}.${d.month}';
+      }
+    }
+
+    Future<void> save(String key, String label, DateTime? date) async {
+      await HomeWidget.saveWidgetData<String>(
+          '${key}_label', date == null ? '' : _t(loc, label));
+      await HomeWidget.saveWidgetData<String>(
+          '${key}_value', date == null ? '' : fmtDate(date));
+    }
+
+    await save('pred1', 'nextPeriod', period);
+    await save('pred2', 'ovulation', ovulation);
+    await save('pred3', 'fertile', fertile);
   }
 
   /// Mini faz ring'ini PNG'ye çizer, dosya yolunu döndürür.
