@@ -74,40 +74,42 @@ class SettingsScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // 4 uzun TR etiketi SegmentedButton'a sığmıyordu
-                  // ("Bebek Planı" eziliyor/sarkıyordu) — Wrap + ChoiceChip
-                  // her genişlikte doğru kırılır
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                  // 2×2 mod kartları: chip'ler dar ekranda taşıyordu —
+                  // onboarding'deki mod adımıyla aynı dil (ikon + etiket)
+                  Column(
                     children: [
-                      for (final (mode, label) in [
-                        (TrackingMode.period, l10n.modePeriod),
-                        (TrackingMode.pregnancy, l10n.modePregnancy),
-                        (TrackingMode.pill, l10n.modePill),
-                        (TrackingMode.ttc, l10n.modeTtc),
-                      ])
-                        ChoiceChip(
-                          label: Text(label,
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: (profile?.trackingMode ??
-                                            TrackingMode.period) ==
-                                        mode
-                                    ? Colors.white
-                                    : AppColors.tp(context),
-                              )),
-                          selected: (profile?.trackingMode ??
-                                  TrackingMode.period) ==
-                              mode,
-                          selectedColor: AppColors.primaryStrong,
-                          backgroundColor: AppColors.bg(context),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16)),
-                          onSelected: (_) =>
-                              _onModeChanged(context, ref, mode),
+                      for (final pair in [
+                        [
+                          (TrackingMode.period, Icons.water_drop_rounded,
+                              l10n.modePeriod),
+                          (
+                            TrackingMode.pregnancy,
+                            Icons.pregnant_woman_rounded,
+                            l10n.modePregnancy
+                          ),
+                        ],
+                        [
+                          (TrackingMode.pill, Icons.medication_rounded,
+                              l10n.modePill),
+                          (TrackingMode.ttc, Icons.favorite_rounded,
+                              l10n.modeTtc),
+                        ],
+                      ]) ...[
+                        Row(
+                          children: [
+                            for (final (mode, icon, label) in pair) ...[
+                              Expanded(
+                                child: _modeCard(context, ref, profile,
+                                    mode, icon, label),
+                              ),
+                              if (mode != pair.last.$1)
+                                const SizedBox(width: 10),
+                            ],
+                          ],
                         ),
+                        if (pair.first.$1 != TrackingMode.pill)
+                          const SizedBox(height: 10),
+                      ],
                     ],
                   ),
                   if (profile?.trackingMode == TrackingMode.pregnancy) ...[
@@ -822,6 +824,68 @@ class SettingsScreen extends ConsumerWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.end,
             style: TextStyle(fontSize: 14, color: AppColors.ts(context))),
+      ),
+    );
+  }
+
+  /// Takip modu kartı (2×2 ızgaranın hücresi): ikon + etiket, seçili
+  /// hal tek vurgu ailesinin gradyanını giyer
+  Widget _modeCard(BuildContext context, WidgetRef ref, UserProfile? profile,
+      TrackingMode mode, IconData icon, String label) {
+    final selected =
+        (profile?.trackingMode ?? TrackingMode.period) == mode;
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: label,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => _onModeChanged(context, ref, mode),
+        child: ExcludeSemantics(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            decoration: BoxDecoration(
+              gradient: selected
+                  ? const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.primaryStrong,
+                        AppColors.primaryDeep,
+                      ],
+                    )
+                  : null,
+              color: selected ? null : AppColors.bg(context),
+              borderRadius: BorderRadius.circular(16),
+              border: selected
+                  ? null
+                  : Border.all(color: AppColors.dv(context)),
+            ),
+            child: Column(
+              children: [
+                Icon(icon,
+                    size: 24,
+                    color: selected
+                        ? Colors.white
+                        : AppColors.primaryStrong),
+                const SizedBox(height: 6),
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color:
+                        selected ? Colors.white : AppColors.tp(context),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

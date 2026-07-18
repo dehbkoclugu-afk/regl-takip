@@ -115,17 +115,11 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Filter chips
-            Row(
-              children: [
-                _filterChip(l10n.last3Months, 3),
-                const SizedBox(width: 8),
-                _filterChip(l10n.last6Months, 6),
-                const SizedBox(width: 8),
-                _filterChip(l10n.last12Months, 12),
-              ],
-            ).animateSafe(context).fadeIn(duration: 400.ms),
-            const SizedBox(height: 20),
+            // Tek parça segmentli filtre: üç ayrı baloncuk yerine
+            // birleşik seçici — daha derli toplu, daha "ürün" his
+            _buildFilterBar(l10n).animateSafe(context).fadeIn(duration: 400.ms),
+            const SizedBox(height: 24),
+            _sectionHeader(l10n.statsSectionOverview),
             _buildOverviewCard(l10n, avgCycle, avgPeriod, filteredRecords),
             const SizedBox(height: 16),
             // "Son döngün normaline göre nasıldı?" — filtreden bağımsız:
@@ -135,13 +129,15 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             // "Yılım": son 12 ay tek halka — düzenlilik bir bakışta.
             // Ring/faz şeridiyle aynı görsel aile (imza dili üçüncü yüzeyde)
             _buildYearRing(l10n, records, profile),
-            const SizedBox(height: 16),
+            const SizedBox(height: 28),
+            _sectionHeader(l10n.statsSectionCharts),
             _buildSymptomChart(l10n, filteredLogs),
             const SizedBox(height: 16),
             _buildMoodChart(l10n, filteredLogs),
             const SizedBox(height: 16),
             _buildPhaseInsights(l10n, filteredLogs, records, profile),
-            const SizedBox(height: 16),
+            const SizedBox(height: 28),
+            _sectionHeader(l10n.statsSectionHistory),
             _buildCycleHistory(l10n, filteredRecords),
             const SizedBox(height: 16),
             _buildTrendChart(
@@ -182,37 +178,74 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     );
   }
 
-  Widget _filterChip(String label, int months) {
-    final isSelected = _filterMonths == months;
-    return Semantics(
-      button: true,
-      selected: isSelected,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () => setState(() => _filterMonths = months),
-        child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          gradient: isSelected
-              ? const LinearGradient(
-                  colors: [AppColors.primary, AppColors.primaryDark],
-                )
-              : null,
-          color: isSelected ? null : AppColors.sf(context),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected
-                ? Colors.transparent
-                : AppColors.primary.withValues(alpha: 0.2),
-          ),
-        ),
-        child: Text(label,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: isSelected ? Colors.white : AppColors.ts(context),
-            )),
+  /// Birleşik segmentli dönem seçici: 3 ay / 6 ay / 12 ay tek kapsülde
+  Widget _buildFilterBar(AppLocalizations l10n) {
+    final options = [
+      (l10n.last3Months, 3),
+      (l10n.last6Months, 6),
+      (l10n.last12Months, 12),
+    ];
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: AppColors.sf(context),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.dv(context)),
+      ),
+      child: Row(
+        children: [
+          for (final (label, months) in options)
+            Expanded(
+              child: Semantics(
+                button: true,
+                selected: _filterMonths == months,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () => setState(() => _filterMonths = months),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      gradient: _filterMonths == months
+                          ? const LinearGradient(colors: [
+                              AppColors.primaryStrong,
+                              AppColors.primaryDeep,
+                            ])
+                          : null,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      label,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: _filterMonths == months
+                            ? Colors.white
+                            : AppColors.ts(context),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// Sayfa bölümleri: kart yığını tek düze akıyordu — kısa başlıklar
+  /// hiyerarşi kurar
+  Widget _sectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 10),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.6,
+          color: AppColors.ts(context),
         ),
       ),
     );
@@ -441,11 +474,13 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           Row(
             children: [
               Expanded(
-                child: _statItem(l10n.avgCycle, '${avgCycle.toStringAsFixed(1)} ${l10n.days}',
-                    Icons.loop_rounded, AppColors.primary),
+                child: _statItem(l10n.avgCycle,
+                    avgCycle.toStringAsFixed(1), l10n.days,
+                    Icons.loop_rounded, AppColors.primaryStrong),
               ),
               Expanded(
-                child: _statItem(l10n.avgPeriod, '${avgPeriod.toStringAsFixed(1)} ${l10n.days}',
+                child: _statItem(l10n.avgPeriod,
+                    avgPeriod.toStringAsFixed(1), l10n.days,
                     Icons.water_drop_rounded, AppColors.menstrual),
               ),
               Expanded(
@@ -454,14 +489,15 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     irregular == null
                         ? l10n.insufficientData
                         : (irregular ? l10n.irregular : l10n.regular),
+                    null,
                     irregular == true
                         ? Icons.warning_amber_rounded
                         : Icons.check_circle_rounded,
                     irregular == null
-                        ? AppColors.warning
+                        ? AppColors.warningText
                         : (irregular
                             ? AppColors.error
-                            : AppColors.success)),
+                            : AppColors.fertileWindowText)),
               ),
             ],
           ),
@@ -470,31 +506,56 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     ).animateSafe(context).fadeIn(delay: 60.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
-  Widget _statItem(String label, String value, IconData icon, Color color) {
+  /// Genel bakış metriği: kahraman sayı + küçük birim (metrik ölçek
+  /// dili). unit null ise değer metin olarak (düzenlilik durumu) yazılır.
+  Widget _statItem(
+      String label, String value, String? unit, IconData icon, Color color) {
     return Column(
       children: [
         Container(
-          width: 44,
-          height: 44,
+          width: 40,
+          height: 40,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [color.withValues(alpha: 0.25), color.withValues(alpha: 0.1)],
+              colors: [color.withValues(alpha: 0.22), color.withValues(alpha: 0.08)],
             ),
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: color, size: 22),
+          child: Icon(icon, color: color, size: 20),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         // "Yetersiz veri" gibi uzun değerler dar sütunda taşıyordu
         FittedBox(
           fit: BoxFit.scaleDown,
-          child: Text(value,
-              maxLines: 1,
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.tp(context))),
+          child: unit == null
+              ? Text(value,
+                  maxLines: 1,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: color))
+              : Text.rich(
+                  TextSpan(
+                    text: value,
+                    style: Theme.of(context)
+                        .textTheme
+                        .displaySmall!
+                        .copyWith(color: AppColors.tp(context)),
+                    children: [
+                      TextSpan(
+                        text: ' $unit',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.ts(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                  maxLines: 1,
+                ),
         ),
+        const SizedBox(height: 2),
         Text(label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

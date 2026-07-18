@@ -1373,6 +1373,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get themeDark => 'Koyu';
 
   @override
+  String get statsSectionOverview => 'GENEL BAKIŞ';
+
+  @override
+  String get statsSectionCharts => 'GRAFİKLER';
+
+  @override
+  String get statsSectionHistory => 'GEÇMİŞ VE TRENDLER';
+
+  @override
   String storySymptomsMore(int recent, int previous) {
     return 'Son 30 gün önceki döneme göre daha yoğun geçti ($recent kayıt, önceki $previous).';
   }

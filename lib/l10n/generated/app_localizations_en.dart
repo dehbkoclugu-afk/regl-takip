@@ -1373,6 +1373,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get themeDark => 'Dark';
 
   @override
+  String get statsSectionOverview => 'OVERVIEW';
+
+  @override
+  String get statsSectionCharts => 'CHARTS';
+
+  @override
+  String get statsSectionHistory => 'HISTORY & TRENDS';
+
+  @override
   String storySymptomsMore(int recent, int previous) {
     return 'The last 30 days were rougher than the period before ($recent entries vs $previous).';
   }

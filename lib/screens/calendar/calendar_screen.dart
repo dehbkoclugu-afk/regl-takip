@@ -232,7 +232,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         backgroundColor: AppColors.bg(context),
         elevation: 0,
       ),
-      body: Column(
+      // Spacer kalktı: içerik doğal akar, küçük ekranda kaydırılabilir
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.only(bottom: 92),
+        child: Column(
         children: [
           GlassCard(
             borderRadius: 20,
@@ -317,13 +320,14 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               ),
             ),
           ).animateSafe(context).fadeIn(duration: 500.ms),
-          const SizedBox(height: 12),
+          // Takvim ile faz şeridi arası nefes: şerit karta yapışıktı
+          const SizedBox(height: 20),
           // Ring'in faz haritası dili takvimde: görünen ayın günleri faz
           // renkleriyle ince bir şerit — ay bir bakışta "nasıl akacak"
           _buildMonthPhaseStrip(profile, records)
               .animateSafe(context)
               .fadeIn(delay: 150.ms, duration: 400.ms),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
@@ -336,11 +340,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               ],
             ),
           ).animateSafe(context).fadeIn(delay: 300.ms, duration: 500.ms),
-          const Spacer(),
+          // Spacer uyarıyı en dibe itip üstte ölü boşluk bırakıyordu —
+          // içerik doğal akışında, uyarı hemen lejantın altında
           Padding(
-            // Alt bar yüzen bir pill: 112 boşluk olmadan uyarı metni
-            // gezinme çubuğunun altında kalıyordu
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 112),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
             child: Row(
               children: [
                 Icon(Icons.info_outline_rounded,
@@ -361,6 +364,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             ),
           ),
         ],
+        ),
       ),
     );
   }

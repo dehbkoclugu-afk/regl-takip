@@ -159,7 +159,9 @@ class DashboardScreen extends ConsumerWidget {
       ),
       child: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 112),
+          // Alt boşluk yüzen gezinme çubuğunu aşacak kadar — fazlası
+          // sayfa sonunda ölü alan bırakıyordu
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 92),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -314,20 +316,21 @@ class DashboardScreen extends ConsumerWidget {
                   fertileWindowDate: fertileStr,
                   ovulationConfirmed: confirmedOvulation != null,
                 ),
-                const SizedBox(height: 16),
+                // Tahminlerden sonrası nefes alsın: bloklar arası eşit
+                // ve cömert boşluk (sıkışıklık şikayetinin adresi)
+                const SizedBox(height: 24),
                 if (mode == TrackingMode.ttc) ...[
                   _buildTtcCard(context, ref, l10n, cycleDay,
                       effectiveCycleLen),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                 ],
                 // Günlük faz koçluğu — faza göre pratik ipucu
                 _buildCoachCard(context, ref, phase, l10n),
               ],
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
               const QuickStatusCards(),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               _buildDisclaimer(context, l10n),
-              const SizedBox(height: 24),
             ],
           ),
         ),

@@ -2699,6 +2699,24 @@ abstract class AppLocalizations {
   /// **'Koyu'**
   String get themeDark;
 
+  /// No description provided for @statsSectionOverview.
+  ///
+  /// In tr, this message translates to:
+  /// **'GENEL BAKIŞ'**
+  String get statsSectionOverview;
+
+  /// No description provided for @statsSectionCharts.
+  ///
+  /// In tr, this message translates to:
+  /// **'GRAFİKLER'**
+  String get statsSectionCharts;
+
+  /// No description provided for @statsSectionHistory.
+  ///
+  /// In tr, this message translates to:
+  /// **'GEÇMİŞ VE TRENDLER'**
+  String get statsSectionHistory;
+
   /// No description provided for @storySymptomsMore.
   ///
   /// In tr, this message translates to:

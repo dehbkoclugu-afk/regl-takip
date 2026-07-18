@@ -115,17 +115,21 @@ class PredictionCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Flexible(
-                    child: Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.ts(context),
-                        letterSpacing: 0.3,
+                    // Uzun başlık ("Verimli Pencere") kesilmek yerine
+                    // sığacak kadar küçülür — yarım kelime hoş durmuyordu
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.ts(context),
+                          letterSpacing: 0.3,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
                       ),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   if (infoText != null) ...[

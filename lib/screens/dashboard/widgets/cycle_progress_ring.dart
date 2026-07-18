@@ -47,7 +47,6 @@ class CycleProgressRing extends StatefulWidget {
 
 class _CycleProgressRingState extends State<CycleProgressRing> {
   static const _size = 264.0;
-  static const _inset = 22.0; // painter ile aynı: yay merkezi mesafesi
 
   /// Dokunuşla seçilen segment; null = normal merkez içerik
   RingSegment? _selected;
@@ -111,9 +110,9 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
     const center = Offset(_size / 2, _size / 2);
     final d = local - center;
     final dist = d.distance;
-    const bandRadius = _size / 2 - _inset;
-    // Bant çevresinde cömert dokunma alanı (±28px)
-    if (dist < bandRadius - 28 || dist > bandRadius + 28) {
+    // Merkez içerik alanı dışındaki HER dokunuş segment seçer — dar bant
+    // hedefi parmakla tutturmak zordu, "çalışmıyor" hissi veriyordu
+    if (dist < 62) {
       _clearSelection();
       return;
     }
