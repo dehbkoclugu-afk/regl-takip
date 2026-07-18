@@ -1,5 +1,18 @@
 # Changelog
 
+## Yayınlanmamış — İkinci tasarım turu: 10 öneri (2026-07-18)
+
+- **Aksiyonlar ringin dibinde**: "Reglim başladı / Kayıt ekle" artık ring'in hemen altında — bir numaralı iş başparmağın menzilinde, tahminler bilgi olarak aşağıda
+- **Dokunulabilir ring**: segmente dokununca yay kalınlaşıyor, merkez o fazın adını + takvim tarih aralığını + süresini gösteriyor; ikinci dokunuş ya da 5 sn sonra normale dönüyor
+- **7 günlük mini şerit**: ana ekranda dün/bugün/yarın bağlamı (gün, faz rengi bandı, kayıt noktası); geçmiş güne dokununca hızlı kayıt açılıyor
+- **İkon durum dili**: ayarlardaki anahtar satırlarında ikon rozeti özellik kapalıyken soluklaşıyor — açık/kapalı hal switch'e bakmadan okunuyor
+- **Desenli faz renkleri (erişilebilirlik)**: yeni ayar; ring, hafta şeridi ve ay şeridinde her faza renk + farklı doku (çapraz/noktalı/uzun çizgi) — renk körlüğünde turuncu ailesi artık ayırt edilebilir
+- **Container transform**: günlük ekranında kategori kartı, açtığı takip ekranının kendisine büyüyerek dönüşüyor (hareket kısıtlıysa düz geçiş)
+- **Hikâye cümleleri**: istatistik grafiklerinin altına veriden türetilen tek cümle ("Son 30 gün önceki döneme göre daha rahat geçti", "Bu dönemde 1,2 kg azalma var")
+- **Takvimde uzun-bas önizleme**: güne uzun basınca hafif baloncukta tarih + durum çipleri, 2,5 sn sonra kendiliğinden kayboluyor — sheet açmadan hızlı tarama
+- **Onboarding'de imza sahnesi**: karşılama sayfasında ring segment segment çiziliyor, damla glifi sona doğru beliriyor
+- **4×2 geniş widget**: ikinci widget boyu — mini ring + sonraki regl / ovülasyon / verimli pencere tarihleri
+
 ## Yayınlanmamış — Görsel kimlik geçişi: 10 temel (2026-07-17)
 
 - **Tek vurgu ailesi**: mor marka rengi olmaktan çıktı (yalnız ovülasyon fazı ve semptom kategorisinde yaşıyor); pembe ailesine bordo uç (primaryDeep) eklendi — gradyanlar, vurgu ikonları, ayar renkleri tek aileden
