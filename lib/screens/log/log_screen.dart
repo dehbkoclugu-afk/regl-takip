@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -6,10 +7,19 @@ import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/enum_labels.dart';
-import '../../core/widgets/glass_card.dart';
 import '../../models/daily_log.dart';
 import '../../providers/providers.dart';
 import '../../core/utils/motion.dart';
+import '../flow/flow_tracking_screen.dart';
+import '../medication/medication_tracking_screen.dart';
+import '../mood/mood_tracking_screen.dart';
+import '../notes/notes_screen.dart';
+import '../sexual_activity/sexual_activity_screen.dart';
+import '../sleep/sleep_tracking_screen.dart';
+import '../symptoms/symptom_tracking_screen.dart';
+import '../temperature/temperature_tracking_screen.dart';
+import '../water/water_tracking_screen.dart';
+import '../weight/weight_tracking_screen.dart';
 
 class LogScreen extends ConsumerStatefulWidget {
   const LogScreen({super.key});
@@ -184,25 +194,34 @@ class _LogScreenState extends ConsumerState<LogScreen> {
   Widget _buildCategoryGrid(DailyLog? log, AppLocalizations l10n) {
     final categories = [
       _CategoryItem(Icons.water_drop_rounded, l10n.flow, AppColors.menstrual,
-          _getFlowSummary(log, l10n), () => context.push('/flow')),
+          _getFlowSummary(log, l10n), '/flow',
+          (_) => const FlowTrackingScreen()),
       _CategoryItem(Icons.face_rounded, l10n.symptoms, AppColors.secondary,
-          _getSymptomSummary(log, l10n), () => context.push('/symptoms')),
+          _getSymptomSummary(log, l10n), '/symptoms',
+          (_) => const SymptomTrackingScreen()),
       _CategoryItem(Icons.mood_rounded, l10n.mood, AppColors.moodHappy,
-          _getMoodSummary(log, l10n), () => context.push('/mood')),
-      _CategoryItem(Icons.thermostat_rounded, l10n.temperature, AppColors.temperature,
-          _getTempSummary(log), () => context.push('/temperature')),
-      _CategoryItem(Icons.monitor_weight_rounded, l10n.weight, AppColors.weightColor,
-          _getWeightSummary(log), () => context.push('/weight')),
-      _CategoryItem(Icons.local_drink_rounded, l10n.waterIntake, AppColors.water,
-          _getWaterSummary(log, l10n), () => context.push('/water')),
+          _getMoodSummary(log, l10n), '/mood',
+          (_) => const MoodTrackingScreen()),
+      _CategoryItem(Icons.thermostat_rounded, l10n.temperature,
+          AppColors.temperature, _getTempSummary(log), '/temperature',
+          (_) => const TemperatureTrackingScreen()),
+      _CategoryItem(Icons.monitor_weight_rounded, l10n.weight,
+          AppColors.weightColor, _getWeightSummary(log), '/weight',
+          (_) => const WeightTrackingScreen()),
+      _CategoryItem(Icons.local_drink_rounded, l10n.waterIntake,
+          AppColors.water, _getWaterSummary(log, l10n), '/water',
+          (_) => const WaterTrackingScreen()),
       _CategoryItem(Icons.bedtime_rounded, l10n.sleep, AppColors.sleep,
-          _getSleepSummary(log), () => context.push('/sleep')),
-      _CategoryItem(Icons.favorite_rounded, l10n.sexualActivity, AppColors.moodRomantic,
-          _getSexualSummary(log, l10n), () => context.push('/sexual-activity')),
-      _CategoryItem(Icons.medication_rounded, l10n.medication, AppColors.medication,
-          _getMedSummary(log, l10n), () => context.push('/medication')),
+          _getSleepSummary(log), '/sleep',
+          (_) => const SleepTrackingScreen()),
+      _CategoryItem(Icons.favorite_rounded, l10n.sexualActivity,
+          AppColors.moodRomantic, _getSexualSummary(log, l10n),
+          '/sexual-activity', (_) => const SexualActivityScreen()),
+      _CategoryItem(Icons.medication_rounded, l10n.medication,
+          AppColors.medication, _getMedSummary(log, l10n), '/medication',
+          (_) => const MedicationTrackingScreen()),
       _CategoryItem(Icons.edit_note_rounded, l10n.notes, AppColors.notesColor,
-          _getNotesSummary(log), () => context.push('/notes')),
+          _getNotesSummary(log), '/notes', (_) => const NotesScreen()),
     ];
 
     return GridView.builder(
@@ -217,22 +236,55 @@ class _LogScreenState extends ConsumerState<LogScreen> {
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final cat = categories[index];
+        final motion = context.motionEnabled;
+        // Container transform: kart, açılan ekranın kendisine BÜYÜR —
+        // "bu ekran o karttan çıktı" mekânsal sürekliliği. Hareket
+        // kısıtlıysa düz rota geçişi.
+        final Widget card;
+        if (motion) {
+          card = OpenContainer(
+            transitionDuration: const Duration(milliseconds: 350),
+            transitionType: ContainerTransitionType.fadeThrough,
+            closedElevation: 0,
+            openElevation: 0,
+            closedShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20)),
+            closedColor: AppColors.sf(context),
+            middleColor: AppColors.bg(context),
+            openColor: AppColors.bg(context),
+            openBuilder: (context, _) => cat.screenBuilder(context),
+            closedBuilder: (context, open) => InkWell(
+              onTap: open,
+              child: _buildCategoryCardBody(cat),
+            ),
+          );
+        } else {
+          card = Material(
+            color: AppColors.sf(context),
+            borderRadius: BorderRadius.circular(20),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: () => context.push(cat.route),
+              child: _buildCategoryCardBody(cat),
+            ),
+          );
+        }
         return Semantics(
           button: true,
           label: cat.summary.isEmpty
               ? cat.label
               : '${cat.label}: ${cat.summary}',
-          child: GlassCard(
-            borderRadius: 20,
-            blur: 0,
-            opacity: 0.15,
-            padding: EdgeInsets.zero,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(20),
-                onTap: cat.onTap,
-                child: Padding(
+          child: card,
+        ).animateSafe(context)
+            .fadeIn(delay: (index * 50).ms, duration: 300.ms)
+            .scale(begin: const Offset(0.95, 0.95), end: const Offset(1, 1),
+                delay: (index * 50).ms, duration: 300.ms);
+      },
+    );
+  }
+
+  Widget _buildCategoryCardBody(_CategoryItem cat) {
+    return Padding(
                   padding: const EdgeInsets.all(14),
                   child: ExcludeSemantics(
                     child: Column(
@@ -286,15 +338,6 @@ class _LogScreenState extends ConsumerState<LogScreen> {
               ],
                     ),
                   ),
-                ),
-              ),
-            ),
-          ),
-        ).animateSafe(context)
-            .fadeIn(delay: (index * 50).ms, duration: 300.ms)
-            .scale(begin: const Offset(0.95, 0.95), end: const Offset(1, 1),
-                delay: (index * 50).ms, duration: 300.ms);
-      },
     );
   }
 
@@ -363,7 +406,13 @@ class _CategoryItem {
   final String label;
   final Color color;
   final String summary;
-  final VoidCallback onTap;
 
-  _CategoryItem(this.icon, this.label, this.color, this.summary, this.onTap);
+  /// Hareket kısıtlı kullanıcı için düz rota geçişi
+  final String route;
+
+  /// Container transform'un açtığı ekran (rota tablosuyla aynı ekranlar)
+  final WidgetBuilder screenBuilder;
+
+  _CategoryItem(this.icon, this.label, this.color, this.summary, this.route,
+      this.screenBuilder);
 }
