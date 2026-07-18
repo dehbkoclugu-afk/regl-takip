@@ -2699,6 +2699,18 @@ abstract class AppLocalizations {
   /// **'Koyu'**
   String get themeDark;
 
+  /// No description provided for @colorBlindPattern.
+  ///
+  /// In tr, this message translates to:
+  /// **'Desenli faz renkleri'**
+  String get colorBlindPattern;
+
+  /// No description provided for @colorBlindPatternDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Faz bantlarına doku ekler — renkleri ayırt etmek zorsa'**
+  String get colorBlindPatternDesc;
+
   /// No description provided for @undo.
   ///
   /// In tr, this message translates to:

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/access.dart';
 import '../../../core/utils/cycle_utils.dart';
+import '../../../core/utils/phase_pattern.dart';
 import '../../../core/utils/ring_segments.dart';
 import '../../../models/enums.dart';
 import '../../../providers/providers.dart';
@@ -148,6 +149,11 @@ class WeekStrip extends ConsumerWidget {
                   color: barColor,
                   borderRadius: BorderRadius.circular(3),
                 ),
+                // Doku modu: renk + desen çift kodlama
+                foregroundDecoration: ref.watch(phasePatternProvider)
+                    ? patternOverlayFor(barColor,
+                        radius: BorderRadius.circular(3))
+                    : null,
               ),
               const SizedBox(height: 4),
               // Kayıt noktası: o güne günlük girildiyse

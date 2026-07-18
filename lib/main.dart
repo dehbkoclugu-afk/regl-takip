@@ -52,6 +52,7 @@ Future<void> _run() async {
   final trialStart = await PremiumService.ensureTrialStart();
   final prefs = await SharedPreferences.getInstance();
   final cachedPremium = prefs.getBool('premium_active') ?? false;
+  final phasePattern = prefs.getBool('phase_pattern') ?? false;
 
   // Premium durumu ve widget güncellemesi arka planda
   unawaited(PremiumService().init());
@@ -91,6 +92,7 @@ Future<void> _run() async {
       overrides: [
         trialStartProvider.overrideWith((ref) => trialStart),
         isPremiumProvider.overrideWith((ref) => cachedPremium),
+        phasePatternProvider.overrideWith((ref) => phasePattern),
         if (profile != null) ...[
           themeModeProvider.overrideWith((ref) => themeModeFromProfile(profile)),
           localeProvider.overrideWith((ref) => Locale(profile.language)),

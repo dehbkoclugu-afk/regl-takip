@@ -9,6 +9,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/cycle_utils.dart';
 import '../../../core/utils/motion.dart';
+import '../../../core/utils/phase_pattern.dart';
 import '../../../core/utils/ring_segments.dart';
 import '../../../core/widgets/phase_glyph.dart';
 
@@ -25,6 +26,10 @@ class CycleProgressRing extends StatefulWidget {
   /// takvim karşılığı. null ise gün numarası aralığı gösterilir.
   final DateTime? lastPeriodStart;
 
+  /// Renk körü dostu doku modu: segmentlere faz başına farklı kesik
+  /// çizgi deseni biner (renk + doku çift kodlama)
+  final bool patterned;
+
   const CycleProgressRing({
     super.key,
     required this.cycleDay,
@@ -33,6 +38,7 @@ class CycleProgressRing extends StatefulWidget {
     required this.phase,
     required this.daysUntilNextPeriod,
     this.lastPeriodStart,
+    this.patterned = false,
   });
 
   @override
@@ -184,6 +190,7 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
               ? Colors.white.withValues(alpha: 0.08)
               : Colors.black.withValues(alpha: 0.05),
           highlighted: _selected,
+          patterned: widget.patterned,
         ),
         child: Center(
           child: AnimatedSwitcher(
@@ -359,6 +366,9 @@ class _SegmentedRingPainter extends CustomPainter {
   /// Dokunuşla seçilen segment: kalınlaşarak "seni duydum" der
   final RingSegment? highlighted;
 
+  /// Renk körü dostu doku: faz başına farklı kesik çizgi overlay'i
+  final bool patterned;
+
   static const _stroke = 16.0;
   static const _inset = 22.0; // dış kenardan yay merkezine mesafe
   static const _gapRadians = 0.035; // segmentler arası nefes boşluğu
@@ -370,6 +380,7 @@ class _SegmentedRingPainter extends CustomPainter {
     required this.ovulationDay,
     required this.trackColor,
     this.highlighted,
+    this.patterned = false,
   });
 
   /// Gün -> açı: gün 1 üstten (saat 12) başlar, saat yönünde ilerler.
@@ -405,6 +416,21 @@ class _SegmentedRingPainter extends CustomPainter {
         ..strokeCap = StrokeCap.round
         ..color = segment.color;
       canvas.drawArc(rect, start, end - start, false, paint);
+
+      // Doku modu: renk + desen çift kodlama (renk körü erişilebilirliği)
+      if (patterned) {
+        final intervals = dashIntervalsFor(segment.color);
+        if (intervals != null) {
+          canvas.drawPath(
+            dashArc(rect, start, end - start, intervals),
+            Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 3
+              ..strokeCap = StrokeCap.round
+              ..color = Colors.white.withValues(alpha: 0.65),
+          );
+        }
+      }
     }
 
     // Ovülasyon işareti: bandın içinde koyu mor nokta
@@ -443,5 +469,6 @@ class _SegmentedRingPainter extends CustomPainter {
       oldDelegate.todayDay != todayDay ||
       oldDelegate.cycleLength != cycleLength ||
       oldDelegate.trackColor != trackColor ||
-      oldDelegate.highlighted != highlighted;
+      oldDelegate.highlighted != highlighted ||
+      oldDelegate.patterned != patterned;
 }

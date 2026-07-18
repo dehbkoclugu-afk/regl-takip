@@ -1373,6 +1373,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get themeDark => 'Koyu';
 
   @override
+  String get colorBlindPattern => 'Desenli faz renkleri';
+
+  @override
+  String get colorBlindPatternDesc => 'Faz bantlarına doku ekler — renkleri ayırt etmek zorsa';
+
+  @override
   String get undo => 'Geri al';
 
   @override

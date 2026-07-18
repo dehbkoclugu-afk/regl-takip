@@ -9,6 +9,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/access.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
+import '../../core/utils/phase_pattern.dart';
 import '../../core/utils/ring_segments.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
@@ -373,18 +374,27 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   children: [
                     for (var d = 1; d <= daysInMonth; d++)
                       Expanded(
-                        child: Container(
-                          margin:
-                              const EdgeInsets.symmetric(horizontal: 0.5),
-                          color: _stripColorFor(
-                            DateTime(_focusedDay.year, _focusedDay.month, d),
+                        child: Builder(builder: (context) {
+                          final color = _stripColorFor(
+                            DateTime(
+                                _focusedDay.year, _focusedDay.month, d),
                             records,
                             lastStart,
                             cycleLen,
                             segments,
                             trackColor,
-                          ),
-                        ),
+                          );
+                          return Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 0.5),
+                            color: color,
+                            // Doku modu: renk + desen çift kodlama
+                            foregroundDecoration:
+                                ref.watch(phasePatternProvider)
+                                    ? patternOverlayFor(color)
+                                    : null,
+                          );
+                        }),
                       ),
                   ],
                 ),

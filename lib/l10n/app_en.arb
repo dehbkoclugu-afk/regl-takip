@@ -586,6 +586,8 @@
   "themeSystem": "System",
   "themeLight": "Light",
   "themeDark": "Dark",
+  "colorBlindPattern": "Patterned phase colors",
+  "colorBlindPatternDesc": "Adds texture to phase bands — helpful when colors are hard to tell apart",
   "undo": "Undo",
   "periodMarkedStarted": "Period start saved",
   "periodMarkedEnded": "Period end saved",

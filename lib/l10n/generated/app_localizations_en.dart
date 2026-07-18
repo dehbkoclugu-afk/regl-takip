@@ -1373,6 +1373,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get themeDark => 'Dark';
 
   @override
+  String get colorBlindPattern => 'Patterned phase colors';
+
+  @override
+  String get colorBlindPatternDesc => 'Adds texture to phase bands — helpful when colors are hard to tell apart';
+
+  @override
   String get undo => 'Undo';
 
   @override

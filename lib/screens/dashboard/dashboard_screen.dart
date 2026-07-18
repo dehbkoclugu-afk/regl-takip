@@ -293,6 +293,7 @@ class DashboardScreen extends ConsumerWidget {
                   phase: phase,
                   daysUntilNextPeriod: daysUntil,
                   lastPeriodStart: profile?.lastPeriodStart,
+                  patterned: ref.watch(phasePatternProvider),
                 ),
                 const SizedBox(height: 20),
                 // 7 günlük mini şerit: dün/bugün/yarın bağlamı takvime

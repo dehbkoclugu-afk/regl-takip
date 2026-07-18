@@ -586,6 +586,8 @@
   "themeSystem": "Sistem",
   "themeLight": "Açık",
   "themeDark": "Koyu",
+  "colorBlindPattern": "Desenli faz renkleri",
+  "colorBlindPatternDesc": "Faz bantlarına doku ekler — renkleri ayırt etmek zorsa",
   "undo": "Geri al",
   "periodMarkedStarted": "Regl başlangıcı kaydedildi",
   "periodMarkedEnded": "Regl bitişi kaydedildi",

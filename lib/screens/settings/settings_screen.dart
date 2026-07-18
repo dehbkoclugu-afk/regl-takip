@@ -9,6 +9,7 @@ import '../../core/widgets/glass_card.dart';
 import '../../models/user_profile.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import '../../core/utils/cycle_utils.dart';
@@ -224,6 +225,21 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                 ),
               ),
+            ),
+            _divider(context),
+            // Renk körü dostu doku modu: faz bantlarına renk + desen
+            // çift kodlama (folliküler/luteal turuncu ailesi
+            // deuteranopiada ayrışmıyor)
+            _switchTile(context,
+              Icons.texture_rounded,
+              l10n.colorBlindPattern,
+              ref.watch(phasePatternProvider),
+              (val) async {
+                ref.read(phasePatternProvider.notifier).state = val;
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setBool('phase_pattern', val);
+              },
+              subtitle: l10n.colorBlindPatternDesc,
             ),
             _divider(context),
             _switchTile(context,

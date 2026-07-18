@@ -46,6 +46,11 @@ final themeModeProvider = StateProvider<ThemeMode>((ref) {
   return ThemeMode.system;
 });
 
+/// Renk körü dostu doku modu: faz bantlarına renk + desen çift kodlama.
+/// Kalıcılığı SharedPreferences 'phase_pattern' — main.dart açılışta
+/// override eder, ayarlar değiştirince yazar.
+final phasePatternProvider = StateProvider<bool>((ref) => false);
+
 // ─── Erişim (deneme / premium / ücretsiz) ─────────────────────────────
 
 /// 30 gün tam deneme → abonelik yoksa yalnız regl takibi.
