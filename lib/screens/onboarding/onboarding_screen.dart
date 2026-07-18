@@ -12,6 +12,7 @@ import '../../providers/providers.dart';
 import '../../models/enums.dart';
 import '../../models/user_profile.dart';
 import '../../services/hive_service.dart';
+import 'widgets/animated_ring_intro.dart';
 import 'widgets/onboarding_page.dart';
 import '../../core/utils/motion.dart';
 
@@ -299,6 +300,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       setState(() => _currentMainPage = index);
                     },
                     children: [
+                      // İlk karşılama: imza ring segment segment çizilir
                       OnboardingPage(
                         icon: Icons.favorite,
                         title: l10n.welcomeInfoTitle,
@@ -307,6 +309,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           AppColors.primary,
                           AppColors.primaryDark,
                         ],
+                        hero: const AnimatedRingIntro(),
                       ),
                       _buildSetupPage(),
                     ],

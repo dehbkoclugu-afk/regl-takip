@@ -13,12 +13,17 @@ class OnboardingPage extends StatelessWidget {
   final String description;
   final List<Color> gradientColors;
 
+  /// Verilirse gradyan daire + ikon yerine bu widget çizilir
+  /// (ör. animasyonlu imza ring'i)
+  final Widget? hero;
+
   const OnboardingPage({
     super.key,
     required this.icon,
     required this.title,
     required this.description,
     required this.gradientColors,
+    this.hero,
   });
 
   @override
@@ -30,38 +35,40 @@ class OnboardingPage extends StatelessWidget {
         children: [
           const Spacer(flex: 2),
 
-          // --- Gradient circle with icon ---
-          Container(
-            width: 180,
-            height: 180,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: gradientColors,
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: gradientColors.first.withValues(alpha: 0.4),
-                  blurRadius: 30,
-                  offset: const Offset(0, 12),
-                ),
-              ],
-            ),
-            child: Icon(
-              icon,
-              size: 80,
-              color: Colors.white,
-            ),
-          )
+          // --- Hero görseli: özel widget ya da gradyan daire + ikon ---
+          (hero ??
+                  Container(
+                    width: 180,
+                    height: 180,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: gradientColors,
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color:
+                              gradientColors.first.withValues(alpha: 0.4),
+                          blurRadius: 30,
+                          offset: const Offset(0, 12),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      icon,
+                      size: 80,
+                      color: Colors.white,
+                    ),
+                  ))
               .animateSafe(context)
               .fadeIn(duration: 600.ms, curve: Curves.easeOut)
               .scale(
                 begin: const Offset(0.5, 0.5),
                 end: const Offset(1.0, 1.0),
                 duration: 600.ms,
-                curve: Curves.elasticOut,
+                curve: Curves.easeOutBack,
               ),
 
           const SizedBox(height: 48),
