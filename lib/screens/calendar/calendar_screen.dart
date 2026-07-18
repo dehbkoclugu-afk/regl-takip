@@ -1,5 +1,8 @@
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -31,6 +34,157 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+
+  // Uzun-bas önizleme baloncuğu: sheet törenine girmeden hızlı bakış
+  OverlayEntry? _peekEntry;
+  Timer? _peekTimer;
+
+  @override
+  void dispose() {
+    _removePeek();
+    super.dispose();
+  }
+
+  void _removePeek() {
+    _peekTimer?.cancel();
+    _peekTimer = null;
+    _peekEntry?.remove();
+    _peekEntry = null;
+  }
+
+  /// Günün özetini geçici baloncukta gösterir; parmağı kaldırınca sheet
+  /// açılmaz, baloncuk 2,5 sn sonra kendiliğinden kaybolur.
+  void _showDayPeek(DateTime day, List<PeriodRecord> records,
+      Map<String, DailyLog> dailyLogs) {
+    _removePeek();
+    HapticFeedback.lightImpact();
+
+    final l10n = AppLocalizations.of(context)!;
+    final profile = ref.read(userProfileProvider);
+    final locale = Localizations.localeOf(context).toString();
+
+    final isPeriod = _isPeriodDay(day, records);
+    var isOvulation = false;
+    var isFertile = false;
+    var isPredicted = false;
+    final lastStart = profile?.lastPeriodStart;
+    if (profile?.trackingMode != TrackingMode.pregnancy &&
+        lastStart != null) {
+      final cycleLen = ref.read(effectiveCycleLengthProvider);
+      isOvulation = CycleUtils.isOvulationDay(day, lastStart, cycleLen);
+      isFertile = CycleUtils.isInFertileWindow(day, lastStart, cycleLen);
+      isPredicted = !isPeriod &&
+          CycleUtils.isPredictedPeriodDay(
+              day, lastStart, cycleLen, profile!.averagePeriodLength);
+    }
+    final dateKey =
+        '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
+    final log = dailyLogs[dateKey];
+
+    final states = <(String, Color)>[
+      if (isPeriod) (l10n.periodDayLabel, AppColors.ringMenstrual),
+      if (isPredicted) (l10n.predicted, AppColors.primaryStrong),
+      if (isOvulation) (l10n.ovulation, AppColors.ringOvulation),
+      if (isFertile) (l10n.fertile, AppColors.fertileWindowText),
+      if (log != null && log.symptoms.isNotEmpty)
+        (l10n.nSymptoms(log.symptoms.length), AppColors.primaryDeep),
+      if (log != null && log.symptoms.isEmpty)
+        (l10n.dayHasRecord, AppColors.primaryDeep),
+    ];
+
+    final isDark = AppColors.isDark(context);
+    final entry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: MediaQuery.of(context).padding.top + 64,
+        left: 36,
+        right: 36,
+        child: IgnorePointer(
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: 1),
+            duration: const Duration(milliseconds: 160),
+            curve: Curves.easeOut,
+            builder: (context, t, child) => Opacity(
+              opacity: t,
+              child: Transform.translate(
+                offset: Offset(0, (1 - t) * -6),
+                child: child,
+              ),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? AppColors.cardDark
+                      : AppColors.surfaceElevated,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.18),
+                      blurRadius: 20,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      DateFormat('d MMMM EEEE', locale).format(day),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.tp(context),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    if (states.isEmpty)
+                      Text(
+                        l10n.noDataYet,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.ts(context),
+                        ),
+                      )
+                    else
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          for (final (label, color) in states)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 9, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: color.withValues(alpha: 0.14),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                label,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: color,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    Overlay.of(context).insert(entry);
+    _peekEntry = entry;
+    _peekTimer =
+        Timer(const Duration(milliseconds: 2500), _removePeek);
+  }
 
   bool _isPeriodDay(DateTime day, List<PeriodRecord> records) {
     for (final record in records) {
@@ -102,6 +256,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 ref.read(selectedDateProvider.notifier).state = selectedDay;
                 _showDayDetailSheet(context, selectedDay, records, dailyLogs);
               },
+              // Uzun basış: sheet açmadan hafif önizleme baloncuğu
+              onDayLongPressed: (day, _) =>
+                  _showDayPeek(day, records, dailyLogs),
               onFormatChanged: (format) {
                 setState(() => _calendarFormat = format);
               },
