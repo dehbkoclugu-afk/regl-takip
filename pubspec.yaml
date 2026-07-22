@@ -49,6 +49,28 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   hive_generator: ^2.0.1
   build_runner: ^2.4.13
+  flutter_launcher_icons: ^0.14.1
+  flutter_native_splash: ^2.4.1
+
+# App icon: dart run flutter_launcher_icons
+# ponytail: R1 is 512px; 1024px source would be sharper on iOS.
+flutter_launcher_icons:
+  image_path: "assets/art/R1-logomark.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  background_color_ios: "#FDF2F8"
+  adaptive_icon_background: "#FDF2F8"
+  adaptive_icon_foreground: "assets/art/R1-logomark.png"
+
+# Splash: dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#FDF2F8"
+  background_image: "assets/art/R2-splash.png"
+  image: "assets/art/R1-logomark.png"
+  android_12:
+    image: "assets/art/R1-logomark.png"
+    color: "#FDF2F8"
 
 flutter:
   uses-material-design: true

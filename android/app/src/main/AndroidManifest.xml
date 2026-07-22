@@ -62,7 +62,7 @@
             android:exported="true"
             android:enabled="false"
             android:label="@string/disguised_name"
-            android:icon="@drawable/ic_disguised"
+            android:icon="@mipmap/ic_launcher"
             android:theme="@style/NeutralLaunchTheme"
             android:targetActivity=".MainActivity">
             <intent-filter>

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/art/art_slot.dart';
 import '../../providers/providers.dart';
 import '../../services/premium_service.dart';
 
@@ -79,9 +80,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(Icons.workspace_premium_rounded,
-                  size: 48, color: AppColors.primaryStrong),
-              const SizedBox(height: 12),
+              ArtSlot(id: 'R17-paywall-hero', height: 200, radius: 24),
+              const SizedBox(height: 16),
               Text(
                 l10n.paywallTitle,
                 textAlign: TextAlign.center,
