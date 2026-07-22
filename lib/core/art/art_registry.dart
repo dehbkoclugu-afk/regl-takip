@@ -44,8 +44,23 @@ const Map<String, ArtSpec> artSpecs = {
 };
 
 /// Finished art. id -> asset path. Add a line here once the PNG is in place.
-/// Empty on purpose: every slot renders a placeholder until you fill it in.
 const Map<String, String> artRegistry = {
-  // 'R1-logomark': 'assets/art/R1-logomark.png',
-  // 'R3-welcome-hero': 'assets/art/R3-welcome-hero.png',
+  'R1-logomark': 'assets/art/R1-logomark.png',
+  'R2-splash': 'assets/art/R2-splash.png',
+  'R3-welcome-hero': 'assets/art/R3-welcome-hero.png',
+  'R4-onb-tracking': 'assets/art/R4-onb-tracking.png',
+  'R5-onb-privacy': 'assets/art/R5-onb-privacy.png',
+  'R6-phase-menstrual': 'assets/art/R6-phase-menstrual.png',
+  'R7-phase-follicular': 'assets/art/R7-phase-follicular.png',
+  'R8-phase-ovulation': 'assets/art/R8-phase-ovulation.png',
+  'R9-phase-luteal': 'assets/art/R9-phase-luteal.png',
+  'R10-empty-notes': 'assets/art/R10-empty-notes.png',
+  'R11-empty-calendar': 'assets/art/R11-empty-calendar.png',
+  'R12-empty-statistics': 'assets/art/R12-empty-statistics.png',
+  // 'R13-mood-spot': 'assets/art/R13-mood-spot.png', // henüz üretilmedi
+  'R14-symptoms-spot': 'assets/art/R14-symptoms-spot.png',
+  'R15-prediction-hero': 'assets/art/R15-prediction-hero.png',
+  'R16-profile-header': 'assets/art/R16-profile-header.png',
+  'R17-paywall-hero': 'assets/art/R17-paywall-hero.png',
+  'R18-share-card': 'assets/art/R18-share-card.png',
 };
