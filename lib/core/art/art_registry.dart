@@ -57,7 +57,7 @@ const Map<String, String> artRegistry = {
   'R10-empty-notes': 'assets/art/R10-empty-notes.png',
   'R11-empty-calendar': 'assets/art/R11-empty-calendar.png',
   'R12-empty-statistics': 'assets/art/R12-empty-statistics.png',
-  // 'R13-mood-spot': 'assets/art/R13-mood-spot.png', // henüz üretilmedi
+  'R13-mood-spot': 'assets/art/R13-mood-spot.png',
   'R14-symptoms-spot': 'assets/art/R14-symptoms-spot.png',
   'R15-prediction-hero': 'assets/art/R15-prediction-hero.png',
   'R16-profile-header': 'assets/art/R16-profile-header.png',

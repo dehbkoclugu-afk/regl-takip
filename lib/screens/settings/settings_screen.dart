@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/access.dart';
 import '../../core/widgets/glass_card.dart';
+import '../../core/art/art_slot.dart';
 import '../../models/user_profile.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
@@ -46,6 +47,9 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 112),
         children: [
+          // Profil başlığı görseli
+          ArtSlot(id: 'R16-profile-header', height: 120, radius: 20),
+          const SizedBox(height: 16),
           // Profile section
           _sectionHeader(context, l10n.profileSection),
           _settingsCard(context, [
