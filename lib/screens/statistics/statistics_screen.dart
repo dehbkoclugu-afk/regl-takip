@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/art/art_slot.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_insights.dart';
@@ -115,6 +116,27 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Hiç kayıt yoksa: tek seferlik boş-durum görseli + yönlendirme
+            // (kart içi boşlukların üstünde, tekrarı önler)
+            if (records.isEmpty) ...[
+              ArtSlot(
+                id: 'R12-empty-statistics',
+                height: 180,
+                fit: BoxFit.contain,
+              ).animateSafe(context).fadeIn(duration: 400.ms),
+              const SizedBox(height: 12),
+              Center(
+                child: Text(
+                  l10n.noDataYet,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.ts(context),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
             // Tek parça segmentli filtre: üç ayrı baloncuk yerine
             // birleşik seçici — daha derli toplu, daha "ürün" his
             _buildFilterBar(l10n).animateSafe(context).fadeIn(duration: 400.ms),
