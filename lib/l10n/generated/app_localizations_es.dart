@@ -1394,6 +1394,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get restoringPurchases => 'Restaurando compras…';
 
   @override
+  String get backdateHint => 'Mantén pulsado para elegir otro día';
+
+  @override
+  String get periodStartDateHelp => '¿Cuándo empezó tu regla?';
+
+  @override
+  String get periodEndDateHelp => '¿Cuándo terminó tu regla?';
+
+  @override
   String get reportTitle => 'Informe de salud del ciclo';
 
   @override

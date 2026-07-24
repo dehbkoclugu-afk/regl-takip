@@ -53,6 +53,7 @@ Future<void> _run() async {
   final prefs = await SharedPreferences.getInstance();
   final cachedPremium = prefs.getBool('premium_active') ?? false;
   final phasePattern = prefs.getBool('phase_pattern') ?? false;
+  final backdateHint = prefs.getBool('backdate_hint_needed') ?? true;
 
   // Premium durumu ve widget güncellemesi arka planda
   unawaited(PremiumService().init());
@@ -93,6 +94,7 @@ Future<void> _run() async {
         trialStartProvider.overrideWith((ref) => trialStart),
         isPremiumProvider.overrideWith((ref) => cachedPremium),
         phasePatternProvider.overrideWith((ref) => phasePattern),
+        backdateHintProvider.overrideWith((ref) => backdateHint),
         if (profile != null) ...[
           themeModeProvider.overrideWith((ref) => themeModeFromProfile(profile)),
           // 'system' = override yok, MaterialApp cihaz dilini izler

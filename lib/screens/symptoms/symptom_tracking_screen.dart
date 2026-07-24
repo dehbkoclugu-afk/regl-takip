@@ -202,14 +202,21 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(_symptomIcon(symptom),
-                    color: isSelected ? AppColors.primary : AppColors.ts(context),
+                    // primary beyaz zeminde 2,01:1 — ikon için de 3:1 gerekir
+                    color: isSelected
+                        ? AppColors.primaryStrong
+                        : AppColors.ts(context),
                     size: 28),
                 const SizedBox(height: 6),
                 Text(_symptomName(symptom, l10n),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                      color: isSelected ? AppColors.primary : AppColors.tp(context),
+                      // Seçim etiketi primary'ye dönüyordu: 2,01:1. Ailenin
+                      // bordo ucu aynı kimliği 6,30:1 ile veriyor
+                      color: isSelected
+                          ? AppColors.primaryDeep
+                          : AppColors.tp(context),
                     ),
                     textAlign: TextAlign.center, maxLines: 1,
                     overflow: TextOverflow.ellipsis),

@@ -139,8 +139,13 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                                     fontSize: 13,
                                     fontWeight: isSelected
                                         ? FontWeight.w700 : FontWeight.w600,
+                                    // Pastelin kendisi metin olarak okunmuyordu
+                                    // (moodHappy beyaz üstünde 1,26:1); ton
+                                    // korunur, parlaklık kısılır
                                     color: isSelected
-                                        ? emojiData.$2 : AppColors.ts(context),
+                                        ? AppColors.readable(
+                                            context, emojiData.$2)
+                                        : AppColors.ts(context),
                                   )),
                             ],
                           ),

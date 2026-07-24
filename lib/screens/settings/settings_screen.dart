@@ -62,6 +62,11 @@ class SettingsScreen extends ConsumerWidget {
             _divider(context),
             _actionTile(context, Icons.edit_rounded, l10n.editProfile,
                 AppColors.primary, () => context.push('/profile-edit')),
+            _divider(context),
+            // Ücretsiz katmanda da açık: yanlış girilen regl kaydını
+            // düzeltmek takibin kendisi kadar temel
+            _actionTile(context, Icons.history_rounded, l10n.cycleHistory,
+                AppColors.menstrual, () => context.push('/period-history')),
           ]),
           const SizedBox(height: 16),
 

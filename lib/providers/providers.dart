@@ -53,6 +53,12 @@ final themeModeProvider = StateProvider<ThemeMode>((ref) {
 /// override eder, ayarlar değiştirince yazar.
 final phasePatternProvider = StateProvider<bool>((ref) => false);
 
+/// "Farklı bir gün için uzun bas" ipucu hâlâ gösterilmeli mi?
+/// Kullanıcı hareketi bir kez kullanınca kalıcı olarak kapanır — keşfi
+/// olmayan bir hareket, olmayan bir özelliktir.
+/// Kalıcılığı SharedPreferences 'backdate_hint_needed'.
+final backdateHintProvider = StateProvider<bool>((ref) => true);
+
 // ─── Erişim (deneme / premium / ücretsiz) ─────────────────────────────
 
 /// 30 gün tam deneme → abonelik yoksa yalnız regl takibi.

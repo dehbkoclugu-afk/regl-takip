@@ -153,7 +153,7 @@ class _MedicationTrackingScreenState
                     Text(med.reminderTime!,
                         style: TextStyle(
                             fontSize: 13, fontWeight: FontWeight.w600,
-                            color: AppColors.medication)),
+                            color: AppColors.categoryText(context, AppColors.medication))),
                 ],
               ),
             ),

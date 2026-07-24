@@ -115,7 +115,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
           Text(_calculateDuration(),
               style: TextStyle(
                   fontSize: 42, fontWeight: FontWeight.bold,
-                  color: AppColors.sleep)),
+                  color: AppColors.categoryText(context, AppColors.sleep))),
           const SizedBox(height: 4),
           Text(l10n.totalSleep,
               style: TextStyle(
@@ -175,10 +175,10 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
                             fontSize: 13, color: AppColors.ts(context))),
                     const SizedBox(height: 4),
                     Text(time.format(context),
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.sleep)),
+                            color: AppColors.categoryText(context, AppColors.sleep))),
                   ],
                 ),
               ),
@@ -240,7 +240,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
             child: Text(_qualityLabelText(l10n),
                 style: TextStyle(
                     fontSize: 16, fontWeight: FontWeight.w600,
-                    color: AppColors.sleep)),
+                    color: AppColors.categoryText(context, AppColors.sleep))),
           ),
         ],
       ),

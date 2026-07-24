@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/access.dart';
@@ -15,6 +16,7 @@ import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/phase_glyph.dart';
 import '../../core/widgets/pressable_scale.dart';
 import '../../models/enums.dart';
+import '../../models/period_record.dart';
 import '../../providers/providers.dart';
 import '../log/quick_log_sheet.dart';
 import 'widgets/cycle_progress_ring.dart';
@@ -220,6 +222,10 @@ class DashboardScreen extends ConsumerWidget {
                   fontWeight: FontWeight.w800,
                   color: AppColors.tp(context),
                 ),
+                // Sistem yazı tipi büyütüldüğünde uzun isim satırı taşırıyordu
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               )
                   .animateSafe(context)
                   .fadeIn(duration: 350.ms)
@@ -261,12 +267,16 @@ class DashboardScreen extends ConsumerWidget {
                                 size: 15,
                                 color: AppColors.primaryDeep),
                             const SizedBox(width: 7),
-                            Text(
-                              _phaseName(phase, l10n),
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.tp(context),
+                            Flexible(
+                              child: Text(
+                                _phaseName(phase, l10n),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.tp(context),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             const SizedBox(width: 6),
@@ -341,7 +351,12 @@ class DashboardScreen extends ConsumerWidget {
   Widget _buildActionRow(BuildContext context, WidgetRef ref,
       AppLocalizations l10n, TrackingMode mode) {
     final ongoingPeriod = ref.watch(ongoingPeriodProvider);
-    return Row(
+    // Keşfi olmayan bir hareket olmayan bir özelliktir: ipucu, kullanıcı
+    // hareketi bir kez kullanana kadar durur, sonra kalıcı olarak kapanır
+    final showHint = mode != TrackingMode.pregnancy &&
+        ref.watch(backdateHintProvider);
+
+    final row = Row(
                 children: [
                   if (mode != TrackingMode.pregnancy) ...[
                     Expanded(
@@ -354,60 +369,13 @@ class DashboardScreen extends ConsumerWidget {
                         color: AppColors.menstrual,
                         // Regl geçmişi en değerli veri, dokunuş yanlışlıkla
                         // olabilir: onay diyaloğu yerine 6 sn'lik Geri Al
-                        onTap: () async {
-                          final messenger = ScaffoldMessenger.of(context);
-                          final recordsNotifier =
-                              ref.read(periodRecordsProvider.notifier);
-                          final profileNotifier =
-                              ref.read(userProfileProvider.notifier);
-                          final prevProfile = ref.read(userProfileProvider);
-
-                          // Uygulamanın en önemli veri anı: dokunuşa
-                          // fiziksel teyit eşlik eder (ring + zemin de
-                          // yeni faza yumuşakça akar)
-                          HapticFeedback.mediumImpact();
-                          if (ongoingPeriod != null) {
-                            final recordId = ongoingPeriod.id;
-                            await recordsNotifier.endPeriod(
-                                recordId, DateTime.now());
-                            profileNotifier.refresh();
-                            messenger.showSnackBar(SnackBar(
-                              content: Text(l10n.periodMarkedEnded),
-                              duration: const Duration(seconds: 6),
-                              action: SnackBarAction(
-                                label: l10n.undo,
-                                onPressed: () async {
-                                  await recordsNotifier.reopenRecord(recordId);
-                                  profileNotifier.refresh();
-                                },
-                              ),
-                            ));
-                          } else {
-                            final record = await recordsNotifier
-                                .startPeriod(DateTime.now());
-                            await profileNotifier.saveProfile(
-                                lastPeriodStart: record.startDate);
-                            messenger.showSnackBar(SnackBar(
-                              content: Text(l10n.periodMarkedStarted),
-                              duration: const Duration(seconds: 6),
-                              action: SnackBarAction(
-                                label: l10n.undo,
-                                onPressed: () async {
-                                  await recordsNotifier
-                                      .deleteRecord(record.id);
-                                  // Profil (lastPeriodStart dahil) eski haline:
-                                  // updateProfile bildirim/widget'ı da tazeler
-                                  if (prevProfile != null) {
-                                    await profileNotifier
-                                        .updateProfile(prevProfile);
-                                  } else {
-                                    profileNotifier.refresh();
-                                  }
-                                },
-                              ),
-                            ));
-                          }
-                        },
+                        onTap: () => _togglePeriod(
+                            context, ref, l10n, ongoingPeriod, DateTime.now()),
+                        // Regl iki gün sonra hatırlanabiliyor: dokunuş hep
+                        // bugünü yazdığı için geç kalan kullanıcı yanlış tarih
+                        // girmek zorundaydı. Uzun bas = gün seç.
+                        onLongPress: () => _pickPeriodDate(
+                            context, ref, l10n, ongoingPeriod),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -427,10 +395,122 @@ class DashboardScreen extends ConsumerWidget {
                     ),
                   ),
                 ],
-              )
+              );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        row,
+        if (showHint) ...[
+          const SizedBox(height: 8),
+          Text(
+            l10n.backdateHint,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              height: 1.35,
+              color: AppColors.ts(context),
+            ),
+          ),
+        ],
+      ],
+    )
         .animateSafe(context)
         .fadeIn(delay: 250.ms, duration: 400.ms)
         .slideY(begin: 0.15, end: 0, delay: 250.ms, duration: 400.ms);
+  }
+
+  /// Regl başlangıcı/bitişi kaydeder. [date] hem bugün (dokunuş) hem geçmiş
+  /// bir gün (uzun bas → tarih seçici) olabilir.
+  Future<void> _togglePeriod(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    PeriodRecord? ongoingPeriod,
+    DateTime date,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final recordsNotifier = ref.read(periodRecordsProvider.notifier);
+    final profileNotifier = ref.read(userProfileProvider.notifier);
+    final prevProfile = ref.read(userProfileProvider);
+
+    // Uygulamanın en önemli veri anı: dokunuşa fiziksel teyit eşlik eder
+    // (ring + zemin de yeni faza yumuşakça akar)
+    HapticFeedback.mediumImpact();
+    if (ongoingPeriod != null) {
+      final recordId = ongoingPeriod.id;
+      await recordsNotifier.endPeriod(recordId, date);
+      profileNotifier.refresh();
+      messenger.showSnackBar(SnackBar(
+        content: Text(l10n.periodMarkedEnded),
+        duration: const Duration(seconds: 6),
+        action: SnackBarAction(
+          label: l10n.undo,
+          onPressed: () async {
+            await recordsNotifier.reopenRecord(recordId);
+            profileNotifier.refresh();
+          },
+        ),
+      ));
+    } else {
+      final record = await recordsNotifier.startPeriod(date);
+      await profileNotifier.saveProfile(lastPeriodStart: record.startDate);
+      messenger.showSnackBar(SnackBar(
+        content: Text(l10n.periodMarkedStarted),
+        duration: const Duration(seconds: 6),
+        action: SnackBarAction(
+          label: l10n.undo,
+          onPressed: () async {
+            await recordsNotifier.deleteRecord(record.id);
+            // Profil (lastPeriodStart dahil) eski haline:
+            // updateProfile bildirim/widget'ı da tazeler
+            if (prevProfile != null) {
+              await profileNotifier.updateProfile(prevProfile);
+            } else {
+              profileNotifier.refresh();
+            }
+          },
+        ),
+      ));
+    }
+  }
+
+  /// Geçmiş bir gün için regl başlangıcı/bitişi. Gelecek seçilemez; geriye
+  /// 90 gün yeter (daha eskisi geçmiş düzenlemesi, kayıt değil).
+  Future<void> _pickPeriodDate(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    PeriodRecord? ongoingPeriod,
+  ) async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    // Bitiş, başlangıçtan önce olamaz
+    final earliest = ongoingPeriod != null
+        ? DateTime(ongoingPeriod.startDate.year, ongoingPeriod.startDate.month,
+            ongoingPeriod.startDate.day)
+        : today.subtract(const Duration(days: 90));
+
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: today,
+      firstDate: earliest,
+      lastDate: today,
+      helpText: ongoingPeriod != null
+          ? l10n.periodEndDateHelp
+          : l10n.periodStartDateHelp,
+    );
+    if (picked == null || !context.mounted) return;
+
+    // Hareket kullanıldı: ipucu artık yer kaplamasın
+    if (ref.read(backdateHintProvider)) {
+      ref.read(backdateHintProvider.notifier).state = false;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('backdate_hint_needed', false);
+      if (!context.mounted) return;
+    }
+
+    await _togglePeriod(context, ref, l10n, ongoingPeriod, picked);
   }
 
   Widget _buildAccessChip(BuildContext context, AppLocalizations l10n,
@@ -467,12 +547,16 @@ class DashboardScreen extends ConsumerWidget {
                       : AppColors.ts(context),
                 ),
                 const SizedBox(width: 6),
-                Text(label,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.ts(context),
-                    )),
+                Flexible(
+                  child: Text(label,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.ts(context),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis),
+                ),
               ],
             ),
           ),
@@ -892,6 +976,7 @@ class DashboardScreen extends ConsumerWidget {
     required String label,
     required Color color,
     required VoidCallback onTap,
+    VoidCallback? onLongPress,
   }) {
     return PressableScale(
         child: GlassCard(
@@ -903,6 +988,7 @@ class DashboardScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
+          onLongPress: onLongPress,
           borderRadius: BorderRadius.circular(20),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 18),
@@ -921,12 +1007,18 @@ class DashboardScreen extends ConsumerWidget {
                   child: Icon(icon, color: color, size: 20),
                 ),
                 const SizedBox(width: 10),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.tp(context),
+                // Etiket iki butona bölünmüş dar alanda yaşıyor: büyük yazı
+                // tipinde satırı taşırmak yerine sarmalı
+                Flexible(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.tp(context),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

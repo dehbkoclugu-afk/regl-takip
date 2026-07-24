@@ -19,6 +19,7 @@ import '../../screens/sexual_activity/sexual_activity_screen.dart';
 import '../../screens/medication/medication_tracking_screen.dart';
 import '../../screens/notes/notes_screen.dart';
 import '../../screens/paywall/paywall_screen.dart';
+import '../../screens/period_history/period_history_screen.dart';
 import '../../screens/profile/profile_edit_screen.dart';
 import '../../providers/providers.dart';
 
@@ -198,6 +199,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/profile-edit',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ProfileEditScreen(),
+      ),
+      // Bilerek _premiumPaths dışında: ücretsiz katmanın vaadi regl takibi,
+      // yanlış girilen kaydı düzeltmek o vaadin parçası
+      GoRoute(
+        path: '/period-history',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const PeriodHistoryScreen(),
       ),
       GoRoute(
         path: '/paywall',

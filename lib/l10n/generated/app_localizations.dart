@@ -2749,6 +2749,24 @@ abstract class AppLocalizations {
   /// **'Satın alımlar geri yükleniyor…'**
   String get restoringPurchases;
 
+  /// No description provided for @backdateHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Farklı bir gün için butona uzun bas'**
+  String get backdateHint;
+
+  /// No description provided for @periodStartDateHelp.
+  ///
+  /// In tr, this message translates to:
+  /// **'Regl hangi gün başladı?'**
+  String get periodStartDateHelp;
+
+  /// No description provided for @periodEndDateHelp.
+  ///
+  /// In tr, this message translates to:
+  /// **'Regl hangi gün bitti?'**
+  String get periodEndDateHelp;
+
   /// No description provided for @reportTitle.
   ///
   /// In tr, this message translates to:

@@ -221,7 +221,7 @@ class _TemperatureTrackingScreenState
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(Icons.access_time_rounded,
-                  color: AppColors.temperature),
+                  color: AppColors.categoryText(context, AppColors.temperature)),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -234,7 +234,7 @@ class _TemperatureTrackingScreenState
                   Text(_measureTime.format(context),
                       style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold,
-                          color: AppColors.temperature)),
+                          color: AppColors.categoryText(context, AppColors.temperature))),
                 ],
               ),
             ),

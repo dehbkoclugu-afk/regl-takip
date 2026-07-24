@@ -1394,6 +1394,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get restoringPurchases => 'Восстановление покупок…';
 
   @override
+  String get backdateHint => 'Долгое нажатие — выбрать другой день';
+
+  @override
+  String get periodStartDateHelp => 'Когда начались месячные?';
+
+  @override
+  String get periodEndDateHelp => 'Когда закончились месячные?';
+
+  @override
   String get reportTitle => 'Отчёт о здоровье цикла';
 
   @override

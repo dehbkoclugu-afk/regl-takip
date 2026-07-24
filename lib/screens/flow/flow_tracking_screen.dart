@@ -143,7 +143,13 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                      color: isSelected ? item.$4 : AppColors.ts(context),
+                      // Akış tonları yalnız parlaklıkla ayrışıyor (1,36:1 —
+                      // 2,93:1): metin olarak okunmuyorlar, koyulaştırılınca
+                      // da dördü aynı renge çöküyor. Yoğunluğu damla sayısı,
+                      // çerçeve ve zemin taşıyor; etiket okunur kalmalı
+                      color: isSelected
+                          ? AppColors.tp(context)
+                          : AppColors.ts(context),
                     )),
               ],
             ),

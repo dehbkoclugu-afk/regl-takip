@@ -1394,6 +1394,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get restoringPurchases => 'Satın alımlar geri yükleniyor…';
 
   @override
+  String get backdateHint => 'Farklı bir gün için butona uzun bas';
+
+  @override
+  String get periodStartDateHelp => 'Regl hangi gün başladı?';
+
+  @override
+  String get periodEndDateHelp => 'Regl hangi gün bitti?';
+
+  @override
   String get reportTitle => 'Döngü Sağlık Raporu';
 
   @override

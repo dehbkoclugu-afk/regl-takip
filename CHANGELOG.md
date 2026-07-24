@@ -1,5 +1,15 @@
 # Changelog
 
+## Yayınlanmamış — Kayıt doğruluğu ve kontrast (2026-07-24)
+
+Tasarım incelemesinin ilk grubu (`docs/tasarim-onerileri.md` madde 1, 2, 75, 76, 77).
+
+- **Regl kaydı ücretsiz katmanda da düzeltilebiliyor** (madde 1): kayıt düzenleyici istatistik ekranının içinde yaşıyordu, o ekran da ücretsiz katmanda tamamen kilitli. Ücretsiz kullanıcının tek yazma eylemi "Reglim başladı" butonuydu ve 6 saniyelik geri al penceresi kapandıktan sonra yanlış kaydı düzeltmesinin hiçbir yolu yoktu. Düzenleyici ortak bir dosyaya taşındı, ayarlardan açılan yeni "Regl geçmişi" ekranı premium kapısının dışında
+- **Geriye dönük regl tarihi** (madde 2): buton her zaman `DateTime.now()` yazıyordu; regl iki gün sonra hatırlandığında yanlış tarih girmekten başka yol yoktu. Butona uzun basmak gün seçiciyi açıyor (90 gün geriye, gelecek seçilemez, bitiş başlangıçtan önce olamaz). Hareket keşfedilebilir olsun diye butonun altında ipucu duruyor, bir kez kullanılınca kalıcı olarak kapanıyor
+- **Kategori renkleri metin olarak okunuyor** (madde 75): su, uyku, kilo, ilaç ve sıcaklık ekranlarında pastel kategori renkleri doğrudan metin rengiydi — beyaz zeminde 1,6:1 ile 2,3:1 arası, WCAG AA sınırı 4,5:1. `app_colors.dart` bu kuralı zaten yazmıştı ama kendi ekranları uymuyordu. Faz renklerindeki kalıba uygun `*Text` varyantları eklendi (5,4:1 – 6,5:1), `categoryText()` açık/koyu temaya göre seçiyor
+- **Seçili etiketler okunur oldu** (madde 76): ruh hâli, semptom ve akış ekranlarında seçim etiketi kendi pasteline dönüyordu — en kötüsü `moodHappy` beyaz üstünde 1,26:1. Ruh hâlinde ton korunup parlaklık kısılıyor (`readable()`, en kötü durum 4,78:1), semptomda ailenin bordo ucu kullanılıyor (6,30:1), akışta ise dört ton yalnız parlaklıkla ayrıştığı için etiket okunur renge alındı — yoğunluğu damla sayısı ve çerçeve taşıyor
+- **Metin ölçeklemesinde taşma koruması** (madde 77, kısmi): ana ekranda selamlama, faz çipi, erişim çipi ve aksiyon butonu etiketleri `maxLines`/`Flexible` ile korundu. Tahmin kartlarında koruma zaten vardı; kalan ekranların taraması sürüyor
+
 ## Yayınlanmamış — Bildirim ve paywall düzeltmeleri (2026-07-24)
 
 - **Zamanlanmış bildirimler artık gerçekten düşüyor**: flutter_local_notifications 18.0.1'in kendi manifest'i hiçbir receiver bildirmiyor, bunlar uygulamanın manifest'inde olmak zorunda. `ScheduledNotificationReceiver` eksikti — alarm tetiklendiğinde broadcast'i alacak bileşen olmadığı için kurulan hiçbir hatırlatma görünmüyordu. `ScheduledNotificationBootReceiver` de eklendi: telefon yeniden başlayınca planlar geri kuruluyor (`RECEIVE_BOOT_COMPLETED` izni zaten vardı, karşılığı yoktu)
