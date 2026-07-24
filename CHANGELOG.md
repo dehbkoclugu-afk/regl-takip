@@ -1,5 +1,15 @@
 # Changelog
 
+## Yayınlanmamış — Hatırlatma zamanlaması (2026-07-24)
+
+Tasarım incelemesinin altıncı grubu (`docs/tasarim-onerileri.md` madde 67, 68).
+
+- **Tür başına hatırlatma saati** (madde 67): tek bir saat regl, ovülasyon, gecikme, faz ipucu ve ilaç hatırlatmalarının hepsini yönetiyordu — ilacını sabah alan ama regl uyarısını akşam isteyen kullanıcı birinden vazgeçmek zorundaydı. Ayarlarda artık "döngü hatırlatma saati" ve "ilaç hatırlatma saati" ayrı. Özel saat girilmediyse ikisi de genel saate düşüyor, yani mevcut kullanıcılar için davranış değişmiyor
+- **Haber verme penceresi ayarlanabilir** (madde 68): regl hatırlatması sabit olarak tahmini tarihten 1 gün önce gidiyordu. Artık aynı gün / 1 / 2 / 3 / 5 / 7 gün önce seçilebiliyor (servis tarafında 0–7 aralığına kırpılıyor)
+- **Profil modeline 5 alan eklendi** (21–25): `medicationReminderHour/Minute`, `cycleReminderHour/Minute`, `periodReminderLeadDays`. Hive adaptörü elle güncellendi — bu ortamda `build_runner` çalıştırılamıyor. Eski kayıtlarda bu alanlar yok, Hive null döndürüyor ve `effective*` getter'ları genel saate düşüyor; 15–20 numaralı alanlar da aynı kalıpla eklenmişti
+- **Yedek uyumu**: `toJson`/`fromJson` yeni alanları taşıyor, alanları olmayan eski yedekler varsayılanlarla okunuyor
+- Etkin saat çözümü, pencere varsayılanı ve yedek gidiş-dönüşü için 8 birim testi eklendi (saat 0'ın geçerli değer olup null ile karışmaması dahil)
+
 ## Yayınlanmamış — Kurulum akışı (2026-07-24)
 
 Tasarım incelemesinin beşinci grubu (`docs/tasarim-onerileri.md` madde 59, 60, 61, 62).

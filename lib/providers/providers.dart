@@ -176,6 +176,11 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     DateTime? pregnancyStartDate,
     DateTime? pillPackStartDate,
     String? themePreference,
+    int? medicationReminderHour,
+    int? medicationReminderMinute,
+    int? cycleReminderHour,
+    int? cycleReminderMinute,
+    int? periodReminderLeadDays,
   }) async {
     final current = state ?? UserProfile();
     final updated = current.copyWith(
@@ -203,6 +208,11 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
       pregnancyStartDate: pregnancyStartDate,
       pillPackStartDate: pillPackStartDate,
       themePreference: themePreference,
+      medicationReminderHour: medicationReminderHour,
+      medicationReminderMinute: medicationReminderMinute,
+      cycleReminderHour: cycleReminderHour,
+      cycleReminderMinute: cycleReminderMinute,
+      periodReminderLeadDays: periodReminderLeadDays,
     );
 
     await _hiveService.saveUserProfile(updated);
@@ -220,7 +230,11 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         // Döngü/regl süresi tahmin tarihlerini kaydırır — bildirimler
         // yeniden planlanmazsa eski tarihlerde kalır
         averageCycleLength != null ||
-        averagePeriodLength != null) {
+        averagePeriodLength != null ||
+        // Saat ve pencere değişince planlar eski değerlerde kalırdı
+        medicationReminderHour != null ||
+        cycleReminderHour != null ||
+        periodReminderLeadDays != null) {
       try {
         await NotificationService().rescheduleAll(
           updated,

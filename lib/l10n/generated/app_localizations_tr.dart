@@ -1505,6 +1505,23 @@ class AppLocalizationsTr extends AppLocalizations {
   String get approxMonthOrMore => 'Bir ay veya daha önce';
 
   @override
+  String get cycleReminderTime => 'Döngü hatırlatma saati';
+
+  @override
+  String get medicationReminderTime => 'İlaç hatırlatma saati';
+
+  @override
+  String get periodReminderLead => 'Regl hatırlatması';
+
+  @override
+  String get leadSameDay => 'Aynı gün';
+
+  @override
+  String leadNDaysBefore(int days) {
+    return '$days gün önce';
+  }
+
+  @override
   String get reportTitle => 'Döngü Sağlık Raporu';
 
   @override

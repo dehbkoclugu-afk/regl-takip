@@ -121,7 +121,10 @@ class NotificationService {
     return scheduled;
   }
 
-  /// Schedules a period reminder 1 day before the predicted next period.
+  /// Tahmini regl tarihinden [leadDays] gün önce hatırlatma kurar.
+  ///
+  /// [leadDays] sabit 1'di; hazırlanmak için daha erken haber almak isteyen
+  /// kullanıcının seçeneği yoktu.
   /// [discreet]: gizli moddayken kilit ekranına düşen metin döngü bilgisi
   /// sızdırmamalı — nötr başlık/gövde kullanılır.
   Future<void> schedulePeriodReminder(
@@ -130,10 +133,12 @@ class NotificationService {
     int minute,
     String locale, {
     int id = _periodReminderBaseId,
+    int leadDays = 1,
     bool discreet = false,
   }) async {
     final l10n = _l10n(locale);
-    final reminderDate = nextPeriodDate.subtract(const Duration(days: 1));
+    final reminderDate =
+        nextPeriodDate.subtract(Duration(days: leadDays.clamp(0, 7)));
 
     await _plugin.cancel(id);
 
@@ -403,8 +408,13 @@ class NotificationService {
       // bilgisi deşifre etmemeli — tüm hatırlatmalar nötr metinle kurulur
       final discreet = await DisguiseService.isDisguised();
 
-      final hour = profile.reminderHour;
-      final minute = profile.reminderMinute;
+      // Tek saat tüm hatırlatmaları yönetiyordu: ilacını sabah alan ama
+      // regl uyarısını akşam isteyen kullanıcı birinden vazgeçiyordu.
+      // Özel saat yoksa ikisi de genel saate düşer (eski davranış).
+      final cycleHour = profile.effectiveCycleHour;
+      final cycleMinute = profile.effectiveCycleMinute;
+      final medHour = profile.effectiveMedicationHour;
+      final medMinute = profile.effectiveMedicationMinute;
       // 'system' tercihi somut dile çözülür (bildirim metinleri için)
       final locale = resolveLanguageCode(profile.language);
 
@@ -430,10 +440,11 @@ class NotificationService {
           if (profile.periodReminderEnabled) {
             await schedulePeriodReminder(
               periodDate,
-              hour,
-              minute,
+              cycleHour,
+              cycleMinute,
               locale,
               id: _periodReminderBaseId + i,
+              leadDays: profile.periodReminderLeadDays,
               discreet: discreet,
             );
           }
@@ -443,8 +454,8 @@ class NotificationService {
                 const Duration(days: AppConstants.ovulationDayBeforePeriod));
             await scheduleOvulationReminder(
               ovulation,
-              hour,
-              minute,
+              cycleHour,
+              cycleMinute,
               locale,
               id: _ovulationReminderBaseId + i,
               discreet: discreet,
@@ -457,8 +468,8 @@ class NotificationService {
           if (profile.periodReminderEnabled) {
             await scheduleDelayReminder(
               periodDate.add(const Duration(days: _delayCheckAfterDays)),
-              hour,
-              minute,
+              cycleHour,
+              cycleMinute,
               locale,
               id: _delayReminderBaseId + i,
               discreet: discreet,
@@ -488,7 +499,7 @@ class NotificationService {
                   nextPeriod.add(Duration(days: cycleLen * i));
               final lutealStart = periodDate.subtract(const Duration(
                   days: AppConstants.ovulationDayBeforePeriod - 2));
-              final scheduled = _scheduleFor(lutealStart, hour, minute);
+              final scheduled = _scheduleFor(lutealStart, cycleHour, cycleMinute);
               if (scheduled == null) continue;
               await _plugin.zonedSchedule(
                 _insightReminderBaseId + i,
@@ -523,8 +534,8 @@ class NotificationService {
         await scheduleMedicationReminders(
           medications,
           locale,
-          fallbackHour: hour,
-          fallbackMinute: minute,
+          fallbackHour: medHour,
+          fallbackMinute: medMinute,
           discreet: discreet,
         );
       }

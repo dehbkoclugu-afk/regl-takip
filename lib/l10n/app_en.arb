@@ -656,6 +656,16 @@
   "approxTwoWeeks": "About 2 weeks ago",
   "approxThreeWeeks": "About 3 weeks ago",
   "approxMonthOrMore": "A month or more ago",
+  "cycleReminderTime": "Cycle reminder time",
+  "medicationReminderTime": "Medication reminder time",
+  "periodReminderLead": "Period reminder",
+  "leadSameDay": "Same day",
+  "leadNDaysBefore": "{days} days before",
+  "@leadNDaysBefore": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
   "reportTitle": "Cycle Health Report",
   "reportGenerated": "Generated",
   "profileSummary": "Profile Summary",

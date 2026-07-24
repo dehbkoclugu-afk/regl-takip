@@ -1505,6 +1505,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String get approxMonthOrMore => 'Месяц назад или раньше';
 
   @override
+  String get cycleReminderTime => 'Время напоминаний о цикле';
+
+  @override
+  String get medicationReminderTime => 'Время напоминаний о лекарствах';
+
+  @override
+  String get periodReminderLead => 'Напоминание о месячных';
+
+  @override
+  String get leadSameDay => 'В тот же день';
+
+  @override
+  String leadNDaysBefore(int days) {
+    return 'за $days дн.';
+  }
+
+  @override
   String get reportTitle => 'Отчёт о здоровье цикла';
 
   @override

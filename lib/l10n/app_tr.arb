@@ -656,6 +656,16 @@
   "approxTwoWeeks": "Yaklaşık 2 hafta önce",
   "approxThreeWeeks": "Yaklaşık 3 hafta önce",
   "approxMonthOrMore": "Bir ay veya daha önce",
+  "cycleReminderTime": "Döngü hatırlatma saati",
+  "medicationReminderTime": "İlaç hatırlatma saati",
+  "periodReminderLead": "Regl hatırlatması",
+  "leadSameDay": "Aynı gün",
+  "leadNDaysBefore": "{days} gün önce",
+  "@leadNDaysBefore": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
   "reportTitle": "Döngü Sağlık Raporu",
   "reportGenerated": "Oluşturma",
   "profileSummary": "Profil Özeti",

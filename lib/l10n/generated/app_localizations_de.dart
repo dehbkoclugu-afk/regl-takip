@@ -1505,6 +1505,23 @@ class AppLocalizationsDe extends AppLocalizations {
   String get approxMonthOrMore => 'Vor einem Monat oder länger';
 
   @override
+  String get cycleReminderTime => 'Uhrzeit für Zyklus-Erinnerungen';
+
+  @override
+  String get medicationReminderTime => 'Uhrzeit für Medikamenten-Erinnerungen';
+
+  @override
+  String get periodReminderLead => 'Perioden-Erinnerung';
+
+  @override
+  String get leadSameDay => 'Am selben Tag';
+
+  @override
+  String leadNDaysBefore(int days) {
+    return '$days Tage vorher';
+  }
+
+  @override
   String get reportTitle => 'Zyklus-Gesundheitsbericht';
 
   @override

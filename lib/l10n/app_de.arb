@@ -504,6 +504,16 @@
   "approxTwoWeeks": "Vor etwa 2 Wochen",
   "approxThreeWeeks": "Vor etwa 3 Wochen",
   "approxMonthOrMore": "Vor einem Monat oder länger",
+  "cycleReminderTime": "Uhrzeit für Zyklus-Erinnerungen",
+  "medicationReminderTime": "Uhrzeit für Medikamenten-Erinnerungen",
+  "periodReminderLead": "Perioden-Erinnerung",
+  "leadSameDay": "Am selben Tag",
+  "leadNDaysBefore": "{days} Tage vorher",
+  "@leadNDaysBefore": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
   "reportTitle": "Zyklus-Gesundheitsbericht",
   "reportGenerated": "Erstellt",
   "profileSummary": "Profilübersicht",

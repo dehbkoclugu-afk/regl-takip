@@ -307,7 +307,37 @@ class SettingsScreen extends ConsumerWidget {
                   .saveProfile(medicationReminderEnabled: val),
             ),
             _divider(context),
-            _reminderTimeTile(context, ref, profile, l10n.reminderTime),
+            // Tek saat üç türü birden yönetiyordu: ilacını sabah alan ama
+            // regl uyarısını akşam isteyen kullanıcı birinden vazgeçiyordu
+            _reminderTimeTile(
+              context,
+              ref,
+              title: l10n.cycleReminderTime,
+              hour: profile?.effectiveCycleHour ?? 9,
+              minute: profile?.effectiveCycleMinute ?? 0,
+              onPicked: (t) => ref
+                  .read(userProfileProvider.notifier)
+                  .saveProfile(
+                    cycleReminderHour: t.hour,
+                    cycleReminderMinute: t.minute,
+                  ),
+            ),
+            _divider(context),
+            _reminderTimeTile(
+              context,
+              ref,
+              title: l10n.medicationReminderTime,
+              hour: profile?.effectiveMedicationHour ?? 9,
+              minute: profile?.effectiveMedicationMinute ?? 0,
+              onPicked: (t) => ref
+                  .read(userProfileProvider.notifier)
+                  .saveProfile(
+                    medicationReminderHour: t.hour,
+                    medicationReminderMinute: t.minute,
+                  ),
+            ),
+            _divider(context),
+            _leadDaysTile(context, ref, profile, l10n),
           ]),
           const SizedBox(height: 16),
 
@@ -981,10 +1011,56 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  /// Regl hatırlatmasının kaç gün önce gönderileceği. Sabit 1 gündü;
+  /// kimi kullanıcı hazırlanmak için daha erken haber almak istiyor.
+  Widget _leadDaysTile(BuildContext context, WidgetRef ref,
+      UserProfile? profile, AppLocalizations l10n) {
+    final lead = profile?.periodReminderLeadDays ?? 1;
+    return ListTile(
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.primary.withValues(alpha: 0.25),
+              AppColors.primary.withValues(alpha: 0.1)
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Icon(Icons.event_available_rounded,
+            color: AppColors.primary, size: 22),
+      ),
+      title: Text(l10n.periodReminderLead,
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+      trailing: DropdownButton<int>(
+        value: lead.clamp(0, 7),
+        underline: const SizedBox.shrink(),
+        borderRadius: BorderRadius.circular(14),
+        items: [
+          DropdownMenuItem(value: 0, child: Text(l10n.leadSameDay)),
+          for (final d in const [1, 2, 3, 5, 7])
+            DropdownMenuItem(value: d, child: Text(l10n.leadNDaysBefore(d))),
+        ],
+        onChanged: (value) {
+          if (value == null) return;
+          ref
+              .read(userProfileProvider.notifier)
+              .saveProfile(periodReminderLeadDays: value);
+        },
+      ),
+    );
+  }
+
   Widget _reminderTimeTile(
-      BuildContext context, WidgetRef ref, UserProfile? profile, String title) {
-    final hour = profile?.reminderHour ?? 9;
-    final minute = profile?.reminderMinute ?? 0;
+    BuildContext context,
+    WidgetRef ref, {
+    required String title,
+    required int hour,
+    required int minute,
+    required void Function(TimeOfDay) onPicked,
+  }) {
     final timeStr =
         '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
 
@@ -994,12 +1070,7 @@ class SettingsScreen extends ConsumerWidget {
           context: context,
           initialTime: TimeOfDay(hour: hour, minute: minute),
         );
-        if (picked != null) {
-          ref.read(userProfileProvider.notifier).saveProfile(
-                reminderHour: picked.hour,
-                reminderMinute: picked.minute,
-              );
-        }
+        if (picked != null) onPicked(picked);
       },
       leading: Container(
         width: 40,

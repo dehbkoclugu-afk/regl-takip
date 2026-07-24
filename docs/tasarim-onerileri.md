@@ -1,10 +1,10 @@
 # 100 kritik tasarım önerisi
 
-> **Durum:** 1, 2, 4, 11, 12, 13, 14, 17, 18, 39, 59, 60, 61, 62, 70, 75, 76
-> ve 77 uygulandı. Kısmi olanlar: 3 (yalnız uyarı tarafı — salt-okunur katman
-> yapılmadı) ve 77 (ana ekran ve paylaşılan bileşenler; diğer ekranlarda taşma
-> taraması sürüyor). Madde 58 açık: adım sayısını azaltmak kurulum akışını
-> yeniden kurgulamak demek. Ayrıntı için CHANGELOG'a bakın.
+> **Durum:** 1, 2, 4, 11, 12, 13, 14, 17, 18, 39, 59, 60, 61, 62, 67, 68, 70,
+> 75, 76 ve 77 uygulandı. Kısmi olanlar: 3 (yalnız uyarı tarafı — salt-okunur
+> katman yapılmadı) ve 77 (ana ekran ve paylaşılan bileşenler; diğer ekranlarda
+> taşma taraması sürüyor). Madde 58 açık: adım sayısını azaltmak kurulum
+> akışını yeniden kurgulamak demek. Ayrıntı için CHANGELOG'a bakın.
 
 Uygulamanın mevcut hâli üzerinden yapılmış eleştirel bir okuma. Öneriler
 gözlemden çıktı: her madde neyin sorun olduğunu söyler, sonra ne yapılacağını.

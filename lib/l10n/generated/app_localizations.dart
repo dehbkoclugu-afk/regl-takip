@@ -2947,6 +2947,36 @@ abstract class AppLocalizations {
   /// **'Bir ay veya daha önce'**
   String get approxMonthOrMore;
 
+  /// No description provided for @cycleReminderTime.
+  ///
+  /// In tr, this message translates to:
+  /// **'Döngü hatırlatma saati'**
+  String get cycleReminderTime;
+
+  /// No description provided for @medicationReminderTime.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlaç hatırlatma saati'**
+  String get medicationReminderTime;
+
+  /// No description provided for @periodReminderLead.
+  ///
+  /// In tr, this message translates to:
+  /// **'Regl hatırlatması'**
+  String get periodReminderLead;
+
+  /// No description provided for @leadSameDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aynı gün'**
+  String get leadSameDay;
+
+  /// No description provided for @leadNDaysBefore.
+  ///
+  /// In tr, this message translates to:
+  /// **'{days} gün önce'**
+  String leadNDaysBefore(int days);
+
   /// No description provided for @reportTitle.
   ///
   /// In tr, this message translates to:

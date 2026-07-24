@@ -504,6 +504,16 @@
   "approxTwoWeeks": "Hace unas 2 semanas",
   "approxThreeWeeks": "Hace unas 3 semanas",
   "approxMonthOrMore": "Hace un mes o más",
+  "cycleReminderTime": "Hora de recordatorios del ciclo",
+  "medicationReminderTime": "Hora de recordatorios de medicación",
+  "periodReminderLead": "Recordatorio de regla",
+  "leadSameDay": "El mismo día",
+  "leadNDaysBefore": "{days} días antes",
+  "@leadNDaysBefore": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
   "reportTitle": "Informe de salud del ciclo",
   "reportGenerated": "Generado",
   "profileSummary": "Resumen del perfil",
