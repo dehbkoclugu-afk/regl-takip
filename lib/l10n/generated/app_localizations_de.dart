@@ -1422,6 +1422,31 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get headlineDelaySubtitle => 'Schwankungen sind normal. Trag sie ein, wenn sie begonnen hat.';
+
+  @override
+  String get notificationDelayTitle => 'Voraussichtliches Datum ist vorbei';
+
+  @override
+  String get notificationDelayBody => 'Wenn deine Periode begonnen hat, trag sie ein. Schwankungen sind normal.';
+
+  @override
+  String get notificationDelayChannel => 'Verspätungs-Erinnerung';
+
+  @override
+  String get notificationDelayChannelDesc => 'Erinnerung, wenn das voraussichtliche Datum vorbei ist';
+
+  @override
+  String headlineDelay(int days) {
+    return 'Deine Periode ist $days Tage überfällig';
+  }
+
+  @override
+  String delayDays(int days) {
+    return '$days Tage überfällig';
+  }
+
+  @override
   String get reportTitle => 'Zyklus-Gesundheitsbericht';
 
   @override

@@ -459,6 +459,23 @@
       "day": {"type": "int"}
     }
   },
+  "headlineDelaySubtitle": "Cierta variación es normal. Regístrala si ya empezó.",
+  "notificationDelayTitle": "La fecha prevista ya pasó",
+  "notificationDelayBody": "Si tu regla ya empezó, recuerda registrarla. Cierta variación es normal.",
+  "notificationDelayChannel": "Recordatorio de retraso",
+  "notificationDelayChannelDesc": "Recordatorio cuando la fecha prevista ha pasado",
+  "headlineDelay": "Tu regla lleva {days} días de retraso",
+  "@headlineDelay": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "delayDays": "{days} días de retraso",
+  "@delayDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
   "reportTitle": "Informe de salud del ciclo",
   "reportGenerated": "Generado",
   "profileSummary": "Resumen del perfil",

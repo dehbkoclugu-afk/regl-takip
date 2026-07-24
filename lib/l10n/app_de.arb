@@ -459,6 +459,23 @@
       "day": {"type": "int"}
     }
   },
+  "headlineDelaySubtitle": "Schwankungen sind normal. Trag sie ein, wenn sie begonnen hat.",
+  "notificationDelayTitle": "Voraussichtliches Datum ist vorbei",
+  "notificationDelayBody": "Wenn deine Periode begonnen hat, trag sie ein. Schwankungen sind normal.",
+  "notificationDelayChannel": "Verspätungs-Erinnerung",
+  "notificationDelayChannelDesc": "Erinnerung, wenn das voraussichtliche Datum vorbei ist",
+  "headlineDelay": "Deine Periode ist {days} Tage überfällig",
+  "@headlineDelay": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "delayDays": "{days} Tage überfällig",
+  "@delayDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
   "reportTitle": "Zyklus-Gesundheitsbericht",
   "reportGenerated": "Erstellt",
   "profileSummary": "Profilübersicht",

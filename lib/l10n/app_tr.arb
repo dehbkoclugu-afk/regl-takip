@@ -611,6 +611,23 @@
       "day": {"type": "int"}
     }
   },
+  "headlineDelaySubtitle": "Sapma olağan olabilir. Başladıysa kaydet.",
+  "notificationDelayTitle": "Tahmini tarih geçti",
+  "notificationDelayBody": "Reglin başladıysa kaydetmeyi unutma. Sapma olağan olabilir.",
+  "notificationDelayChannel": "Gecikme Hatırlatması",
+  "notificationDelayChannelDesc": "Tahmini tarih geçtiğinde hatırlatma",
+  "headlineDelay": "Reglin {days} gün gecikti",
+  "@headlineDelay": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "delayDays": "{days} gün gecikme",
+  "@delayDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
   "reportTitle": "Döngü Sağlık Raporu",
   "reportGenerated": "Oluşturma",
   "profileSummary": "Profil Özeti",

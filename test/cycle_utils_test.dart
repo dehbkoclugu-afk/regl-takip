@@ -241,4 +241,49 @@ void main() {
           DateTime(2026, 6, 5));
     });
   });
+
+  group('periodDelayDays', () {
+    // Fonksiyon "bugün"ü kendisi okuduğu için tarihler bugüne göre kurulur.
+    // Gün çıkarma takvim aritmetiğiyle (Duration ile değil): yaz saati
+    // geçişinde bir saatlik kayma günü değiştirmesin. Saat 12:00 seçili ki
+    // olası kayma gece yarısını da aşmasın.
+    DateTime daysAgo(int n) {
+      final now = DateTime.now();
+      return DateTime(now.year, now.month, now.day - n, 12);
+    }
+
+    test('tahmini tarih gelmemişse gecikme yok', () {
+      // 10 gün önce başlayan 28 günlük döngü: tahmin 18 gün sonra
+      expect(CycleUtils.periodDelayDays(daysAgo(10), 28), 0);
+    });
+
+    test('tam tahmini gündeyken henüz gecikme sayılmaz', () {
+      expect(CycleUtils.periodDelayDays(daysAgo(28), 28), 0);
+    });
+
+    test('tahmini tarihi geçen gün sayısını döner', () {
+      expect(CycleUtils.periodDelayDays(daysAgo(31), 28), 3);
+    });
+
+    test('bir döngü boyuna ulaşan gecikme bayat veri sayılır', () {
+      // 28 + 28: bir sonraki tahmin de geçmiş, gecikme ile "uzun süredir
+      // kayıt yok" ayırt edilemez
+      expect(CycleUtils.periodDelayDays(daysAgo(56), 28), 0);
+    });
+
+    test('sınırın bir gün altı hâlâ gecikme', () {
+      expect(CycleUtils.periodDelayDays(daysAgo(55), 28), 27);
+    });
+
+    test('döngü uzunluğuyla birlikte kayar', () {
+      expect(CycleUtils.periodDelayDays(daysAgo(35), 35), 0);
+      expect(CycleUtils.periodDelayDays(daysAgo(40), 35), 5);
+    });
+
+    test('saat bileşeni sonucu bozmaz', () {
+      final now = DateTime.now();
+      final last = DateTime(now.year, now.month, now.day - 31, 23, 30);
+      expect(CycleUtils.periodDelayDays(last, 28), 3);
+    });
+  });
 }

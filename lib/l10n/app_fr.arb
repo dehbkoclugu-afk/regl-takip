@@ -459,6 +459,23 @@
       "day": {"type": "int"}
     }
   },
+  "headlineDelaySubtitle": "Une variation est normale. Enregistrez-les si elles ont commencé.",
+  "notificationDelayTitle": "La date prévue est passée",
+  "notificationDelayBody": "Si vos règles ont commencé, pensez à les enregistrer. Une variation est normale.",
+  "notificationDelayChannel": "Rappel de retard",
+  "notificationDelayChannelDesc": "Rappel lorsque la date prévue est passée",
+  "headlineDelay": "Vos règles ont {days} jours de retard",
+  "@headlineDelay": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "delayDays": "{days} jours de retard",
+  "@delayDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
   "reportTitle": "Rapport de santé du cycle",
   "reportGenerated": "Généré",
   "profileSummary": "Résumé du profil",

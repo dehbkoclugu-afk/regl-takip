@@ -611,6 +611,23 @@
       "day": {"type": "int"}
     }
   },
+  "headlineDelaySubtitle": "Some variation is normal. Log it if it has started.",
+  "notificationDelayTitle": "Predicted date has passed",
+  "notificationDelayBody": "If your period has started, remember to log it. Some variation is normal.",
+  "notificationDelayChannel": "Delay Reminder",
+  "notificationDelayChannelDesc": "Reminder when the predicted date has passed",
+  "headlineDelay": "Your period is {days} days late",
+  "@headlineDelay": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "delayDays": "{days} days late",
+  "@delayDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
   "reportTitle": "Cycle Health Report",
   "reportGenerated": "Generated",
   "profileSummary": "Profile Summary",

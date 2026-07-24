@@ -38,6 +38,12 @@ class NotificationService {
   static const int _maxMedicationReminders = 10;
   // Faz ipucu (kişisel semptom tahmini): luteal başlangıcında
   static const int _insightReminderBaseId = 30;
+  // Gecikme kontrolü: tahmini tarihten birkaç gün sonra
+  static const int _delayReminderBaseId = 50;
+
+  /// Tahmini tarihten kaç gün sonra gecikme hatırlatması gönderileceği.
+  /// Ertesi gün sormak erken (bir günlük sapma olağan), bir hafta geç.
+  static const int _delayCheckAfterDays = 3;
 
   /// Kaç döngü ileriye hatırlatma planlanacağı
   static const int _cyclesToSchedule = 3;
@@ -195,6 +201,50 @@ class NotificationService {
           presentAlert: true,
           presentBadge: true,
           presentSound: true,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
+  /// Tahmini tarih geçtiği hâlde kayıt gelmediyse gönderilen hatırlatma.
+  ///
+  /// Metin bilinçli olarak tanı koymaz ve gebelikten söz etmez: sapma çok
+  /// yaygın, uygulamanın işi kaygı üretmek değil kaydı güncel tutmak.
+  Future<void> scheduleDelayReminder(
+    DateTime checkDate,
+    int hour,
+    int minute,
+    String locale, {
+    required int id,
+    bool discreet = false,
+  }) async {
+    final l10n = _l10n(locale);
+    await _plugin.cancel(id);
+
+    final scheduledDate = _scheduleFor(checkDate, hour, minute);
+    if (scheduledDate == null) return;
+
+    await _plugin.zonedSchedule(
+      id,
+      discreet ? l10n.notificationDiscreetTitle : l10n.notificationDelayTitle,
+      discreet ? l10n.notificationDiscreetBody : l10n.notificationDelayBody,
+      scheduledDate,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'period_delay',
+          l10n.notificationDelayChannel,
+          channelDescription: l10n.notificationDelayChannelDesc,
+          importance: Importance.defaultImportance,
+          priority: Priority.defaultPriority,
+          icon: '@mipmap/ic_launcher',
+        ),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: false,
+          presentSound: false,
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
@@ -397,6 +447,20 @@ class NotificationService {
               minute,
               locale,
               id: _ovulationReminderBaseId + i,
+              discreet: discreet,
+            );
+          }
+
+          // Gecikme kontrolü: tahmini tarih geçtiği hâlde kayıt gelmediyse
+          // uygulamanın söyleyecek sözü yoktu. Regl başlatıldığında
+          // rescheduleAll yeniden çalıştığı için bu hatırlatma iptal olur.
+          if (profile.periodReminderEnabled) {
+            await scheduleDelayReminder(
+              periodDate.add(const Duration(days: _delayCheckAfterDays)),
+              hour,
+              minute,
+              locale,
+              id: _delayReminderBaseId + i,
               discreet: discreet,
             );
           }

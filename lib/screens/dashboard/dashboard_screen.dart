@@ -265,6 +265,7 @@ class DashboardScreen extends ConsumerWidget {
                   periodLength: profile?.averagePeriodLength ?? 5,
                   phase: phase,
                   daysUntilNextPeriod: daysUntil,
+                  delayDays: ref.watch(periodDelayProvider),
                   lastPeriodStart: profile?.lastPeriodStart,
                   patterned: ref.watch(phasePatternProvider),
                 ),
@@ -330,6 +331,7 @@ class DashboardScreen extends ConsumerWidget {
     String locale,
   ) {
     final ongoing = ref.watch(ongoingPeriodProvider);
+    final delay = ref.watch(periodDelayProvider);
 
     String headline;
     String? subtitle;
@@ -337,6 +339,12 @@ class DashboardScreen extends ConsumerWidget {
     if (profile?.lastPeriodStart == null) {
       // Kurulum yarım kalmış: cevap yerine tek yapılacak iş
       headline = l10n.headlineNoData;
+    } else if (delay > 0) {
+      // Kullanıcının uygulamayı en çok açtığı an: cevap "gecikme" olmalı,
+      // ileri sarılmış bir sonraki tahmin değil. Alt satır sakinleştirici
+      // ve eyleme dönük — tanı koymaz.
+      headline = l10n.headlineDelay(delay);
+      subtitle = l10n.headlineDelaySubtitle;
     } else if (ongoing != null) {
       final now = DateTime.now();
       final start = ongoing.startDate;

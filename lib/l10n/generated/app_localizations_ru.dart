@@ -1422,6 +1422,31 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get headlineDelaySubtitle => 'Небольшие отклонения — это нормально. Отметьте, если начались.';
+
+  @override
+  String get notificationDelayTitle => 'Предполагаемая дата прошла';
+
+  @override
+  String get notificationDelayBody => 'Если месячные начались, не забудьте отметить. Отклонения — это нормально.';
+
+  @override
+  String get notificationDelayChannel => 'Напоминание о задержке';
+
+  @override
+  String get notificationDelayChannelDesc => 'Напоминание, когда предполагаемая дата прошла';
+
+  @override
+  String headlineDelay(int days) {
+    return 'Задержка $days дн.';
+  }
+
+  @override
+  String delayDays(int days) {
+    return 'задержка $days дн.';
+  }
+
+  @override
   String get reportTitle => 'Отчёт о здоровье цикла';
 
   @override

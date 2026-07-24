@@ -683,6 +683,18 @@ final daysUntilNextPeriodProvider = Provider<int>((ref) {
   );
 });
 
+/// Tahmini tarihin kaç gün geçtiği; gecikme yoksa 0.
+/// Devam eden bir regl varken gecikmeden söz edilemez.
+final periodDelayProvider = Provider<int>((ref) {
+  final profile = ref.watch(userProfileProvider);
+  if (profile == null || profile.lastPeriodStart == null) return 0;
+  if (ref.watch(ongoingPeriodProvider) != null) return 0;
+  return CycleUtils.periodDelayDays(
+    profile.lastPeriodStart!,
+    ref.watch(effectiveCycleLengthProvider),
+  );
+});
+
 /// Mevcut döngüde ölçümle teyit edilmiş ovülasyon günü.
 /// Öncelik: BBT yükselişi (kesin teyit) > pozitif LH testi + 1 gün
 /// (LH piki ovülasyondan 24-36 saat önce gelir). İkisi de yoksa null.

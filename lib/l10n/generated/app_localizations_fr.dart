@@ -1422,6 +1422,31 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get headlineDelaySubtitle => 'Une variation est normale. Enregistrez-les si elles ont commencé.';
+
+  @override
+  String get notificationDelayTitle => 'La date prévue est passée';
+
+  @override
+  String get notificationDelayBody => 'Si vos règles ont commencé, pensez à les enregistrer. Une variation est normale.';
+
+  @override
+  String get notificationDelayChannel => 'Rappel de retard';
+
+  @override
+  String get notificationDelayChannelDesc => 'Rappel lorsque la date prévue est passée';
+
+  @override
+  String headlineDelay(int days) {
+    return 'Vos règles ont $days jours de retard';
+  }
+
+  @override
+  String delayDays(int days) {
+    return '$days jours de retard';
+  }
+
+  @override
   String get reportTitle => 'Rapport de santé du cycle';
 
   @override

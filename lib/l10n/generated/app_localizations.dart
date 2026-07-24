@@ -2797,6 +2797,48 @@ abstract class AppLocalizations {
   /// **'Reglinin {day}. günü'**
   String headlinePeriodDay(int day);
 
+  /// No description provided for @headlineDelaySubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sapma olağan olabilir. Başladıysa kaydet.'**
+  String get headlineDelaySubtitle;
+
+  /// No description provided for @notificationDelayTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tahmini tarih geçti'**
+  String get notificationDelayTitle;
+
+  /// No description provided for @notificationDelayBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglin başladıysa kaydetmeyi unutma. Sapma olağan olabilir.'**
+  String get notificationDelayBody;
+
+  /// No description provided for @notificationDelayChannel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gecikme Hatırlatması'**
+  String get notificationDelayChannel;
+
+  /// No description provided for @notificationDelayChannelDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tahmini tarih geçtiğinde hatırlatma'**
+  String get notificationDelayChannelDesc;
+
+  /// No description provided for @headlineDelay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglin {days} gün gecikti'**
+  String headlineDelay(int days);
+
+  /// No description provided for @delayDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'{days} gün gecikme'**
+  String delayDays(int days);
+
   /// No description provided for @reportTitle.
   ///
   /// In tr, this message translates to:

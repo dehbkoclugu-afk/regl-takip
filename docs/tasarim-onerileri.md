@@ -1,8 +1,8 @@
 # 100 kritik tasarım önerisi
 
-> **Durum:** 1, 2, 11, 12, 13, 14, 75, 76 ve 77 uygulandı (77 kısmen: ana ekran
-> ve paylaşılan bileşenler; diğer ekranlarda taşma taraması sürüyor).
-> Ayrıntı için CHANGELOG'a bakın.
+> **Durum:** 1, 2, 11, 12, 13, 14, 17, 18, 70, 75, 76 ve 77 uygulandı
+> (77 kısmen: ana ekran ve paylaşılan bileşenler; diğer ekranlarda taşma
+> taraması sürüyor). Ayrıntı için CHANGELOG'a bakın.
 
 Uygulamanın mevcut hâli üzerinden yapılmış eleştirel bir okuma. Öneriler
 gözlemden çıktı: her madde neyin sorun olduğunu söyler, sonra ne yapılacağını.

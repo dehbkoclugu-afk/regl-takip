@@ -1422,6 +1422,31 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get headlineDelaySubtitle => 'Cierta variación es normal. Regístrala si ya empezó.';
+
+  @override
+  String get notificationDelayTitle => 'La fecha prevista ya pasó';
+
+  @override
+  String get notificationDelayBody => 'Si tu regla ya empezó, recuerda registrarla. Cierta variación es normal.';
+
+  @override
+  String get notificationDelayChannel => 'Recordatorio de retraso';
+
+  @override
+  String get notificationDelayChannelDesc => 'Recordatorio cuando la fecha prevista ha pasado';
+
+  @override
+  String headlineDelay(int days) {
+    return 'Tu regla lleva $days días de retraso';
+  }
+
+  @override
+  String delayDays(int days) {
+    return '$days días de retraso';
+  }
+
+  @override
   String get reportTitle => 'Informe de salud del ciclo';
 
   @override

@@ -22,6 +22,11 @@ class CycleProgressRing extends StatefulWidget {
   final CyclePhase phase;
   final int daysUntilNextPeriod;
 
+  /// Tahmini tarihin kaç gün geçtiği; gecikme yoksa 0. Gecikme kendi
+  /// diline sahip olmalı: rozet "bugün!" derken kullanıcı üç gündür
+  /// bekliyor olabiliyordu.
+  final int delayDays;
+
   /// Segment dokunuşunda tarih aralığı gösterebilmek için: döngü günü 1'in
   /// takvim karşılığı. null ise gün numarası aralığı gösterilir.
   final DateTime? lastPeriodStart;
@@ -37,6 +42,7 @@ class CycleProgressRing extends StatefulWidget {
     this.periodLength = 5,
     required this.phase,
     required this.daysUntilNextPeriod,
+    this.delayDays = 0,
     this.lastPeriodStart,
     this.patterned = false,
   });
@@ -295,10 +301,17 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
   }
 
   Widget _buildCenterContent(AppLocalizations l10n, BuildContext context) {
-    final textColor = _textColor(AppColors.isDark(context));
+    final isDark = AppColors.isDark(context);
+    final textColor = _textColor(isDark);
     final phaseShift = context.motionEnabled
         ? const Duration(milliseconds: 600)
         : Duration.zero;
+    // Gecikmede rozet kendi rengini ve metnini alır: aynı kabuk içinde
+    // "bugün!" demek, üç gündür bekleyen kullanıcıya yanlış bilgiydi
+    final delayed = widget.delayDays > 0;
+    final badgeColor = delayed
+        ? (isDark ? AppColors.warning : AppColors.warningText)
+        : _ringColor;
     return Column(
       key: const ValueKey('center'),
       mainAxisAlignment: MainAxisAlignment.center,
@@ -332,7 +345,7 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
           curve: Curves.easeOutQuart,
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
           decoration: BoxDecoration(
-            color: _ringColor.withValues(alpha: 0.15),
+            color: badgeColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(16),
           ),
           child: AnimatedDefaultTextStyle(
@@ -341,12 +354,14 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
-              color: textColor,
+              color: delayed ? badgeColor : textColor,
             ),
             child: Text(
-              widget.daysUntilNextPeriod > 0
-                  ? l10n.daysLater(widget.daysUntilNextPeriod)
-                  : l10n.todayExclamation,
+              delayed
+                  ? l10n.delayDays(widget.delayDays)
+                  : (widget.daysUntilNextPeriod > 0
+                      ? l10n.daysLater(widget.daysUntilNextPeriod)
+                      : l10n.todayExclamation),
             ),
           ),
         ),

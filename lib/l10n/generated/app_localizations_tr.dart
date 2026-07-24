@@ -1422,6 +1422,31 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get headlineDelaySubtitle => 'Sapma olağan olabilir. Başladıysa kaydet.';
+
+  @override
+  String get notificationDelayTitle => 'Tahmini tarih geçti';
+
+  @override
+  String get notificationDelayBody => 'Reglin başladıysa kaydetmeyi unutma. Sapma olağan olabilir.';
+
+  @override
+  String get notificationDelayChannel => 'Gecikme Hatırlatması';
+
+  @override
+  String get notificationDelayChannelDesc => 'Tahmini tarih geçtiğinde hatırlatma';
+
+  @override
+  String headlineDelay(int days) {
+    return 'Reglin $days gün gecikti';
+  }
+
+  @override
+  String delayDays(int days) {
+    return '$days gün gecikme';
+  }
+
+  @override
   String get reportTitle => 'Döngü Sağlık Raporu';
 
   @override

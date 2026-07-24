@@ -1422,6 +1422,31 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get headlineDelaySubtitle => 'Some variation is normal. Log it if it has started.';
+
+  @override
+  String get notificationDelayTitle => 'Predicted date has passed';
+
+  @override
+  String get notificationDelayBody => 'If your period has started, remember to log it. Some variation is normal.';
+
+  @override
+  String get notificationDelayChannel => 'Delay Reminder';
+
+  @override
+  String get notificationDelayChannelDesc => 'Reminder when the predicted date has passed';
+
+  @override
+  String headlineDelay(int days) {
+    return 'Your period is $days days late';
+  }
+
+  @override
+  String delayDays(int days) {
+    return '$days days late';
+  }
+
+  @override
   String get reportTitle => 'Cycle Health Report';
 
   @override

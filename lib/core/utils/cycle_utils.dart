@@ -333,6 +333,29 @@ class CycleUtils {
         nextPeriod.difference(DateTime(now.year, now.month, now.day)).inDays;
     return diff > 0 ? diff : 0;
   }
+
+  /// Tahmini regl tarihinin üzerinden kaç gün geçtiği; gecikme yoksa 0.
+  ///
+  /// Gecikme uygulamada hiçbir yerde görünmüyordu: [daysUntilNextPeriod]
+  /// sonucu sıfıra kırpıyor, [nextFuturePeriod] geçmişte kalan tahmini bir
+  /// sonraki döngüye ileri sarıyor. İkisi birlikte gecikmeyi tamamen
+  /// görünmez kılıyordu — oysa kullanıcının uygulamaya en çok ihtiyaç
+  /// duyduğu an tam orası.
+  ///
+  /// Üst sınır bir döngü boyu: gecikme döngü uzunluğuna ulaştıysa bir
+  /// sonraki tahmini tarih de geçmiş demektir ve uygulama "çok geç kaldı"
+  /// ile "kullanıcı uzun süredir kayıt girmiyor"u birbirinden ayıramaz.
+  /// O noktada 0 dönüp normal tahmin diline geri dönmek dürüst olan.
+  static int periodDelayDays(DateTime lastPeriodStart, int cycleLength) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final predicted = predictNextPeriod(lastPeriodStart, cycleLength);
+    final delay = today
+        .difference(DateTime(predicted.year, predicted.month, predicted.day))
+        .inDays;
+    if (delay <= 0 || delay >= cycleLength) return 0;
+    return delay;
+  }
 }
 
 enum CyclePhase {

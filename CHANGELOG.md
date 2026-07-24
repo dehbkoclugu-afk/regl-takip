@@ -1,5 +1,16 @@
 # Changelog
 
+## Yayınlanmamış — Gecikme durumu (2026-07-24)
+
+Tasarım incelemesinin üçüncü grubu (`docs/tasarim-onerileri.md` madde 17, 18, 70).
+
+- **Gecikme artık görünüyor** (madde 18): uygulamada gecikmeyi gösteren hiçbir şey yoktu — `daysUntilNextPeriod` sonucu sıfıra kırpıyor, `nextFuturePeriod` geçmişte kalan tahmini bir sonraki döngüye ileri sarıyordu. İkisi birlikte gecikmeyi tamamen görünmez kılıyordu, oysa kullanıcının uygulamaya en çok ihtiyaç duyduğu an tam orası. Yeni `CycleUtils.periodDelayDays` tahmini tarihin kaç gün geçtiğini veriyor, ana ekran başlığı "Reglin 3 gün gecikti" diyor, alt satır sakinleştirici ve eyleme dönük
+- **Ring gecikmeyi ayırt ediyor** (madde 17): rozet "bugün!" derken kullanıcı üç gündür bekliyor olabiliyordu. Gecikmede rozet kendi metnini ve uyarı tonunu alıyor
+- **Gecikme bildirimi** (madde 70): tahmini tarihten 3 gün sonra hatırlatma gönderiliyor (ertesi gün sormak erken, bir hafta geç). Regl kaydedildiğinde `rescheduleAll` yeniden çalıştığı için bildirim kendiliğinden iptal oluyor. Gizli modda nötr metin, hamilelik ve hap modunda hiç kurulmuyor
+- **Sınır bilinçli**: gecikme döngü uzunluğuna ulaştığında 0'a dönüyor — o noktada bir sonraki tahmini tarih de geçmiş demektir ve uygulama "çok geç kaldı" ile "kullanıcı uzun süredir kayıt girmiyor"u ayırt edemez
+- **Metinler tanı koymuyor**: ne ekranda ne bildirimde gebelikten söz ediliyor; sapmanın yaygın olduğu söylenip kaydı güncellemeye yönlendiriliyor
+- `periodDelayDays` için 7 birim testi eklendi (sınır değerleri, döngü uzunluğuyla kayma, saat bileşeni)
+
 ## Yayınlanmamış — Ana ekran soruya cevap veriyor (2026-07-24)
 
 Tasarım incelemesinin ikinci grubu (`docs/tasarim-onerileri.md` madde 11, 12, 13, 14).
