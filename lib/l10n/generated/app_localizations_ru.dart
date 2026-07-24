@@ -1546,6 +1546,23 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get backupWarningTitle => 'Файл резервной копии не зашифрован';
+
+  @override
+  String get backupWarningBody => 'Резервная копия содержит все записи о цикле и здоровье в читаемом виде. Данные на устройстве зашифрованы, а этот файл — нет. Будьте внимательны, где вы его сохраняете и с кем делитесь.';
+
+  @override
+  String get backupNever => 'Вы ещё ни разу не делали резервную копию.';
+
+  @override
+  String get backupStaleHint => 'Если вы потеряете телефон, записи восстановить не удастся.';
+
+  @override
+  String backupLastAt(String date) {
+    return 'Последняя копия: $date';
+  }
+
+  @override
   String get reportTitle => 'Отчёт о здоровье цикла';
 
   @override

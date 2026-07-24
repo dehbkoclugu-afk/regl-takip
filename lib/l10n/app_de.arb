@@ -537,6 +537,16 @@
       "count": {"type": "int"}
     }
   },
+  "backupWarningTitle": "Die Sicherungsdatei ist unverschlüsselt",
+  "backupWarningBody": "Die Sicherung enthält alle Zyklus- und Gesundheitseinträge in lesbarer Form. Die Daten auf dem Gerät sind verschlüsselt, diese Datei jedoch nicht. Achte darauf, wo du sie speicherst und mit wem du sie teilst.",
+  "backupNever": "Du hast noch nie eine Sicherung erstellt.",
+  "backupStaleHint": "Wenn du dein Telefon verlierst, sind die Einträge nicht wiederherstellbar.",
+  "backupLastAt": "Letzte Sicherung: {date}",
+  "@backupLastAt": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
   "reportTitle": "Zyklus-Gesundheitsbericht",
   "reportGenerated": "Erstellt",
   "profileSummary": "Profilübersicht",

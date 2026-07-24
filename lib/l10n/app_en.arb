@@ -689,6 +689,16 @@
       "count": {"type": "int"}
     }
   },
+  "backupWarningTitle": "The backup file is not encrypted",
+  "backupWarningBody": "The backup contains all your cycle and health records in readable form. Data on the device is encrypted, but this file is not. Be careful where you save it and who you share it with.",
+  "backupNever": "You have never made a backup.",
+  "backupStaleHint": "If you lose your phone, the records cannot be recovered.",
+  "backupLastAt": "Last backup: {date}",
+  "@backupLastAt": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
   "reportTitle": "Cycle Health Report",
   "reportGenerated": "Generated",
   "profileSummary": "Profile Summary",

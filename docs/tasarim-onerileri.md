@@ -1,9 +1,10 @@
 # 100 kritik tasarım önerisi
 
 > **Durum:** 1, 2, 4, 11, 12, 13, 14, 17, 18, 39, 48, 49, 50, 59, 60, 61, 62,
-> 67, 68, 70, 75, 76 ve 77 uygulandı. Kısmi olanlar: 3 (yalnız uyarı tarafı — salt-okunur
-> katman yapılmadı) ve 77 (ana ekran ve paylaşılan bileşenler; diğer ekranlarda
-> taşma taraması sürüyor). Madde 58 açık: adım sayısını azaltmak kurulum
+> 67, 68, 70, 75, 76, 77 ve 92 uygulandı. Kısmi olanlar: 3 (yalnız uyarı
+> tarafı — salt-okunur katman yapılmadı), 77 (ana ekran ve paylaşılan
+> bileşenler; diğer ekranlarda taşma taraması sürüyor) ve 89 (uyarı eklendi,
+> parolalı yedek yapılmadı). Madde 58 açık: adım sayısını azaltmak kurulum
 > akışını yeniden kurgulamak demek. Ayrıntı için CHANGELOG'a bakın.
 
 Uygulamanın mevcut hâli üzerinden yapılmış eleştirel bir okuma. Öneriler
@@ -405,6 +406,11 @@ gelmeli.
 **89. 🟡 Yedek dosyası şifresiz.** Hive kutuları cihazda şifreli ama dışa
 aktarılan yedek düz JSON. En hassas veri en korumasız hâlde cihazdan çıkıyor;
 parolalı yedek seçeneği gerekiyor.
+
+*(Kısmen ele alındı: dışa aktarmadan önce dosyanın şifresiz olduğunu ve
+içeriğini söyleyen bir onay adımı eklendi. Parolalı yedeğin kendisi
+yapılmadı — kriptografi derlenemeyen ve test edilemeyen bir ortamda
+yazılacak son şey; ayrı, gözden geçirilebilir bir tur istiyor.)*
 
 **90. 🔵 Ekran görüntüsü koruması yalnız kilitliyken.** `FLAG_SECURE` kilit
 gerektiğinde açılıyor; kilit kullanmayan kullanıcı da bu korumayı isteyebilir.

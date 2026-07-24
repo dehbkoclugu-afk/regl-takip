@@ -1,5 +1,15 @@
 # Changelog
 
+## Yayınlanmamış — Yedekleme (2026-07-24)
+
+Tasarım incelemesinin sekizinci grubu (`docs/tasarim-onerileri.md` madde 92, 89).
+
+- **Yedek hatırlatması** (madde 92): yedekleme tamamen kullanıcıya bırakılmıştı, hatırlatan hiçbir şey yoktu ve telefon kaybında yılların verisi gidiyordu. Ayarlardaki veri bölümü artık son yedeğin ne zaman alındığını gösteriyor; 30 günü geçtiyse veya hiç alınmadıysa uyarı tonuna geçip sonucunu söylüyor
+- **Zaman damgası paylaşım sonrası yazılıyor**: dosyayı yazmak yeterli değil, kullanıcı paylaşım sayfasını iptal etmiş olabilir. Damga `shareFile` döndükten sonra atılıyor
+- **Şifresiz yedek uyarısı** (madde 89, kısmi): dışa aktarmadan önce dosyanın tüm döngü ve sağlık kayıtlarını okunabilir biçimde içerdiği, cihazdaki verinin şifreli ama bu dosyanın şifresiz olduğu söyleniyor. Kullanıcı onaylamadan dosya oluşmuyor. **Parolalı yedeğin kendisi yapılmadı** — kriptografi derlenemeyen ve test edilemeyen bir ortamda yazılacak son şey; ayrı bir tur istiyor
+- **Yedek durumu Hive'da değil SharedPreferences'ta**: "tüm verileri sil" yedek geçmişini de silmemeli
+- `isStale` için 5 birim testi (hiç yedek yok, eşik değeri, eşiğin bir altı)
+
 ## Yayınlanmamış — İstatistikte dürüstlük (2026-07-24)
 
 Tasarım incelemesinin yedinci grubu (`docs/tasarim-onerileri.md` madde 48, 49, 50).

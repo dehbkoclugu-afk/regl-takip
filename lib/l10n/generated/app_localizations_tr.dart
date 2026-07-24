@@ -1546,6 +1546,23 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get backupWarningTitle => 'Yedek dosyası şifresiz';
+
+  @override
+  String get backupWarningBody => 'Yedek, döngü ve sağlık kayıtlarının tamamını okunabilir biçimde içerir. Cihazdaki veriler şifreli tutulur ama bu dosya değildir. Nereye kaydettiğine ve kiminle paylaştığına dikkat et.';
+
+  @override
+  String get backupNever => 'Henüz hiç yedek almadın.';
+
+  @override
+  String get backupStaleHint => 'Telefonunu kaybedersen kayıtlar geri gelmez.';
+
+  @override
+  String backupLastAt(String date) {
+    return 'Son yedek: $date';
+  }
+
+  @override
   String get reportTitle => 'Döngü Sağlık Raporu';
 
   @override

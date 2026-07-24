@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -478,12 +479,46 @@ class SettingsScreen extends ConsumerWidget {
           // Data
           _sectionHeader(context, l10n.dataSection),
           _settingsCard(context, [
+            // Yedek bayatladıysa (ya da hiç alınmadıysa) uyarı satırı:
+            // yedekleme tamamen kullanıcıya bırakılmıştı ve telefon
+            // kaybında yılların verisi gidiyordu
+            _backupStatusTile(context, ref, l10n),
+            _divider(context),
             _actionTile(context, Icons.backup_rounded, l10n.backupData,
                 AppColors.primary, () async {
+              // Dosya şifresiz düz JSON: uygulamanın içindeki en hassas
+              // veri en korumasız hâlde cihazdan çıkıyor. Kullanıcı bunu
+              // nereye gönderdiğine karar vermeden önce bilmeli.
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24)),
+                  icon: const Icon(Icons.lock_open_rounded,
+                      color: AppColors.warningText, size: 32),
+                  title: Text(l10n.backupWarningTitle),
+                  content: Text(l10n.backupWarningBody,
+                      style: const TextStyle(fontSize: 14, height: 1.5)),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: Text(l10n.cancel),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(ctx, true),
+                      child: Text(l10n.continueBtn),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmed != true) return;
               try {
                 final backupService = BackupService(HiveService());
                 final path = await backupService.exportBackup();
                 await ExportService().shareFile(path);
+                // Dosyayı yazmak yeterli değil; paylaşım da tamamlandı
+                await BackupService.markBackedUp();
+                ref.invalidate(lastBackupProvider);
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -1008,6 +1043,51 @@ class SettingsScreen extends ConsumerWidget {
       title: Text(title,
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
       trailing: Icon(Icons.chevron_right_rounded, color: AppColors.ts(context)),
+    );
+  }
+
+  /// Son yedeğin durumu. Bayat ya da hiç alınmamışsa uyarı tonunda;
+  /// güncelse sessiz bir bilgi satırı.
+  Widget _backupStatusTile(
+      BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+    final async = ref.watch(lastBackupProvider);
+    return async.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (last) {
+        final stale = BackupService.isStale(last);
+        final locale = Localizations.localeOf(context).toString();
+        final text = last == null
+            ? l10n.backupNever
+            : l10n.backupLastAt(
+                DateFormat('d MMM yyyy', locale).format(last));
+        final color =
+            stale ? AppColors.warningText : AppColors.ts(context);
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                stale
+                    ? Icons.cloud_off_rounded
+                    : Icons.cloud_done_rounded,
+                size: 16,
+                color: color,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  stale ? '$text ${l10n.backupStaleHint}' : text,
+                  style: TextStyle(
+                      fontSize: 12, height: 1.4, color: color),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

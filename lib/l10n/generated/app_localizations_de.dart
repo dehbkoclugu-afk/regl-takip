@@ -1546,6 +1546,23 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get backupWarningTitle => 'Die Sicherungsdatei ist unverschlüsselt';
+
+  @override
+  String get backupWarningBody => 'Die Sicherung enthält alle Zyklus- und Gesundheitseinträge in lesbarer Form. Die Daten auf dem Gerät sind verschlüsselt, diese Datei jedoch nicht. Achte darauf, wo du sie speicherst und mit wem du sie teilst.';
+
+  @override
+  String get backupNever => 'Du hast noch nie eine Sicherung erstellt.';
+
+  @override
+  String get backupStaleHint => 'Wenn du dein Telefon verlierst, sind die Einträge nicht wiederherstellbar.';
+
+  @override
+  String backupLastAt(String date) {
+    return 'Letzte Sicherung: $date';
+  }
+
+  @override
   String get reportTitle => 'Zyklus-Gesundheitsbericht';
 
   @override

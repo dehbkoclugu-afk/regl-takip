@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/daily_log.dart';
 import '../models/period_record.dart';
@@ -34,9 +35,39 @@ class BackupException implements Exception {
 class BackupService {
   static const int backupVersion = 1;
 
+  /// Son başarılı yedeğin zamanı (SharedPreferences).
+  /// Hive'da değil: "tüm verileri sil" yedek geçmişini de silmemeli,
+  /// aksi halde kullanıcı sıfırdan başlarken "hiç yedek almadın" uyarısı
+  /// doğru olur ama ona söylenmesi gereken şey bu değildir.
+  static const String lastBackupKey = 'last_backup_epoch';
+
+  /// Kaç gün sonra "yedek alman iyi olur" denecek.
+  static const int backupStaleDays = 30;
+
   final HiveService _hiveService;
 
   BackupService(this._hiveService);
+
+  static Future<DateTime?> lastBackupAt() async {
+    final prefs = await SharedPreferences.getInstance();
+    final epoch = prefs.getInt(lastBackupKey);
+    return epoch == null ? null : DateTime.fromMillisecondsSinceEpoch(epoch);
+  }
+
+  /// Yedek gerçekten paylaşıldıktan sonra çağrılır. Dosyayı yazmak yeterli
+  /// değil: kullanıcı paylaşım sayfasını iptal etmiş olabilir.
+  static Future<void> markBackedUp() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(
+        lastBackupKey, DateTime.now().millisecondsSinceEpoch);
+  }
+
+  /// Yedek bayatladı mı? Hiç alınmadıysa da true — telefon kaybında
+  /// yılların verisi gidiyor ve uygulama bunu hiç hatırlatmıyordu.
+  static bool isStale(DateTime? last) {
+    if (last == null) return true;
+    return DateTime.now().difference(last).inDays >= backupStaleDays;
+  }
 
   /// Mevcut tüm veriyi JSON string'e serileştirir.
   String buildBackupJson() {

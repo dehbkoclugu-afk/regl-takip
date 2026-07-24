@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import '../services/backup_service.dart';
 import '../services/hive_service.dart';
 import '../services/notification_service.dart';
 import '../services/premium_service.dart';
@@ -58,6 +59,12 @@ final phasePatternProvider = StateProvider<bool>((ref) => false);
 /// olmayan bir hareket, olmayan bir özelliktir.
 /// Kalıcılığı SharedPreferences 'backdate_hint_needed'.
 final backdateHintProvider = StateProvider<bool>((ref) => true);
+
+/// Son başarılı yedeğin zamanı; hiç yedek alınmadıysa null.
+/// Yedekleme tamamen kullanıcıya bırakılmıştı ve hatırlatan hiçbir şey
+/// yoktu: telefon kaybında yılların verisi gidiyordu.
+final lastBackupProvider =
+    FutureProvider<DateTime?>((ref) => BackupService.lastBackupAt());
 
 // ─── Erişim (deneme / premium / ücretsiz) ─────────────────────────────
 

@@ -689,6 +689,16 @@
       "count": {"type": "int"}
     }
   },
+  "backupWarningTitle": "Yedek dosyası şifresiz",
+  "backupWarningBody": "Yedek, döngü ve sağlık kayıtlarının tamamını okunabilir biçimde içerir. Cihazdaki veriler şifreli tutulur ama bu dosya değildir. Nereye kaydettiğine ve kiminle paylaştığına dikkat et.",
+  "backupNever": "Henüz hiç yedek almadın.",
+  "backupStaleHint": "Telefonunu kaybedersen kayıtlar geri gelmez.",
+  "backupLastAt": "Son yedek: {date}",
+  "@backupLastAt": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
   "reportTitle": "Döngü Sağlık Raporu",
   "reportGenerated": "Oluşturma",
   "profileSummary": "Profil Özeti",

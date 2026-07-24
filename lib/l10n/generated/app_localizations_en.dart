@@ -1546,6 +1546,23 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get backupWarningTitle => 'The backup file is not encrypted';
+
+  @override
+  String get backupWarningBody => 'The backup contains all your cycle and health records in readable form. Data on the device is encrypted, but this file is not. Be careful where you save it and who you share it with.';
+
+  @override
+  String get backupNever => 'You have never made a backup.';
+
+  @override
+  String get backupStaleHint => 'If you lose your phone, the records cannot be recovered.';
+
+  @override
+  String backupLastAt(String date) {
+    return 'Last backup: $date';
+  }
+
+  @override
   String get reportTitle => 'Cycle Health Report';
 
   @override

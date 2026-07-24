@@ -537,6 +537,16 @@
       "count": {"type": "int"}
     }
   },
+  "backupWarningTitle": "Le fichier de sauvegarde n’est pas chiffré",
+  "backupWarningBody": "La sauvegarde contient toutes vos données de cycle et de santé en clair. Les données sur l’appareil sont chiffrées, mais pas ce fichier. Faites attention à l’endroit où vous l’enregistrez et à qui vous le partagez.",
+  "backupNever": "Vous n’avez encore jamais fait de sauvegarde.",
+  "backupStaleHint": "Si vous perdez votre téléphone, les données seront irrécupérables.",
+  "backupLastAt": "Dernière sauvegarde : {date}",
+  "@backupLastAt": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
   "reportTitle": "Rapport de santé du cycle",
   "reportGenerated": "Généré",
   "profileSummary": "Résumé du profil",

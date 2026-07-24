@@ -3013,6 +3013,36 @@ abstract class AppLocalizations {
   /// **'Düzenlilikten söz edebilmek için en az {count} döngü aralığı gerekiyor. Daha az kayıtla yapılan yorum yanıltıcı olur.'**
   String regularityInfoInsufficient(int count);
 
+  /// No description provided for @backupWarningTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedek dosyası şifresiz'**
+  String get backupWarningTitle;
+
+  /// No description provided for @backupWarningBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedek, döngü ve sağlık kayıtlarının tamamını okunabilir biçimde içerir. Cihazdaki veriler şifreli tutulur ama bu dosya değildir. Nereye kaydettiğine ve kiminle paylaştığına dikkat et.'**
+  String get backupWarningBody;
+
+  /// No description provided for @backupNever.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz hiç yedek almadın.'**
+  String get backupNever;
+
+  /// No description provided for @backupStaleHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Telefonunu kaybedersen kayıtlar geri gelmez.'**
+  String get backupStaleHint;
+
+  /// No description provided for @backupLastAt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son yedek: {date}'**
+  String backupLastAt(String date);
+
   /// No description provided for @reportTitle.
   ///
   /// In tr, this message translates to:

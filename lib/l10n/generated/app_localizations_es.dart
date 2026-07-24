@@ -1546,6 +1546,23 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get backupWarningTitle => 'El archivo de copia no está cifrado';
+
+  @override
+  String get backupWarningBody => 'La copia contiene todos tus registros de ciclo y salud en formato legible. Los datos del dispositivo están cifrados, pero este archivo no. Ten cuidado con dónde lo guardas y con quién lo compartes.';
+
+  @override
+  String get backupNever => 'Aún no has hecho ninguna copia.';
+
+  @override
+  String get backupStaleHint => 'Si pierdes el teléfono, los registros no se podrán recuperar.';
+
+  @override
+  String backupLastAt(String date) {
+    return 'Última copia: $date';
+  }
+
+  @override
   String get reportTitle => 'Informe de salud del ciclo';
 
   @override

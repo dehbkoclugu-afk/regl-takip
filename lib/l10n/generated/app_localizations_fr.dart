@@ -1546,6 +1546,23 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get backupWarningTitle => 'Le fichier de sauvegarde n’est pas chiffré';
+
+  @override
+  String get backupWarningBody => 'La sauvegarde contient toutes vos données de cycle et de santé en clair. Les données sur l’appareil sont chiffrées, mais pas ce fichier. Faites attention à l’endroit où vous l’enregistrez et à qui vous le partagez.';
+
+  @override
+  String get backupNever => 'Vous n’avez encore jamais fait de sauvegarde.';
+
+  @override
+  String get backupStaleHint => 'Si vous perdez votre téléphone, les données seront irrécupérables.';
+
+  @override
+  String backupLastAt(String date) {
+    return 'Dernière sauvegarde : $date';
+  }
+
+  @override
   String get reportTitle => 'Rapport de santé du cycle';
 
   @override

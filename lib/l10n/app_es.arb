@@ -537,6 +537,16 @@
       "count": {"type": "int"}
     }
   },
+  "backupWarningTitle": "El archivo de copia no está cifrado",
+  "backupWarningBody": "La copia contiene todos tus registros de ciclo y salud en formato legible. Los datos del dispositivo están cifrados, pero este archivo no. Ten cuidado con dónde lo guardas y con quién lo compartes.",
+  "backupNever": "Aún no has hecho ninguna copia.",
+  "backupStaleHint": "Si pierdes el teléfono, los registros no se podrán recuperar.",
+  "backupLastAt": "Última copia: {date}",
+  "@backupLastAt": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
   "reportTitle": "Informe de salud del ciclo",
   "reportGenerated": "Generado",
   "profileSummary": "Resumen del perfil",
