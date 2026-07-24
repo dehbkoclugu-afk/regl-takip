@@ -514,6 +514,29 @@
       "days": {"type": "int"}
     }
   },
+  "regularityInfoIrregular": "Zwischen deinem kürzesten und längsten Zyklus liegen 9 Tage oder mehr. Schwankende Zykluslängen sind sehr häufig; Stress, Schlaf, Krankheit und Veränderungen im Alltag wirken sich aus. Das ist keine Diagnose.",
+  "regularityInfoRegular": "Der Unterschied zwischen deinem kürzesten und längsten Zyklus liegt unter 9 Tagen. Mit dieser Beständigkeit sind die Vorhersagen genauer.",
+  "regularityInfoSeeDoctor": "Wenn dein Zyklus dauerhaft kürzer als 21 oder länger als 35 Tage ist, du länger als drei Monate keine Periode hattest oder die Blutung ungewöhnlich stark ist, sprich am besten mit einer Ärztin oder einem Arzt.",
+  "typicalRangeNote": "Üblicher Bereich: Zyklus {min}–{max} Tage, Periode bis zu {pmax} Tage. Kein diagnostischer Grenzwert.",
+  "@typicalRangeNote": {
+    "placeholders": {
+      "min": {"type": "int"},
+      "max": {"type": "int"},
+      "pmax": {"type": "int"}
+    }
+  },
+  "lowConfidenceNote": "Diese Durchschnitte stammen aus nur {count} Zyklen; sie werden mit weiteren Einträgen genauer.",
+  "@lowConfidenceNote": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "regularityInfoInsufficient": "Für eine Aussage zur Regelmäßigkeit braucht es mindestens {count} Zyklusabstände. Weniger wäre irreführend.",
+  "@regularityInfoInsufficient": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "reportTitle": "Zyklus-Gesundheitsbericht",
   "reportGenerated": "Erstellt",
   "profileSummary": "Profilübersicht",

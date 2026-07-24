@@ -8,6 +8,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
@@ -473,6 +474,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     // null = veri yetersiz; aksi halde en uzun/en kısa döngü farkı >= 9 gün
     // düzensiz sayılır (CycleUtils.isIrregular)
     final irregular = CycleUtils.isIrregular(records);
+    final gapCount = CycleUtils.validCycleGaps(records).length;
     return GlassCard(
       borderRadius: 20,
       blur: 0,
@@ -500,26 +502,110 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     Icons.water_drop_rounded, AppColors.menstrual),
               ),
               Expanded(
-                child: _statItem(
-                    l10n.regularity,
-                    irregular == null
-                        ? l10n.insufficientData
-                        : (irregular ? l10n.irregular : l10n.regular),
-                    null,
-                    irregular == true
-                        ? Icons.warning_amber_rounded
-                        : Icons.check_circle_rounded,
-                    irregular == null
-                        ? AppColors.warningText
-                        : (irregular
-                            ? AppColors.error
-                            : AppColors.fertileWindowText)),
+                // Dokunulabilir: "Düzensiz" tıbbi ağırlığı olan bir yargı,
+                // ne anlama geldiği ve ne zaman hekime danışılacağı
+                // söylenmeden bırakılamaz
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () => _showRegularityInfo(l10n, irregular, gapCount),
+                  child: _statItem(
+                      l10n.regularity,
+                      irregular == null
+                          ? l10n.insufficientData
+                          : (irregular ? l10n.irregular : l10n.regular),
+                      null,
+                      irregular == true
+                          ? Icons.info_outline_rounded
+                          : Icons.check_circle_rounded,
+                      // Kırmızı "sende bir sorun var" diye okunuyordu:
+                      // değişkenlik bir bulgu, hata değil
+                      irregular == null
+                          ? AppColors.warningText
+                          : (irregular
+                              ? AppColors.warningText
+                              : AppColors.fertileWindowText)),
+                ),
               ),
             ],
           ),
+          const SizedBox(height: 14),
+          // Sayının tek başına anlamı yok: "29,3 gün" iyi mi kötü mü?
+          Text(
+            l10n.typicalRangeNote(AppConstants.typicalCycleMin,
+                AppConstants.typicalCycleMax, AppConstants.typicalPeriodMax),
+            style: TextStyle(
+                fontSize: 11, height: 1.4, color: AppColors.ts(context)),
+          ),
+          // Az veriyle hesaplanan ortalama yanıltıcı: kaç döngüden
+          // çıktığı söylenmeli
+          if (gapCount < AppConstants.minGapsForRegularity) ...[
+            const SizedBox(height: 6),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.info_outline_rounded,
+                    size: 13, color: AppColors.warningText),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    l10n.lowConfidenceNote(gapCount),
+                    style: TextStyle(
+                        fontSize: 11,
+                        height: 1.4,
+                        color: AppColors.warningText),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     ).animateSafe(context).fadeIn(delay: 60.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+  }
+
+  /// Düzenlilik yargısının ne demek olduğunu açıklar. Ölçütü saklamak
+  /// kullanıcıyı yargının karşısında çaresiz bırakıyor.
+  void _showRegularityInfo(
+      AppLocalizations l10n, bool? irregular, int gapCount) {
+    final body = irregular == null
+        ? l10n.regularityInfoInsufficient(AppConstants.minGapsForRegularity)
+        : (irregular
+            ? l10n.regularityInfoIrregular
+            : l10n.regularityInfoRegular);
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: AppColors.sf(ctx),
+        title: Text(l10n.regularity,
+            style: const TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold)),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(body,
+                  style: const TextStyle(fontSize: 14, height: 1.5)),
+              const SizedBox(height: 12),
+              Text(l10n.regularityInfoSeeDoctor,
+                  style: TextStyle(
+                      fontSize: 13,
+                      height: 1.5,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.tp(ctx))),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.done),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Genel bakış metriği: kahraman sayı + küçük birim (metrik ölçek

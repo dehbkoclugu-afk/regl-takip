@@ -1522,6 +1522,30 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get regularityInfoIrregular => 'Il y a 9 jours ou plus entre votre cycle le plus court et le plus long. Une durée de cycle variable est très courante ; le stress, le sommeil, la maladie et les changements de vie y contribuent. Ceci n’est pas un diagnostic.';
+
+  @override
+  String get regularityInfoRegular => 'L’écart entre votre cycle le plus court et le plus long est inférieur à 9 jours. Les prévisions sont plus fiables avec cette régularité.';
+
+  @override
+  String get regularityInfoSeeDoctor => 'Si votre cycle est constamment plus court que 21 jours ou plus long que 35, si vous n’avez pas eu de règles depuis plus de trois mois, ou si les saignements sont inhabituellement abondants, il vaut mieux consulter un professionnel de santé.';
+
+  @override
+  String typicalRangeNote(int min, int max, int pmax) {
+    return 'Plage courante : cycle $min–$max jours, règles jusqu’à $pmax jours. Ce n’est pas un seuil diagnostique.';
+  }
+
+  @override
+  String lowConfidenceNote(int count) {
+    return 'Ces moyennes proviennent de seulement $count cycles ; elles s’affineront avec vos saisies.';
+  }
+
+  @override
+  String regularityInfoInsufficient(int count) {
+    return 'Il faut au moins $count intervalles de cycle pour parler de régularité. En dessous, le jugement serait trompeur.';
+  }
+
+  @override
   String get reportTitle => 'Rapport de santé du cycle';
 
   @override

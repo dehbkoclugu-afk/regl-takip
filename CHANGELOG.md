@@ -1,5 +1,15 @@
 # Changelog
 
+## Yayınlanmamış — İstatistikte dürüstlük (2026-07-24)
+
+Tasarım incelemesinin yedinci grubu (`docs/tasarim-onerileri.md` madde 48, 49, 50).
+
+- **Sayılara bağlam** (madde 48): "Ort. döngü 29,3 gün" tek başına iyi mi kötü mü söylemiyordu. Genel bakış kartının altında yaygın kabul edilen aralık yazıyor (döngü 21–35 gün, regl 7 güne kadar) ve bunun tanı ölçütü olmadığı belirtiliyor
+- **"Düzensiz" etiketi açıklanıyor** (madde 49): tıbbi ağırlığı olan bir yargı, ölçütü söylenmeden ve ne yapılacağı belirtilmeden duruyordu. Etiket artık dokunulabilir: ölçütün ne olduğunu (en kısa ve en uzun döngü arasında 9+ gün fark), döngü uzunluğunun değişmesinin çok yaygın olduğunu ve bunun bir tanı olmadığını anlatıyor; ayrıca hangi durumlarda hekime danışılması gerektiğini söylüyor
+- **Kırmızı kalktı** (madde 49 devamı): "Düzensiz" hata kırmızısıyla ve uyarı üçgeniyle gösteriliyordu — "sende bir sorun var" diye okunuyor. Uyarı tonuna ve bilgi ikonuna alındı; değişkenlik bir bulgu, hata değil
+- **Az veri uyarısı** (madde 50): iki döngüden ortalama hesaplamak yanıltıcı. Üç döngü aralığından az veriyle ortalamaların kaç döngüden çıktığı ve kayıt geldikçe netleşeceği yazıyor
+- **Sabitler adlandırıldı**: `typicalCycleMin/Max`, `typicalPeriodMin/Max` ve `minGapsForRegularity` `AppConstants`'a taşındı. Mevcut `minCycleLength/maxCycleLength` giriş doğrulama sınırlarıydı (18–45) ve yaygın aralıkla karıştırılabiliyordu; ikisinin farkı yorumla açıklandı
+
 ## Yayınlanmamış — Hatırlatma zamanlaması (2026-07-24)
 
 Tasarım incelemesinin altıncı grubu (`docs/tasarim-onerileri.md` madde 67, 68).

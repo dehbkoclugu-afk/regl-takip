@@ -1522,6 +1522,30 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get regularityInfoIrregular => 'Zwischen deinem kürzesten und längsten Zyklus liegen 9 Tage oder mehr. Schwankende Zykluslängen sind sehr häufig; Stress, Schlaf, Krankheit und Veränderungen im Alltag wirken sich aus. Das ist keine Diagnose.';
+
+  @override
+  String get regularityInfoRegular => 'Der Unterschied zwischen deinem kürzesten und längsten Zyklus liegt unter 9 Tagen. Mit dieser Beständigkeit sind die Vorhersagen genauer.';
+
+  @override
+  String get regularityInfoSeeDoctor => 'Wenn dein Zyklus dauerhaft kürzer als 21 oder länger als 35 Tage ist, du länger als drei Monate keine Periode hattest oder die Blutung ungewöhnlich stark ist, sprich am besten mit einer Ärztin oder einem Arzt.';
+
+  @override
+  String typicalRangeNote(int min, int max, int pmax) {
+    return 'Üblicher Bereich: Zyklus $min–$max Tage, Periode bis zu $pmax Tage. Kein diagnostischer Grenzwert.';
+  }
+
+  @override
+  String lowConfidenceNote(int count) {
+    return 'Diese Durchschnitte stammen aus nur $count Zyklen; sie werden mit weiteren Einträgen genauer.';
+  }
+
+  @override
+  String regularityInfoInsufficient(int count) {
+    return 'Für eine Aussage zur Regelmäßigkeit braucht es mindestens $count Zyklusabstände. Weniger wäre irreführend.';
+  }
+
+  @override
   String get reportTitle => 'Zyklus-Gesundheitsbericht';
 
   @override

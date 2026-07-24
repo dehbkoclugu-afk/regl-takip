@@ -1522,6 +1522,30 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get regularityInfoIrregular => 'Hay 9 días o más entre tu ciclo más corto y el más largo. Que la duración del ciclo varíe es muy común; el estrés, el sueño, las enfermedades y los cambios de vida influyen. Esto no es un diagnóstico.';
+
+  @override
+  String get regularityInfoRegular => 'La diferencia entre tu ciclo más corto y el más largo es menor de 9 días. Las predicciones son más precisas con esta consistencia.';
+
+  @override
+  String get regularityInfoSeeDoctor => 'Si tu ciclo es siempre más corto de 21 días o más largo de 35, si llevas más de tres meses sin regla o si el sangrado es inusualmente abundante, conviene consultar a un profesional sanitario.';
+
+  @override
+  String typicalRangeNote(int min, int max, int pmax) {
+    return 'Rango habitual: ciclo $min–$max días, regla hasta $pmax días. No es un criterio diagnóstico.';
+  }
+
+  @override
+  String lowConfidenceNote(int count) {
+    return 'Estas medias salen de solo $count ciclos; se afinarán a medida que registres más.';
+  }
+
+  @override
+  String regularityInfoInsufficient(int count) {
+    return 'Hacen falta al menos $count intervalos de ciclo para hablar de regularidad. Con menos, el juicio induciría a error.';
+  }
+
+  @override
   String get reportTitle => 'Informe de salud del ciclo';
 
   @override

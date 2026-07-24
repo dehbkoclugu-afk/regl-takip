@@ -1522,6 +1522,30 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get regularityInfoIrregular => 'There are 9 or more days between your shortest and longest cycle. Cycle length varying is very common; stress, sleep, illness and life changes all affect it. This is not a diagnosis.';
+
+  @override
+  String get regularityInfoRegular => 'The difference between your shortest and longest cycle is under 9 days. Predictions are more accurate with this consistency.';
+
+  @override
+  String get regularityInfoSeeDoctor => 'If your cycle is consistently shorter than 21 days or longer than 35, if you have had no period for more than three months, or if bleeding is unusually heavy, it is worth speaking to a healthcare professional.';
+
+  @override
+  String typicalRangeNote(int min, int max, int pmax) {
+    return 'Commonly accepted range: cycle $min–$max days, period up to $pmax days. Not a diagnostic threshold.';
+  }
+
+  @override
+  String lowConfidenceNote(int count) {
+    return 'These averages come from only $count cycles; they will sharpen as you log more.';
+  }
+
+  @override
+  String regularityInfoInsufficient(int count) {
+    return 'At least $count cycle gaps are needed before regularity means anything. A judgement on less would mislead.';
+  }
+
+  @override
   String get reportTitle => 'Cycle Health Report';
 
   @override

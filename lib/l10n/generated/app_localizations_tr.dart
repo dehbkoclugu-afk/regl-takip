@@ -1522,6 +1522,30 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get regularityInfoIrregular => 'En kısa ve en uzun döngün arasında 9 gün veya daha fazla fark var. Döngü uzunluğunun değişmesi çok yaygındır; stres, uyku, hastalık ve yaşam değişiklikleri etkiler. Bu bir tanı değildir.';
+
+  @override
+  String get regularityInfoRegular => 'En kısa ve en uzun döngün arasındaki fark 9 günden az. Tahminler bu tutarlılıkta daha isabetli olur.';
+
+  @override
+  String get regularityInfoSeeDoctor => 'Döngün sürekli 21 günden kısa ya da 35 günden uzunsa, üç aydan fazla hiç regl görmediysen ya da kanaman olağandışı yoğunsa bir sağlık uzmanına danışman iyi olur.';
+
+  @override
+  String typicalRangeNote(int min, int max, int pmax) {
+    return 'Yaygın kabul edilen aralık: döngü $min–$max gün, regl $pmax güne kadar. Tanı ölçütü değildir.';
+  }
+
+  @override
+  String lowConfidenceNote(int count) {
+    return 'Bu ortalamalar yalnız $count döngüden hesaplandı; kayıt geldikçe netleşecek.';
+  }
+
+  @override
+  String regularityInfoInsufficient(int count) {
+    return 'Düzenlilikten söz edebilmek için en az $count döngü aralığı gerekiyor. Daha az kayıtla yapılan yorum yanıltıcı olur.';
+  }
+
+  @override
   String get reportTitle => 'Döngü Sağlık Raporu';
 
   @override

@@ -1522,6 +1522,30 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get regularityInfoIrregular => 'Между самым коротким и самым длинным циклом 9 дней или больше. Колебания длины цикла очень распространены: влияют стресс, сон, болезни и перемены в жизни. Это не диагноз.';
+
+  @override
+  String get regularityInfoRegular => 'Разница между самым коротким и самым длинным циклом меньше 9 дней. При такой стабильности прогнозы точнее.';
+
+  @override
+  String get regularityInfoSeeDoctor => 'Если цикл постоянно короче 21 дня или длиннее 35, если месячных нет более трёх месяцев или кровотечение необычно обильное, стоит обратиться к врачу.';
+
+  @override
+  String typicalRangeNote(int min, int max, int pmax) {
+    return 'Обычный диапазон: цикл $min–$max дней, месячные до $pmax дней. Это не диагностический критерий.';
+  }
+
+  @override
+  String lowConfidenceNote(int count) {
+    return 'Эти средние рассчитаны всего по $count циклам и уточнятся с новыми записями.';
+  }
+
+  @override
+  String regularityInfoInsufficient(int count) {
+    return 'Чтобы говорить о регулярности, нужно минимум $count интервалов цикла. Меньше — вывод будет вводить в заблуждение.';
+  }
+
+  @override
   String get reportTitle => 'Отчёт о здоровье цикла';
 
   @override

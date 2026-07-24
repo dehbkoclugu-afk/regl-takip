@@ -666,6 +666,29 @@
       "days": {"type": "int"}
     }
   },
+  "regularityInfoIrregular": "There are 9 or more days between your shortest and longest cycle. Cycle length varying is very common; stress, sleep, illness and life changes all affect it. This is not a diagnosis.",
+  "regularityInfoRegular": "The difference between your shortest and longest cycle is under 9 days. Predictions are more accurate with this consistency.",
+  "regularityInfoSeeDoctor": "If your cycle is consistently shorter than 21 days or longer than 35, if you have had no period for more than three months, or if bleeding is unusually heavy, it is worth speaking to a healthcare professional.",
+  "typicalRangeNote": "Commonly accepted range: cycle {min}–{max} days, period up to {pmax} days. Not a diagnostic threshold.",
+  "@typicalRangeNote": {
+    "placeholders": {
+      "min": {"type": "int"},
+      "max": {"type": "int"},
+      "pmax": {"type": "int"}
+    }
+  },
+  "lowConfidenceNote": "These averages come from only {count} cycles; they will sharpen as you log more.",
+  "@lowConfidenceNote": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "regularityInfoInsufficient": "At least {count} cycle gaps are needed before regularity means anything. A judgement on less would mislead.",
+  "@regularityInfoInsufficient": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "reportTitle": "Cycle Health Report",
   "reportGenerated": "Generated",
   "profileSummary": "Profile Summary",

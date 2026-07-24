@@ -666,6 +666,29 @@
       "days": {"type": "int"}
     }
   },
+  "regularityInfoIrregular": "En kısa ve en uzun döngün arasında 9 gün veya daha fazla fark var. Döngü uzunluğunun değişmesi çok yaygındır; stres, uyku, hastalık ve yaşam değişiklikleri etkiler. Bu bir tanı değildir.",
+  "regularityInfoRegular": "En kısa ve en uzun döngün arasındaki fark 9 günden az. Tahminler bu tutarlılıkta daha isabetli olur.",
+  "regularityInfoSeeDoctor": "Döngün sürekli 21 günden kısa ya da 35 günden uzunsa, üç aydan fazla hiç regl görmediysen ya da kanaman olağandışı yoğunsa bir sağlık uzmanına danışman iyi olur.",
+  "typicalRangeNote": "Yaygın kabul edilen aralık: döngü {min}–{max} gün, regl {pmax} güne kadar. Tanı ölçütü değildir.",
+  "@typicalRangeNote": {
+    "placeholders": {
+      "min": {"type": "int"},
+      "max": {"type": "int"},
+      "pmax": {"type": "int"}
+    }
+  },
+  "lowConfidenceNote": "Bu ortalamalar yalnız {count} döngüden hesaplandı; kayıt geldikçe netleşecek.",
+  "@lowConfidenceNote": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "regularityInfoInsufficient": "Düzenlilikten söz edebilmek için en az {count} döngü aralığı gerekiyor. Daha az kayıtla yapılan yorum yanıltıcı olur.",
+  "@regularityInfoInsufficient": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "reportTitle": "Döngü Sağlık Raporu",
   "reportGenerated": "Oluşturma",
   "profileSummary": "Profil Özeti",

@@ -170,7 +170,7 @@ class CycleUtils {
   /// (tıbbi literatürdeki yaygın eşik). Veri yetersizse null.
   static bool? isIrregular(List<PeriodRecord> records) {
     final gaps = validCycleGaps(records);
-    if (gaps.length < 3) return null;
+    if (gaps.length < AppConstants.minGapsForRegularity) return null;
     final minGap = gaps.reduce((a, b) => a < b ? a : b);
     final maxGap = gaps.reduce((a, b) => a > b ? a : b);
     return (maxGap - minGap) >= 9;

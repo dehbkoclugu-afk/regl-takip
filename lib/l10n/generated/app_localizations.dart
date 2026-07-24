@@ -2977,6 +2977,42 @@ abstract class AppLocalizations {
   /// **'{days} gün önce'**
   String leadNDaysBefore(int days);
 
+  /// No description provided for @regularityInfoIrregular.
+  ///
+  /// In tr, this message translates to:
+  /// **'En kısa ve en uzun döngün arasında 9 gün veya daha fazla fark var. Döngü uzunluğunun değişmesi çok yaygındır; stres, uyku, hastalık ve yaşam değişiklikleri etkiler. Bu bir tanı değildir.'**
+  String get regularityInfoIrregular;
+
+  /// No description provided for @regularityInfoRegular.
+  ///
+  /// In tr, this message translates to:
+  /// **'En kısa ve en uzun döngün arasındaki fark 9 günden az. Tahminler bu tutarlılıkta daha isabetli olur.'**
+  String get regularityInfoRegular;
+
+  /// No description provided for @regularityInfoSeeDoctor.
+  ///
+  /// In tr, this message translates to:
+  /// **'Döngün sürekli 21 günden kısa ya da 35 günden uzunsa, üç aydan fazla hiç regl görmediysen ya da kanaman olağandışı yoğunsa bir sağlık uzmanına danışman iyi olur.'**
+  String get regularityInfoSeeDoctor;
+
+  /// No description provided for @typicalRangeNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yaygın kabul edilen aralık: döngü {min}–{max} gün, regl {pmax} güne kadar. Tanı ölçütü değildir.'**
+  String typicalRangeNote(int min, int max, int pmax);
+
+  /// No description provided for @lowConfidenceNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ortalamalar yalnız {count} döngüden hesaplandı; kayıt geldikçe netleşecek.'**
+  String lowConfidenceNote(int count);
+
+  /// No description provided for @regularityInfoInsufficient.
+  ///
+  /// In tr, this message translates to:
+  /// **'Düzenlilikten söz edebilmek için en az {count} döngü aralığı gerekiyor. Daha az kayıtla yapılan yorum yanıltıcı olur.'**
+  String regularityInfoInsufficient(int count);
+
   /// No description provided for @reportTitle.
   ///
   /// In tr, this message translates to:

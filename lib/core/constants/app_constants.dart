@@ -4,10 +4,25 @@ class AppConstants {
   // Varsayılan değerler
   static const int defaultCycleLength = 28;
   static const int defaultPeriodLength = 5;
+  // Giriş doğrulama sınırları: bu aralığın dışındaki değerler kayıt hatası
+  // sayılır ve hesaplamaya alınmaz. Yaygın kabul edilen aralıkla
+  // karıştırılmamalı — onlar aşağıda.
   static const int minCycleLength = 18;
   static const int maxCycleLength = 45;
   static const int minPeriodLength = 2;
   static const int maxPeriodLength = 10;
+
+  // Yaygın kabul edilen aralıklar. Ekrandaki sayıya bağlam vermek için:
+  // "29,3 gün" tek başına iyi mi kötü mü söylemiyor. Tanı ölçütü değil,
+  // yalnız okuma yardımı.
+  static const int typicalCycleMin = 21;
+  static const int typicalCycleMax = 35;
+  static const int typicalPeriodMin = 2;
+  static const int typicalPeriodMax = 7;
+
+  /// Düzenlilik yargısı için gereken en az döngü aralığı sayısı.
+  /// Altında "yetersiz veri" denir — iki döngüyle düzenlilik konuşulmaz.
+  static const int minGapsForRegularity = 3;
   static const int fertileWindowDays = 6;
   static const int ovulationDayBeforePeriod = 14;
 
