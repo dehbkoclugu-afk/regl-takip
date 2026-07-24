@@ -1,5 +1,14 @@
 # Changelog
 
+## Yayınlanmamış — Ücretsiz katman deneyimi (2026-07-24)
+
+Tasarım incelemesinin dördüncü grubu (`docs/tasarim-onerileri.md` madde 39, 3, 4).
+
+- **Takvimden regl işaretlenebiliyor** (madde 39): gün özeti sayfası herkese açılıyordu ama içindeki tek eylem premium kapısına çarpıyordu — ücretsiz katmanda takvim salt okunur bir kartondu. Gün bir kayda düşüyorsa "Bu kaydı düzenle", düşmüyorsa "Reglim bu gün başladı" eylemi eklendi; ikisi de premium kapısının dışında. Günlük kayıt (akış, ruh hâli, semptom) premium kapsamında kalıyor
+- **Geri al artık sadık** (madde 39 devamı): `startPeriod` devam eden bir kayıt varken onu kapatıyor, gün kaydın başlangıcında/öncesindeyse mevcut kaydı geri döndürüyor. Takvimden başlatmada bu durumlar mümkün olduğu için geri al önceki durumu yakalayıp geri kuruyor — aksi hâlde kullanıcının eski kaydını silebilirdi
+- **Deneme bitişi sürpriz olmuyor** (madde 3, kısmi): son 3 günde ana ekrandaki erişim çipi uyarı diline geçiyor (ton, kenarlık, ağırlık). Salt-okunur premium katmanı yapılmadı — 11 takip ekranının her birine okuma modu eklemek ayrı bir iş
+- **Paywall kullanıcının emeğini gösteriyor** (madde 4): soyut özellik listesinin üstünde "{n} döngü kaydı · {n} günlük kayıt" ve verinin cihazda kalacağı sözü. Hiç veri yoksa kart çizilmiyor — boş bir "0 kayıt" kartı argümanın tersini söylerdi
+
 ## Yayınlanmamış — Gecikme durumu (2026-07-24)
 
 Tasarım incelemesinin üçüncü grubu (`docs/tasarim-onerileri.md` madde 17, 18, 70).

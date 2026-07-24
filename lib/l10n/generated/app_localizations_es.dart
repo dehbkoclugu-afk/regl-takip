@@ -1447,6 +1447,22 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get yourDataStays => 'Tus registros permanecen en tu dispositivo al terminar la prueba.';
+
+  @override
+  String get periodStartedOnThisDay => 'Mi regla empezó este día';
+
+  @override
+  String nCyclesRecorded(int count) {
+    return '$count ciclos registrados';
+  }
+
+  @override
+  String nLogsRecorded(int count) {
+    return '$count registros diarios';
+  }
+
+  @override
   String get reportTitle => 'Informe de salud del ciclo';
 
   @override

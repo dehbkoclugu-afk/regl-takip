@@ -476,6 +476,20 @@
       "days": {"type": "int"}
     }
   },
+  "yourDataStays": "Deine Einträge bleiben auf dem Gerät, auch wenn die Testphase endet.",
+  "periodStartedOnThisDay": "Meine Periode begann an diesem Tag",
+  "nCyclesRecorded": "{count} Zyklen erfasst",
+  "@nCyclesRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "nLogsRecorded": "{count} Tageseinträge",
+  "@nLogsRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "reportTitle": "Zyklus-Gesundheitsbericht",
   "reportGenerated": "Erstellt",
   "profileSummary": "Profilübersicht",

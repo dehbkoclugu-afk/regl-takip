@@ -1447,6 +1447,22 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get yourDataStays => 'Ваши записи останутся на устройстве после окончания пробного периода.';
+
+  @override
+  String get periodStartedOnThisDay => 'Месячные начались в этот день';
+
+  @override
+  String nCyclesRecorded(int count) {
+    return 'записано циклов: $count';
+  }
+
+  @override
+  String nLogsRecorded(int count) {
+    return 'дневных записей: $count';
+  }
+
+  @override
   String get reportTitle => 'Отчёт о здоровье цикла';
 
   @override

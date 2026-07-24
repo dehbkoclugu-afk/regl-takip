@@ -17,6 +17,7 @@ import '../../core/utils/ring_segments.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
 import '../log/quick_log_sheet.dart';
+import '../period_history/period_record_editor.dart';
 import '../../models/daily_log.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
@@ -186,12 +187,16 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         Timer(const Duration(milliseconds: 2500), _removePeek);
   }
 
-  bool _isPeriodDay(DateTime day, List<PeriodRecord> records) {
+  /// Günün düştüğü regl kaydı; yoksa null.
+  PeriodRecord? _recordForDay(DateTime day, List<PeriodRecord> records) {
     for (final record in records) {
-      if (record.containsDate(day)) return true;
+      if (record.containsDate(day)) return record;
     }
-    return false;
+    return null;
   }
+
+  bool _isPeriodDay(DateTime day, List<PeriodRecord> records) =>
+      _recordForDay(day, records) != null;
 
   // Faz-adaptif vurgu (kontrollü): "bugün" işareti güncel fazın rengini
   // giyer — uygulama yaşayan bir döngüyü izlediğini hissettirir.
@@ -599,12 +604,64 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
   }
 
+  /// Seçilen günde regl başlatır. Ana ekrandaki butonla aynı sözleşme:
+  /// onay diyaloğu yerine 6 saniyelik geri al.
+  ///
+  /// Ana ekrandan farklı olarak burada devam eden bir kayıt varken de
+  /// çağrılabiliyor ve `startPeriod` o durumda ya devam eden kaydı kapatıyor
+  /// ya da (gün kaydın başlangıcında/öncesindeyse) mevcut kaydı geri
+  /// döndürüyor. Geri al bunları bilmezse kullanıcının eski kaydını siler
+  /// ya da kapanmış bir kaydı açık sanır — bu yüzden önceki durum önce
+  /// yakalanır.
+  Future<void> _startPeriodOn(DateTime day) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final recordsNotifier = ref.read(periodRecordsProvider.notifier);
+    final profileNotifier = ref.read(userProfileProvider.notifier);
+    final prevProfile = ref.read(userProfileProvider);
+
+    final before = ref.read(periodRecordsProvider);
+    final idsBefore = before.map((r) => r.id).toSet();
+    final ongoingBefore =
+        before.where((r) => r.isOngoing).map((r) => r.id).toList();
+
+    HapticFeedback.mediumImpact();
+    final record = await recordsNotifier.startPeriod(day);
+    // Mevcut bir kayıt döndürüldüyse yeni kayıt oluşmamıştır
+    final created = !idsBefore.contains(record.id);
+    await profileNotifier.saveProfile(lastPeriodStart: record.startDate);
+
+    messenger.showSnackBar(SnackBar(
+      content: Text(l10n.periodMarkedStarted),
+      duration: const Duration(seconds: 6),
+      action: SnackBarAction(
+        label: l10n.undo,
+        onPressed: () async {
+          if (created) {
+            await recordsNotifier.deleteRecord(record.id);
+          }
+          // Kapatılmış olabilecek kayıtlar yeniden açılır
+          for (final id in ongoingBefore) {
+            if (id != record.id) await recordsNotifier.reopenRecord(id);
+          }
+          if (prevProfile != null) {
+            await profileNotifier.updateProfile(prevProfile);
+          } else {
+            profileNotifier.refresh();
+          }
+        },
+      ),
+    ));
+  }
+
   void _showDayDetailSheet(BuildContext context, DateTime day,
       List<PeriodRecord> records, Map<String, DailyLog> dailyLogs) {
     final dateKey =
         '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
     final log = dailyLogs[dateKey];
     final isPeriod = _isPeriodDay(day, records);
+    // Gün bir kayda düşüyorsa eylem "düzenle", düşmüyorsa "burada başladı"
+    final recordForDay = _recordForDay(day, records);
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).toString();
     final dateStr = DateFormat('d MMMM yyyy, EEEE', locale).format(day);
@@ -675,8 +732,36 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           style: TextStyle(
                               fontSize: 14, color: AppColors.ts(context))),
                     const SizedBox(height: 16),
-                    // Geçmiş güne hızlı kayıt: sheet kapatılıp quick log açılır
-                    if (!day.isAfter(DateTime.now()))
+                    // Regl eylemi bilerek premium kapısının dışında: takvim
+                    // ücretsiz katmanın vaadinin parçası ve o katmanda
+                    // buradan hiçbir şey işaretlenemiyordu — gün sayfası
+                    // salt okunur bir kartondu
+                    if (!day.isAfter(DateTime.now())) ...[
+                      SizedBox(
+                        width: double.infinity,
+                        child: recordForDay != null
+                            ? OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.of(sheetContext).pop();
+                                  showPeriodRecordEditor(
+                                      context, ref, recordForDay);
+                                },
+                                icon: const Icon(Icons.edit_calendar_rounded,
+                                    size: 18),
+                                label: Text(l10n.editPeriodRecord),
+                              )
+                            : OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.of(sheetContext).pop();
+                                  _startPeriodOn(day);
+                                },
+                                icon: const Icon(Icons.water_drop_rounded,
+                                    size: 18),
+                                label: Text(l10n.periodStartedOnThisDay),
+                              ),
+                      ),
+                      const SizedBox(height: 8),
+                      // Günlük kayıt (akış, ruh hâli, semptom) premium kapsamı
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
@@ -689,6 +774,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           label: Text(l10n.quickLog),
                         ),
                       ),
+                    ],
                   ],
                 ),
               ),

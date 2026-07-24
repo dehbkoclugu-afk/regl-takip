@@ -564,6 +564,10 @@ class DashboardScreen extends ConsumerWidget {
   Widget _buildAccessChip(BuildContext context, AppLocalizations l10n,
       AccessLevel access, int daysLeft) {
     final isFree = access == AccessLevel.free;
+    // Deneme bitişi sessizce geliyordu: 30. gün her şey açık, 31. gün on
+    // ekran birden kapalı. Son üç gün çip uyarı diline geçer ki kapanış
+    // sürpriz olmasın.
+    final isEnding = !isFree && daysLeft <= 3;
     final label =
         isFree ? l10n.freeBadge : l10n.trialBadge(daysLeft);
     return Semantics(
@@ -580,7 +584,11 @@ class DashboardScreen extends ConsumerWidget {
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.dv(context)),
+              border: Border.all(
+                color: (isFree || isEnding)
+                    ? AppColors.warningText.withValues(alpha: 0.5)
+                    : AppColors.dv(context),
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -590,7 +598,7 @@ class DashboardScreen extends ConsumerWidget {
                       ? Icons.lock_outline_rounded
                       : Icons.hourglass_bottom_rounded,
                   size: 14,
-                  color: isFree
+                  color: (isFree || isEnding)
                       ? AppColors.warningText
                       : AppColors.ts(context),
                 ),
@@ -599,8 +607,12 @@ class DashboardScreen extends ConsumerWidget {
                   child: Text(label,
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.ts(context),
+                        fontWeight: isEnding
+                            ? FontWeight.w700
+                            : FontWeight.w600,
+                        color: isEnding
+                            ? AppColors.warningText
+                            : AppColors.ts(context),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis),

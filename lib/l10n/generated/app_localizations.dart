@@ -2839,6 +2839,30 @@ abstract class AppLocalizations {
   /// **'{days} gün gecikme'**
   String delayDays(int days);
 
+  /// No description provided for @yourDataStays.
+  ///
+  /// In tr, this message translates to:
+  /// **'Deneme bitse de kayıtların cihazında kalır.'**
+  String get yourDataStays;
+
+  /// No description provided for @periodStartedOnThisDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglim bu gün başladı'**
+  String get periodStartedOnThisDay;
+
+  /// No description provided for @nCyclesRecorded.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} döngü kaydı'**
+  String nCyclesRecorded(int count);
+
+  /// No description provided for @nLogsRecorded.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} günlük kayıt'**
+  String nLogsRecorded(int count);
+
   /// No description provided for @reportTitle.
   ///
   /// In tr, this message translates to:

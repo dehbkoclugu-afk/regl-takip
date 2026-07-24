@@ -1447,6 +1447,22 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get yourDataStays => 'Deneme bitse de kayıtların cihazında kalır.';
+
+  @override
+  String get periodStartedOnThisDay => 'Reglim bu gün başladı';
+
+  @override
+  String nCyclesRecorded(int count) {
+    return '$count döngü kaydı';
+  }
+
+  @override
+  String nLogsRecorded(int count) {
+    return '$count günlük kayıt';
+  }
+
+  @override
   String get reportTitle => 'Döngü Sağlık Raporu';
 
   @override

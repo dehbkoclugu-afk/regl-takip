@@ -628,6 +628,20 @@
       "days": {"type": "int"}
     }
   },
+  "yourDataStays": "Your records stay on your device when the trial ends.",
+  "periodStartedOnThisDay": "My period started on this day",
+  "nCyclesRecorded": "{count} cycles recorded",
+  "@nCyclesRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "nLogsRecorded": "{count} daily logs",
+  "@nLogsRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "reportTitle": "Cycle Health Report",
   "reportGenerated": "Generated",
   "profileSummary": "Profile Summary",

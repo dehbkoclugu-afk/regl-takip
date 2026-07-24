@@ -628,6 +628,20 @@
       "days": {"type": "int"}
     }
   },
+  "yourDataStays": "Deneme bitse de kayıtların cihazında kalır.",
+  "periodStartedOnThisDay": "Reglim bu gün başladı",
+  "nCyclesRecorded": "{count} döngü kaydı",
+  "@nCyclesRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "nLogsRecorded": "{count} günlük kayıt",
+  "@nLogsRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "reportTitle": "Döngü Sağlık Raporu",
   "reportGenerated": "Oluşturma",
   "profileSummary": "Profil Özeti",

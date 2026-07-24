@@ -1447,6 +1447,22 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get yourDataStays => 'Deine Einträge bleiben auf dem Gerät, auch wenn die Testphase endet.';
+
+  @override
+  String get periodStartedOnThisDay => 'Meine Periode begann an diesem Tag';
+
+  @override
+  String nCyclesRecorded(int count) {
+    return '$count Zyklen erfasst';
+  }
+
+  @override
+  String nLogsRecorded(int count) {
+    return '$count Tageseinträge';
+  }
+
+  @override
   String get reportTitle => 'Zyklus-Gesundheitsbericht';
 
   @override

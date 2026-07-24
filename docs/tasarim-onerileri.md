@@ -1,8 +1,9 @@
 # 100 kritik tasarım önerisi
 
-> **Durum:** 1, 2, 11, 12, 13, 14, 17, 18, 70, 75, 76 ve 77 uygulandı
-> (77 kısmen: ana ekran ve paylaşılan bileşenler; diğer ekranlarda taşma
-> taraması sürüyor). Ayrıntı için CHANGELOG'a bakın.
+> **Durum:** 1, 2, 4, 11, 12, 13, 14, 17, 18, 39, 70, 75, 76 ve 77 uygulandı.
+> Kısmi olanlar: 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı) ve
+> 77 (ana ekran ve paylaşılan bileşenler; diğer ekranlarda taşma taraması
+> sürüyor). Ayrıntı için CHANGELOG'a bakın.
 
 Uygulamanın mevcut hâli üzerinden yapılmış eleştirel bir okuma. Öneriler
 gözlemden çıktı: her madde neyin sorun olduğunu söyler, sonra ne yapılacağını.
@@ -188,10 +189,13 @@ bir kapanış.
 
 ## D. Takvim (39–47)
 
-**39. 🟠 Takvim salt görüntüleme gibi davranıyor.** Güne dokunmak premium
-kapısına çarpıyor (`calendar_screen.dart:685`). Ücretsiz kullanıcı için
-takvim etkileşimsiz bir resme dönüşüyor; en azından regl günü işaretleme
-açık olmalı.
+**39. 🟠 Takvimden hiçbir şey işaretlenemiyor.** Güne dokununca gün özeti
+sayfası herkese açılıyor ama içindeki tek eylem ("Hızlı kayıt") premium
+kapısına çarpıyor. Ücretsiz kullanıcı için takvim salt okunur bir kartona
+dönüşüyor; en azından regl günü işaretleme açık olmalı.
+
+*(İlk yazımda "güne dokunmak premium kapısına çarpıyor" demiştim; gün özeti
+sayfası aslında herkese açılıyor, kapalı olan içindeki eylem.)*
 
 **40. 🟠 Efsane (legend) sürekli yer kaplıyor.** Renk anlamları her açılışta
 gösteriliyor. İlk birkaç kullanımdan sonra kapatılabilir olmalı.

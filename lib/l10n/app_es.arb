@@ -476,6 +476,20 @@
       "days": {"type": "int"}
     }
   },
+  "yourDataStays": "Tus registros permanecen en tu dispositivo al terminar la prueba.",
+  "periodStartedOnThisDay": "Mi regla empezó este día",
+  "nCyclesRecorded": "{count} ciclos registrados",
+  "@nCyclesRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "nLogsRecorded": "{count} registros diarios",
+  "@nLogsRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "reportTitle": "Informe de salud del ciclo",
   "reportGenerated": "Generado",
   "profileSummary": "Resumen del perfil",

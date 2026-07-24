@@ -117,6 +117,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   color: AppColors.ts(context),
                 ),
               ),
+              // Kullanıcının biriktirdiği veri, özellik listesinden daha
+              // somut bir argüman: soyut vaat yerine kendi emeği. Verinin
+              // silinmediğini söylemek de deneme bitişinin en büyük
+              // korkusunu doğrudan karşılıyor.
+              _buildYourDataCard(context, l10n, ref),
               const SizedBox(height: 24),
               // Özellikler
               ...features.map((f) => Padding(
@@ -205,6 +210,62 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       ),
     );
   }
+}
+
+/// "Bunlar sende kalır" kartı: kayıt sayıları + verinin silinmeyeceği sözü.
+/// Hiç veri yoksa çizilmez — boş bir "0 kayıt" kartı argümanın tersini
+/// söylerdi.
+Widget _buildYourDataCard(
+    BuildContext context, AppLocalizations l10n, WidgetRef ref) {
+  final cycles = ref.watch(periodRecordsProvider).length;
+  final logs = ref.watch(dailyLogProvider).length;
+  if (cycles == 0 && logs == 0) return const SizedBox.shrink();
+
+  final parts = <String>[
+    if (cycles > 0) l10n.nCyclesRecorded(cycles),
+    if (logs > 0) l10n.nLogsRecorded(logs),
+  ];
+
+  return Container(
+    margin: const EdgeInsets.only(top: 20),
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    decoration: BoxDecoration(
+      color: AppColors.sf(context),
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: AppColors.dv(context)),
+    ),
+    child: Row(
+      children: [
+        Icon(Icons.inventory_2_rounded,
+            size: 20, color: AppColors.primaryStrong),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                parts.join(' · '),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.tp(context),
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                l10n.yourDataStays,
+                style: TextStyle(
+                  fontSize: 12,
+                  height: 1.35,
+                  color: AppColors.ts(context),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _PlanCard extends StatelessWidget {

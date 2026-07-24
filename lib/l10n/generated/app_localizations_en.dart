@@ -1447,6 +1447,22 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get yourDataStays => 'Your records stay on your device when the trial ends.';
+
+  @override
+  String get periodStartedOnThisDay => 'My period started on this day';
+
+  @override
+  String nCyclesRecorded(int count) {
+    return '$count cycles recorded';
+  }
+
+  @override
+  String nLogsRecorded(int count) {
+    return '$count daily logs';
+  }
+
+  @override
   String get reportTitle => 'Cycle Health Report';
 
   @override
