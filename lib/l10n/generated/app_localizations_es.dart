@@ -1346,6 +1346,54 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get notificationPeriodTitle => 'Recordatorio de regla';
+
+  @override
+  String get notificationPeriodBody => 'Tu regla podría empezar mañana. ¡Prepárate!';
+
+  @override
+  String get notificationPeriodChannel => 'Recordatorio de regla';
+
+  @override
+  String get notificationPeriodChannelDesc => 'Recordatorios del ciclo menstrual';
+
+  @override
+  String get notificationOvulationTitle => 'Recordatorio de ovulación';
+
+  @override
+  String get notificationOvulationBody => 'Hoy es tu día de ovulación. ¡Estás en tu ventana fértil!';
+
+  @override
+  String get notificationOvulationChannel => 'Recordatorio de ovulación';
+
+  @override
+  String get notificationOvulationChannelDesc => 'Recordatorios de ovulación';
+
+  @override
+  String get notificationMedicationTitle => 'Recordatorio de medicación';
+
+  @override
+  String get notificationMedicationBody => '¡No olvides tomar tu medicación!';
+
+  @override
+  String get notificationMedicationChannel => 'Recordatorio de medicación';
+
+  @override
+  String get notificationMedicationChannelDesc => 'Recordatorios de medicación';
+
+  @override
+  String get notificationDiscreetTitle => 'Recordatorio';
+
+  @override
+  String get notificationDiscreetBody => 'Tienes un recordatorio para hoy';
+
+  @override
+  String get noPurchasesToRestore => 'No se encontraron compras para restaurar';
+
+  @override
+  String get restoringPurchases => 'Restaurando compras…';
+
+  @override
   String get reportTitle => 'Informe de salud del ciclo';
 
   @override

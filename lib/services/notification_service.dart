@@ -2,6 +2,7 @@ import 'dart:ui' show Locale;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -41,49 +42,28 @@ class NotificationService {
   /// Kaç döngü ileriye hatırlatma planlanacağı
   static const int _cyclesToSchedule = 3;
 
-  // Localized notification strings
-  static const _strings = {
-    'tr': {
-      'periodTitle': 'Adet Hatırlatması',
-      'periodBody': 'Adetiniz yarın başlayabilir. Hazırlıklı olun!',
-      'periodChannel': 'Adet Hatırlatması',
-      'periodChannelDesc': 'Adet döngüsü hatırlatmaları',
-      'ovulationTitle': 'Ovülasyon Hatırlatması',
-      'ovulationBody': 'Bugün ovülasyon gününüz. Doğurgan dönemdesiniz!',
-      'ovulationChannel': 'Ovülasyon Hatırlatması',
-      'ovulationChannelDesc': 'Ovülasyon hatırlatmaları',
-      'medicationTitle': 'İlaç Hatırlatması',
-      'medicationBody': 'İlacınızı almayı unutmayın!',
-      'medicationChannel': 'İlaç Hatırlatması',
-      'medicationChannelDesc': 'İlaç hatırlatmaları',
-      'discreetTitle': 'Hatırlatma',
-      'discreetBody': 'Bugün için bir hatırlatman var',
-    },
-    'en': {
-      'periodTitle': 'Period Reminder',
-      'periodBody': 'Your period may start tomorrow. Be prepared!',
-      'periodChannel': 'Period Reminder',
-      'periodChannelDesc': 'Period cycle reminders',
-      'ovulationTitle': 'Ovulation Reminder',
-      'ovulationBody': 'Today is your ovulation day. You are in your fertile window!',
-      'ovulationChannel': 'Ovulation Reminder',
-      'ovulationChannelDesc': 'Ovulation reminders',
-      'medicationTitle': 'Medication Reminder',
-      'medicationBody': 'Don\'t forget to take your medication!',
-      'medicationChannel': 'Medication Reminder',
-      'medicationChannelDesc': 'Medication reminders',
-      'discreetTitle': 'Reminder',
-      'discreetBody': 'You have a reminder for today',
-    },
-  };
-
-  String _t(String locale, String key) =>
-      _strings[locale]?[key] ?? _strings['en']![key]!;
+  /// Bildirim metinleri arayüzle aynı kaynaktan gelir (6 dil). Eskiden
+  /// servisin içinde yalnız tr/en içeren ayrı bir tablo vardı: Almanca,
+  /// İspanyolca, Fransızca ve Rusça kullanan kullanıcı arayüzü kendi
+  /// dilinde görürken bildirimi İngilizce alıyordu.
+  AppLocalizations _l10n(String locale) =>
+      lookupAppLocalizations(Locale(locale));
 
   Future<void> init() async {
     if (_isInitialized) return;
 
     tz.initializeTimeZones();
+    // initializeTimeZones yalnız saat dilimi veritabanını yükler; tz.local
+    // ayrıca bağlanmazsa UTC kalır ve zonedSchedule'a verilen her saat UTC
+    // olarak yorumlanır (TSİ'de 09:00 hatırlatması 12:00'de düşerdi).
+    try {
+      final timezone = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(timezone.identifier));
+    } catch (e) {
+      // Cihaz saat dilimi okunamadı: UTC ile devam etmek saatleri kaydırır,
+      // bu yüzden en azından görünür bir iz bırak
+      debugPrint('[NOTIF] local timezone resolution failed, using UTC: $e');
+    }
 
     const androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -146,6 +126,7 @@ class NotificationService {
     int id = _periodReminderBaseId,
     bool discreet = false,
   }) async {
+    final l10n = _l10n(locale);
     final reminderDate = nextPeriodDate.subtract(const Duration(days: 1));
 
     await _plugin.cancel(id);
@@ -157,14 +138,14 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       id,
-      _t(locale, discreet ? 'discreetTitle' : 'periodTitle'),
-      _t(locale, discreet ? 'discreetBody' : 'periodBody'),
+      discreet ? l10n.notificationDiscreetTitle : l10n.notificationPeriodTitle,
+      discreet ? l10n.notificationDiscreetBody : l10n.notificationPeriodBody,
       scheduledDate,
       NotificationDetails(
         android: AndroidNotificationDetails(
           'period_reminder',
-          _t(locale, 'periodChannel'),
-          channelDescription: _t(locale, 'periodChannelDesc'),
+          l10n.notificationPeriodChannel,
+          channelDescription: l10n.notificationPeriodChannelDesc,
           importance: Importance.high,
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',
@@ -190,6 +171,7 @@ class NotificationService {
     int id = _ovulationReminderBaseId,
     bool discreet = false,
   }) async {
+    final l10n = _l10n(locale);
     await _plugin.cancel(id);
 
     final scheduledDate = _scheduleFor(ovulationDate, hour, minute);
@@ -197,14 +179,14 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       id,
-      _t(locale, discreet ? 'discreetTitle' : 'ovulationTitle'),
-      _t(locale, discreet ? 'discreetBody' : 'ovulationBody'),
+      discreet ? l10n.notificationDiscreetTitle : l10n.notificationOvulationTitle,
+      discreet ? l10n.notificationDiscreetBody : l10n.notificationOvulationBody,
       scheduledDate,
       NotificationDetails(
         android: AndroidNotificationDetails(
           'ovulation_reminder',
-          _t(locale, 'ovulationChannel'),
-          channelDescription: _t(locale, 'ovulationChannelDesc'),
+          l10n.notificationOvulationChannel,
+          channelDescription: l10n.notificationOvulationChannelDesc,
           importance: Importance.high,
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',
@@ -228,6 +210,7 @@ class NotificationService {
     String locale, {
     bool discreet = false,
   }) async {
+    final l10n = _l10n(locale);
     await _plugin.cancel(_medicationReminderId);
 
     final now = DateTime.now();
@@ -245,14 +228,14 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       _medicationReminderId,
-      _t(locale, discreet ? 'discreetTitle' : 'medicationTitle'),
-      _t(locale, discreet ? 'discreetBody' : 'medicationBody'),
+      discreet ? l10n.notificationDiscreetTitle : l10n.notificationMedicationTitle,
+      discreet ? l10n.notificationDiscreetBody : l10n.notificationMedicationBody,
       scheduledDate,
       NotificationDetails(
         android: AndroidNotificationDetails(
           'medication_reminder',
-          _t(locale, 'medicationChannel'),
-          channelDescription: _t(locale, 'medicationChannelDesc'),
+          l10n.notificationMedicationChannel,
+          channelDescription: l10n.notificationMedicationChannelDesc,
           importance: Importance.high,
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',
@@ -283,6 +266,7 @@ class NotificationService {
     required int fallbackMinute,
     bool discreet = false,
   }) async {
+    final l10n = _l10n(locale);
     final named =
         medications.where((m) => m.name.trim().isNotEmpty).toList();
     final withTime = named
@@ -316,19 +300,19 @@ class NotificationService {
 
       // Gizli modda ilaç adı da kilit ekranına düşmemeli
       final body = discreet
-          ? _t(locale, 'discreetBody')
+          ? l10n.notificationDiscreetBody
           : (med.dose.isEmpty ? med.name : '${med.name} — ${med.dose}');
 
       await _plugin.zonedSchedule(
         _medicationReminderBaseId + i,
-        _t(locale, discreet ? 'discreetTitle' : 'medicationTitle'),
+        discreet ? l10n.notificationDiscreetTitle : l10n.notificationMedicationTitle,
         body,
         scheduledDate,
         NotificationDetails(
           android: AndroidNotificationDetails(
             'medication_reminder',
-            _t(locale, 'medicationChannel'),
-            channelDescription: _t(locale, 'medicationChannelDesc'),
+            l10n.notificationMedicationChannel,
+            channelDescription: l10n.notificationMedicationChannelDesc,
             importance: Importance.high,
             priority: Priority.high,
             icon: '@mipmap/ic_launcher',
@@ -431,7 +415,7 @@ class NotificationService {
           final lutealInsight =
               topInsightForPhase(insights, CyclePhase.luteal);
           if (lutealInsight != null) {
-            final l10n = lookupAppLocalizations(Locale(locale));
+            final l10n = _l10n(locale);
             final symptomName =
                 EnumLabels.symptom(lutealInsight.symptom, l10n);
             // Luteal başlangıcı ~ ovülasyon + 2 gün = adet - 12 gün

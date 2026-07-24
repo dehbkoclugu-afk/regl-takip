@@ -1346,6 +1346,54 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get notificationPeriodTitle => 'Perioden-Erinnerung';
+
+  @override
+  String get notificationPeriodBody => 'Deine Periode könnte morgen beginnen. Sei vorbereitet!';
+
+  @override
+  String get notificationPeriodChannel => 'Perioden-Erinnerung';
+
+  @override
+  String get notificationPeriodChannelDesc => 'Erinnerungen zum Menstruationszyklus';
+
+  @override
+  String get notificationOvulationTitle => 'Eisprung-Erinnerung';
+
+  @override
+  String get notificationOvulationBody => 'Heute ist dein Eisprung. Du bist in deiner fruchtbaren Phase!';
+
+  @override
+  String get notificationOvulationChannel => 'Eisprung-Erinnerung';
+
+  @override
+  String get notificationOvulationChannelDesc => 'Erinnerungen zum Eisprung';
+
+  @override
+  String get notificationMedicationTitle => 'Medikamenten-Erinnerung';
+
+  @override
+  String get notificationMedicationBody => 'Vergiss nicht, dein Medikament einzunehmen!';
+
+  @override
+  String get notificationMedicationChannel => 'Medikamenten-Erinnerung';
+
+  @override
+  String get notificationMedicationChannelDesc => 'Erinnerungen an Medikamente';
+
+  @override
+  String get notificationDiscreetTitle => 'Erinnerung';
+
+  @override
+  String get notificationDiscreetBody => 'Du hast heute eine Erinnerung';
+
+  @override
+  String get noPurchasesToRestore => 'Keine Käufe zum Wiederherstellen gefunden';
+
+  @override
+  String get restoringPurchases => 'Käufe werden wiederhergestellt…';
+
+  @override
   String get reportTitle => 'Zyklus-Gesundheitsbericht';
 
   @override

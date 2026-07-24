@@ -1346,6 +1346,54 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get notificationPeriodTitle => 'Period Reminder';
+
+  @override
+  String get notificationPeriodBody => 'Your period may start tomorrow. Be prepared!';
+
+  @override
+  String get notificationPeriodChannel => 'Period Reminder';
+
+  @override
+  String get notificationPeriodChannelDesc => 'Period cycle reminders';
+
+  @override
+  String get notificationOvulationTitle => 'Ovulation Reminder';
+
+  @override
+  String get notificationOvulationBody => 'Today is your ovulation day. You are in your fertile window!';
+
+  @override
+  String get notificationOvulationChannel => 'Ovulation Reminder';
+
+  @override
+  String get notificationOvulationChannelDesc => 'Ovulation reminders';
+
+  @override
+  String get notificationMedicationTitle => 'Medication Reminder';
+
+  @override
+  String get notificationMedicationBody => 'Don\'t forget to take your medication!';
+
+  @override
+  String get notificationMedicationChannel => 'Medication Reminder';
+
+  @override
+  String get notificationMedicationChannelDesc => 'Medication reminders';
+
+  @override
+  String get notificationDiscreetTitle => 'Reminder';
+
+  @override
+  String get notificationDiscreetBody => 'You have a reminder for today';
+
+  @override
+  String get noPurchasesToRestore => 'No purchases found to restore';
+
+  @override
+  String get restoringPurchases => 'Restoring purchases…';
+
+  @override
   String get reportTitle => 'Cycle Health Report';
 
   @override

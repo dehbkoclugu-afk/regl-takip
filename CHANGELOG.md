@@ -1,5 +1,15 @@
 # Changelog
 
+## Yayınlanmamış — Bildirim ve paywall düzeltmeleri (2026-07-24)
+
+- **Zamanlanmış bildirimler artık gerçekten düşüyor**: flutter_local_notifications 18.0.1'in kendi manifest'i hiçbir receiver bildirmiyor, bunlar uygulamanın manifest'inde olmak zorunda. `ScheduledNotificationReceiver` eksikti — alarm tetiklendiğinde broadcast'i alacak bileşen olmadığı için kurulan hiçbir hatırlatma görünmüyordu. `ScheduledNotificationBootReceiver` de eklendi: telefon yeniden başlayınca planlar geri kuruluyor (`RECEIVE_BOOT_COMPLETED` izni zaten vardı, karşılığı yoktu)
+- **Bildirim saatleri düzeldi**: `tz.initializeTimeZones()` yalnız saat dilimi veritabanını yüklüyor; `setLocalLocation` çağrılmadığı için `tz.local` UTC kalıyordu ve 09:00'a kurulan hatırlatma TSİ'de 12:00'de düşüyordu. Cihazın saat dilimi `flutter_timezone` ile okunup bağlanıyor
+- **Bildirimler 6 dilde**: servisin içindeki yalnız tr/en içeren metin tablosu kalktı, tüm metinler arayüzle aynı ARB kaynağından geliyor. Almanca, İspanyolca, Fransızca ve Rusça kullanıcı artık bildirimi de kendi dilinde alıyor
+- **SCHEDULE_EXACT_ALARM izni kaldırıldı**: hatırlatmaların hepsi zaten `inexactAllowWhileIdle` ile kuruluyordu; kullanılmayan izin Play'de gerekçe formu istiyor
+- **Paywall'da fiyatlar canlı**: ürün detayları mağazadan asenkron geldiği için ekran ürünler dönmeden açıldığında sabit tanıtım fiyatlarında (₺29/₺199) donuyor ve hiç güncellenmiyordu — kullanıcı mağaza ekranında başka rakam görebiliyordu. Fiyatlar artık yalnız mağazadan geliyor, gelene kadar kartta bekleme göstergesi var, mağaza ürün döndürmezse sebebi yazıyor
+- **"Satın alımları geri yükle" sonucu söylüyor**: eskiden akış başlatılıp beklenmiyordu, geri yüklenecek bir şey yoksa ekranda hiçbir şey olmuyordu. Hem paywall'da hem ayarlarda ilerleme ve sonuç bildiriliyor
+- **Deneme bitişi anında yansıyor**: `accessProvider` zamanın geçmesiyle tazelenmiyordu, 30. gün uygulama açıkken dolduğunda erişim yeniden başlatılana dek premium kalıyordu — periyodik tik ve arka plandan dönüşte tazeleniyor
+
 ## Yayınlanmamış — İllüstrasyonlar kaldırıldı (2026-07-24)
 
 - **Ekran içi illüstrasyonlar kaldırıldı**: ana sayfadaki faz görseli, ruh hali başlığı, ayarlar profil başlığı, paywall kahraman görseli ve istatistik boş-durum görseli — hiçbiri arayüze yakışmıyordu, ekranlar kendi tipografi ve renk diline döndü

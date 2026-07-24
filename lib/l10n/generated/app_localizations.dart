@@ -2653,6 +2653,102 @@ abstract class AppLocalizations {
   /// **'Luteal faz başlıyor. Kayıtlarına göre bu fazda en sık: {symptom}.'**
   String notificationInsightBody(String symptom);
 
+  /// No description provided for @notificationPeriodTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adet Hatırlatması'**
+  String get notificationPeriodTitle;
+
+  /// No description provided for @notificationPeriodBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adetiniz yarın başlayabilir. Hazırlıklı olun!'**
+  String get notificationPeriodBody;
+
+  /// No description provided for @notificationPeriodChannel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adet Hatırlatması'**
+  String get notificationPeriodChannel;
+
+  /// No description provided for @notificationPeriodChannelDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adet döngüsü hatırlatmaları'**
+  String get notificationPeriodChannelDesc;
+
+  /// No description provided for @notificationOvulationTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ovülasyon Hatırlatması'**
+  String get notificationOvulationTitle;
+
+  /// No description provided for @notificationOvulationBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün ovülasyon gününüz. Doğurgan dönemdesiniz!'**
+  String get notificationOvulationBody;
+
+  /// No description provided for @notificationOvulationChannel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ovülasyon Hatırlatması'**
+  String get notificationOvulationChannel;
+
+  /// No description provided for @notificationOvulationChannelDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ovülasyon hatırlatmaları'**
+  String get notificationOvulationChannelDesc;
+
+  /// No description provided for @notificationMedicationTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlaç Hatırlatması'**
+  String get notificationMedicationTitle;
+
+  /// No description provided for @notificationMedicationBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlacınızı almayı unutmayın!'**
+  String get notificationMedicationBody;
+
+  /// No description provided for @notificationMedicationChannel.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlaç Hatırlatması'**
+  String get notificationMedicationChannel;
+
+  /// No description provided for @notificationMedicationChannelDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlaç hatırlatmaları'**
+  String get notificationMedicationChannelDesc;
+
+  /// No description provided for @notificationDiscreetTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hatırlatma'**
+  String get notificationDiscreetTitle;
+
+  /// No description provided for @notificationDiscreetBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün için bir hatırlatman var'**
+  String get notificationDiscreetBody;
+
+  /// No description provided for @noPurchasesToRestore.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geri yüklenecek bir satın alma bulunamadı'**
+  String get noPurchasesToRestore;
+
+  /// No description provided for @restoringPurchases.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satın alımlar geri yükleniyor…'**
+  String get restoringPurchases;
+
   /// No description provided for @reportTitle.
   ///
   /// In tr, this message translates to:

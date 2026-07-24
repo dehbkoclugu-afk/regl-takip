@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -34,6 +36,11 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   bool _decoyResolved = false;
   bool _isDisguisedCached = false;
 
+  /// Deneme süresi zamanın geçmesiyle dolar ama accessProvider'ı tazeleyen
+  /// bir olay yoktu: 30. gün uygulama açıkken dolduğunda erişim yeniden
+  /// başlatılana dek premium kalıyordu. Periyodik tik + arka plandan dönüş.
+  Timer? _accessRefreshTimer;
+
   @override
   void initState() {
     super.initState();
@@ -43,8 +50,18 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     // Satın alma olayları (mağazadan asenkron gelir) erişim kararlarına
     // yansımalı: ValueNotifier → Riverpod köprüsü
     PremiumService().isPremiumNotifier.addListener(_onPremiumChanged);
+    _accessRefreshTimer = Timer.periodic(
+      const Duration(minutes: 30),
+      (_) => _refreshAccess(),
+    );
     // Kilit varsa reklam kilit açıldıktan sonra gösterilir (_onUnlocked)
     if (!_needsLock) _showOpenAd();
+  }
+
+  void _refreshAccess() {
+    if (!mounted) return;
+    ref.invalidate(accessProvider);
+    ref.invalidate(trialDaysLeftProvider);
   }
 
   void _onPremiumChanged() {
@@ -87,6 +104,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _accessRefreshTimer?.cancel();
     PremiumService().isPremiumNotifier.removeListener(_onPremiumChanged);
     super.dispose();
   }
@@ -105,6 +123,8 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Arka planda geçen süre denemeyi bitirmiş olabilir
+    if (state == AppLifecycleState.resumed) _refreshAccess();
     // Yalnız paused/hidden: `inactive` bildirim çekmecesi, izin diyaloğu,
     // paylaşım sayfası gibi geçici odak kayıplarında da gelir — orada
     // kilitlemek her seferinde PIN + (eski davranışta) state kaybı demekti.

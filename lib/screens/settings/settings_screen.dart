@@ -425,7 +425,16 @@ class SettingsScreen extends ConsumerWidget {
               _divider(context),
               _actionTile(context, Icons.restore_page_rounded,
                   l10n.restorePurchases, AppColors.primary, () async {
-                await PremiumService().restore();
+                // Sonuç söylenmeli: sessiz kalınca buton bozuk görünüyordu
+                final messenger = ScaffoldMessenger.of(context);
+                messenger.showSnackBar(
+                    SnackBar(content: Text(l10n.restoringPurchases)));
+                final restored = await PremiumService().restore();
+                messenger.showSnackBar(SnackBar(
+                  content: Text(restored
+                      ? l10n.premiumActive
+                      : l10n.noPurchasesToRestore),
+                ));
               }),
             ]);
           }),

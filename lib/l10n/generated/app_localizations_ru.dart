@@ -1346,6 +1346,54 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get notificationPeriodTitle => 'Напоминание о месячных';
+
+  @override
+  String get notificationPeriodBody => 'Месячные могут начаться завтра. Будьте готовы!';
+
+  @override
+  String get notificationPeriodChannel => 'Напоминание о месячных';
+
+  @override
+  String get notificationPeriodChannelDesc => 'Напоминания о менструальном цикле';
+
+  @override
+  String get notificationOvulationTitle => 'Напоминание об овуляции';
+
+  @override
+  String get notificationOvulationBody => 'Сегодня день овуляции. Вы в фертильном окне!';
+
+  @override
+  String get notificationOvulationChannel => 'Напоминание об овуляции';
+
+  @override
+  String get notificationOvulationChannelDesc => 'Напоминания об овуляции';
+
+  @override
+  String get notificationMedicationTitle => 'Напоминание о лекарстве';
+
+  @override
+  String get notificationMedicationBody => 'Не забудьте принять лекарство!';
+
+  @override
+  String get notificationMedicationChannel => 'Напоминание о лекарстве';
+
+  @override
+  String get notificationMedicationChannelDesc => 'Напоминания о лекарствах';
+
+  @override
+  String get notificationDiscreetTitle => 'Напоминание';
+
+  @override
+  String get notificationDiscreetBody => 'У вас есть напоминание на сегодня';
+
+  @override
+  String get noPurchasesToRestore => 'Покупки для восстановления не найдены';
+
+  @override
+  String get restoringPurchases => 'Восстановление покупок…';
+
+  @override
   String get reportTitle => 'Отчёт о здоровье цикла';
 
   @override

@@ -1346,6 +1346,54 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get notificationPeriodTitle => 'Adet Hatırlatması';
+
+  @override
+  String get notificationPeriodBody => 'Adetiniz yarın başlayabilir. Hazırlıklı olun!';
+
+  @override
+  String get notificationPeriodChannel => 'Adet Hatırlatması';
+
+  @override
+  String get notificationPeriodChannelDesc => 'Adet döngüsü hatırlatmaları';
+
+  @override
+  String get notificationOvulationTitle => 'Ovülasyon Hatırlatması';
+
+  @override
+  String get notificationOvulationBody => 'Bugün ovülasyon gününüz. Doğurgan dönemdesiniz!';
+
+  @override
+  String get notificationOvulationChannel => 'Ovülasyon Hatırlatması';
+
+  @override
+  String get notificationOvulationChannelDesc => 'Ovülasyon hatırlatmaları';
+
+  @override
+  String get notificationMedicationTitle => 'İlaç Hatırlatması';
+
+  @override
+  String get notificationMedicationBody => 'İlacınızı almayı unutmayın!';
+
+  @override
+  String get notificationMedicationChannel => 'İlaç Hatırlatması';
+
+  @override
+  String get notificationMedicationChannelDesc => 'İlaç hatırlatmaları';
+
+  @override
+  String get notificationDiscreetTitle => 'Hatırlatma';
+
+  @override
+  String get notificationDiscreetBody => 'Bugün için bir hatırlatman var';
+
+  @override
+  String get noPurchasesToRestore => 'Geri yüklenecek bir satın alma bulunamadı';
+
+  @override
+  String get restoringPurchases => 'Satın alımlar geri yükleniyor…';
+
+  @override
   String get reportTitle => 'Döngü Sağlık Raporu';
 
   @override
