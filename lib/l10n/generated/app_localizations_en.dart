@@ -1463,6 +1463,48 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get notifPermissionTitle => 'Turn on reminders?';
+
+  @override
+  String get notifPermissionBody => 'We let you know when your period is close, on your ovulation day, and when the predicted date has passed. Notifications never leave your device. You can also turn them on later in settings.';
+
+  @override
+  String get enableNotifications => 'Turn on';
+
+  @override
+  String get notNow => 'Not now';
+
+  @override
+  String get optionalField => 'Optional';
+
+  @override
+  String get privacyAssurance => 'Your data stays encrypted on this device only';
+
+  @override
+  String get dontRememberExactly => 'I don’t remember exactly';
+
+  @override
+  String get approxTitle => 'Roughly when was it?';
+
+  @override
+  String get approxSubtitle => 'A rough date is enough. Predictions correct themselves as you log.';
+
+  @override
+  String get approxThisWeek => 'This week';
+
+  @override
+  String get approxLastWeek => 'Last week';
+
+  @override
+  String get approxTwoWeeks => 'About 2 weeks ago';
+
+  @override
+  String get approxThreeWeeks => 'About 3 weeks ago';
+
+  @override
+  String get approxMonthOrMore => 'A month or more ago';
+
+  @override
   String get reportTitle => 'Cycle Health Report';
 
   @override

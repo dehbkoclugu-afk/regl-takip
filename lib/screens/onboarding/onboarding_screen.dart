@@ -12,6 +12,7 @@ import '../../providers/providers.dart';
 import '../../models/enums.dart';
 import '../../models/user_profile.dart';
 import '../../services/hive_service.dart';
+import '../../services/notification_service.dart';
 import 'widgets/animated_ring_intro.dart';
 import 'widgets/onboarding_page.dart';
 import '../../core/utils/motion.dart';
@@ -127,6 +128,45 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
+  /// Sistem izin diyaloğunun önüne uygulama içi gerekçe koyar.
+  ///
+  /// Android'de bildirim izni tek atıştır: reddedilirse sistem bir daha
+  /// sormaz. Önceden diyalog soğuk açılışta, kurulum ekranının üstünde,
+  /// hiçbir bağlam olmadan çıkıyordu — hatırlatma altyapısının tamamı o tek
+  /// bağlamsız dokunuşa bağlıydı. "Şimdi değil" diyen kullanıcıya sistem
+  /// diyaloğu hiç gösterilmez, böylece izin ileride ayarlardan istenebilir.
+  Future<void> _askNotificationPermission() async {
+    final l10n = AppLocalizations.of(context)!;
+    final wants = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24)),
+        icon: const Icon(Icons.notifications_active_rounded,
+            color: AppColors.primaryStrong, size: 32),
+        title: Text(l10n.notifPermissionTitle),
+        content: Text(l10n.notifPermissionBody,
+            style: const TextStyle(fontSize: 14, height: 1.5)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.notNow),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.enableNotifications),
+          ),
+        ],
+      ),
+    );
+    if (wants != true) return;
+    try {
+      await NotificationService().requestPermission();
+    } catch (e) {
+      debugPrint('[NOTIF] permission request failed: $e');
+    }
+  }
+
   Future<void> _completeOnboarding() async {
     if (_isSaving || _lastPeriodDate == null) return;
     final l10n = AppLocalizations.of(context)!;
@@ -203,6 +243,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
       // En son: bildirim ve widget kurulumu kayıtları da görmüş olur
       await ref.read(userProfileProvider.notifier).updateProfile(profile);
+
+      if (!mounted) return;
+      // İzin ancak burada isteniyor: kullanıcı kurulumu bitirmiş, neyin
+      // hatırlatılacağını biliyor. Sistem diyaloğu tek atış — önünde
+      // gerekçe olmadan çıkarsa reddedilmesi çok daha olası.
+      await _askNotificationPermission();
 
       if (!mounted) return;
       GoRouter.of(context).go('/dashboard');
@@ -310,6 +356,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           AppColors.primaryDark,
                         ],
                         hero: const AnimatedRingIntro(),
+                        // Gizlilik vaadi kurulumun sonundaki onay
+                        // diyaloğunda gömülüydü; bu kategoride en güçlü
+                        // argüman ve ilk ekranda görülmeli
+                        assurance: l10n.privacyAssurance,
                       ),
                       _buildSetupPage(),
                     ],
@@ -596,15 +646,43 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  Widget _stepSubtitle(String text) {
+  /// [optional] verildiğinde altına "İsteğe bağlı" rozeti düşer.
+  /// İsim ve doğum tarihi kodda zaten atlanabilirdi ama kullanıcıya
+  /// söylenmiyordu: sağlık uygulamasında kişisel veri isteyen her alan
+  /// zorunlu sanılıyor.
+  Widget _stepSubtitle(String text, {bool optional = false}) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
+      child: Column(
+        children: [
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+          ),
+          if (optional) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                l10n.optionalField,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSecondary,
+                ),
+              ),
             ),
+          ],
+        ],
       ),
     );
   }
@@ -711,7 +789,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       children: [
         _stepIcon(Icons.person_outline_rounded),
         _stepTitle(l10n.enterName),
-        _stepSubtitle(l10n.whatShouldWeCallYou),
+        _stepSubtitle(l10n.whatShouldWeCallYou, optional: true),
         TextField(
           controller: _nameController,
           textCapitalization: TextCapitalization.words,
@@ -747,7 +825,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       children: [
         _stepIcon(Icons.cake_outlined),
         _stepTitle(l10n.yourBirthDate),
-        _stepSubtitle(l10n.birthDateHelp),
+        _stepSubtitle(l10n.birthDateHelp, optional: true),
         _dateField(
           value: _birthDate,
           semanticsLabel: l10n.yourBirthDate,
@@ -771,8 +849,80 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           hint: l10n.selectDateHint,
           onTap: _pickLastPeriodDate,
         ),
+        const SizedBox(height: 8),
+        // Kurulumun tek zorunlu sorusu buydu ve tarihi hatırlamayan
+        // kullanıcı sıkışıp kalıyordu. Yaklaşık seçim, uydurma bir kesinlik
+        // girmekten iyi: tahminler zaten kayıt geldikçe kendini düzeltiyor.
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton.icon(
+            onPressed: _pickApproximateLastPeriod,
+            icon: const Icon(Icons.help_outline_rounded, size: 18),
+            label: Text(l10n.dontRememberExactly),
+            style: TextButton.styleFrom(
+                foregroundColor: AppColors.primaryStrong),
+          ),
+        ),
       ],
     );
+  }
+
+  /// Yaklaşık son regl tarihi. Seçenekler hafta cinsinden çünkü kullanıcı
+  /// "3 Temmuz" diye değil "geçen hafta" diye hatırlıyor.
+  Future<void> _pickApproximateLastPeriod() async {
+    final l10n = AppLocalizations.of(context)!;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    final options = <(String, int)>[
+      (l10n.approxThisWeek, 3),
+      (l10n.approxLastWeek, 10),
+      (l10n.approxTwoWeeks, 17),
+      (l10n.approxThreeWeeks, 24),
+      (l10n.approxMonthOrMore, 32),
+    ];
+
+    final daysAgo = await showModalBottomSheet<int>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 16),
+            Text(l10n.approxTitle,
+                style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary)),
+            const SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(l10n.approxSubtitle,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontSize: 13,
+                      height: 1.4,
+                      color: AppColors.textSecondary)),
+            ),
+            const SizedBox(height: 8),
+            for (final (label, days) in options)
+              ListTile(
+                title: Text(label),
+                onTap: () => Navigator.pop(sheetContext, days),
+              ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+
+    if (daysAgo == null || !mounted) return;
+    setState(() =>
+        _lastPeriodDate = today.subtract(Duration(days: daysAgo)));
   }
 
   Widget _buildCycleLengthStep() {

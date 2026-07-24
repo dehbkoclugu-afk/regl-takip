@@ -65,8 +65,15 @@ Future<void> _run() async {
   unawaited(() async {
     try {
       await notificationService.init();
-      await notificationService.requestPermission();
+      // İzin artık soğuk açılışta istenmiyor: sistem diyaloğu kurulum
+      // ekranının üstünde, hiçbir gerekçe görülmeden çıkıyordu ve
+      // reddedildiğinde Android bir daha sormuyor — yani tüm hatırlatma
+      // altyapısı tek bir bağlamsız dokunuşla ölüyordu. Yeni kurulumda izin
+      // kurulum bittikten sonra, ne işe yaradığı anlatılarak isteniyor
+      // (onboarding_screen). Profili olan kurulumlar eski akıştan geçmiş:
+      // izin verilmişse çağrı zaten sessiz, reddedilmişse sistem sormuyor.
       if (profile != null) {
+        await notificationService.requestPermission();
         // İlaç hatırlatmaları ilaçların kendi saatlerinde kurulur: soğuk
         // açılışta liste verilmezse yalnız genel hatırlatma planlanıyordu
         final logsWithMeds = HiveService()

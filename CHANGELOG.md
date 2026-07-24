@@ -1,5 +1,14 @@
 # Changelog
 
+## Yayınlanmamış — Kurulum akışı (2026-07-24)
+
+Tasarım incelemesinin beşinci grubu (`docs/tasarim-onerileri.md` madde 59, 60, 61, 62).
+
+- **Bildirim izni artık gerekçesiyle isteniyor** (madde 61): sistem diyaloğu soğuk açılışta, kurulum ekranının üstünde, hiçbir bağlam olmadan çıkıyordu. Android'de bildirim izni tek atış — reddedilince sistem bir daha sormuyor, yani tüm hatırlatma altyapısı tek bir bağlamsız dokunuşa bağlıydı. İzin artık kurulum bittikten sonra, ne hatırlatılacağı ve bildirimlerin cihazdan çıkmadığı anlatılarak isteniyor. "Şimdi değil" denirse sistem diyaloğu hiç gösterilmiyor, izin ileride ayarlardan istenebilir kalıyor. Profili olan kurulumlarda davranış değişmedi
+- **"Tam hatırlamıyorum" yolu** (madde 60): son regl tarihi kurulumun tek zorunlu sorusuydu ve tarihi hatırlamayan kullanıcı sıkışıp kalıyordu. Hafta cinsinden yaklaşık seçenekler eklendi ("bu hafta", "geçen hafta", "yaklaşık 2 hafta önce"…) — kullanıcı "3 Temmuz" diye değil "geçen hafta" diye hatırlıyor. Yaklaşık tarih, uydurma bir kesinlikten iyi: tahminler kayıt geldikçe kendini düzeltiyor
+- **Gizlilik vaadi ilk ekranda** (madde 62): "verilerin yalnızca bu cihazda, şifreli saklanır" bu kategorideki en güçlü argümandı ve kurulumun sonundaki onay diyaloğunda gömülüydü. Artık karşılama ekranında rozet olarak duruyor
+- **İsteğe bağlı alanlar işaretlendi** (madde 59): isim ve doğum tarihi kodda zaten atlanabiliyordu ama kullanıcıya söylenmiyordu
+
 ## Yayınlanmamış — Ücretsiz katman deneyimi (2026-07-24)
 
 Tasarım incelemesinin dördüncü grubu (`docs/tasarim-onerileri.md` madde 39, 3, 4).

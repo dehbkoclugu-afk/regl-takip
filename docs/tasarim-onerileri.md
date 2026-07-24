@@ -1,9 +1,10 @@
 # 100 kritik tasarım önerisi
 
-> **Durum:** 1, 2, 4, 11, 12, 13, 14, 17, 18, 39, 70, 75, 76 ve 77 uygulandı.
-> Kısmi olanlar: 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı) ve
-> 77 (ana ekran ve paylaşılan bileşenler; diğer ekranlarda taşma taraması
-> sürüyor). Ayrıntı için CHANGELOG'a bakın.
+> **Durum:** 1, 2, 4, 11, 12, 13, 14, 17, 18, 39, 59, 60, 61, 62, 70, 75, 76
+> ve 77 uygulandı. Kısmi olanlar: 3 (yalnız uyarı tarafı — salt-okunur katman
+> yapılmadı) ve 77 (ana ekran ve paylaşılan bileşenler; diğer ekranlarda taşma
+> taraması sürüyor). Madde 58 açık: adım sayısını azaltmak kurulum akışını
+> yeniden kurgulamak demek. Ayrıntı için CHANGELOG'a bakın.
 
 Uygulamanın mevcut hâli üzerinden yapılmış eleştirel bir okuma. Öneriler
 gözlemden çıktı: her madde neyin sorun olduğunu söyler, sonra ne yapılacağını.
@@ -263,14 +264,24 @@ inmek beklenen davranış.
 
 ## F. Onboarding (58–66)
 
-**58. 🟠 Değer görülmeden altı soru soruluyor.** Mod, isim, doğum tarihi, son
-regl, döngü uzunluğu, regl uzunluğu (`onboarding_screen.dart:33`). Kullanıcı
-uygulamanın ne yaptığını görmeden form dolduruyor. Son regl tarihi tek
-zorunlu soru; gerisi sonraya bırakılabilir.
+**58. 🟠 Değer görülmeden altı adım yürünüyor.** Mod, isim, doğum tarihi, son
+regl, döngü uzunluğu, regl uzunluğu (`onboarding_screen.dart:35`). Kullanıcı
+uygulamanın ne yaptığını görmeden form dolduruyor. Adımların tamamının
+kurulumda olması gerekmiyor; döngü ve regl uzunluğu varsayılanla geçilip
+sonra sorulabilir.
 
-**59. 🟠 İsim ve doğum tarihi gerekçesiz isteniyor.** Sağlık uygulamasında
-kişisel veri istemek gerekçe ister. "Yaşa göre referans aralığı" gibi somut
-bir sebep yazılmalı, yoksa atlanabilir olduğu açıkça belirtilmeli.
+*(İlk yazımda "altı zorunlu soru" demiştim; kodda yalnız son regl tarihi
+zorunlu — `_canContinue` yalnız 3. adımı kilitliyor. Sorun soruların
+zorunluluğu değil, sayısı.)*
+
+**59. 🟠 İsim ve doğum tarihinin isteğe bağlı olduğu söylenmiyor.** İkisi de
+kodda atlanabilir ve ikisinin de bir gerekçe satırı var ("Sana nasıl hitap
+edelim?", "Yaşa uygun öneriler sunmamıza yardımcı olur"). Ama hiçbir yerde
+"isteğe bağlı" yazmıyor: sağlık uygulamasında kişisel veri isteyen her alan
+zorunlu sanılıyor.
+
+*(İlk yazımda "gerekçesiz isteniyor" demiştim; gerekçe var, eksik olan
+atlanabilirliğin görünmesi.)*
 
 **60. 🟡 "Bilmiyorum" seçeneği yok.** Son regl tarihini hatırlamayan kullanıcı
 sıkışıyor. "Emin değilim" yolu, yanlış veri girmekten iyidir.

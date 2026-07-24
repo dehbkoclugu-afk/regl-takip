@@ -1463,6 +1463,48 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get notifPermissionTitle => 'Включить напоминания?';
+
+  @override
+  String get notifPermissionBody => 'Сообщим, когда месячные близко, в день овуляции и когда предполагаемая дата прошла. Уведомления не покидают устройство. Включить можно и позже в настройках.';
+
+  @override
+  String get enableNotifications => 'Включить';
+
+  @override
+  String get notNow => 'Не сейчас';
+
+  @override
+  String get optionalField => 'Необязательно';
+
+  @override
+  String get privacyAssurance => 'Ваши данные хранятся в зашифрованном виде только на этом устройстве';
+
+  @override
+  String get dontRememberExactly => 'Точно не помню';
+
+  @override
+  String get approxTitle => 'Примерно когда это было?';
+
+  @override
+  String get approxSubtitle => 'Достаточно примерной даты. Прогнозы уточняются по мере записей.';
+
+  @override
+  String get approxThisWeek => 'На этой неделе';
+
+  @override
+  String get approxLastWeek => 'На прошлой неделе';
+
+  @override
+  String get approxTwoWeeks => 'Около 2 недель назад';
+
+  @override
+  String get approxThreeWeeks => 'Около 3 недель назад';
+
+  @override
+  String get approxMonthOrMore => 'Месяц назад или раньше';
+
+  @override
   String get reportTitle => 'Отчёт о здоровье цикла';
 
   @override

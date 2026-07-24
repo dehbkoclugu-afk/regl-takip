@@ -1463,6 +1463,48 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get notifPermissionTitle => 'Erinnerungen aktivieren?';
+
+  @override
+  String get notifPermissionBody => 'Wir sagen Bescheid, wenn deine Periode näher rückt, an deinem Eisprungtag und wenn das voraussichtliche Datum vorbei ist. Benachrichtigungen verlassen dein Gerät nie. Du kannst sie auch später in den Einstellungen aktivieren.';
+
+  @override
+  String get enableNotifications => 'Aktivieren';
+
+  @override
+  String get notNow => 'Jetzt nicht';
+
+  @override
+  String get optionalField => 'Optional';
+
+  @override
+  String get privacyAssurance => 'Deine Daten bleiben verschlüsselt nur auf diesem Gerät';
+
+  @override
+  String get dontRememberExactly => 'Ich weiß es nicht genau';
+
+  @override
+  String get approxTitle => 'Ungefähr wann war es?';
+
+  @override
+  String get approxSubtitle => 'Ein ungefähres Datum reicht. Die Vorhersagen korrigieren sich mit jedem Eintrag.';
+
+  @override
+  String get approxThisWeek => 'Diese Woche';
+
+  @override
+  String get approxLastWeek => 'Letzte Woche';
+
+  @override
+  String get approxTwoWeeks => 'Vor etwa 2 Wochen';
+
+  @override
+  String get approxThreeWeeks => 'Vor etwa 3 Wochen';
+
+  @override
+  String get approxMonthOrMore => 'Vor einem Monat oder länger';
+
+  @override
   String get reportTitle => 'Zyklus-Gesundheitsbericht';
 
   @override

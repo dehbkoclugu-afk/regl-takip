@@ -17,6 +17,11 @@ class OnboardingPage extends StatelessWidget {
   /// (ör. animasyonlu imza ring'i)
   final Widget? hero;
 
+  /// Açıklamanın altında rozet olarak gösterilecek güvence metni.
+  /// "Veriler yalnız cihazında" bu kategorideki en güçlü argüman ve
+  /// kurulumun sonundaki onay diyaloğuna saklanmayacak kadar önemli.
+  final String? assurance;
+
   const OnboardingPage({
     super.key,
     required this.icon,
@@ -24,6 +29,7 @@ class OnboardingPage extends StatelessWidget {
     required this.description,
     required this.gradientColors,
     this.hero,
+    this.assurance,
   });
 
   @override
@@ -112,6 +118,43 @@ class OnboardingPage extends StatelessWidget {
                 duration: 500.ms,
                 curve: Curves.easeOut,
               ),
+
+          if (assurance != null) ...[
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 14, vertical: 9),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.25)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.lock_rounded,
+                      size: 16, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      assurance!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        height: 1.35,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+                .animateSafe(context)
+                .fadeIn(delay: 600.ms, duration: 500.ms)
+                .slideY(begin: 0.3, end: 0, delay: 600.ms, duration: 500.ms),
+          ],
 
           const Spacer(flex: 3),
         ],

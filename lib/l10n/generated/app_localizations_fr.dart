@@ -1463,6 +1463,48 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get notifPermissionTitle => 'Activer les rappels ?';
+
+  @override
+  String get notifPermissionBody => 'Nous vous prévenons à l’approche de vos règles, le jour de l’ovulation et quand la date prévue est passée. Les notifications ne quittent jamais votre appareil. Vous pouvez aussi les activer plus tard dans les réglages.';
+
+  @override
+  String get enableNotifications => 'Activer';
+
+  @override
+  String get notNow => 'Plus tard';
+
+  @override
+  String get optionalField => 'Facultatif';
+
+  @override
+  String get privacyAssurance => 'Vos données restent chiffrées sur cet appareil uniquement';
+
+  @override
+  String get dontRememberExactly => 'Je ne sais plus exactement';
+
+  @override
+  String get approxTitle => 'C’était à peu près quand ?';
+
+  @override
+  String get approxSubtitle => 'Une date approximative suffit. Les prévisions s’ajustent au fil de vos saisies.';
+
+  @override
+  String get approxThisWeek => 'Cette semaine';
+
+  @override
+  String get approxLastWeek => 'La semaine dernière';
+
+  @override
+  String get approxTwoWeeks => 'Il y a environ 2 semaines';
+
+  @override
+  String get approxThreeWeeks => 'Il y a environ 3 semaines';
+
+  @override
+  String get approxMonthOrMore => 'Il y a un mois ou plus';
+
+  @override
   String get reportTitle => 'Rapport de santé du cycle';
 
   @override

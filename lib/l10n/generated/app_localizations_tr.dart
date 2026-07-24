@@ -1463,6 +1463,48 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get notifPermissionTitle => 'Hatırlatmaları açalım mı?';
+
+  @override
+  String get notifPermissionBody => 'Reglin yaklaştığında, ovülasyon gününde ve tahmini tarih geçtiğinde haber veririz. Bildirimler cihazından çıkmaz. İstersen sonra ayarlardan da açabilirsin.';
+
+  @override
+  String get enableNotifications => 'Bildirimleri aç';
+
+  @override
+  String get notNow => 'Şimdi değil';
+
+  @override
+  String get optionalField => 'İsteğe bağlı';
+
+  @override
+  String get privacyAssurance => 'Verilerin yalnızca bu cihazda, şifreli saklanır';
+
+  @override
+  String get dontRememberExactly => 'Tam hatırlamıyorum';
+
+  @override
+  String get approxTitle => 'Yaklaşık ne zamandı?';
+
+  @override
+  String get approxSubtitle => 'Yaklaşık bir tarih yeter. Tahminler sen kayıt girdikçe kendini düzeltir.';
+
+  @override
+  String get approxThisWeek => 'Bu hafta';
+
+  @override
+  String get approxLastWeek => 'Geçen hafta';
+
+  @override
+  String get approxTwoWeeks => 'Yaklaşık 2 hafta önce';
+
+  @override
+  String get approxThreeWeeks => 'Yaklaşık 3 hafta önce';
+
+  @override
+  String get approxMonthOrMore => 'Bir ay veya daha önce';
+
+  @override
   String get reportTitle => 'Döngü Sağlık Raporu';
 
   @override

@@ -2863,6 +2863,90 @@ abstract class AppLocalizations {
   /// **'{count} günlük kayıt'**
   String nLogsRecorded(int count);
 
+  /// No description provided for @notifPermissionTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hatırlatmaları açalım mı?'**
+  String get notifPermissionTitle;
+
+  /// No description provided for @notifPermissionBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglin yaklaştığında, ovülasyon gününde ve tahmini tarih geçtiğinde haber veririz. Bildirimler cihazından çıkmaz. İstersen sonra ayarlardan da açabilirsin.'**
+  String get notifPermissionBody;
+
+  /// No description provided for @enableNotifications.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirimleri aç'**
+  String get enableNotifications;
+
+  /// No description provided for @notNow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şimdi değil'**
+  String get notNow;
+
+  /// No description provided for @optionalField.
+  ///
+  /// In tr, this message translates to:
+  /// **'İsteğe bağlı'**
+  String get optionalField;
+
+  /// No description provided for @privacyAssurance.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verilerin yalnızca bu cihazda, şifreli saklanır'**
+  String get privacyAssurance;
+
+  /// No description provided for @dontRememberExactly.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tam hatırlamıyorum'**
+  String get dontRememberExactly;
+
+  /// No description provided for @approxTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yaklaşık ne zamandı?'**
+  String get approxTitle;
+
+  /// No description provided for @approxSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yaklaşık bir tarih yeter. Tahminler sen kayıt girdikçe kendini düzeltir.'**
+  String get approxSubtitle;
+
+  /// No description provided for @approxThisWeek.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu hafta'**
+  String get approxThisWeek;
+
+  /// No description provided for @approxLastWeek.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçen hafta'**
+  String get approxLastWeek;
+
+  /// No description provided for @approxTwoWeeks.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yaklaşık 2 hafta önce'**
+  String get approxTwoWeeks;
+
+  /// No description provided for @approxThreeWeeks.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yaklaşık 3 hafta önce'**
+  String get approxThreeWeeks;
+
+  /// No description provided for @approxMonthOrMore.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir ay veya daha önce'**
+  String get approxMonthOrMore;
+
   /// No description provided for @reportTitle.
   ///
   /// In tr, this message translates to:
