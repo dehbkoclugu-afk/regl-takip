@@ -1403,6 +1403,25 @@ class AppLocalizationsTr extends AppLocalizations {
   String get periodEndDateHelp => 'Regl hangi gün bitti?';
 
   @override
+  String get headlinePeriodToday => 'Reglin bugün başlayabilir';
+
+  @override
+  String get headlinePeriodTomorrow => 'Reglin yarın başlayabilir';
+
+  @override
+  String get headlineNoData => 'Son regl tarihini ekle';
+
+  @override
+  String headlinePeriodInDays(int days) {
+    return 'Reglin $days gün sonra';
+  }
+
+  @override
+  String headlinePeriodDay(int day) {
+    return 'Reglinin $day. günü';
+  }
+
+  @override
   String get reportTitle => 'Döngü Sağlık Raporu';
 
   @override

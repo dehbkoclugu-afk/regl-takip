@@ -1403,6 +1403,25 @@ class AppLocalizationsFr extends AppLocalizations {
   String get periodEndDateHelp => 'Quand vos règles se sont-elles terminées ?';
 
   @override
+  String get headlinePeriodToday => 'Vos règles peuvent commencer aujourd’hui';
+
+  @override
+  String get headlinePeriodTomorrow => 'Vos règles peuvent commencer demain';
+
+  @override
+  String get headlineNoData => 'Ajoutez la date de vos dernières règles';
+
+  @override
+  String headlinePeriodInDays(int days) {
+    return 'Vos règles dans $days jours';
+  }
+
+  @override
+  String headlinePeriodDay(int day) {
+    return 'Jour $day de vos règles';
+  }
+
+  @override
   String get reportTitle => 'Rapport de santé du cycle';
 
   @override

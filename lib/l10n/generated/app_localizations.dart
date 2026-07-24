@@ -2767,6 +2767,36 @@ abstract class AppLocalizations {
   /// **'Regl hangi gün bitti?'**
   String get periodEndDateHelp;
 
+  /// No description provided for @headlinePeriodToday.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglin bugün başlayabilir'**
+  String get headlinePeriodToday;
+
+  /// No description provided for @headlinePeriodTomorrow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglin yarın başlayabilir'**
+  String get headlinePeriodTomorrow;
+
+  /// No description provided for @headlineNoData.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son regl tarihini ekle'**
+  String get headlineNoData;
+
+  /// No description provided for @headlinePeriodInDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglin {days} gün sonra'**
+  String headlinePeriodInDays(int days);
+
+  /// No description provided for @headlinePeriodDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglinin {day}. günü'**
+  String headlinePeriodDay(int day);
+
   /// No description provided for @reportTitle.
   ///
   /// In tr, this message translates to:

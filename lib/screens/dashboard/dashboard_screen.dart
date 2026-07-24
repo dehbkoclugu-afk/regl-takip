@@ -17,6 +17,7 @@ import '../../core/widgets/phase_glyph.dart';
 import '../../core/widgets/pressable_scale.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
+import '../../models/user_profile.dart';
 import '../../providers/providers.dart';
 import '../log/quick_log_sheet.dart';
 import 'widgets/cycle_progress_ring.dart';
@@ -167,76 +168,36 @@ class DashboardScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 12),
-              // Dark mode toggle - sağ üst
-              Align(
-                alignment: Alignment.centerRight,
-                child: GlassContainer(
-                  borderRadius: 12,
-                  blur: 0,
-                  padding: EdgeInsets.zero,
-                  child: Material(
-                    color: Colors.transparent,
-                    child: Semantics(
-                      button: true,
-                      label: l10n.darkTheme,
-                      toggled: AppColors.isDark(context),
-                      child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
-                      // Hızlı geçiş etkin parlaklığa göre açık/koyu yazar;
-                      // "sistem" tercihine dönüş ayarlardaki üçlü seçimde
-                      onTap: () {
-                        final target =
-                            AppColors.isDark(context) ? 'light' : 'dark';
-                        ref.read(themeModeProvider.notifier).state =
-                            target == 'dark'
-                                ? ThemeMode.dark
-                                : ThemeMode.light;
-                        ref.read(userProfileProvider.notifier)
-                            .saveProfile(themePreference: target);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Icon(
-                          AppColors.isDark(context)
-                              ? Icons.light_mode_rounded
-                              : Icons.dark_mode_rounded,
-                          color: AppColors.tp(context),
-                          size: 22,
-                        ),
-                      ),
-                    ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              // Greeting — isim isteğe bağlı, boşsa "Merhaba, !" yazmasın
+              const SizedBox(height: 20),
+              // Selamlama artık display anı değil: ekranın en büyük yazısı
+              // kullanıcının sorusuna ("ne zaman?") ait olmalı, ismine değil.
+              // Tema düğmesi de buradan kalktı — ayda bir kullanılan bir
+              // tercih, her açılışta göz hizasındaki köşeyi hak etmiyor
+              // (üçlü seçici ayarlarda duruyor).
               Text(
                 (profile?.name.trim().isNotEmpty ?? false)
                     ? l10n.helloName(profile!.name.trim())
                     : l10n.helloGeneric,
                 style: TextStyle(
-                  // Display anı: gövdeden (w500) net ayrışan ağırlık
-                  fontSize: 26,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.tp(context),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.ts(context),
                 ),
-                // Sistem yazı tipi büyütüldüğünde uzun isim satırı taşırıyordu
                 textAlign: TextAlign.center,
-                maxLines: 2,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               )
                   .animateSafe(context)
                   .fadeIn(duration: 350.ms)
                   .slideY(begin: -0.2, end: 0, duration: 350.ms),
-              // Deneme/ücretsiz durumu görünür olmalı: kalan gün ve
-              // kapsam bilgisi — dokununca planlar
-              if (access != AccessLevel.premium) ...[
-                const SizedBox(height: 4),
-                _buildAccessChip(context, l10n, access, trialDaysLeft),
+              if (mode != TrackingMode.pregnancy) ...[
+                const SizedBox(height: 6),
+                _buildHeadline(context, l10n, ref, profile, daysUntil, locale)
+                    .animateSafe(context)
+                    .fadeIn(delay: 60.ms, duration: 400.ms)
+                    .slideY(begin: -0.15, end: 0, duration: 400.ms),
               ],
-              const SizedBox(height: 8),
+              const SizedBox(height: 14),
               if (mode == TrackingMode.pregnancy) ...[
                 // Hamilelik modu: hafta sayacı hero, tahminler gizli
                 const SizedBox(height: 20),
@@ -337,6 +298,12 @@ class DashboardScreen extends ConsumerWidget {
                 // Günlük faz koçluğu — faza göre pratik ipucu
                 _buildCoachCard(context, ref, phase, l10n),
               ],
+              // Deneme/ücretsiz durumu görünür kalır ama ekranın tepesinde
+              // değil: orası "ne zaman?" cevabının yeri
+              if (access != AccessLevel.premium) ...[
+                const SizedBox(height: 24),
+                _buildAccessChip(context, l10n, access, trialDaysLeft),
+              ],
               const SizedBox(height: 28),
               const QuickStatusCards(),
               const SizedBox(height: 20),
@@ -345,6 +312,79 @@ class DashboardScreen extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  /// Ekranın tek cümlelik cevabı: "ne zaman?".
+  ///
+  /// Ring döngü gününü görsel olarak anlatıyordu ama kullanıcının %90
+  /// sorusuna açık bir cümleyle cevap veren hiçbir şey yoktu — tarih yalnız
+  /// tahmin kartlarının içinde, kaydırmanın altındaydı. Ekranın en büyük
+  /// yazısı artık bu.
+  Widget _buildHeadline(
+    BuildContext context,
+    AppLocalizations l10n,
+    WidgetRef ref,
+    UserProfile? profile,
+    int daysUntil,
+    String locale,
+  ) {
+    final ongoing = ref.watch(ongoingPeriodProvider);
+
+    String headline;
+    String? subtitle;
+
+    if (profile?.lastPeriodStart == null) {
+      // Kurulum yarım kalmış: cevap yerine tek yapılacak iş
+      headline = l10n.headlineNoData;
+    } else if (ongoing != null) {
+      final now = DateTime.now();
+      final start = ongoing.startDate;
+      final dayOfPeriod = DateTime(now.year, now.month, now.day)
+              .difference(DateTime(start.year, start.month, start.day))
+              .inDays +
+          1;
+      headline = l10n.headlinePeriodDay(dayOfPeriod);
+    } else {
+      final cycleLen = ref.watch(effectiveCycleLengthProvider);
+      final next = CycleUtils.nextFuturePeriod(profile!.lastPeriodStart!, cycleLen);
+      subtitle = DateFormat('d MMMM', locale).format(next);
+      headline = switch (daysUntil) {
+        0 => l10n.headlinePeriodToday,
+        1 => l10n.headlinePeriodTomorrow,
+        _ => l10n.headlinePeriodInDays(daysUntil),
+      };
+    }
+
+    return Column(
+      children: [
+        Text(
+          headline,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.w800,
+            height: 1.2,
+            color: AppColors.tp(context),
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        if (subtitle != null) ...[
+          const SizedBox(height: 2),
+          Text(
+            subtitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.ts(context),
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ],
     );
   }
 

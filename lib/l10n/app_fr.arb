@@ -444,6 +444,21 @@
   "backdateHint": "Appui long pour choisir un autre jour",
   "periodStartDateHelp": "Quand vos règles ont-elles commencé ?",
   "periodEndDateHelp": "Quand vos règles se sont-elles terminées ?",
+  "headlinePeriodToday": "Vos règles peuvent commencer aujourd’hui",
+  "headlinePeriodTomorrow": "Vos règles peuvent commencer demain",
+  "headlineNoData": "Ajoutez la date de vos dernières règles",
+  "headlinePeriodInDays": "Vos règles dans {days} jours",
+  "@headlinePeriodInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "headlinePeriodDay": "Jour {day} de vos règles",
+  "@headlinePeriodDay": {
+    "placeholders": {
+      "day": {"type": "int"}
+    }
+  },
   "reportTitle": "Rapport de santé du cycle",
   "reportGenerated": "Généré",
   "profileSummary": "Résumé du profil",

@@ -444,6 +444,21 @@
   "backdateHint": "Für einen anderen Tag lange drücken",
   "periodStartDateHelp": "Wann hat deine Periode begonnen?",
   "periodEndDateHelp": "Wann hat deine Periode geendet?",
+  "headlinePeriodToday": "Deine Periode könnte heute beginnen",
+  "headlinePeriodTomorrow": "Deine Periode könnte morgen beginnen",
+  "headlineNoData": "Datum deiner letzten Periode eintragen",
+  "headlinePeriodInDays": "Deine Periode in {days} Tagen",
+  "@headlinePeriodInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "headlinePeriodDay": "Tag {day} deiner Periode",
+  "@headlinePeriodDay": {
+    "placeholders": {
+      "day": {"type": "int"}
+    }
+  },
   "reportTitle": "Zyklus-Gesundheitsbericht",
   "reportGenerated": "Erstellt",
   "profileSummary": "Profilübersicht",

@@ -1403,6 +1403,25 @@ class AppLocalizationsRu extends AppLocalizations {
   String get periodEndDateHelp => 'Когда закончились месячные?';
 
   @override
+  String get headlinePeriodToday => 'Месячные могут начаться сегодня';
+
+  @override
+  String get headlinePeriodTomorrow => 'Месячные могут начаться завтра';
+
+  @override
+  String get headlineNoData => 'Добавьте дату последних месячных';
+
+  @override
+  String headlinePeriodInDays(int days) {
+    return 'Месячные через $days дн.';
+  }
+
+  @override
+  String headlinePeriodDay(int day) {
+    return '$day-й день месячных';
+  }
+
+  @override
   String get reportTitle => 'Отчёт о здоровье цикла';
 
   @override

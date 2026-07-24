@@ -1403,6 +1403,25 @@ class AppLocalizationsDe extends AppLocalizations {
   String get periodEndDateHelp => 'Wann hat deine Periode geendet?';
 
   @override
+  String get headlinePeriodToday => 'Deine Periode könnte heute beginnen';
+
+  @override
+  String get headlinePeriodTomorrow => 'Deine Periode könnte morgen beginnen';
+
+  @override
+  String get headlineNoData => 'Datum deiner letzten Periode eintragen';
+
+  @override
+  String headlinePeriodInDays(int days) {
+    return 'Deine Periode in $days Tagen';
+  }
+
+  @override
+  String headlinePeriodDay(int day) {
+    return 'Tag $day deiner Periode';
+  }
+
+  @override
   String get reportTitle => 'Zyklus-Gesundheitsbericht';
 
   @override

@@ -596,6 +596,21 @@
   "backdateHint": "Long-press for a different day",
   "periodStartDateHelp": "When did your period start?",
   "periodEndDateHelp": "When did your period end?",
+  "headlinePeriodToday": "Your period may start today",
+  "headlinePeriodTomorrow": "Your period may start tomorrow",
+  "headlineNoData": "Add your last period date",
+  "headlinePeriodInDays": "Your period in {days} days",
+  "@headlinePeriodInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "headlinePeriodDay": "Day {day} of your period",
+  "@headlinePeriodDay": {
+    "placeholders": {
+      "day": {"type": "int"}
+    }
+  },
   "reportTitle": "Cycle Health Report",
   "reportGenerated": "Generated",
   "profileSummary": "Profile Summary",

@@ -1403,6 +1403,25 @@ class AppLocalizationsEs extends AppLocalizations {
   String get periodEndDateHelp => '¿Cuándo terminó tu regla?';
 
   @override
+  String get headlinePeriodToday => 'Tu regla puede empezar hoy';
+
+  @override
+  String get headlinePeriodTomorrow => 'Tu regla puede empezar mañana';
+
+  @override
+  String get headlineNoData => 'Añade la fecha de tu última regla';
+
+  @override
+  String headlinePeriodInDays(int days) {
+    return 'Tu regla en $days días';
+  }
+
+  @override
+  String headlinePeriodDay(int day) {
+    return 'Día $day de tu regla';
+  }
+
+  @override
   String get reportTitle => 'Informe de salud del ciclo';
 
   @override

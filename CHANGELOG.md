@@ -1,5 +1,14 @@
 # Changelog
 
+## Yayınlanmamış — Ana ekran soruya cevap veriyor (2026-07-24)
+
+Tasarım incelemesinin ikinci grubu (`docs/tasarim-onerileri.md` madde 11, 12, 13, 14).
+
+- **Tek cümlelik cevap** (madde 13): ring döngü gününü görsel olarak anlatıyordu ama "ne zaman?" sorusuna açık bir cümleyle cevap veren hiçbir şey yoktu — tarih yalnız tahmin kartlarının içinde, kaydırmanın altındaydı. Ekranın en büyük yazısı artık cevabın kendisi: "Reglin 6 gün sonra" + altında tarih. Durumlar ayrı ayrı ele alındı: bugün, yarın, N gün sonra, regl sürerken "Reglinin 3. günü", kayıt yokken "Son regl tarihini ekle"
+- **Tema düğmesi ana ekrandan kalktı** (madde 11): ayda bir kullanılan bir tercih her açılışta göz hizasındaki köşeyi tutuyordu. Ayarlardaki üçlü seçici (sistem/açık/koyu) zaten daha eksiksiz — hızlı geçiş düğmesi "sistem" tercihine dönemiyordu bile
+- **Selamlama küçüldü** (madde 14): 26 punto display anıydı ama bilgi taşımıyordu; artık başlığın üstünde tek satırlık ikincil metin. Display ağırlığı cevaba geçti
+- **Deneme çipi tepeden indi** (madde 12): ücretsiz/deneme durumu görünür kalıyor ama ekranın tepesinde değil, aksiyon bloğunun altında — orası cevabın yeri
+
 ## Yayınlanmamış — Kayıt doğruluğu ve kontrast (2026-07-24)
 
 Tasarım incelemesinin ilk grubu (`docs/tasarim-onerileri.md` madde 1, 2, 75, 76, 77).

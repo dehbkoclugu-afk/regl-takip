@@ -596,6 +596,21 @@
   "backdateHint": "Farklı bir gün için butona uzun bas",
   "periodStartDateHelp": "Regl hangi gün başladı?",
   "periodEndDateHelp": "Regl hangi gün bitti?",
+  "headlinePeriodToday": "Reglin bugün başlayabilir",
+  "headlinePeriodTomorrow": "Reglin yarın başlayabilir",
+  "headlineNoData": "Son regl tarihini ekle",
+  "headlinePeriodInDays": "Reglin {days} gün sonra",
+  "@headlinePeriodInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "headlinePeriodDay": "Reglinin {day}. günü",
+  "@headlinePeriodDay": {
+    "placeholders": {
+      "day": {"type": "int"}
+    }
+  },
   "reportTitle": "Döngü Sağlık Raporu",
   "reportGenerated": "Oluşturma",
   "profileSummary": "Profil Özeti",
