@@ -1,5 +1,12 @@
 # Changelog
 
+## Yayınlanmamış — İllüstrasyonlar kaldırıldı (2026-07-24)
+
+- **Ekran içi illüstrasyonlar kaldırıldı**: ana sayfadaki faz görseli, ruh hali başlığı, ayarlar profil başlığı, paywall kahraman görseli ve istatistik boş-durum görseli — hiçbiri arayüze yakışmıyordu, ekranlar kendi tipografi ve renk diline döndü
+- **Art slot sistemi silindi**: `lib/core/art/` (kayıt defteri + yer tutucu widget'ı) ve `docs/asset-briefs.md` kalktı
+- **16 kullanılmayan PNG silindi**: yalnız ikon ve açılış ekranını üreten `R1-logomark.png` ile `R2-splash.png` kaldı (~33 MB depo tasarrufu)
+- **Görseller artık APK'ya paketlenmiyor**: `assets/art/` bundle listesinden çıktı — kalan iki dosya sadece derleme zamanında ikon/splash üretmek için okunuyor
+
 ## Yayınlanmamış — Telefon testi düzeltmeleri + 6 dil (2026-07-18)
 
 - **Ring dokunuşu düzeltildi**: merkez dışındaki her dokunuş artık segment seçiyor (dar bant hedefini tutturmak zordu)

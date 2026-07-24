@@ -13,7 +13,6 @@ import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_insights.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/phase_glyph.dart';
-import '../../core/art/art_slot.dart';
 import '../../core/widgets/pressable_scale.dart';
 import '../../models/enums.dart';
 import '../../providers/providers.dart';
@@ -37,19 +36,6 @@ class DashboardScreen extends ConsumerWidget {
         return AppColors.ovulationGradient;
       case CyclePhase.luteal:
         return AppColors.lutealGradient;
-    }
-  }
-
-  String _artIdForPhase(CyclePhase phase) {
-    switch (phase) {
-      case CyclePhase.menstrual:
-        return 'R6-phase-menstrual';
-      case CyclePhase.follicular:
-        return 'R7-phase-follicular';
-      case CyclePhase.ovulation:
-        return 'R8-phase-ovulation';
-      case CyclePhase.luteal:
-        return 'R9-phase-luteal';
     }
   }
 
@@ -300,13 +286,6 @@ class DashboardScreen extends ConsumerWidget {
                   const SizedBox(height: 8),
                   _buildPillChip(context, l10n, profile!.pillPackStartDate!),
                 ],
-                const SizedBox(height: 16),
-                // Faz illüstrasyonu — faz haritasının yumuşak görsel yüzeyi
-                ArtSlot(
-                  id: _artIdForPhase(phase),
-                  height: 150,
-                  radius: 22,
-                ).animateSafe(context).fadeIn(delay: 120.ms, duration: 450.ms),
                 const SizedBox(height: 28),
                 // Progress Ring
                 CycleProgressRing(

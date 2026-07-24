@@ -5,7 +5,6 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/widgets/tracker_scaffold.dart';
-import '../../core/art/art_slot.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../providers/providers.dart';
@@ -79,14 +78,6 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: ArtSlot(
-                      id: 'R13-mood-spot',
-                      height: 96,
-                      fit: BoxFit.contain,
-                    ).animate().fadeIn(duration: 350.ms),
-                  ),
-                  const SizedBox(height: 12),
                   Text(l10n.howAreYouFeeling,
                       style: TextStyle(
                           fontSize: 22, fontWeight: FontWeight.bold,
