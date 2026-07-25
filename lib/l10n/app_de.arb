@@ -559,6 +559,21 @@
   "backToToday": "Zu heute",
   "monthNoRecords": "Keine Einträge in diesem Monat",
   "doctorSummary": "Zusammenfassung für meine Ärztin",
+  "healthImport": "Aus Health Connect importieren",
+  "healthImportAction": "Importieren",
+  "healthImportNothingNew": "Keine neuen Einträge zum Importieren gefunden",
+  "healthImportConfirm": "{count} Perioden in Health Connect gefunden, die nicht in der App sind. Zu deinen Einträgen hinzufügen? Deine vorhandenen Einträge bleiben unverändert.",
+  "@healthImportConfirm": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "healthImportDone": "{count} Perioden importiert",
+  "@healthImportDone": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "monthPeriodDays": "{count} Periodentage",
   "@monthPeriodDays": {
     "placeholders": {

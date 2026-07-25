@@ -1599,6 +1599,25 @@ class AppLocalizationsTr extends AppLocalizations {
   String get doctorSummary => 'Doktoruma özet çıkar';
 
   @override
+  String get healthImport => 'Health Connect’ten içe aktar';
+
+  @override
+  String get healthImportAction => 'İçe aktar';
+
+  @override
+  String get healthImportNothingNew => 'İçe aktarılacak yeni kayıt bulunamadı';
+
+  @override
+  String healthImportConfirm(int count) {
+    return 'Health Connect’te uygulamada olmayan $count adet dönemi bulundu. Kayıtlarına eklensin mi? Mevcut kayıtların değişmez.';
+  }
+
+  @override
+  String healthImportDone(int count) {
+    return '$count dönem içe aktarıldı';
+  }
+
+  @override
   String monthPeriodDays(int count) {
     return '$count regl günü';
   }

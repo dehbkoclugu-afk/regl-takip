@@ -559,6 +559,21 @@
   "backToToday": "Volver a hoy",
   "monthNoRecords": "Sin registros este mes",
   "doctorSummary": "Exportar resumen para mi médico",
+  "healthImport": "Importar desde Health Connect",
+  "healthImportAction": "Importar",
+  "healthImportNothingNew": "No se encontraron registros nuevos para importar",
+  "healthImportConfirm": "Se encontraron {count} periodos en Health Connect que no están en la app. ¿Añadirlos a tus registros? Tus registros actuales no cambian.",
+  "@healthImportConfirm": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "healthImportDone": "{count} periodos importados",
+  "@healthImportDone": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "monthPeriodDays": "{count} días de regla",
   "@monthPeriodDays": {
     "placeholders": {

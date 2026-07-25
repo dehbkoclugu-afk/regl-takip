@@ -1599,6 +1599,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get doctorSummary => 'Export a summary for my doctor';
 
   @override
+  String get healthImport => 'Import from Health Connect';
+
+  @override
+  String get healthImportAction => 'Import';
+
+  @override
+  String get healthImportNothingNew => 'No new records found to import';
+
+  @override
+  String healthImportConfirm(int count) {
+    return 'Found $count period spans in Health Connect that are not in the app. Add them to your records? Your existing records are untouched.';
+  }
+
+  @override
+  String healthImportDone(int count) {
+    return '$count periods imported';
+  }
+
+  @override
   String monthPeriodDays(int count) {
     return '$count period days';
   }

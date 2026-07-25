@@ -559,6 +559,21 @@
   "backToToday": "К сегодня",
   "monthNoRecords": "В этом месяце записей нет",
   "doctorSummary": "Выгрузить сводку для врача",
+  "healthImport": "Импорт из Health Connect",
+  "healthImportAction": "Импортировать",
+  "healthImportNothingNew": "Новых записей для импорта не найдено",
+  "healthImportConfirm": "В Health Connect найдено периодов, которых нет в приложении: {count}. Добавить их к вашим записям? Существующие записи не изменятся.",
+  "@healthImportConfirm": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "healthImportDone": "Импортировано периодов: {count}",
+  "@healthImportDone": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "monthPeriodDays": "дней месячных: {count}",
   "@monthPeriodDays": {
     "placeholders": {

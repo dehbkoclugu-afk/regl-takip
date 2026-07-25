@@ -711,6 +711,21 @@
   "backToToday": "Bugüne dön",
   "monthNoRecords": "Bu ayda kayıt yok",
   "doctorSummary": "Doktoruma özet çıkar",
+  "healthImport": "Health Connect’ten içe aktar",
+  "healthImportAction": "İçe aktar",
+  "healthImportNothingNew": "İçe aktarılacak yeni kayıt bulunamadı",
+  "healthImportConfirm": "Health Connect’te uygulamada olmayan {count} adet dönemi bulundu. Kayıtlarına eklensin mi? Mevcut kayıtların değişmez.",
+  "@healthImportConfirm": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "healthImportDone": "{count} dönem içe aktarıldı",
+  "@healthImportDone": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "monthPeriodDays": "{count} regl günü",
   "@monthPeriodDays": {
     "placeholders": {

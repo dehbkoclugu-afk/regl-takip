@@ -1,5 +1,16 @@
 # Changelog
 
+## Yayınlanmamış — Health Connect artık iki yönlü (2026-07-24)
+
+Tasarım incelemesinin on dördüncü grubu (`docs/tasarim-onerileri.md` madde 93).
+
+- **Health Connect'ten içe aktarma** (madde 93): entegrasyon tek yönlüydü — uygulama yazıyordu ama okumuyordu. Başka bir uygulamadan geçen kullanıcının geçmişi Health Connect'te dururken elle yeniden girmek zorunda kalıyordu. Son 12 ayın adet günleri okunup bitişik bloklara ayrılıyor
+- **Okuma öneri üretir, yazma onaydan sonra**: kimsenin geçmişi sorulmadan değiştirilmemeli. Kaç dönem bulunduğu söyleniyor, kullanıcı onaylarsa yazılıyor
+- **Mevcut kayıtlarla kesişen aralıklar eleniyor**: kullanıcının kendi kaydı esas, içe aktarma onu ezmiyor. Devam eden kayıt bugüne kadar kapsıyor sayılıyor
+- **Yalnız tarih okunuyor**: akış şiddetinin karşılığı platformdan platforma değişiyor, tarih ise sabit
+- **Manifest'e `READ_MENSTRUATION` eklendi**
+- `groupConsecutiveDays` ve `overlapsExisting` için 15 birim testi (sırasız giriş, tekrarlı gün, ay sınırı, bitişik ama ayrı dönem, devam eden kayıt)
+
 ## Yayınlanmamış — İstatistik kilidi ve doktor özeti (2026-07-24)
 
 Tasarım incelemesinin on üçüncü grubu (`docs/tasarim-onerileri.md` madde 5, 51).

@@ -1599,6 +1599,25 @@ class AppLocalizationsFr extends AppLocalizations {
   String get doctorSummary => 'Exporter un résumé pour mon médecin';
 
   @override
+  String get healthImport => 'Importer depuis Health Connect';
+
+  @override
+  String get healthImportAction => 'Importer';
+
+  @override
+  String get healthImportNothingNew => 'Aucune nouvelle donnée à importer';
+
+  @override
+  String healthImportConfirm(int count) {
+    return '$count périodes trouvées dans Health Connect et absentes de l’app. Les ajouter à vos données ? Vos données existantes ne changent pas.';
+  }
+
+  @override
+  String healthImportDone(int count) {
+    return '$count périodes importées';
+  }
+
+  @override
   String monthPeriodDays(int count) {
     return '$count jours de règles';
   }

@@ -570,6 +570,15 @@ class SettingsScreen extends ConsumerWidget {
               );
             }),
             _divider(context),
+            // Entegrasyon tek yönlüydü: uygulama yazıyordu ama okumuyordu.
+            // Başka uygulamadan geçen kullanıcının geçmişi Health
+            // Connect'te duruyor olabilir.
+            _actionTile(context, Icons.download_rounded, l10n.healthImport,
+                AppColors.primaryDeep, () async {
+              if (!ensurePremiumAccess(context, ref)) return;
+              await _importFromHealth(context, ref, l10n);
+            }),
+            _divider(context),
             _actionTile(context, Icons.picture_as_pdf_rounded, l10n.exportPdfReport,
                 AppColors.error, () async {
               if (!ensurePremiumAccess(context, ref)) return;
@@ -737,6 +746,84 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// Health Connect'ten adet geçmişini içe aktarır.
+  ///
+  /// Okuma öneri üretir, yazma kullanıcı onayından sonra: kimsenin
+  /// geçmişi sorulmadan değiştirilmemeli. Mevcut kayıtlarla kesişen
+  /// aralıklar serviste zaten eleniyor — kullanıcının kendi kaydı esas.
+  Future<void> _importFromHealth(
+      BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final result =
+        await HealthSyncService().readPeriods(ref.read(periodRecordsProvider));
+    if (!context.mounted) return;
+
+    if (result.status != HealthSyncResult.success) {
+      final (message, color) = switch (result.status) {
+        HealthSyncResult.permissionDenied => (
+            l10n.healthSyncDenied,
+            AppColors.warning
+          ),
+        HealthSyncResult.unavailable => (
+            l10n.healthSyncUnavailable,
+            AppColors.warning
+          ),
+        _ => (l10n.healthSyncFailed, AppColors.error),
+      };
+      messenger.showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: color),
+      );
+      return;
+    }
+
+    if (result.ranges.isEmpty) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.healthImportNothingNew)),
+      );
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(l10n.healthImport),
+        content: Text(l10n.healthImportConfirm(result.ranges.length),
+            style: const TextStyle(fontSize: 14, height: 1.5)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.healthImportAction),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    final notifier = ref.read(periodRecordsProvider.notifier);
+    for (final (start, end) in result.ranges) {
+      final record = await notifier.startPeriod(start);
+      await notifier.endPeriod(record.id, end);
+    }
+    // Profil tarihi kayıtların türevi: en yeni kayda eşitlenmeli
+    final records = ref.read(periodRecordsProvider);
+    if (records.isNotEmpty) {
+      await ref
+          .read(userProfileProvider.notifier)
+          .saveProfile(lastPeriodStart: records.first.startDate);
+    }
+    if (!context.mounted) return;
+    messenger.showSnackBar(SnackBar(
+      content: Text(l10n.healthImportDone(result.ranges.length)),
+      backgroundColor: AppColors.success,
+    ));
   }
 
   Future<void> _onModeChanged(

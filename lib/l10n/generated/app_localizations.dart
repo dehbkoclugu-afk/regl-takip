@@ -3115,6 +3115,36 @@ abstract class AppLocalizations {
   /// **'Doktoruma özet çıkar'**
   String get doctorSummary;
 
+  /// No description provided for @healthImport.
+  ///
+  /// In tr, this message translates to:
+  /// **'Health Connect’ten içe aktar'**
+  String get healthImport;
+
+  /// No description provided for @healthImportAction.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçe aktar'**
+  String get healthImportAction;
+
+  /// No description provided for @healthImportNothingNew.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçe aktarılacak yeni kayıt bulunamadı'**
+  String get healthImportNothingNew;
+
+  /// No description provided for @healthImportConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'Health Connect’te uygulamada olmayan {count} adet dönemi bulundu. Kayıtlarına eklensin mi? Mevcut kayıtların değişmez.'**
+  String healthImportConfirm(int count);
+
+  /// No description provided for @healthImportDone.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} dönem içe aktarıldı'**
+  String healthImportDone(int count);
+
   /// No description provided for @monthPeriodDays.
   ///
   /// In tr, this message translates to:

@@ -1599,6 +1599,25 @@ class AppLocalizationsRu extends AppLocalizations {
   String get doctorSummary => 'Выгрузить сводку для врача';
 
   @override
+  String get healthImport => 'Импорт из Health Connect';
+
+  @override
+  String get healthImportAction => 'Импортировать';
+
+  @override
+  String get healthImportNothingNew => 'Новых записей для импорта не найдено';
+
+  @override
+  String healthImportConfirm(int count) {
+    return 'В Health Connect найдено периодов, которых нет в приложении: $count. Добавить их к вашим записям? Существующие записи не изменятся.';
+  }
+
+  @override
+  String healthImportDone(int count) {
+    return 'Импортировано периодов: $count';
+  }
+
+  @override
   String monthPeriodDays(int count) {
     return 'дней месячных: $count';
   }

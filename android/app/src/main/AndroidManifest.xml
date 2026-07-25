@@ -9,8 +9,11 @@
          inexactAllowWhileIdle ile kuruluyor (birkaç dakikalık kayma bu
          uygulamada sorun değil) ve Play bu izin için gerekçe formu istiyor. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <!-- Health Connect: adet verisi yazma -->
+    <!-- Health Connect: adet verisi yazma ve okuma. Okuma, başka bir
+         uygulamadan geçen kullanıcının geçmişini elle yeniden girmeden
+         alabilmesi için — ikisi de yalnız kullanıcı tetiklediğinde. -->
     <uses-permission android:name="android.permission.health.WRITE_MENSTRUATION"/>
+    <uses-permission android:name="android.permission.health.READ_MENSTRUATION"/>
     <!-- Google Play Billing -->
     <uses-permission android:name="com.android.vending.BILLING"/>
     <!-- allowBackup=false: Hive kutuları cihaza özel Keystore anahtarıyla
