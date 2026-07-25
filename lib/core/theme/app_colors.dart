@@ -179,8 +179,15 @@ class AppColors {
   static const Color surface = Color(0xFFFFFBFE);
   static const Color surfaceElevated = Color(0xFFFFFFFF);
   static const Color textPrimary = Color(0xFF2D2D3A);
-  // 4.6:1 on background — 14px gövde metni için WCAG AA
-  static const Color textSecondary = Color(0xFF6E6E7A);
+  /// Düz zeminde 6,2:1; ana ekranın faz gradyanının en yoğun noktasında
+  /// (ovülasyon moru, %35 alfa) 4,7:1.
+  ///
+  /// Önceki ton (#6E6E7A) düz zeminde 4,6:1 ile sınırı ancak geçiyordu ama
+  /// gradyanın üstünde dört fazın hepsinde altına düşüyordu (3,5–4,3:1).
+  /// Gradyanın alfasını kısmak açık temada çare değil: pastel tint zemini
+  /// yalnız biraz açtığı için alfa 0,05'te bile 4,4:1'de kalıyordu — metnin
+  /// kendisi koyulaşmalıydı.
+  static const Color textSecondary = Color(0xFF5A5A64);
   static const Color divider = Color(0xFFF0E8EE);
   // 5.3:1 on surface — hata metni okunabilir olmalı
   static const Color error = Color(0xFFB04A4A);

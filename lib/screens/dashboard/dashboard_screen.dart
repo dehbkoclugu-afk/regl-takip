@@ -144,6 +144,7 @@ class DashboardScreen extends ConsumerWidget {
       fertileStr = '${dateFormat.format(fStart)} - ${dateFormat.format(fEnd)}';
     }
 
+    final isDarkTheme = AppColors.isDark(context);
     // Faz değişince zemin rengi atlamak yerine yumuşakça akar
     // (AnimatedContainer gradyanı kendisi lerp'ler)
     return AnimatedContainer(
@@ -156,8 +157,12 @@ class DashboardScreen extends ConsumerWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            gradient[0].withValues(alpha: 0.35),
-            gradient[1].withValues(alpha: 0.2),
+            // Koyu temada tint zemini AÇIYOR, yani açık renkli ikincil
+            // metnin kontrastını düşürüyor: aynı alfada dört fazın hepsi
+            // 2,6–3,7:1'e iniyordu. Kısılmış alfa hem okunurluğu kurtarıyor
+            // hem "parlak öğeler dark'ta kısılır" ilkesiyle uyumlu.
+            gradient[0].withValues(alpha: isDarkTheme ? 0.15 : 0.35),
+            gradient[1].withValues(alpha: isDarkTheme ? 0.10 : 0.20),
             AppColors.bg(context),
           ],
           stops: const [0.0, 0.3, 0.8],

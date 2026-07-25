@@ -398,7 +398,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                         icon: const Icon(Icons.close_rounded, size: 16),
                         tooltip: l10n.hideLegend,
                         color: AppColors.ts(context),
-                        visualDensity: VisualDensity.compact,
                       ),
                     ],
                   ),
@@ -692,8 +691,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               style: TextButton.styleFrom(
                   foregroundColor: AppColors.primaryStrong,
                   textStyle: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w700),
-                  visualDensity: VisualDensity.compact),
+                      fontSize: 12, fontWeight: FontWeight.w700)),
               child: Text(l10n.backToToday),
             ),
         ],

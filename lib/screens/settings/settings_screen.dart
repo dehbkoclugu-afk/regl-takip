@@ -244,7 +244,8 @@ class SettingsScreen extends ConsumerWidget {
                         .saveProfile(themePreference: value);
                   },
                   style: ButtonStyle(
-                    visualDensity: VisualDensity.compact,
+                    // compact yoğunluk dokunma hedefini 48 px'in altına
+                    // indiriyordu (Material asgarisi)
                     textStyle:
                         WidgetStateProperty.all(TextStyle(fontSize: 12)),
                   ),

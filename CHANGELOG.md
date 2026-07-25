@@ -1,5 +1,15 @@
 # Changelog
 
+## Yayınlanmamış — Gradyan kontrastı ve dokunma hedefleri (2026-07-24)
+
+Tasarım incelemesinin on dokuzuncu grubu (`docs/tasarim-onerileri.md` madde 16, 78).
+
+- **Faz gradyanının üstündeki metin okunur oldu** (madde 16): ölçüm iddiayı doğruladı ve genişletti. Açık temada ikincil metin dört fazın hepsinde 3,47–4,29:1 (en kötüsü ovülasyon), koyu temada 2,60–3,68:1
+- **İki tema iki farklı ilaç istedi**: açık temada alfayı kısmak çözmüyor — pastel tint zemini yalnız biraz açtığı için alfa %5'te bile 4,43:1'de kalıyor, yani metnin kendisi koyulaşmalıydı (`textSecondary` #6E6E7A → #5A5A64). Koyu temada ise tersi: tint zemini *açtığı* için açık renkli metnin kontrastı düşüyor, orada çözüm alfayı kısmak (%35/%20 → %15/%10)
+- **Sonuç**: açık temada 4,70–5,83:1, koyu temada 4,93–6,26:1 — her iki temada dört faz da AA sınırının üstünde. Düz zeminde ikincil metin 4,61:1'den 6,24:1'e çıktı, `textPrimary` ile hiyerarşi farkı korundu (12,42:1)
+- **Koyu temada gradyanın kısılması** "parlak öğeler dark'ta kısılır" ilkesiyle zaten uyumlu
+- **Dokunma hedefleri** (madde 78): üç yerde `VisualDensity.compact` hedefi Material'ın 48 px asgarisinin altına indiriyordu (takvim efsane kapatma, bugüne dön, tema seçici) — kaldırıldı. Bu turda eklenen "eksik olan" satırının yüksekliği de 48 px'e çıkarıldı
+
 ## Yayınlanmamış — Bugün özeti eyleme dönüştü (2026-07-24)
 
 Tasarım incelemesinin on sekizinci grubu (`docs/tasarim-onerileri.md` madde 20).

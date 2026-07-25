@@ -185,8 +185,9 @@ class QuickStatusCards extends ConsumerWidget {
             context.push(route);
           },
           child: Padding(
+            // 18 px ikon + 2x15 = 48 px: Material asgari dokunma hedefi
             padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
             child: Row(
               children: [
                 Icon(icon, size: 18, color: AppColors.ts(context)),

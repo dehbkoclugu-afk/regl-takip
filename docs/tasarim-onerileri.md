@@ -2,7 +2,8 @@
 
 > **Durum:** 1, 2, 4, 6, 11, 12, 13, 14, 17, 18, 39, 48, 49, 50, 58, 59, 60,
 > 61, 62, 67, 68, 70, 75, 76, 77, 86, 87 ve 92 uygulandı; 5, 26, 27 (hızlı
-> kayıt), 20, 22, 23, 31, 34, 40, 41, 45 (takvim), 51, 52, 69 ve 93 de.
+> kayıt), 16, 20, 22, 23, 31, 34, 40, 41, 45 (takvim), 51, 52, 69, 78
+> ve 93 de.
 > Kısmi olanlar:
 > 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı), 77 (ana ekran ve
 > paylaşılan bileşenler; diğer ekranlarda taşma taraması sürüyor) ve 89
@@ -94,11 +95,15 @@ ve tam genişlik. Tarih + döngü günüyle birleştirilirse aynı yer bilgi ta�
 sabit (`dashboard_screen.dart:333`). Onboarding'de bir kez ve ayarlarda
 kalıcı olması yeterli; her gün tekrarlanan uyarı okunmaz hale gelir.
 
-**16. 🟡 Faz gradyanı metin kontrastını düşürüyor.** Zemin fazın rengiyle
-%35 alfa boyanıyor (`dashboard_screen.dart:150-158`). Foliküler ve luteal
-turuncularında ikincil metin (`textSecondary`, açık zeminde 4.6:1) sınırın
-altına düşebilir. Gradyanı yalnız üst %30'da tutmak veya alfayı %20'ye
-çekmek gerekiyor.
+**16. 🟠 Faz gradyanı metin kontrastını düşürüyor.** Zemin fazın rengiyle
+%35 alfa boyanıyor. İkincil metin (`textSecondary`) gradyanın üstünde
+**dört fazın hepsinde** sınırın altına düşüyor.
+
+*(Ölçüldü ve iddia genişledi: açık temada 3,47–4,29:1 — yalnız foliküler ve
+luteal değil, en kötüsü ovülasyon. Koyu tema hiç değerlendirilmemişti:
+orada 2,60–3,68:1 ile daha da kötü. Ayrıca önerdiğim çözüm — alfayı %20'ye
+çekmek — açık temada işe yaramıyor: alfa %5'te bile 4,43:1'de kalıyor,
+çünkü pastel tint zemini yalnız biraz açıyor.)*
 
 **17. 🟡 Ring dolu döngüde ne söylüyor belirsiz.** Gün sayısı merkezde ama
 "geciktin" durumu ayrı bir dil istiyor. 3 gün gecikmede ring rengi ve merkez
