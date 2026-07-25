@@ -3151,6 +3151,12 @@ abstract class AppLocalizations {
   /// **'Gebelik testi artık anlamlı olabilir'**
   String get pregnancyTestReady;
 
+  /// No description provided for @notLoggedToday.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün {what} girilmemiş'**
+  String notLoggedToday(String what);
+
   /// No description provided for @pregnancyTestFrom.
   ///
   /// In tr, this message translates to:

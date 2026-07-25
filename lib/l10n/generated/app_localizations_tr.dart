@@ -1617,6 +1617,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get pregnancyTestReady => 'Gebelik testi artık anlamlı olabilir';
 
   @override
+  String notLoggedToday(String what) {
+    return 'Bugün $what girilmemiş';
+  }
+
+  @override
   String pregnancyTestFrom(String date) {
     return 'Gebelik testi için en erken: $date';
   }

@@ -565,6 +565,12 @@
   "actionPeriodStarted": "Mes règles ont commencé",
   "actionMedicationTaken": "Pris",
   "pregnancyTestReady": "Un test de grossesse peut désormais être fiable",
+  "notLoggedToday": "Aucune saisie aujourd’hui : {what}",
+  "@notLoggedToday": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
   "pregnancyTestFrom": "Test fiable à partir du {date}",
   "@pregnancyTestFrom": {
     "placeholders": {

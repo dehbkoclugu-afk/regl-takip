@@ -717,6 +717,12 @@
   "actionPeriodStarted": "Reglim başladı",
   "actionMedicationTaken": "Aldım",
   "pregnancyTestReady": "Gebelik testi artık anlamlı olabilir",
+  "notLoggedToday": "Bugün {what} girilmemiş",
+  "@notLoggedToday": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
   "pregnancyTestFrom": "Gebelik testi için en erken: {date}",
   "@pregnancyTestFrom": {
     "placeholders": {

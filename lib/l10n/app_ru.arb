@@ -565,6 +565,12 @@
   "actionPeriodStarted": "Месячные начались",
   "actionMedicationTaken": "Принято",
   "pregnancyTestReady": "Тест на беременность уже может быть информативным",
+  "notLoggedToday": "Сегодня не отмечено: {what}",
+  "@notLoggedToday": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
   "pregnancyTestFrom": "Тест имеет смысл с {date}",
   "@pregnancyTestFrom": {
     "placeholders": {

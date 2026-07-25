@@ -1617,6 +1617,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get pregnancyTestReady => 'Una prueba de embarazo ya puede ser fiable';
 
   @override
+  String notLoggedToday(String what) {
+    return 'Hoy sin registro de $what';
+  }
+
+  @override
   String pregnancyTestFrom(String date) {
     return 'Prueba fiable a partir del $date';
   }

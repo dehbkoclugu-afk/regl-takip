@@ -717,6 +717,12 @@
   "actionPeriodStarted": "My period started",
   "actionMedicationTaken": "Taken",
   "pregnancyTestReady": "A pregnancy test can be meaningful now",
+  "notLoggedToday": "No {what} logged today",
+  "@notLoggedToday": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
   "pregnancyTestFrom": "Earliest useful test: {date}",
   "@pregnancyTestFrom": {
     "placeholders": {

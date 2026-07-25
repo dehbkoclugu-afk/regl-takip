@@ -2,7 +2,7 @@
 
 > **Durum:** 1, 2, 4, 6, 11, 12, 13, 14, 17, 18, 39, 48, 49, 50, 58, 59, 60,
 > 61, 62, 67, 68, 70, 75, 76, 77, 86, 87 ve 92 uygulandı; 5, 26, 27 (hızlı
-> kayıt), 22, 23, 31, 34, 40, 41, 45 (takvim), 51, 52, 69 ve 93 de.
+> kayıt), 20, 22, 23, 31, 34, 40, 41, 45 (takvim), 51, 52, 69 ve 93 de.
 > Kısmi olanlar:
 > 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı), 77 (ana ekran ve
 > paylaşılan bileşenler; diğer ekranlarda taşma taraması sürüyor) ve 89
@@ -108,13 +108,16 @@ metni farklılaşmalı, yoksa kullanıcı gecikmeyi fark etmiyor.
 uygulamanın söyleyecek sözü yok. "5 gün gecikme — düzensizlik normal olabilir,
 kaydını güncelle" gibi bir durum kartı hem işlevsel hem sakinleştirici.
 
-**19. 🔵 Koç kartı statik.** Faz başına sabit ipucu dönüyor. Kullanıcının
-kendi kayıtlarına bağlanırsa ("son üç luteal'de baş ağrısı yazmışsın")
-tekrar okunur hale gelir.
+**19. ✅ Koç kartı zaten kişisel.** Genel faz ipucunun üstünde kullanıcının
+kendi kayıtlarından çıkan içgörü duruyor ("Kayıtlarına göre bu fazda en sık:
+X (%Y)"), motoru istatistikle aynı (`topInsightForPhase`).
 
-**20. 🔵 Hızlı durum kartları eylemsiz.** Bugünün özetini gösteriyor ama
-eksik olanı istemiyor. "Bugün ruh hâli girilmemiş" satırı doğrudan oraya
-götürmeli.
+*(İlk yazımda "faz başına sabit ipucu dönüyor" demiştim, doğru değil —
+kişisel içgörü katmanı zaten vardı. Yanlış bir eleştiriydi.)*
+
+**20. 🔵 Hızlı durum kartları eylemsiz.** Hiçbir şey girilmemişken
+yönlendirme var ama gün yarı doluyken eksik olan istenmiyor; dolu kartlar da
+dokunulamıyor.
 
 **21. 🔵 Hamilelik modunda ana ekran zayıflıyor.** Hafta sayacı + aksiyon
 satırı kalıyor, gerisi düşüyor. Hamilelik haftasına göre bilgi kartı

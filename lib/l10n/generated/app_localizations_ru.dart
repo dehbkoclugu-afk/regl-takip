@@ -1617,6 +1617,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pregnancyTestReady => 'Тест на беременность уже может быть информативным';
 
   @override
+  String notLoggedToday(String what) {
+    return 'Сегодня не отмечено: $what';
+  }
+
+  @override
   String pregnancyTestFrom(String date) {
     return 'Тест имеет смысл с $date';
   }

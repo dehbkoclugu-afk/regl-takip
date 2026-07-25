@@ -565,6 +565,12 @@
   "actionPeriodStarted": "Periode hat begonnen",
   "actionMedicationTaken": "Eingenommen",
   "pregnancyTestReady": "Ein Schwangerschaftstest kann jetzt aussagekräftig sein",
+  "notLoggedToday": "Heute noch kein Eintrag: {what}",
+  "@notLoggedToday": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
   "pregnancyTestFrom": "Frühester sinnvoller Test: {date}",
   "@pregnancyTestFrom": {
     "placeholders": {

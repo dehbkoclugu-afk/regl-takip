@@ -1,5 +1,17 @@
 # Changelog
 
+## Yayınlanmamış — Bugün özeti eyleme dönüştü (2026-07-24)
+
+Tasarım incelemesinin on sekizinci grubu (`docs/tasarim-onerileri.md` madde 20).
+
+- **Yarı dolu gün için yönlendirme** (madde 20): hiçbir şey girilmemişken yönlendirme vardı ama ruh hâli girilip semptom girilmediğinde (ya da tersi) eksik olan hiç istenmiyordu. Artık ince bir satır eksik olanı söylüyor ve doğrudan oraya götürüyor
+- **Dolu kartlar dokunulabilir**: özet gösteriliyordu ama düzeltmek için günlük ekranından dolaşmak gerekiyordu. Ruh hâli ve semptom kartları kendi ekranlarını açıyor
+- **Kart kabuğu bozulmadı**: dokunulabilirlik `Material` + `InkWell` sarmalıyla eklendi, kartın gölgesi ve kenarlığı olduğu gibi kaldı
+
+### Düzeltme
+
+- Madde 19 (koç kartı statik) tamamen geri çekildi: genel faz ipucunun üstünde kullanıcının kendi kayıtlarından çıkan içgörü zaten duruyor ("Kayıtlarına göre bu fazda en sık: X (%Y)") ve motoru istatistikle aynı. Yanlış bir eleştiriydi
+
 ## Yayınlanmamış — Hap ve TTC modları (2026-07-24)
 
 Tasarım incelemesinin on yedinci grubu (`docs/tasarim-onerileri.md` madde 22, 23).

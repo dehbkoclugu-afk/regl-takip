@@ -565,6 +565,12 @@
   "actionPeriodStarted": "Mi regla empezó",
   "actionMedicationTaken": "Tomado",
   "pregnancyTestReady": "Una prueba de embarazo ya puede ser fiable",
+  "notLoggedToday": "Hoy sin registro de {what}",
+  "@notLoggedToday": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
   "pregnancyTestFrom": "Prueba fiable a partir del {date}",
   "@pregnancyTestFrom": {
     "placeholders": {
