@@ -1008,7 +1008,13 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  Text(_moodName(e.key, l10n),
+                  // Yüzde lejantta da yazar: dilimi lejanta bağlayan tek
+                  // kanal renkti ve ruh hâli paleti pastel — deuteranopiada
+                  // sarı/turuncu/yeşil noktalar birbirine karışıyor.
+                  // Dilimin içindeki "%38" ile lejanttaki "%38" eşleşiyor.
+                  Text(
+                      '${_moodName(e.key, l10n)} '
+                      '%${(e.value / total * 100).toStringAsFixed(0)}',
                       style: TextStyle(
                           fontSize: 11, color: AppColors.ts(context))),
                 ],

@@ -335,8 +335,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                         AppColors.isDark(context))),
                 selectedDecoration: const BoxDecoration(
                     color: AppColors.primary, shape: BoxShape.circle),
+                // Seçili gün de aynı tuzaktaydı: pastel pembe zeminde beyaz
+                // rakam 2,06:1. Koyu metinle 6,60:1
                 selectedTextStyle: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.white),
+                    fontWeight: FontWeight.bold, color: AppColors.textPrimary),
               ),
               calendarBuilders: CalendarBuilders(
                 defaultBuilder: (ctx, day, focused) =>
@@ -462,16 +464,22 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     // renk körlüğünde ikisi aynı görünür, kesikli olmayan bir çerçeve ekle
     Border? border;
 
+    // Pastel zeminde beyaz gün numarası okunmuyordu: regl hücresinde
+    // 2,06:1, ovülasyonda 2,66:1 (AA sınırı 4,5:1) — kod tabanının kendi
+    // kuralı ("pastel primary beyazla 2.06:1, zemin olarak kullanılamaz")
+    // burada atlanmıştı. Tahmin hücresi de pembe metinle 2,50:1'deydi.
+    // Koyu metin üçünü de kurtarıyor (6,60 / 5,10 / 11,27:1) ve hücreler
+    // zaten zemin + çerçeve + desenle ayrışıyor.
     if (isPeriod) {
       bgColor = AppColors.periodDay;
-      textColor = Colors.white;
+      textColor = AppColors.textPrimary;
     } else if (isPredicted) {
       bgColor = AppColors.periodDayLight;
-      textColor = AppColors.primaryDark;
+      textColor = AppColors.textPrimary;
       border = Border.all(color: AppColors.periodDay, width: 1.5);
     } else if (isOvulation) {
       bgColor = AppColors.ovulationDay;
-      textColor = Colors.white;
+      textColor = AppColors.textPrimary;
     } else if (isFertile) {
       bgColor = AppColors.fertileWindowLight;
       textColor = AppColors.fertileWindowText;
@@ -509,15 +517,40 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   shape: BoxShape.circle,
                   border: border,
                 ),
-                child: Center(
-                  child: Text(
-                    '${day.day}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: isToday ? FontWeight.bold : FontWeight.w600,
-                      color: textColor,
+                // Desen modu hücrelere hiç uygulanmıyordu: ring ve şeritler
+                // dokuluyken takvimin kendisi düz kalıyordu ve ovülasyon
+                // moru ile regl pembesi renk körlüğünde birbirine yakın iki
+                // soluk tona düşüyor.
+                //
+                // Şeritlerdeki gibi foregroundDecoration OLAMAZ: orada çocuk
+                // yok, burada gün numarası var ve desen onun da üstüne
+                // binerdi (yarı saydam beyaz çizgiler rakamı soldururdu).
+                // Desen metnin ALTINA ayrı bir katman olarak konur;
+                // StackFit.expand ikisini de hücreyi dolduracak şekilde
+                // ölçer (gevşek yığın deseni yalnız rakam kadar boyardı).
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    if (bgColor != null && ref.watch(phasePatternProvider))
+                      DecoratedBox(
+                        decoration: patternOverlayFor(
+                              bgColor,
+                              radius: BorderRadius.circular(20),
+                            ) ??
+                            const BoxDecoration(),
+                      ),
+                    Center(
+                      child: Text(
+                        '${day.day}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight:
+                              isToday ? FontWeight.bold : FontWeight.w600,
+                          color: textColor,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
               if (hasLog)

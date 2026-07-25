@@ -1,5 +1,17 @@
 # Changelog
 
+## Yayınlanmamış — Renk körlüğü: takvim hücreleri ve pasta lejantı (2026-07-25)
+
+Tasarım incelemesinin yirmi üçüncü grubu (`docs/tasarim-onerileri.md` madde 79, 80).
+
+- **Madde 79'da saydığım üç yer yanlış seçilmişti**: akış yoğunluğunda damla sayısı (1–4) + etiket, ruh hâlinde emoji + etiket, semptomda ikon + etiket var. Renk hiçbirinde tek kanal değil — oralara desen eklemek gürültü olurdu
+- **Renk gerçekten tek kanal olan iki yer bulundu.** Birincisi **takvim hücreleri**: desen modu açıkken ring ve şeritler dokuluyken hücrelerin kendisi düz kalıyordu, çünkü hücreler ring tonlarını değil kendi pastel paletini kullanıyor ve eşleme tablosunda yoklardı. Ovülasyon moru ile regl pembesi deuteranopiada birbirine yakın iki soluk tona düşüyordu
+- **Aynı fazın takvim karşılığı ring'dekiyle aynı dokuyu alıyor**: fertil dikey, ovülasyon ters çapraz (fertilden ayrışsın diye), foliküler çapraz, luteal yatay, regl düz. İki ekranda aynı doku, aynı anlam
+- İkincisi **ruh hâli pastası**: dilimi lejanttaki adına bağlayan tek şey renkti ve palet pastel — deuteranopiada sarı/turuncu/yeşil noktalar birbirine karışıyor. Lejant artık yüzdeyi de yazıyor, dilimin içindeki "%38" ile eşleşiyor
+- **Desen metnin altına konuldu, üstüne değil**: şeritlerde `foregroundDecoration` doğru çünkü orada çocuk yok; hücrede gün numarası var ve yarı saydam beyaz çizgiler rakamı soldururdu. Ayrı bir katman + `StackFit.expand` (gevşek yığın deseni yalnız rakam kadar boyardı)
+- **Yolda ayrı bir kontrast hatası çıktı**: takvim hücrelerinde gün numarası pastel zeminde **beyaz** yazılıyordu — regl hücresinde 2,06:1, ovülasyonda 2,66:1, seçili günde 2,06:1, tahmin hücresinde pembe metinle 2,50:1. Kod tabanının kendi kuralı zaten yazılıydı ("pastel primary beyazla 2.06:1, zemin olarak kullanılamaz"), takvimde atlanmıştı. Dördü de koyu metne çevrildi (5,10–11,27:1)
+- **Madde 80 geri çekildi**: "fl_chart görselleri için metin alternatifi yok" demiştim; üç grafiğin üçü de `Semantics` + `ExcludeSemantics` çiftiyle sarılıymış ve veriyi metin olarak duyuruyormuş (çubukta "semptom: sayı", pastada "ruh hâli: %", çizgide "son / min / maks"). Benim incelememden önce eklenmiş
+
 ## Yayınlanmamış — Hareket azaltma ve ring'in ekran okuyucu etiketi (2026-07-25)
 
 Tasarım incelemesinin yirmi ikinci grubu (`docs/tasarim-onerileri.md` madde 81, 83).

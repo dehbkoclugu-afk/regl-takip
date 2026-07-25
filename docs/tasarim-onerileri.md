@@ -3,7 +3,7 @@
 > **Durum:** 1, 2, 4, 6, 11, 12, 13, 14, 17, 18, 39, 48, 49, 50, 58, 59, 60,
 > 61, 62, 67, 68, 70, 75, 76, 77, 86, 87 ve 92 uygulandı; 5, 26, 27 (hızlı
 > kayıt), 16, 20, 22, 23, 31, 34, 40, 41, 45 (takvim), 51, 52, 69, 72, 73,
-> 74, 78, 81, 83 ve 93 de.
+> 74, 78, 79, 81, 83 ve 93 de. Madde 80 geri çekildi (zaten yapılmıştı).
 > Kısmi olanlar:
 > 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı), 71 (ton yapıldı,
 > sıklık ayarının somut karşılığı yok), 77 (ana ekran ve
@@ -420,9 +420,33 @@ ikon butonlarının hepsi taranmalı.
 **79. 🟡 Renk körlüğü desteği yalnız faz renklerinde.** Desen modu ring ve
 şeritlerde çalışıyor ama akış yoğunluğu, ruh hâli ve semptom renklerinde
 karşılığı yok.
+*Düzeltme:* saydığım üç yer yanlış seçilmişti. Akış yoğunluğunda damla
+sayısı (1–4) + etiket, ruh hâlinde emoji + etiket, semptomda ikon + etiket
+var — renk hiçbirinde **tek** kanal değil, desen eklemek gürültü olurdu.
+*Uygulandı:* renk gerçekten tek kanal olan iki yer bulundu ve düzeltildi.
+**Takvim hücreleri**: desen modu açıkken bile düz kalıyorlardı (hücreler
+ring tonlarını değil kendi pastel paletini kullanıyor, eşleme tablosunda
+yoklardı) — ovülasyon moru ile regl pembesi deuteranopiada birbirine yakın
+iki soluk tona düşüyordu. Artık aynı fazın takvim karşılığı ring'dekiyle
+aynı dokuyu alıyor. **Ruh hâli pastası**: dilimi lejanttaki adına bağlayan
+tek şey renkti; lejant artık yüzdeyi de yazıyor, dilimin içindeki "%38" ile
+eşleşiyor.
 
-**80. 🟡 Grafikler ekran okuyucuya kapalı.** fl_chart görselleri için metin
-alternatifi yok; istatistik ekranı görme engelli kullanıcı için sessiz.
+*Bu maddeyi uygularken ayrı bir kontrast hatası çıktı:* takvim hücrelerinde
+gün numarası pastel zeminde **beyaz** yazılıyordu — regl hücresinde 2,06:1,
+ovülasyonda 2,66:1, seçili günde 2,06:1, tahmin hücresinde pembe metinle
+2,50:1 (AA sınırı 4,5:1). Kod tabanının kendi kuralı zaten yazılıydı
+("pastel primary beyazla 2.06:1, zemin olarak kullanılamaz"), takvimde
+atlanmıştı. Dördü de koyu metne çevrildi (5,10–11,27:1).
+
+**80. ✅ Grafiklerin metin alternatifi zaten var.** Üç grafiğin üçü de
+(çubuk, pasta, çizgi) `Semantics` + `ExcludeSemantics` çiftiyle sarılı ve
+veriyi metin olarak duyuruyor: çubukta "semptom: sayı" listesi, pastada
+"ruh hâli: %", çizgide "son değer / min / maks". İstatistik ekranındaki
+`CustomPaint` görseli de sarılı.
+
+*(İlk yazımda "metin alternatifi yok" demiştim; kodda vardı ve benim
+incelememden önce eklenmişti. Yanlış bir eleştiriydi.)*
 
 **81. 🟡 Hareket azaltma kısmen uygulanmış.** `animateSafe` var ama
 `animate()` doğrudan çağrılan yerler kalmış — kalıp her yerde aynı olmalı.
