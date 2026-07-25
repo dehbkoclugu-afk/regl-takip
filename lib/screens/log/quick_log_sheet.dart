@@ -6,6 +6,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/enum_labels.dart';
+import '../../core/utils/symptom_ranking.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../providers/providers.dart';
@@ -262,13 +263,17 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               ),
               const SizedBox(height: 20),
 
-              // Semptomlar
+              // Semptomlar — sık girilenler önde (liste kullanıldıkça
+              // kişiselleşir, seçenek kümesi daralmaz)
               _sectionLabel(l10n.symptoms),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: _commonSymptoms.map((s) {
+                children: SymptomRanking.reorder(
+                  _commonSymptoms,
+                  ref.read(dailyLogProvider).values,
+                ).map((s) {
                   final selected = _symptoms.containsKey(s);
                   return _chip(
                     label: EnumLabels.symptom(s, l10n),

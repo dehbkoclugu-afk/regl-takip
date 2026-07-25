@@ -561,6 +561,7 @@
   "doctorSummary": "Exportar resumen para mi médico",
   "healthImport": "Importar desde Health Connect",
   "healthImportAction": "Importar",
+  "allTime": "Todo",
   "healthImportNothingNew": "No se encontraron registros nuevos para importar",
   "healthImportConfirm": "Se encontraron {count} periodos en Health Connect que no están en la app. ¿Añadirlos a tus registros? Tus registros actuales no cambian.",
   "@healthImportConfirm": {

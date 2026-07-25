@@ -1605,6 +1605,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get healthImportAction => 'Импортировать';
 
   @override
+  String get allTime => 'Всё время';
+
+  @override
   String get healthImportNothingNew => 'Новых записей для импорта не найдено';
 
   @override

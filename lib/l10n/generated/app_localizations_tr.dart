@@ -1605,6 +1605,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get healthImportAction => 'İçe aktar';
 
   @override
+  String get allTime => 'Tümü';
+
+  @override
   String get healthImportNothingNew => 'İçe aktarılacak yeni kayıt bulunamadı';
 
   @override

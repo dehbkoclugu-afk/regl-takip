@@ -561,6 +561,7 @@
   "doctorSummary": "Выгрузить сводку для врача",
   "healthImport": "Импорт из Health Connect",
   "healthImportAction": "Импортировать",
+  "allTime": "Всё время",
   "healthImportNothingNew": "Новых записей для импорта не найдено",
   "healthImportConfirm": "В Health Connect найдено периодов, которых нет в приложении: {count}. Добавить их к вашим записям? Существующие записи не изменятся.",
   "@healthImportConfirm": {

@@ -1605,6 +1605,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get healthImportAction => 'Importar';
 
   @override
+  String get allTime => 'Todo';
+
+  @override
   String get healthImportNothingNew => 'No se encontraron registros nuevos para importar';
 
   @override

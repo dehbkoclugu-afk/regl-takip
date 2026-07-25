@@ -561,6 +561,7 @@
   "doctorSummary": "Exporter un résumé pour mon médecin",
   "healthImport": "Importer depuis Health Connect",
   "healthImportAction": "Importer",
+  "allTime": "Tout",
   "healthImportNothingNew": "Aucune nouvelle donnée à importer",
   "healthImportConfirm": "{count} périodes trouvées dans Health Connect et absentes de l’app. Les ajouter à vos données ? Vos données existantes ne changent pas.",
   "@healthImportConfirm": {

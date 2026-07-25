@@ -3127,6 +3127,12 @@ abstract class AppLocalizations {
   /// **'İçe aktar'**
   String get healthImportAction;
 
+  /// No description provided for @allTime.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümü'**
+  String get allTime;
+
   /// No description provided for @healthImportNothingNew.
   ///
   /// In tr, this message translates to:

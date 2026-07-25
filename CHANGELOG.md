@@ -1,5 +1,20 @@
 # Changelog
 
+## Yayınlanmamış — Semptom sıralaması ve tüm zamanlar (2026-07-24)
+
+Tasarım incelemesinin on beşinci grubu (`docs/tasarim-onerileri.md` madde 31, 52).
+
+- **Sık girilen semptomlar önde** (madde 31): hızlı kayıt sayfasındaki liste sabit sıradaydı, kullanıcı her seferinde kendi semptomunu arıyordu. Son 90 günün kayıtlarına göre sıralanıyor
+- **Seçenek kümesi daralmıyor**: yalnız sıra değişiyor. Listeyi kullanıcının geçmişine göre kısaltmak, hiç girmediği bir semptomu bulmasını imkânsız kılardı
+- **Sıralama kararlı**: eşit sayıda girilen iki semptom varsayılan sırasını koruyor — liste her açılışta zıplamamalı
+- **Pencere 90 gün**: daha eskisi artık geçerli olmayan bir dönemi (bırakılmış bir ilacın yan etkisi gibi) öne taşırdı
+- **İstatistikte "Tümü" filtresi** (madde 52): 3/6/12 ay sabitti; 12 aydan eski kaydı olan kullanıcı kendi verisinin tamamını göremiyordu
+- `SymptomRanking.reorder` için 6 birim testi (boş geçmiş, pencere dışı kayıt, eşitlik, listede olmayan semptom)
+
+### Düzeltme
+
+- Madde 32 (ağrı şiddeti yok) 🟡'dan 🔵'ye indirildi: "semptom var/yok olarak kaydediliyor" demiştim, doğru değil — `SymptomEntry.severity` var ve semptom ekranında beş noktalı seçici duruyor. Kalan iş şiddeti hızlı kayda ve istatistiğe taşımak
+
 ## Yayınlanmamış — Health Connect artık iki yönlü (2026-07-24)
 
 Tasarım incelemesinin on dördüncü grubu (`docs/tasarim-onerileri.md` madde 93).

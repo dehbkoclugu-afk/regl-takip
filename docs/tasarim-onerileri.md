@@ -2,7 +2,7 @@
 
 > **Durum:** 1, 2, 4, 6, 11, 12, 13, 14, 17, 18, 39, 48, 49, 50, 58, 59, 60,
 > 61, 62, 67, 68, 70, 75, 76, 77, 86, 87 ve 92 uygulandı; 5, 26, 27 (hızlı
-> kayıt), 40, 41, 45 (takvim), 51 ve 93 de. Kısmi olanlar:
+> kayıt), 31, 40, 41, 45 (takvim), 51, 52 ve 93 de. Kısmi olanlar:
 > 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı), 77 (ana ekran ve
 > paylaşılan bileşenler; diğer ekranlarda taşma taraması sürüyor) ve 89
 > (uyarı eklendi, parolalı yedek yapılmadı). Madde 7 (reklamın yerini kaydet
@@ -164,9 +164,13 @@ motivasyonu. Sağlık uygulamasında agresif olmadan yapılabilir.
 **31. 🟡 Semptom listesi uzun ve düzsüz.** Sık kullanılanlar öne alınmıyor.
 Kullanıcının son 30 günde seçtiği semptomlar listenin başında olmalı.
 
-**32. 🟡 Ağrı şiddeti yok.** Semptom var/yok olarak kaydediliyor. "Kramp"
-hafif mi dayanılmaz mı — istatistiğin de bildirimin de en çok işine yarayacak
-bilgi bu ve şu an kayboluyor.
+**32. 🔵 Şiddet girilebiliyor ama görünürlüğü zayıf.** Semptom ekranında
+1–5 arası şiddet seçilebiliyor; hızlı kayıt sayfası ise sabit 2 yazıyor ve
+şiddet istatistiklerde kullanılmıyor.
+
+*(İlk yazımda "semptom var/yok olarak kaydediliyor" demiştim, doğru değil —
+`SymptomEntry.severity` var ve semptom ekranında beş noktalı seçici duruyor.
+Kalan iş şiddeti hızlı kayda ve istatistiğe taşımak.)*
 
 **33. 🟡 İlaç modeli günlük kayda bağlı.** İlaçlar günlük log içinde
 tutuluyor ve hatırlatmalar en son ilaç içeren logdan okunuyor

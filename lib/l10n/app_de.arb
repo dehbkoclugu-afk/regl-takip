@@ -561,6 +561,7 @@
   "doctorSummary": "Zusammenfassung für meine Ärztin",
   "healthImport": "Aus Health Connect importieren",
   "healthImportAction": "Importieren",
+  "allTime": "Gesamt",
   "healthImportNothingNew": "Keine neuen Einträge zum Importieren gefunden",
   "healthImportConfirm": "{count} Perioden in Health Connect gefunden, die nicht in der App sind. Zu deinen Einträgen hinzufügen? Deine vorhandenen Einträge bleiben unverändert.",
   "@healthImportConfirm": {

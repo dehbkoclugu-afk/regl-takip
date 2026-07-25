@@ -47,7 +47,12 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final dailyLogs = ref.watch(dailyLogProvider);
     final profile = ref.watch(userProfileProvider);
 
-    final cutoff = DateTime.now().subtract(Duration(days: _filterMonths * 30));
+    // 0 = tüm zamanlar. Aylık pencereler kısa geçmişi olan kullanıcıyı
+    // kendi verisinden mahrum bırakıyordu: 12 aydan eski kaydı olan da
+    // tamamını görebilmeli.
+    final cutoff = _filterMonths == 0
+        ? DateTime.fromMillisecondsSinceEpoch(0)
+        : DateTime.now().subtract(Duration(days: _filterMonths * 30));
     final filteredRecords =
         records.where((r) => r.startDate.isAfter(cutoff)).toList();
     final filteredLogs =
@@ -282,6 +287,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       (l10n.last3Months, 3),
       (l10n.last6Months, 6),
       (l10n.last12Months, 12),
+      (l10n.allTime, 0),
     ];
     return Container(
       padding: const EdgeInsets.all(4),
