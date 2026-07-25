@@ -1349,7 +1349,24 @@ class AppLocalizationsDe extends AppLocalizations {
   String get notificationPeriodTitle => 'Perioden-Erinnerung';
 
   @override
-  String get notificationPeriodBody => 'Deine Periode könnte morgen beginnen. Sei vorbereitet!';
+  String get notificationPeriodTimingToday => 'Deine Periode könnte heute beginnen.';
+
+  @override
+  String get notificationPeriodTimingTomorrow => 'Deine Periode könnte morgen beginnen.';
+
+  @override
+  String notificationPeriodTimingInDays(int days) {
+    return 'Deine Periode könnte in $days Tagen beginnen.';
+  }
+
+  @override
+  String get notificationPeriodTip1 => 'Denk daran, eine Binde oder einen Tampon einzupacken.';
+
+  @override
+  String get notificationPeriodTip2 => 'Ein wenig Vorbereitung macht es leichter.';
+
+  @override
+  String get notificationPeriodTip3 => 'Den Beginn einzutragen verbessert die Vorhersagen.';
 
   @override
   String get notificationPeriodChannel => 'Perioden-Erinnerung';
@@ -1386,6 +1403,18 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get notificationDiscreetBody => 'Du hast heute eine Erinnerung';
+
+  @override
+  String get notificationFertileTitle => 'Dein fruchtbares Fenster beginnt';
+
+  @override
+  String get notificationFertileBody => 'Ab heute sind die Tage mit der höchsten Empfängniswahrscheinlichkeit.';
+
+  @override
+  String get notificationChainEndTitle => 'Erinnerungen pausieren';
+
+  @override
+  String get notificationChainEndBody => 'Die geplanten Erinnerungen sind aufgebraucht. Öffne die App, um neue einzurichten.';
 
   @override
   String get noPurchasesToRestore => 'Keine Käufe zum Wiederherstellen gefunden';
@@ -1429,6 +1458,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get notificationDelayBody => 'Wenn deine Periode begonnen hat, trag sie ein. Schwankungen sind normal.';
+
+  @override
+  String get notificationDelayBodyAlt1 => 'Noch kein Eintrag. Wenn sie begonnen hat, genügt ein Tippen.';
+
+  @override
+  String get notificationDelayBodyAlt2 => 'Eine Verschiebung von ein paar Tagen ist normal. Ist dein Eintrag aktuell?';
 
   @override
   String get notificationDelayChannel => 'Verspätungs-Erinnerung';

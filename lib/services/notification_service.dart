@@ -47,6 +47,10 @@ class NotificationService {
   static const int _insightReminderBaseId = 30;
   // Gecikme kontrolü: tahmini tarihten birkaç gün sonra
   static const int _delayReminderBaseId = 50;
+  // TTC modunda verimli pencerenin açıldığı gün
+  static const int _fertileReminderBaseId = 60;
+  // Planlanan zincirin sonunda tek bir "uygulamayı aç" hatırlatması
+  static const int _chainEndReminderId = 5;
 
   /// Tahmini tarihten kaç gün sonra gecikme hatırlatması gönderileceği.
   /// Ertesi gün sormak erken (bir günlük sapma olağan), bir hafta geç.
@@ -186,12 +190,44 @@ class NotificationService {
     return scheduled;
   }
 
+  /// Regl hatırlatmasının gövdesi: zamanlama cümlesi + dönüşümlü ipucu.
+  ///
+  /// İki ayrı sorunu birlikte çözer. Gövde "yarın başlayabilir" diye
+  /// sabitlenmişti; hatırlatma penceresi ayarlanabilir olunca (madde 68)
+  /// 3 gün önce gelen bildirim yanlış gün söylüyordu. İkincisi, her ay
+  /// harfi harfine aynı cümle gelmesi bildirimi görünmez kılıyor
+  /// (madde 74) — ikinci cümle [variant] ile dönüyor.
+  String _periodBody(AppLocalizations l10n, int leadDays, int variant) {
+    final timing = leadDays <= 0
+        ? l10n.notificationPeriodTimingToday
+        : leadDays == 1
+            ? l10n.notificationPeriodTimingTomorrow
+            : l10n.notificationPeriodTimingInDays(leadDays);
+    final tips = [
+      l10n.notificationPeriodTip1,
+      l10n.notificationPeriodTip2,
+      l10n.notificationPeriodTip3,
+    ];
+    return '$timing ${tips[variant.abs() % tips.length]}';
+  }
+
+  /// Gecikme hatırlatmasının dönüşümlü gövdesi (madde 74).
+  String _delayBody(AppLocalizations l10n, int variant) {
+    final bodies = [
+      l10n.notificationDelayBody,
+      l10n.notificationDelayBodyAlt1,
+      l10n.notificationDelayBodyAlt2,
+    ];
+    return bodies[variant.abs() % bodies.length];
+  }
+
   /// Tahmini regl tarihinden [leadDays] gün önce hatırlatma kurar.
   ///
   /// [leadDays] sabit 1'di; hazırlanmak için daha erken haber almak isteyen
   /// kullanıcının seçeneği yoktu.
   /// [discreet]: gizli moddayken kilit ekranına düşen metin döngü bilgisi
   /// sızdırmamalı — nötr başlık/gövde kullanılır.
+  /// [variant]: gövde havuzundan hangi ipucunun seçileceği.
   Future<void> schedulePeriodReminder(
     DateTime nextPeriodDate,
     int hour,
@@ -200,10 +236,13 @@ class NotificationService {
     int id = _periodReminderBaseId,
     int leadDays = 1,
     bool discreet = false,
+    int variant = 0,
   }) async {
     final l10n = _l10n(locale);
-    final reminderDate =
-        nextPeriodDate.subtract(Duration(days: leadDays.clamp(0, 7)));
+    // Metin ile tarih AYNI değeri kullanmalı: kırpılmamış leadDays ile
+    // yazılan gövde, kırpılmış tarihten farklı bir gün söylerdi.
+    final lead = leadDays.clamp(0, 7);
+    final reminderDate = nextPeriodDate.subtract(Duration(days: lead));
 
     await _plugin.cancel(id);
 
@@ -215,7 +254,9 @@ class NotificationService {
     await _plugin.zonedSchedule(
       id,
       discreet ? l10n.notificationDiscreetTitle : l10n.notificationPeriodTitle,
-      discreet ? l10n.notificationDiscreetBody : l10n.notificationPeriodBody,
+      discreet
+          ? l10n.notificationDiscreetBody
+          : _periodBody(l10n, lead, variant),
       scheduledDate,
       NotificationDetails(
         android: AndroidNotificationDetails(
@@ -281,6 +322,100 @@ class NotificationService {
     );
   }
 
+  /// TTC modunda verimli pencerenin AÇILDIĞI gün gönderilir.
+  ///
+  /// Ovülasyon günü bildirimi hamile kalmaya çalışan kullanıcı için geç
+  /// kalıyor: sperm ömrü nedeniyle asıl fırsat ovülasyondan önceki
+  /// günlerde. Aynı metnin hem takip hem TTC kullanıcısına gitmesi de
+  /// yanlıştı — TTC'nin sorusu "hangi gün" değil, "ne zaman başlıyor".
+  Future<void> scheduleFertileWindowReminder(
+    DateTime windowStart,
+    int hour,
+    int minute,
+    String locale, {
+    required int id,
+    bool discreet = false,
+  }) async {
+    final l10n = _l10n(locale);
+    await _plugin.cancel(id);
+
+    final scheduledDate = _scheduleFor(windowStart, hour, minute);
+    if (scheduledDate == null) return;
+
+    await _plugin.zonedSchedule(
+      id,
+      discreet ? l10n.notificationDiscreetTitle : l10n.notificationFertileTitle,
+      discreet ? l10n.notificationDiscreetBody : l10n.notificationFertileBody,
+      scheduledDate,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'ovulation_reminder',
+          l10n.notificationOvulationChannel,
+          channelDescription: l10n.notificationOvulationChannelDesc,
+          importance: Importance.high,
+          priority: Priority.high,
+          icon: '@mipmap/ic_launcher',
+        ),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
+  /// Planlanan zincirin bittiğini haber verir.
+  ///
+  /// Hatırlatmalar yalnız [_cyclesToSchedule] döngü ileriye kurulabiliyor
+  /// (platform sınırı: uygulama açılmadan yeni bildirim planlanamaz).
+  /// Uygulama o süre boyunca açılmazsa zincir SESSİZCE kopuyordu; kullanıcı
+  /// hatırlatmaların durduğunu ancak bir gününü kaçırınca fark ediyordu.
+  ///
+  /// Metin gizli modda da nötrlenmez: "hatırlatmalar bitti, uygulamayı aç"
+  /// cümlesi bir not defteri için de aynen geçerli, döngü bilgisi taşımıyor.
+  Future<void> scheduleChainEndReminder(
+    DateTime date,
+    int hour,
+    int minute,
+    String locale, {
+    int id = _chainEndReminderId,
+  }) async {
+    final l10n = _l10n(locale);
+    await _plugin.cancel(id);
+
+    final scheduledDate = _scheduleFor(date, hour, minute);
+    if (scheduledDate == null) return;
+
+    await _plugin.zonedSchedule(
+      id,
+      l10n.notificationChainEndTitle,
+      l10n.notificationChainEndBody,
+      scheduledDate,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'chain_end',
+          l10n.notificationChainEndTitle,
+          channelDescription: l10n.notificationChainEndBody,
+          importance: Importance.defaultImportance,
+          priority: Priority.defaultPriority,
+          icon: '@mipmap/ic_launcher',
+        ),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: false,
+          presentSound: false,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
   /// Tahmini tarih geçtiği hâlde kayıt gelmediyse gönderilen hatırlatma.
   ///
   /// Metin bilinçli olarak tanı koymaz ve gebelikten söz etmez: sapma çok
@@ -292,6 +427,7 @@ class NotificationService {
     String locale, {
     required int id,
     bool discreet = false,
+    int variant = 0,
   }) async {
     final l10n = _l10n(locale);
     await _plugin.cancel(id);
@@ -302,7 +438,9 @@ class NotificationService {
     await _plugin.zonedSchedule(
       id,
       discreet ? l10n.notificationDiscreetTitle : l10n.notificationDelayTitle,
-      discreet ? l10n.notificationDiscreetBody : l10n.notificationDelayBody,
+      discreet
+          ? l10n.notificationDiscreetBody
+          : _delayBody(l10n, variant),
       scheduledDate,
       NotificationDetails(
         android: AndroidNotificationDetails(
@@ -517,6 +655,10 @@ class NotificationService {
               id: _periodReminderBaseId + i,
               leadDays: profile.periodReminderLeadDays,
               discreet: discreet,
+              // Ay numarası: hangi anda planlandığından bağımsız olarak
+              // ardışık aylara farklı ipucu düşer. Döngü indeksi (i)
+              // kullanılsaydı her yeniden planlamada havuz başa dönerdi.
+              variant: periodDate.month,
             );
           }
 
@@ -531,6 +673,20 @@ class NotificationService {
               id: _ovulationReminderBaseId + i,
               discreet: discreet,
             );
+
+            // TTC modunda pencerenin açılışı ovülasyon gününden daha
+            // kritik; takip modunda böyle bir bildirim gereksiz gürültü.
+            if (profile.trackingMode == TrackingMode.ttc) {
+              await scheduleFertileWindowReminder(
+                ovulation.subtract(const Duration(
+                    days: AppConstants.fertileWindowStartBeforeOvulation)),
+                cycleHour,
+                cycleMinute,
+                locale,
+                id: _fertileReminderBaseId + i,
+                discreet: discreet,
+              );
+            }
           }
 
           // Gecikme kontrolü: tahmini tarih geçtiği hâlde kayıt gelmediyse
@@ -544,8 +700,22 @@ class NotificationService {
               locale,
               id: _delayReminderBaseId + i,
               discreet: discreet,
+              variant: periodDate.month,
             );
           }
+        }
+
+        // Zincirin sonu: son planlanan döngüden bir döngü sonrası. O tarihe
+        // gelindiğinde kurulu tek bildirim bu olur; kullanıcı uygulamayı
+        // açınca rescheduleAll yeniden çalışır ve zincir uzar.
+        if (profile.periodReminderEnabled ||
+            profile.ovulationReminderEnabled) {
+          await scheduleChainEndReminder(
+            nextPeriod.add(Duration(days: cycleLen * _cyclesToSchedule)),
+            cycleHour,
+            cycleMinute,
+            locale,
+          );
         }
 
         // Kişisel semptom tahmini: kullanıcının kayıtları luteal fazda

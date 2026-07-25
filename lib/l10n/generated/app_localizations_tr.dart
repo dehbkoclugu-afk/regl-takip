@@ -1349,7 +1349,24 @@ class AppLocalizationsTr extends AppLocalizations {
   String get notificationPeriodTitle => 'Adet Hatırlatması';
 
   @override
-  String get notificationPeriodBody => 'Adetiniz yarın başlayabilir. Hazırlıklı olun!';
+  String get notificationPeriodTimingToday => 'Adetin bugün başlayabilir.';
+
+  @override
+  String get notificationPeriodTimingTomorrow => 'Adetin yarın başlayabilir.';
+
+  @override
+  String notificationPeriodTimingInDays(int days) {
+    return 'Adetin $days gün sonra başlayabilir.';
+  }
+
+  @override
+  String get notificationPeriodTip1 => 'Yanına bir ped ya da tampon almayı unutma.';
+
+  @override
+  String get notificationPeriodTip2 => 'Hazırlıklı olmak işleri kolaylaştırır.';
+
+  @override
+  String get notificationPeriodTip3 => 'Başladığında kaydetmen tahminleri iyileştirir.';
 
   @override
   String get notificationPeriodChannel => 'Adet Hatırlatması';
@@ -1386,6 +1403,18 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get notificationDiscreetBody => 'Bugün için bir hatırlatman var';
+
+  @override
+  String get notificationFertileTitle => 'Verimli pencere başlıyor';
+
+  @override
+  String get notificationFertileBody => 'Bugünden itibaren gebe kalma olasılığın en yüksek günlerdesin.';
+
+  @override
+  String get notificationChainEndTitle => 'Hatırlatmalar duraklıyor';
+
+  @override
+  String get notificationChainEndBody => 'Planlanan hatırlatmalar bitti. Uygulamayı açtığında yenileri kurulur.';
 
   @override
   String get noPurchasesToRestore => 'Geri yüklenecek bir satın alma bulunamadı';
@@ -1429,6 +1458,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get notificationDelayBody => 'Reglin başladıysa kaydetmeyi unutma. Sapma olağan olabilir.';
+
+  @override
+  String get notificationDelayBodyAlt1 => 'Henüz bir kayıt yok. Başladıysa eklemek tek dokunuş.';
+
+  @override
+  String get notificationDelayBodyAlt2 => 'Birkaç günlük kayma sık görülür. Kaydın güncel mi?';
 
   @override
   String get notificationDelayChannel => 'Gecikme Hatırlatması';

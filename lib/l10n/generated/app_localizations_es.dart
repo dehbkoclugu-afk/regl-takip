@@ -1349,7 +1349,24 @@ class AppLocalizationsEs extends AppLocalizations {
   String get notificationPeriodTitle => 'Recordatorio de regla';
 
   @override
-  String get notificationPeriodBody => 'Tu regla podría empezar mañana. ¡Prepárate!';
+  String get notificationPeriodTimingToday => 'Tu regla podría empezar hoy.';
+
+  @override
+  String get notificationPeriodTimingTomorrow => 'Tu regla podría empezar mañana.';
+
+  @override
+  String notificationPeriodTimingInDays(int days) {
+    return 'Tu regla podría empezar en $days días.';
+  }
+
+  @override
+  String get notificationPeriodTip1 => 'Recuerda llevar una compresa o un tampón.';
+
+  @override
+  String get notificationPeriodTip2 => 'Un poco de preparación lo hace todo más fácil.';
+
+  @override
+  String get notificationPeriodTip3 => 'Registrar el inicio mejora tus predicciones.';
 
   @override
   String get notificationPeriodChannel => 'Recordatorio de regla';
@@ -1386,6 +1403,18 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get notificationDiscreetBody => 'Tienes un recordatorio para hoy';
+
+  @override
+  String get notificationFertileTitle => 'Empieza tu ventana fértil';
+
+  @override
+  String get notificationFertileBody => 'Desde hoy estás en los días con mayor probabilidad de concebir.';
+
+  @override
+  String get notificationChainEndTitle => 'Los recordatorios se pausan';
+
+  @override
+  String get notificationChainEndBody => 'Los recordatorios programados se han agotado. Abre la app para crear nuevos.';
 
   @override
   String get noPurchasesToRestore => 'No se encontraron compras para restaurar';
@@ -1429,6 +1458,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get notificationDelayBody => 'Si tu regla ya empezó, recuerda registrarla. Cierta variación es normal.';
+
+  @override
+  String get notificationDelayBodyAlt1 => 'Aún no hay ningún registro. Si ya empezó, basta un toque.';
+
+  @override
+  String get notificationDelayBodyAlt2 => 'Un desfase de unos días es habitual. ¿Tu registro está al día?';
 
   @override
   String get notificationDelayChannel => 'Recordatorio de retraso';

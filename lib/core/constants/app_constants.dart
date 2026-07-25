@@ -26,6 +26,11 @@ class AppConstants {
   static const int fertileWindowDays = 6;
   static const int ovulationDayBeforePeriod = 14;
 
+  /// Verimli pencere ovülasyondan kaç gün önce açılır.
+  /// Sperm ömrü nedeniyle asıl fırsat ovülasyon gününden ÖNCE başlar;
+  /// TTC bildirimi bu güne kurulur, ovülasyon gününe değil.
+  static const int fertileWindowStartBeforeOvulation = 5;
+
   // Hap paketi: 21 etkin + 7 ara/plasebo
   static const int pillActiveDays = 21;
   static const int pillPackDays = 28;

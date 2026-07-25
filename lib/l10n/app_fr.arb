@@ -426,7 +426,17 @@
   "notificationInsightTitle": "Conseil de phase",
   "notificationInsightBody": "La phase lutéale commence. D'après vos saisies, votre symptôme le plus fréquent dans cette phase : {symptom}.",
   "notificationPeriodTitle": "Rappel de règles",
-  "notificationPeriodBody": "Vos règles pourraient commencer demain. Soyez prête !",
+  "notificationPeriodTimingToday": "Vos règles pourraient commencer aujourd'hui.",
+  "notificationPeriodTimingTomorrow": "Vos règles pourraient commencer demain.",
+  "notificationPeriodTimingInDays": "Vos règles pourraient commencer dans {days} jours.",
+  "@notificationPeriodTimingInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "notificationPeriodTip1": "Pensez à emporter une serviette ou un tampon.",
+  "notificationPeriodTip2": "Un peu de préparation facilite les choses.",
+  "notificationPeriodTip3": "Enregistrer le début améliore vos prédictions.",
   "notificationPeriodChannel": "Rappel de règles",
   "notificationPeriodChannelDesc": "Rappels du cycle menstruel",
   "notificationOvulationTitle": "Rappel d'ovulation",
@@ -439,6 +449,10 @@
   "notificationMedicationChannelDesc": "Rappels de médicaments",
   "notificationDiscreetTitle": "Rappel",
   "notificationDiscreetBody": "Vous avez un rappel pour aujourd'hui",
+  "notificationFertileTitle": "Votre fenêtre de fertilité commence",
+  "notificationFertileBody": "À partir d'aujourd'hui, ce sont les jours les plus propices à la conception.",
+  "notificationChainEndTitle": "Les rappels sont en pause",
+  "notificationChainEndBody": "Les rappels programmés sont épuisés. Ouvrez l'application pour en planifier de nouveaux.",
   "noPurchasesToRestore": "Aucun achat à restaurer",
   "restoringPurchases": "Restauration des achats…",
   "backdateHint": "Appui long pour choisir un autre jour",
@@ -462,6 +476,8 @@
   "headlineDelaySubtitle": "Une variation est normale. Enregistrez-les si elles ont commencé.",
   "notificationDelayTitle": "La date prévue est passée",
   "notificationDelayBody": "Si vos règles ont commencé, pensez à les enregistrer. Une variation est normale.",
+  "notificationDelayBodyAlt1": "Aucune entrée pour l'instant. Si elles ont commencé, un appui suffit.",
+  "notificationDelayBodyAlt2": "Un décalage de quelques jours est courant. Votre suivi est-il à jour ?",
   "notificationDelayChannel": "Rappel de retard",
   "notificationDelayChannelDesc": "Rappel lorsque la date prévue est passée",
   "headlineDelay": "Vos règles ont {days} jours de retard",

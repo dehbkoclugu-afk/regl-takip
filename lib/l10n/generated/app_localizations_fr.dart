@@ -1349,7 +1349,24 @@ class AppLocalizationsFr extends AppLocalizations {
   String get notificationPeriodTitle => 'Rappel de règles';
 
   @override
-  String get notificationPeriodBody => 'Vos règles pourraient commencer demain. Soyez prête !';
+  String get notificationPeriodTimingToday => 'Vos règles pourraient commencer aujourd\'hui.';
+
+  @override
+  String get notificationPeriodTimingTomorrow => 'Vos règles pourraient commencer demain.';
+
+  @override
+  String notificationPeriodTimingInDays(int days) {
+    return 'Vos règles pourraient commencer dans $days jours.';
+  }
+
+  @override
+  String get notificationPeriodTip1 => 'Pensez à emporter une serviette ou un tampon.';
+
+  @override
+  String get notificationPeriodTip2 => 'Un peu de préparation facilite les choses.';
+
+  @override
+  String get notificationPeriodTip3 => 'Enregistrer le début améliore vos prédictions.';
 
   @override
   String get notificationPeriodChannel => 'Rappel de règles';
@@ -1386,6 +1403,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get notificationDiscreetBody => 'Vous avez un rappel pour aujourd\'hui';
+
+  @override
+  String get notificationFertileTitle => 'Votre fenêtre de fertilité commence';
+
+  @override
+  String get notificationFertileBody => 'À partir d\'aujourd\'hui, ce sont les jours les plus propices à la conception.';
+
+  @override
+  String get notificationChainEndTitle => 'Les rappels sont en pause';
+
+  @override
+  String get notificationChainEndBody => 'Les rappels programmés sont épuisés. Ouvrez l\'application pour en planifier de nouveaux.';
 
   @override
   String get noPurchasesToRestore => 'Aucun achat à restaurer';
@@ -1429,6 +1458,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get notificationDelayBody => 'Si vos règles ont commencé, pensez à les enregistrer. Une variation est normale.';
+
+  @override
+  String get notificationDelayBodyAlt1 => 'Aucune entrée pour l\'instant. Si elles ont commencé, un appui suffit.';
+
+  @override
+  String get notificationDelayBodyAlt2 => 'Un décalage de quelques jours est courant. Votre suivi est-il à jour ?';
 
   @override
   String get notificationDelayChannel => 'Rappel de retard';

@@ -2659,11 +2659,41 @@ abstract class AppLocalizations {
   /// **'Adet Hatırlatması'**
   String get notificationPeriodTitle;
 
-  /// No description provided for @notificationPeriodBody.
+  /// No description provided for @notificationPeriodTimingToday.
   ///
   /// In tr, this message translates to:
-  /// **'Adetiniz yarın başlayabilir. Hazırlıklı olun!'**
-  String get notificationPeriodBody;
+  /// **'Adetin bugün başlayabilir.'**
+  String get notificationPeriodTimingToday;
+
+  /// No description provided for @notificationPeriodTimingTomorrow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adetin yarın başlayabilir.'**
+  String get notificationPeriodTimingTomorrow;
+
+  /// No description provided for @notificationPeriodTimingInDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adetin {days} gün sonra başlayabilir.'**
+  String notificationPeriodTimingInDays(int days);
+
+  /// No description provided for @notificationPeriodTip1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yanına bir ped ya da tampon almayı unutma.'**
+  String get notificationPeriodTip1;
+
+  /// No description provided for @notificationPeriodTip2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hazırlıklı olmak işleri kolaylaştırır.'**
+  String get notificationPeriodTip2;
+
+  /// No description provided for @notificationPeriodTip3.
+  ///
+  /// In tr, this message translates to:
+  /// **'Başladığında kaydetmen tahminleri iyileştirir.'**
+  String get notificationPeriodTip3;
 
   /// No description provided for @notificationPeriodChannel.
   ///
@@ -2736,6 +2766,30 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bugün için bir hatırlatman var'**
   String get notificationDiscreetBody;
+
+  /// No description provided for @notificationFertileTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verimli pencere başlıyor'**
+  String get notificationFertileTitle;
+
+  /// No description provided for @notificationFertileBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugünden itibaren gebe kalma olasılığın en yüksek günlerdesin.'**
+  String get notificationFertileBody;
+
+  /// No description provided for @notificationChainEndTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hatırlatmalar duraklıyor'**
+  String get notificationChainEndTitle;
+
+  /// No description provided for @notificationChainEndBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Planlanan hatırlatmalar bitti. Uygulamayı açtığında yenileri kurulur.'**
+  String get notificationChainEndBody;
 
   /// No description provided for @noPurchasesToRestore.
   ///
@@ -2814,6 +2868,18 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Reglin başladıysa kaydetmeyi unutma. Sapma olağan olabilir.'**
   String get notificationDelayBody;
+
+  /// No description provided for @notificationDelayBodyAlt1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz bir kayıt yok. Başladıysa eklemek tek dokunuş.'**
+  String get notificationDelayBodyAlt1;
+
+  /// No description provided for @notificationDelayBodyAlt2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Birkaç günlük kayma sık görülür. Kaydın güncel mi?'**
+  String get notificationDelayBodyAlt2;
 
   /// No description provided for @notificationDelayChannel.
   ///

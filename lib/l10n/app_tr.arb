@@ -578,7 +578,17 @@
     }
   },
   "notificationPeriodTitle": "Adet Hatırlatması",
-  "notificationPeriodBody": "Adetiniz yarın başlayabilir. Hazırlıklı olun!",
+  "notificationPeriodTimingToday": "Adetin bugün başlayabilir.",
+  "notificationPeriodTimingTomorrow": "Adetin yarın başlayabilir.",
+  "notificationPeriodTimingInDays": "Adetin {days} gün sonra başlayabilir.",
+  "@notificationPeriodTimingInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "notificationPeriodTip1": "Yanına bir ped ya da tampon almayı unutma.",
+  "notificationPeriodTip2": "Hazırlıklı olmak işleri kolaylaştırır.",
+  "notificationPeriodTip3": "Başladığında kaydetmen tahminleri iyileştirir.",
   "notificationPeriodChannel": "Adet Hatırlatması",
   "notificationPeriodChannelDesc": "Adet döngüsü hatırlatmaları",
   "notificationOvulationTitle": "Ovülasyon Hatırlatması",
@@ -591,6 +601,10 @@
   "notificationMedicationChannelDesc": "İlaç hatırlatmaları",
   "notificationDiscreetTitle": "Hatırlatma",
   "notificationDiscreetBody": "Bugün için bir hatırlatman var",
+  "notificationFertileTitle": "Verimli pencere başlıyor",
+  "notificationFertileBody": "Bugünden itibaren gebe kalma olasılığın en yüksek günlerdesin.",
+  "notificationChainEndTitle": "Hatırlatmalar duraklıyor",
+  "notificationChainEndBody": "Planlanan hatırlatmalar bitti. Uygulamayı açtığında yenileri kurulur.",
   "noPurchasesToRestore": "Geri yüklenecek bir satın alma bulunamadı",
   "restoringPurchases": "Satın alımlar geri yükleniyor…",
   "backdateHint": "Farklı bir gün için butona uzun bas",
@@ -614,6 +628,8 @@
   "headlineDelaySubtitle": "Sapma olağan olabilir. Başladıysa kaydet.",
   "notificationDelayTitle": "Tahmini tarih geçti",
   "notificationDelayBody": "Reglin başladıysa kaydetmeyi unutma. Sapma olağan olabilir.",
+  "notificationDelayBodyAlt1": "Henüz bir kayıt yok. Başladıysa eklemek tek dokunuş.",
+  "notificationDelayBodyAlt2": "Birkaç günlük kayma sık görülür. Kaydın güncel mi?",
   "notificationDelayChannel": "Gecikme Hatırlatması",
   "notificationDelayChannelDesc": "Tahmini tarih geçtiğinde hatırlatma",
   "headlineDelay": "Reglin {days} gün gecikti",

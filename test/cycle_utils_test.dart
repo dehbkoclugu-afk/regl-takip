@@ -286,4 +286,42 @@ void main() {
       expect(CycleUtils.periodDelayDays(last, 28), 3);
     });
   });
+
+  group('verimli pencere sabiti (TTC bildirimi)', () {
+    test('sabit ile hesaplanan pencere başlangıcı örtüşür', () {
+      final last = DateTime(2026, 3, 1);
+      final ovulation = CycleUtils.predictOvulation(last, 28);
+      expect(
+        CycleUtils.fertileWindowStart(last, 28),
+        ovulation.subtract(const Duration(
+            days: AppConstants.fertileWindowStartBeforeOvulation)),
+      );
+    });
+
+    test('TTC bildirimi ovülasyon gününden önce düşer', () {
+      final last = DateTime(2026, 3, 1);
+      final ovulation = CycleUtils.predictOvulation(last, 28);
+      final windowStart = ovulation.subtract(const Duration(
+          days: AppConstants.fertileWindowStartBeforeOvulation));
+      expect(windowStart.isBefore(ovulation), isTrue);
+      // Pencerenin içinde kalmalı: sınıra oturuyor, dışına taşmıyor
+      expect(CycleUtils.isInFertileWindow(windowStart, last, 28), isTrue);
+      expect(
+        CycleUtils.isInFertileWindow(
+            windowStart.subtract(const Duration(days: 1)), last, 28),
+        isFalse,
+      );
+    });
+
+    test('döngü uzunluğu değişince pencere de kayar', () {
+      final last = DateTime(2026, 3, 1);
+      final short = CycleUtils.predictOvulation(last, 24).subtract(
+          const Duration(
+              days: AppConstants.fertileWindowStartBeforeOvulation));
+      final long = CycleUtils.predictOvulation(last, 32).subtract(
+          const Duration(
+              days: AppConstants.fertileWindowStartBeforeOvulation));
+      expect(long.difference(short).inDays, 8);
+    });
+  });
 }

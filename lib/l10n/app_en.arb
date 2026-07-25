@@ -578,7 +578,17 @@
     }
   },
   "notificationPeriodTitle": "Period Reminder",
-  "notificationPeriodBody": "Your period may start tomorrow. Be prepared!",
+  "notificationPeriodTimingToday": "Your period may start today.",
+  "notificationPeriodTimingTomorrow": "Your period may start tomorrow.",
+  "notificationPeriodTimingInDays": "Your period may start in {days} days.",
+  "@notificationPeriodTimingInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "notificationPeriodTip1": "Remember to pack a pad or tampon.",
+  "notificationPeriodTip2": "A little preparation makes it easier.",
+  "notificationPeriodTip3": "Logging the start improves your predictions.",
   "notificationPeriodChannel": "Period Reminder",
   "notificationPeriodChannelDesc": "Period cycle reminders",
   "notificationOvulationTitle": "Ovulation Reminder",
@@ -591,6 +601,10 @@
   "notificationMedicationChannelDesc": "Medication reminders",
   "notificationDiscreetTitle": "Reminder",
   "notificationDiscreetBody": "You have a reminder for today",
+  "notificationFertileTitle": "Your fertile window starts",
+  "notificationFertileBody": "From today you're in the days with the highest chance of conceiving.",
+  "notificationChainEndTitle": "Reminders are pausing",
+  "notificationChainEndBody": "The scheduled reminders have run out. Open the app to set up new ones.",
   "noPurchasesToRestore": "No purchases found to restore",
   "restoringPurchases": "Restoring purchases…",
   "backdateHint": "Long-press for a different day",
@@ -614,6 +628,8 @@
   "headlineDelaySubtitle": "Some variation is normal. Log it if it has started.",
   "notificationDelayTitle": "Predicted date has passed",
   "notificationDelayBody": "If your period has started, remember to log it. Some variation is normal.",
+  "notificationDelayBodyAlt1": "No entry yet. If it started, logging takes one tap.",
+  "notificationDelayBodyAlt2": "A shift of a few days is common. Is your log up to date?",
   "notificationDelayChannel": "Delay Reminder",
   "notificationDelayChannelDesc": "Reminder when the predicted date has passed",
   "headlineDelay": "Your period is {days} days late",

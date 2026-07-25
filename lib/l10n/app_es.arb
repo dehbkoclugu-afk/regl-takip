@@ -426,7 +426,17 @@
   "notificationInsightTitle": "Consejo de fase",
   "notificationInsightBody": "Empieza la fase lútea. Según tus registros, tu síntoma más frecuente en esta fase: {symptom}.",
   "notificationPeriodTitle": "Recordatorio de regla",
-  "notificationPeriodBody": "Tu regla podría empezar mañana. ¡Prepárate!",
+  "notificationPeriodTimingToday": "Tu regla podría empezar hoy.",
+  "notificationPeriodTimingTomorrow": "Tu regla podría empezar mañana.",
+  "notificationPeriodTimingInDays": "Tu regla podría empezar en {days} días.",
+  "@notificationPeriodTimingInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "notificationPeriodTip1": "Recuerda llevar una compresa o un tampón.",
+  "notificationPeriodTip2": "Un poco de preparación lo hace todo más fácil.",
+  "notificationPeriodTip3": "Registrar el inicio mejora tus predicciones.",
   "notificationPeriodChannel": "Recordatorio de regla",
   "notificationPeriodChannelDesc": "Recordatorios del ciclo menstrual",
   "notificationOvulationTitle": "Recordatorio de ovulación",
@@ -439,6 +449,10 @@
   "notificationMedicationChannelDesc": "Recordatorios de medicación",
   "notificationDiscreetTitle": "Recordatorio",
   "notificationDiscreetBody": "Tienes un recordatorio para hoy",
+  "notificationFertileTitle": "Empieza tu ventana fértil",
+  "notificationFertileBody": "Desde hoy estás en los días con mayor probabilidad de concebir.",
+  "notificationChainEndTitle": "Los recordatorios se pausan",
+  "notificationChainEndBody": "Los recordatorios programados se han agotado. Abre la app para crear nuevos.",
   "noPurchasesToRestore": "No se encontraron compras para restaurar",
   "restoringPurchases": "Restaurando compras…",
   "backdateHint": "Mantén pulsado para elegir otro día",
@@ -462,6 +476,8 @@
   "headlineDelaySubtitle": "Cierta variación es normal. Regístrala si ya empezó.",
   "notificationDelayTitle": "La fecha prevista ya pasó",
   "notificationDelayBody": "Si tu regla ya empezó, recuerda registrarla. Cierta variación es normal.",
+  "notificationDelayBodyAlt1": "Aún no hay ningún registro. Si ya empezó, basta un toque.",
+  "notificationDelayBodyAlt2": "Un desfase de unos días es habitual. ¿Tu registro está al día?",
   "notificationDelayChannel": "Recordatorio de retraso",
   "notificationDelayChannelDesc": "Recordatorio cuando la fecha prevista ha pasado",
   "headlineDelay": "Tu regla lleva {days} días de retraso",

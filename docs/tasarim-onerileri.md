@@ -2,8 +2,8 @@
 
 > **Durum:** 1, 2, 4, 6, 11, 12, 13, 14, 17, 18, 39, 48, 49, 50, 58, 59, 60,
 > 61, 62, 67, 68, 70, 75, 76, 77, 86, 87 ve 92 uygulandı; 5, 26, 27 (hızlı
-> kayıt), 16, 20, 22, 23, 31, 34, 40, 41, 45 (takvim), 51, 52, 69, 78
-> ve 93 de.
+> kayıt), 16, 20, 22, 23, 31, 34, 40, 41, 45 (takvim), 51, 52, 69, 72, 73,
+> 74, 78 ve 93 de.
 > Kısmi olanlar:
 > 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı), 77 (ana ekran ve
 > paylaşılan bileşenler; diğer ekranlarda taşma taraması sürüyor) ve 89
@@ -356,13 +356,30 @@ gönderilmiyor; oysa kullanıcının en çok merak ettiği an tam orası.
 **72. 🔵 Üç döngü ileri planlama sessiz bir sınır.** Uygulama 3 ay açılmazsa
 hatırlatma zinciri kopuyor (`notification_service.dart:43`). Kullanıcı bunu
 bilmiyor; hiç değilse zincirin sonunda "uygulamayı aç" hatırlatması olmalı.
+*Uygulandı:* zincirin bir döngü ardına tek bir "hatırlatmalar duraklıyor"
+bildirimi kuruluyor. Uygulama her açıldığında zincir uzadığı ve bu bildirim
+de ileri kaydığı için, düzenli kullanan onu hiç görmüyor.
 
 **73. 🔵 Ovülasyon bildirimi hap modunda anlamsız ama TTC'de kritik.** Aynı
 metin ikisine gidiyor; TTC kullanıcısı için "verimli pencere bugün başlıyor"
 daha doğru.
+*Düzeltme:* maddenin ilk yarısı yanlıştı — hap ve hamilelik modunda döngü
+tahmini bildirimleri zaten hiç kurulmuyor (`cyclePredictionsActive`), yani
+hap modunda ovülasyon bildirimi gitmiyordu. Geçerli olan ikinci yarısı:
+*uygulandı*, ama gün seçimi düzeltilerek. Pencere ovülasyondan 5 gün önce
+açılır ve asıl fırsat orada; TTC modunda bildirim ovülasyon gününe değil
+pencerenin açıldığı güne kuruluyor, ovülasyon günü bildirimi de duruyor.
 
 **74. 🔵 Bildirim metinleri tek tip.** Aynı cümle her ay tekrar ediyor.
 Küçük bir varyasyon havuzu, bildirimin görünmez hale gelmesini geciktirir.
+*Uygulandı, üstüne bir hata çıktı:* regl bildiriminin gövdesi "yarın
+başlayabilir" diye sabitti. Madde 68 ile hatırlatma penceresi
+ayarlanabilir olunca, 3 gün önce kurulan bildirim **yanlış gün**
+söylüyordu. Gövde ikiye ayrıldı: zamanlama cümlesi pencereye göre
+kuruluyor (bugün / yarın / N gün sonra), ardından üç ipuçlu havuzdan
+biri ekleniyor. Gecikme bildiriminin de üç gövdesi var. Havuz seçimi
+tahmini regl tarihinin ay numarasına bakıyor — döngü indeksi
+kullanılsaydı her yeniden planlamada havuz başa dönerdi.
 
 ---
 

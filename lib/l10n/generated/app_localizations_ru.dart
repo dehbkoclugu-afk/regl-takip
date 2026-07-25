@@ -1349,7 +1349,24 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notificationPeriodTitle => 'Напоминание о месячных';
 
   @override
-  String get notificationPeriodBody => 'Месячные могут начаться завтра. Будьте готовы!';
+  String get notificationPeriodTimingToday => 'Месячные могут начаться сегодня.';
+
+  @override
+  String get notificationPeriodTimingTomorrow => 'Месячные могут начаться завтра.';
+
+  @override
+  String notificationPeriodTimingInDays(int days) {
+    return 'Месячные могут начаться через $days дн.';
+  }
+
+  @override
+  String get notificationPeriodTip1 => 'Не забудьте взять с собой прокладку или тампон.';
+
+  @override
+  String get notificationPeriodTip2 => 'Небольшая подготовка всё упрощает.';
+
+  @override
+  String get notificationPeriodTip3 => 'Отметка начала улучшает прогнозы.';
 
   @override
   String get notificationPeriodChannel => 'Напоминание о месячных';
@@ -1386,6 +1403,18 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notificationDiscreetBody => 'У вас есть напоминание на сегодня';
+
+  @override
+  String get notificationFertileTitle => 'Начинается фертильное окно';
+
+  @override
+  String get notificationFertileBody => 'С сегодняшнего дня — самые благоприятные для зачатия дни.';
+
+  @override
+  String get notificationChainEndTitle => 'Напоминания приостанавливаются';
+
+  @override
+  String get notificationChainEndBody => 'Запланированные напоминания закончились. Откройте приложение, чтобы создать новые.';
 
   @override
   String get noPurchasesToRestore => 'Покупки для восстановления не найдены';
@@ -1429,6 +1458,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notificationDelayBody => 'Если месячные начались, не забудьте отметить. Отклонения — это нормально.';
+
+  @override
+  String get notificationDelayBodyAlt1 => 'Записи пока нет. Если началось, отметить можно одним касанием.';
+
+  @override
+  String get notificationDelayBodyAlt2 => 'Сдвиг на несколько дней — обычное дело. Ваши записи актуальны?';
 
   @override
   String get notificationDelayChannel => 'Напоминание о задержке';

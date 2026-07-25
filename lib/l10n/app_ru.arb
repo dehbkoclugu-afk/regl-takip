@@ -426,7 +426,17 @@
   "notificationInsightTitle": "Подсказка по фазе",
   "notificationInsightBody": "Начинается лютеиновая фаза. По вашим записям, самый частый симптом в этой фазе: {symptom}.",
   "notificationPeriodTitle": "Напоминание о месячных",
-  "notificationPeriodBody": "Месячные могут начаться завтра. Будьте готовы!",
+  "notificationPeriodTimingToday": "Месячные могут начаться сегодня.",
+  "notificationPeriodTimingTomorrow": "Месячные могут начаться завтра.",
+  "notificationPeriodTimingInDays": "Месячные могут начаться через {days} дн.",
+  "@notificationPeriodTimingInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "notificationPeriodTip1": "Не забудьте взять с собой прокладку или тампон.",
+  "notificationPeriodTip2": "Небольшая подготовка всё упрощает.",
+  "notificationPeriodTip3": "Отметка начала улучшает прогнозы.",
   "notificationPeriodChannel": "Напоминание о месячных",
   "notificationPeriodChannelDesc": "Напоминания о менструальном цикле",
   "notificationOvulationTitle": "Напоминание об овуляции",
@@ -439,6 +449,10 @@
   "notificationMedicationChannelDesc": "Напоминания о лекарствах",
   "notificationDiscreetTitle": "Напоминание",
   "notificationDiscreetBody": "У вас есть напоминание на сегодня",
+  "notificationFertileTitle": "Начинается фертильное окно",
+  "notificationFertileBody": "С сегодняшнего дня — самые благоприятные для зачатия дни.",
+  "notificationChainEndTitle": "Напоминания приостанавливаются",
+  "notificationChainEndBody": "Запланированные напоминания закончились. Откройте приложение, чтобы создать новые.",
   "noPurchasesToRestore": "Покупки для восстановления не найдены",
   "restoringPurchases": "Восстановление покупок…",
   "backdateHint": "Долгое нажатие — выбрать другой день",
@@ -462,6 +476,8 @@
   "headlineDelaySubtitle": "Небольшие отклонения — это нормально. Отметьте, если начались.",
   "notificationDelayTitle": "Предполагаемая дата прошла",
   "notificationDelayBody": "Если месячные начались, не забудьте отметить. Отклонения — это нормально.",
+  "notificationDelayBodyAlt1": "Записи пока нет. Если началось, отметить можно одним касанием.",
+  "notificationDelayBodyAlt2": "Сдвиг на несколько дней — обычное дело. Ваши записи актуальны?",
   "notificationDelayChannel": "Напоминание о задержке",
   "notificationDelayChannelDesc": "Напоминание, когда предполагаемая дата прошла",
   "headlineDelay": "Задержка {days} дн.",

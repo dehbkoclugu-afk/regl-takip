@@ -426,7 +426,17 @@
   "notificationInsightTitle": "Phasen-Tipp",
   "notificationInsightBody": "Die Lutealphase beginnt. Laut deinen Einträgen ist dein häufigstes Symptom in dieser Phase: {symptom}.",
   "notificationPeriodTitle": "Perioden-Erinnerung",
-  "notificationPeriodBody": "Deine Periode könnte morgen beginnen. Sei vorbereitet!",
+  "notificationPeriodTimingToday": "Deine Periode könnte heute beginnen.",
+  "notificationPeriodTimingTomorrow": "Deine Periode könnte morgen beginnen.",
+  "notificationPeriodTimingInDays": "Deine Periode könnte in {days} Tagen beginnen.",
+  "@notificationPeriodTimingInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "notificationPeriodTip1": "Denk daran, eine Binde oder einen Tampon einzupacken.",
+  "notificationPeriodTip2": "Ein wenig Vorbereitung macht es leichter.",
+  "notificationPeriodTip3": "Den Beginn einzutragen verbessert die Vorhersagen.",
   "notificationPeriodChannel": "Perioden-Erinnerung",
   "notificationPeriodChannelDesc": "Erinnerungen zum Menstruationszyklus",
   "notificationOvulationTitle": "Eisprung-Erinnerung",
@@ -439,6 +449,10 @@
   "notificationMedicationChannelDesc": "Erinnerungen an Medikamente",
   "notificationDiscreetTitle": "Erinnerung",
   "notificationDiscreetBody": "Du hast heute eine Erinnerung",
+  "notificationFertileTitle": "Dein fruchtbares Fenster beginnt",
+  "notificationFertileBody": "Ab heute sind die Tage mit der höchsten Empfängniswahrscheinlichkeit.",
+  "notificationChainEndTitle": "Erinnerungen pausieren",
+  "notificationChainEndBody": "Die geplanten Erinnerungen sind aufgebraucht. Öffne die App, um neue einzurichten.",
   "noPurchasesToRestore": "Keine Käufe zum Wiederherstellen gefunden",
   "restoringPurchases": "Käufe werden wiederhergestellt…",
   "backdateHint": "Für einen anderen Tag lange drücken",
@@ -462,6 +476,8 @@
   "headlineDelaySubtitle": "Schwankungen sind normal. Trag sie ein, wenn sie begonnen hat.",
   "notificationDelayTitle": "Voraussichtliches Datum ist vorbei",
   "notificationDelayBody": "Wenn deine Periode begonnen hat, trag sie ein. Schwankungen sind normal.",
+  "notificationDelayBodyAlt1": "Noch kein Eintrag. Wenn sie begonnen hat, genügt ein Tippen.",
+  "notificationDelayBodyAlt2": "Eine Verschiebung von ein paar Tagen ist normal. Ist dein Eintrag aktuell?",
   "notificationDelayChannel": "Verspätungs-Erinnerung",
   "notificationDelayChannelDesc": "Erinnerung, wenn das voraussichtliche Datum vorbei ist",
   "headlineDelay": "Deine Periode ist {days} Tage überfällig",

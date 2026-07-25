@@ -21,7 +21,8 @@ class CycleUtils {
   static DateTime fertileWindowStart(
       DateTime lastPeriodStart, int cycleLength) {
     final ovulation = predictOvulation(lastPeriodStart, cycleLength);
-    return ovulation.subtract(const Duration(days: 5));
+    return ovulation.subtract(const Duration(
+        days: AppConstants.fertileWindowStartBeforeOvulation));
   }
 
   /// Verimli pencere bitişini hesaplar (ovülasyondan 1 gün sonra)

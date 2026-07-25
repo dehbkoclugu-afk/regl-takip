@@ -1,5 +1,19 @@
 # Changelog
 
+## Yayınlanmamış — Bildirimler: zincirin sonu, verimli pencere, metin çeşitliliği (2026-07-25)
+
+Tasarım incelemesinin yirminci grubu (`docs/tasarim-onerileri.md` madde 72, 73, 74).
+
+- **Regl bildirimi yanlış gün söylüyordu** (madde 74'ü ararken çıktı): gövde "yarın başlayabilir" diye sabitti, oysa madde 68 ile hatırlatma penceresi ayarlanabilir olmuştu. 3 gün önceye kurulan bildirim yine "yarın" diyordu. Gövde artık pencereye göre kuruluyor: bugün / yarın / N gün sonra
+- **Metin ile tarih aynı değeri kullanıyor**: pencere 0–7 gün aralığına kırpılıyordu ama gövde kırpılmamış değerle yazılsaydı tarihten farklı bir gün söylerdi — kırpma tek yerde yapılıp ikisine de veriliyor
+- **Bildirim metinleri dönüyor** (madde 74): regl bildirimi zamanlama cümlesinden sonra üç ipuçlu havuzdan birini, gecikme bildirimi üç gövdeden birini alıyor. Seçim tahmini tarihin ay numarasına bakıyor; döngü indeksi kullanılsaydı her yeniden planlamada havuz başa döner ve ardışık aylar aynı cümleyi alabilirdi
+- **TTC'de verimli pencere bildirimi** (madde 73): pencere ovülasyondan 5 gün önce açılıyor ve gebe kalma şansı asıl orada — TTC modunda pencerenin açıldığı güne ayrı bir bildirim kuruluyor, ovülasyon günü bildirimi de duruyor. Takip modunda kurulmuyor (gereksiz gürültü)
+- **Maddenin ilk yarısı yanlıştı**: "ovülasyon bildirimi hap modunda anlamsız" deniyordu ama hap ve hamilelik modunda döngü tahmini bildirimlerinin hiçbiri zaten kurulmuyor
+- **Zincirin sonu artık sessiz değil** (madde 72): hatırlatmalar üç döngü ileriye kurulabiliyor (platform sınırı), uygulama o süre açılmazsa zincir sessizce kopuyordu. Son döngünün bir döngü ardına tek bir "hatırlatmalar duraklıyor, uygulamayı aç" bildirimi kuruluyor. Düzenli kullanan onu hiç görmüyor: her açılışta zincir uzuyor, bu bildirim de ileri kayıyor
+- **Gizli modda nötrlenmiyor**: "hatırlatmalar bitti, uygulamayı aç" cümlesi bir not defteri için de aynen geçerli, döngü bilgisi taşımıyor
+- **Sabit tek kaynağa indi**: verimli pencerenin ovülasyondan kaç gün önce açıldığı `cycle_utils` içinde 5 olarak gömülüydü; `AppConstants.fertileWindowStartBeforeOvulation` oldu ve bildirim de onu kullanıyor
+- 12 yeni metin altı dile eklendi; kullanılmaz hâle gelen `notificationPeriodBody` kaldırıldı. Üç yeni test (`cycle_utils_test.dart`)
+
 ## Yayınlanmamış — Gradyan kontrastı ve dokunma hedefleri (2026-07-24)
 
 Tasarım incelemesinin on dokuzuncu grubu (`docs/tasarim-onerileri.md` madde 16, 78).

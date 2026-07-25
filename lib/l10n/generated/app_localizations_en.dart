@@ -1349,7 +1349,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationPeriodTitle => 'Period Reminder';
 
   @override
-  String get notificationPeriodBody => 'Your period may start tomorrow. Be prepared!';
+  String get notificationPeriodTimingToday => 'Your period may start today.';
+
+  @override
+  String get notificationPeriodTimingTomorrow => 'Your period may start tomorrow.';
+
+  @override
+  String notificationPeriodTimingInDays(int days) {
+    return 'Your period may start in $days days.';
+  }
+
+  @override
+  String get notificationPeriodTip1 => 'Remember to pack a pad or tampon.';
+
+  @override
+  String get notificationPeriodTip2 => 'A little preparation makes it easier.';
+
+  @override
+  String get notificationPeriodTip3 => 'Logging the start improves your predictions.';
 
   @override
   String get notificationPeriodChannel => 'Period Reminder';
@@ -1386,6 +1403,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationDiscreetBody => 'You have a reminder for today';
+
+  @override
+  String get notificationFertileTitle => 'Your fertile window starts';
+
+  @override
+  String get notificationFertileBody => 'From today you\'re in the days with the highest chance of conceiving.';
+
+  @override
+  String get notificationChainEndTitle => 'Reminders are pausing';
+
+  @override
+  String get notificationChainEndBody => 'The scheduled reminders have run out. Open the app to set up new ones.';
 
   @override
   String get noPurchasesToRestore => 'No purchases found to restore';
@@ -1429,6 +1458,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationDelayBody => 'If your period has started, remember to log it. Some variation is normal.';
+
+  @override
+  String get notificationDelayBodyAlt1 => 'No entry yet. If it started, logging takes one tap.';
+
+  @override
+  String get notificationDelayBodyAlt2 => 'A shift of a few days is common. Is your log up to date?';
 
   @override
   String get notificationDelayChannel => 'Delay Reminder';
