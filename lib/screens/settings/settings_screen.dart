@@ -23,6 +23,7 @@ import '../../services/health_sync_service.dart';
 import '../../services/hive_service.dart';
 import '../../services/notification_service.dart';
 import '../../services/premium_service.dart';
+import '../../services/privacy_screen_service.dart';
 import '../../services/widget_service.dart';
 import '../lock/pin_setup_dialog.dart';
 import '../../core/utils/motion.dart';
@@ -419,6 +420,12 @@ class SettingsScreen extends ConsumerWidget {
                     .saveProfile(biometricEnabled: val);
               },
             ),
+            // Kilit varken anlamlı: gecikme yoksa her dönüşte PIN
+            if ((profile?.pinEnabled ?? false) ||
+                (profile?.biometricEnabled ?? false)) ...[
+              _divider(context),
+              const _LockTimeoutTile(),
+            ],
             if (DisguiseService.isSupported) ...[
               _divider(context),
               const _DisguiseTile(),
@@ -1268,6 +1275,76 @@ class _DisguiseTileState extends ConsumerState<_DisguiseTile> {
                 if (mounted) setState(() => _enabled = value);
               },
       ),
+    );
+  }
+}
+
+/// Kilit gecikmesi seçici. Cihaza özel tercih olduğu için profilde değil
+/// SharedPreferences'ta (PIN/biyometri durumu da yedeğe girmiyor).
+class _LockTimeoutTile extends StatefulWidget {
+  const _LockTimeoutTile();
+
+  @override
+  State<_LockTimeoutTile> createState() => _LockTimeoutTileState();
+}
+
+class _LockTimeoutTileState extends State<_LockTimeoutTile> {
+  int? _seconds;
+
+  @override
+  void initState() {
+    super.initState();
+    LockTimeout.read().then((value) {
+      if (mounted) setState(() => _seconds = value);
+    });
+  }
+
+  String _label(AppLocalizations l10n, int seconds) => switch (seconds) {
+        0 => l10n.lockImmediately,
+        60 => l10n.lockAfterMinutes(1),
+        300 => l10n.lockAfterMinutes(5),
+        _ => l10n.lockAfterMinutes(15),
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return ListTile(
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.primary.withValues(alpha: 0.25),
+              AppColors.primary.withValues(alpha: 0.1),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Icon(Icons.lock_clock_rounded,
+            color: AppColors.primary, size: 22),
+      ),
+      title: Text(l10n.lockTimeoutTitle,
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+      subtitle: Text(l10n.lockTimeoutDesc,
+          style: const TextStyle(fontSize: 11)),
+      trailing: _seconds == null
+          ? const SizedBox.shrink()
+          : DropdownButton<int>(
+              value: _seconds,
+              underline: const SizedBox.shrink(),
+              borderRadius: BorderRadius.circular(14),
+              items: [
+                for (final s in LockTimeout.options)
+                  DropdownMenuItem(value: s, child: Text(_label(l10n, s))),
+              ],
+              onChanged: (value) async {
+                if (value == null) return;
+                setState(() => _seconds = value);
+                await LockTimeout.write(value);
+              },
+            ),
     );
   }
 }

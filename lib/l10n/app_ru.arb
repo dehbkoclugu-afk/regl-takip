@@ -549,6 +549,16 @@
   },
   "durationsStepTitle": "Данные вашего цикла",
   "durationsStepHelp": "Не уверены? Оставьте как есть — это можно изменить в настройках.",
+  "lockTimeoutTitle": "Задержка блокировки",
+  "lockTimeoutDesc": "Не спрашивать PIN, если вы вернулись быстро",
+  "lockImmediately": "Сразу",
+  "pinNoRecoveryWarning": "Если вы забудете PIN, восстановить его нельзя — останется только удалить все данные. Выберите то, что запомните.",
+  "lockAfterMinutes": "Через {minutes} мин",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
   "reportTitle": "Отчёт о здоровье цикла",
   "reportGenerated": "Создан",
   "profileSummary": "Сводка профиля",

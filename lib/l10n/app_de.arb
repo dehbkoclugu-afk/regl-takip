@@ -549,6 +549,16 @@
   },
   "durationsStepTitle": "Deine Zyklusdaten",
   "durationsStepHelp": "Nicht sicher? Lass sie so — du kannst das später in den Einstellungen ändern.",
+  "lockTimeoutTitle": "Sperrverzögerung",
+  "lockTimeoutDesc": "Keine PIN, wenn du nach kurzer Zeit zurückkommst",
+  "lockImmediately": "Sofort",
+  "pinNoRecoveryWarning": "Wenn du deine PIN vergisst, gibt es keine Wiederherstellung; der einzige Weg zurück ist das Löschen aller Daten. Wähle etwas, das du dir merkst.",
+  "lockAfterMinutes": "Nach {minutes} Min.",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
   "reportTitle": "Zyklus-Gesundheitsbericht",
   "reportGenerated": "Erstellt",
   "profileSummary": "Profilübersicht",

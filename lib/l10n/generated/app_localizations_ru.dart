@@ -1569,6 +1569,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String get durationsStepHelp => 'Не уверены? Оставьте как есть — это можно изменить в настройках.';
 
   @override
+  String get lockTimeoutTitle => 'Задержка блокировки';
+
+  @override
+  String get lockTimeoutDesc => 'Не спрашивать PIN, если вы вернулись быстро';
+
+  @override
+  String get lockImmediately => 'Сразу';
+
+  @override
+  String get pinNoRecoveryWarning => 'Если вы забудете PIN, восстановить его нельзя — останется только удалить все данные. Выберите то, что запомните.';
+
+  @override
+  String lockAfterMinutes(int minutes) {
+    return 'Через $minutes мин';
+  }
+
+  @override
   String get reportTitle => 'Отчёт о здоровье цикла';
 
   @override

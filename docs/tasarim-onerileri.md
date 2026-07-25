@@ -1,11 +1,11 @@
 # 100 kritik tasarım önerisi
 
 > **Durum:** 1, 2, 4, 6, 11, 12, 13, 14, 17, 18, 39, 48, 49, 50, 58, 59, 60,
-> 61, 62, 67, 68, 70, 75, 76, 77 ve 92 uygulandı. Kısmi olanlar: 3 (yalnız
-> uyarı tarafı — salt-okunur katman yapılmadı), 77 (ana ekran ve paylaşılan
-> bileşenler; diğer ekranlarda taşma taraması sürüyor) ve 89 (uyarı eklendi,
-> parolalı yedek yapılmadı). Madde 7 (reklamın yerini kaydet sonrasına almak)
-> bilinçli olarak açık: gelir etkisi olan bir ürün kararı.
+> 61, 62, 67, 68, 70, 75, 76, 77, 86, 87 ve 92 uygulandı. Kısmi olanlar:
+> 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı), 77 (ana ekran ve
+> paylaşılan bileşenler; diğer ekranlarda taşma taraması sürüyor) ve 89
+> (uyarı eklendi, parolalı yedek yapılmadı). Madde 7 (reklamın yerini kaydet
+> sonrasına almak) bilinçli olarak açık: gelir etkisi olan bir ürün kararı.
 > Ayrıntı için CHANGELOG'a bakın.
 
 Uygulamanın mevcut hâli üzerinden yapılmış eleştirel bir okuma. Öneriler
@@ -389,9 +389,14 @@ olan kullanıcıda hafta pazar başlıyor.
 
 ## I. Gizlilik, gizli mod, güvenlik (85–91)
 
-**85. 🟠 Gizli mod keşfedilmiyor.** Uygulamanın en ayırt edici özelliği
-ayarların içinde. Kurulumda tek cümlelik tanıtımı hem satış hem güven
-argümanı.
+**85. 🔵 Gizli mod keşfedilmiyor.** Uygulamanın en ayırt edici özelliği
+ayarların içinde.
+
+*(Önceliği düşürüldü: ayarlardaki satırın zaten açıklayıcı bir alt metni var
+ve özellik paywall listesinde de geçiyor — "hiç anlatılmıyor" demek doğru
+değildi. Kurulumda ayrı bir tanıtım adımı ise madde 58'in tersi yönde
+çalışıyor. Gerçek çözüm kurulum akışının yeniden kurgulanmasıyla birlikte
+düşünülmeli.)*
 
 **86. 🟠 Kilit ekranı zaman aşımı yok.** Kilit yalnız arka plana alınınca
 devreye giriyor (`app.dart:120-133`). "5 dakika sonra kilitle" seçeneği

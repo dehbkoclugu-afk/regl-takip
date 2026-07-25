@@ -1569,6 +1569,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String get durationsStepHelp => '¿No estás segura? Déjalos así: puedes cambiarlos luego en ajustes.';
 
   @override
+  String get lockTimeoutTitle => 'Retardo de bloqueo';
+
+  @override
+  String get lockTimeoutDesc => 'Sin PIN si vuelves tras un momento breve';
+
+  @override
+  String get lockImmediately => 'Inmediatamente';
+
+  @override
+  String get pinNoRecoveryWarning => 'Si olvidas tu PIN no hay forma de recuperarlo; la única salida es borrar todos tus datos. Elige algo que recuerdes.';
+
+  @override
+  String lockAfterMinutes(int minutes) {
+    return 'Tras $minutes min';
+  }
+
+  @override
   String get reportTitle => 'Informe de salud del ciclo';
 
   @override

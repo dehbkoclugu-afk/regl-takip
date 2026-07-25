@@ -41,6 +41,14 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   /// başlatılana dek premium kalıyordu. Periyodik tik + arka plandan dönüş.
   Timer? _accessRefreshTimer;
 
+  /// Uygulamanın arka plana alındığı an. Kilit kararı artık burada değil
+  /// dönüşte veriliyor: kullanıcının seçtiği gecikme dolmadıysa PIN
+  /// sorulmaz. null = uygulama hiç arka plana gitmedi (soğuk açılış).
+  DateTime? _backgroundedAt;
+
+  /// Kilit gecikmesi (saniye). 0 = hemen, eski davranış.
+  int _lockTimeoutSeconds = LockTimeout.defaultSeconds;
+
   @override
   void initState() {
     super.initState();
@@ -54,6 +62,10 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
       const Duration(minutes: 30),
       (_) => _refreshAccess(),
     );
+    // İlk arka plan/dönüş çevriminde de doğru gecikme kullanılsın
+    LockTimeout.read().then((value) {
+      if (mounted) _lockTimeoutSeconds = value;
+    });
     // Kilit varsa reklam kilit açıldıktan sonra gösterilir (_onUnlocked)
     if (!_needsLock) _showOpenAd();
   }
@@ -132,24 +144,40 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Arka planda geçen süre denemeyi bitirmiş olabilir
-    if (state == AppLifecycleState.resumed) _refreshAccess();
+    if (state == AppLifecycleState.resumed) {
+      // Arka planda geçen süre denemeyi bitirmiş olabilir
+      _refreshAccess();
+      // Kilit kararı burada: gecikme dolmadıysa PIN sorulmaz. Bildirime
+      // bakıp dönmek, fotoğraf seçiciden çıkmak, bir bağlantı açıp kapatmak
+      // her seferinde PIN istiyordu — kilidi kapattıran türden sürtünme.
+      final profile = ref.read(userProfileProvider);
+      final needs = (profile?.pinEnabled == true) ||
+          (profile?.biometricEnabled == true);
+      if (needs &&
+          !_isLocked &&
+          LockTimeout.shouldLock(
+            now: DateTime.now(),
+            backgroundedAt: _backgroundedAt,
+            timeoutSeconds: _lockTimeoutSeconds,
+          )) {
+        FocusManager.instance.primaryFocus?.unfocus();
+        setState(() => _isLocked = true);
+      }
+      _backgroundedAt = null;
+      return;
+    }
     // Yalnız paused/hidden: `inactive` bildirim çekmecesi, izin diyaloğu,
     // paylaşım sayfası gibi geçici odak kayıplarında da gelir — orada
     // kilitlemek her seferinde PIN + (eski davranışta) state kaybı demekti.
     // Recents önizleme sızıntısını FLAG_SECURE çözer (PrivacyScreenService).
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.hidden) {
-      final profile = ref.read(userProfileProvider);
-      if ((profile?.pinEnabled == true) ||
-          (profile?.biometricEnabled == true)) {
-        if (!_isLocked) {
-          // Kilit örtüsü inerken alttaki alan odağı bırakmalı (klavye açık
-          // kalmasın, tuş vuruşları alta gitmesin)
-          FocusManager.instance.primaryFocus?.unfocus();
-          setState(() => _isLocked = true);
-        }
-      }
+      // Zaman damgası: kilit kararı dönüşte bunun üzerinden veriliyor
+      _backgroundedAt ??= DateTime.now();
+      // Gecikme tercihi arka planda tazelenir; dönüşte okuma beklenmesin
+      LockTimeout.read().then((value) {
+        if (mounted) _lockTimeoutSeconds = value;
+      });
       // Kılık tutarlılığı: gizli moddayken arka plana giden uygulama
       // dönüşte yine "Notlar" olarak açılmalı
       if (_isDisguisedCached && !_decoyActive) {

@@ -549,6 +549,16 @@
   },
   "durationsStepTitle": "Los datos de tu ciclo",
   "durationsStepHelp": "¿No estás segura? Déjalos así: puedes cambiarlos luego en ajustes.",
+  "lockTimeoutTitle": "Retardo de bloqueo",
+  "lockTimeoutDesc": "Sin PIN si vuelves tras un momento breve",
+  "lockImmediately": "Inmediatamente",
+  "pinNoRecoveryWarning": "Si olvidas tu PIN no hay forma de recuperarlo; la única salida es borrar todos tus datos. Elige algo que recuerdes.",
+  "lockAfterMinutes": "Tras {minutes} min",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
   "reportTitle": "Informe de salud del ciclo",
   "reportGenerated": "Generado",
   "profileSummary": "Resumen del perfil",

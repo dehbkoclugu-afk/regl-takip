@@ -1569,6 +1569,23 @@ class AppLocalizationsTr extends AppLocalizations {
   String get durationsStepHelp => 'Emin değilsen olduğu gibi bırak — ayarlardan sonra değiştirebilirsin.';
 
   @override
+  String get lockTimeoutTitle => 'Kilit gecikmesi';
+
+  @override
+  String get lockTimeoutDesc => 'Uygulamadan kısa süre ayrılınca PIN tekrar sorulmasın';
+
+  @override
+  String get lockImmediately => 'Hemen';
+
+  @override
+  String get pinNoRecoveryWarning => 'PIN’ini unutursan kurtarma yolu yok; tek çıkış tüm verini silmek olur. Hatırlayacağın bir sayı seç.';
+
+  @override
+  String lockAfterMinutes(int minutes) {
+    return '$minutes dk sonra';
+  }
+
+  @override
   String get reportTitle => 'Döngü Sağlık Raporu';
 
   @override

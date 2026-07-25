@@ -1,5 +1,20 @@
 # Changelog
 
+## Yayınlanmamış — Kilit ve PIN (2026-07-24)
+
+Tasarım incelemesinin onuncu grubu (`docs/tasarim-onerileri.md` madde 86, 87).
+
+- **Kilit gecikmesi** (madde 86): kilit yalnız arka plana alınınca devreye giriyordu ve dönüşte her seferinde PIN istiyordu — bildirime bakıp geri gelmek, fotoğraf seçiciden dönmek, bir bağlantı açıp kapatmak hepsi yeniden PIN demekti. Bu, kilidi tamamen kapattıran türden bir sürtünme. Artık "hemen / 1 dk / 5 dk / 15 dk" seçilebiliyor
+- **Kilit kararı dönüş anına taşındı**: arka plana geçişte yalnız zaman damgası alınıyor, kilitleme kararı `resumed` olayında veriliyor. Soğuk açılışta damga yok, o yüzden her zaman kilitleniyor — gecikme yalnız uygulama açık kalmışken tanınıyor
+- **Varsayılan değişmedi**: "hemen" varsayılan, yani mevcut kullanıcılar için davranış aynı. Negatif ya da bozuk bir tercih de hemen kilitlemek sayılıyor — bozuk ayar güvenliği gevşetmemeli
+- **Tercih profilde değil SharedPreferences'ta**: cihaza özel bir ayar, PIN ve biyometri durumu da yedeğe girmiyor (`restoreBackup` ikisini de sıfırlıyor)
+- **PIN kurtarma uyarısı** (madde 87): PIN unutulursa tek çıkış tüm verinin silinmesi. Bu, PIN kurulurken söyleniyor — sonradan öğrenen kullanıcı yıllarının kaydını kaybediyor
+- `shouldLock` için 8 birim testi (soğuk açılış, sınır değeri, negatif tercih)
+
+### Düzeltme
+
+- Madde 85 (gizli mod keşfedilmiyor) 🟠'dan 🔵'ye indirildi: ayarlardaki satırın zaten açıklayıcı alt metni var ve özellik paywall listesinde de geçiyor. "Hiç anlatılmıyor" demek doğru değildi
+
 ## Yayınlanmamış — Reklam sıklığı ve kurulum uzunluğu (2026-07-24)
 
 Tasarım incelemesinin dokuzuncu grubu (`docs/tasarim-onerileri.md` madde 6, 58).

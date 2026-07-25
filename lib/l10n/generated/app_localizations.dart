@@ -3055,6 +3055,36 @@ abstract class AppLocalizations {
   /// **'Emin değilsen olduğu gibi bırak — ayarlardan sonra değiştirebilirsin.'**
   String get durationsStepHelp;
 
+  /// No description provided for @lockTimeoutTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kilit gecikmesi'**
+  String get lockTimeoutTitle;
+
+  /// No description provided for @lockTimeoutDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Uygulamadan kısa süre ayrılınca PIN tekrar sorulmasın'**
+  String get lockTimeoutDesc;
+
+  /// No description provided for @lockImmediately.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hemen'**
+  String get lockImmediately;
+
+  /// No description provided for @pinNoRecoveryWarning.
+  ///
+  /// In tr, this message translates to:
+  /// **'PIN’ini unutursan kurtarma yolu yok; tek çıkış tüm verini silmek olur. Hatırlayacağın bir sayı seç.'**
+  String get pinNoRecoveryWarning;
+
+  /// No description provided for @lockAfterMinutes.
+  ///
+  /// In tr, this message translates to:
+  /// **'{minutes} dk sonra'**
+  String lockAfterMinutes(int minutes);
+
   /// No description provided for @reportTitle.
   ///
   /// In tr, this message translates to:

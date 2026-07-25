@@ -549,6 +549,16 @@
   },
   "durationsStepTitle": "Vos données de cycle",
   "durationsStepHelp": "Pas sûre ? Laissez tel quel — vous pourrez les modifier dans les réglages.",
+  "lockTimeoutTitle": "Délai de verrouillage",
+  "lockTimeoutDesc": "Pas de code si vous revenez après un court instant",
+  "lockImmediately": "Immédiatement",
+  "pinNoRecoveryWarning": "Si vous oubliez votre code, il n’y a aucun moyen de le récupérer ; la seule issue est de supprimer toutes vos données. Choisissez un code dont vous vous souviendrez.",
+  "lockAfterMinutes": "Après {minutes} min",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
   "reportTitle": "Rapport de santé du cycle",
   "reportGenerated": "Généré",
   "profileSummary": "Résumé du profil",

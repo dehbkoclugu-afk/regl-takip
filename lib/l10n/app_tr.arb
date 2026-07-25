@@ -701,6 +701,16 @@
   },
   "durationsStepTitle": "Döngü bilgilerin",
   "durationsStepHelp": "Emin değilsen olduğu gibi bırak — ayarlardan sonra değiştirebilirsin.",
+  "lockTimeoutTitle": "Kilit gecikmesi",
+  "lockTimeoutDesc": "Uygulamadan kısa süre ayrılınca PIN tekrar sorulmasın",
+  "lockImmediately": "Hemen",
+  "pinNoRecoveryWarning": "PIN’ini unutursan kurtarma yolu yok; tek çıkış tüm verini silmek olur. Hatırlayacağın bir sayı seç.",
+  "lockAfterMinutes": "{minutes} dk sonra",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
   "reportTitle": "Döngü Sağlık Raporu",
   "reportGenerated": "Oluşturma",
   "profileSummary": "Profil Özeti",

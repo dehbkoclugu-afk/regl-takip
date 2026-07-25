@@ -701,6 +701,16 @@
   },
   "durationsStepTitle": "Your cycle details",
   "durationsStepHelp": "Not sure? Leave them as they are — you can change these in settings later.",
+  "lockTimeoutTitle": "Lock delay",
+  "lockTimeoutDesc": "Skip the PIN when you come back after a short moment away",
+  "lockImmediately": "Immediately",
+  "pinNoRecoveryWarning": "If you forget your PIN there is no way to recover it; the only way back in is deleting all your data. Choose something you will remember.",
+  "lockAfterMinutes": "After {minutes} min",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
   "reportTitle": "Cycle Health Report",
   "reportGenerated": "Generated",
   "profileSummary": "Profile Summary",
