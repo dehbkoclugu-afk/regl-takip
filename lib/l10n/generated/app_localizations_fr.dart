@@ -1584,6 +1584,28 @@ class AppLocalizationsFr extends AppLocalizations {
   String get nextDay => 'Jour suivant';
 
   @override
+  String get showLegend => 'Légende des couleurs';
+
+  @override
+  String get hideLegend => 'Masquer la légende';
+
+  @override
+  String get backToToday => 'Revenir à aujourd’hui';
+
+  @override
+  String get monthNoRecords => 'Aucune donnée ce mois-ci';
+
+  @override
+  String monthPeriodDays(int count) {
+    return '$count jours de règles';
+  }
+
+  @override
+  String monthLoggedDays(int count) {
+    return '$count jours renseignés';
+  }
+
+  @override
   String get pinNoRecoveryWarning => 'Si vous oubliez votre code, il n’y a aucun moyen de le récupérer ; la seule issue est de supprimer toutes vos données. Choisissez un code dont vous vous souviendrez.';
 
   @override

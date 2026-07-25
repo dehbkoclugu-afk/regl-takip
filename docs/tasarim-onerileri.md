@@ -1,8 +1,8 @@
 # 100 kritik tasarım önerisi
 
 > **Durum:** 1, 2, 4, 6, 11, 12, 13, 14, 17, 18, 39, 48, 49, 50, 58, 59, 60,
-> 61, 62, 67, 68, 70, 75, 76, 77, 86, 87 ve 92 uygulandı; 26 ve 27 de
-> (hızlı kayıtta gün gezinmesi ve not alanı). Kısmi olanlar:
+> 61, 62, 67, 68, 70, 75, 76, 77, 86, 87 ve 92 uygulandı; 26, 27 (hızlı
+> kayıt), 40, 41 ve 45 (takvim) de. Kısmi olanlar:
 > 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı), 77 (ana ekran ve
 > paylaşılan bileşenler; diğer ekranlarda taşma taraması sürüyor) ve 89
 > (uyarı eklendi, parolalı yedek yapılmadı). Madde 7 (reklamın yerini kaydet
@@ -208,9 +208,14 @@ gösteriliyor. İlk birkaç kullanımdan sonra kapatılabilir olmalı.
 gecikme vardı" gibi özet yok. Ay başlığının altında tek satırlık ay özeti
 takvimi okunur kılar.
 
-**42. 🟡 Tahmin ile gerçek ayrımı zayıf.** Tahmin edilen regl günleri ile
-kaydedilmiş günler farklı renkte ama aynı doluluğa sahip. Tahminin kesikli
-çerçeve gibi "henüz olmamış" dili olmalı.
+**42. 🔵 Tahmin ile gerçek ayrımı güçlendirilebilir.** Tahmin günleri açık
+dolgu + ince çerçeve, gerçek günler dolu zemin. Ayrım var ama kesikli çerçeve
+"henüz olmamış" fikrini daha net söylerdi.
+
+*(Önceliği düşürüldü: ilk yazımda "aynı doluluğa sahip" demiştim, doğru
+değil — `calendar_screen.dart` tahmin günlerine hem daha açık dolgu hem
+1,5 px çerçeve veriyor ve kodda bunun gerekçesi de yazılı. Kalan iş kesikli
+çerçeve, o da CustomPainter istiyor.)*
 
 **43. 🟡 Yıl görünümü yok.** 12 aylık kuş bakışı, düzensizliği tek bakışta
 gösteren en güçlü görünüm — istatistikte yıl halkası var ama takvimde yok.

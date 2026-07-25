@@ -554,6 +554,22 @@
   "lockImmediately": "Immédiatement",
   "previousDay": "Jour précédent",
   "nextDay": "Jour suivant",
+  "showLegend": "Légende des couleurs",
+  "hideLegend": "Masquer la légende",
+  "backToToday": "Revenir à aujourd’hui",
+  "monthNoRecords": "Aucune donnée ce mois-ci",
+  "monthPeriodDays": "{count} jours de règles",
+  "@monthPeriodDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthLoggedDays": "{count} jours renseignés",
+  "@monthLoggedDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "pinNoRecoveryWarning": "Si vous oubliez votre code, il n’y a aucun moyen de le récupérer ; la seule issue est de supprimer toutes vos données. Choisissez un code dont vous vous souviendrez.",
   "lockAfterMinutes": "Après {minutes} min",
   "@lockAfterMinutes": {

@@ -1584,6 +1584,28 @@ class AppLocalizationsTr extends AppLocalizations {
   String get nextDay => 'Sonraki gün';
 
   @override
+  String get showLegend => 'Renk anlamları';
+
+  @override
+  String get hideLegend => 'Renk anlamlarını gizle';
+
+  @override
+  String get backToToday => 'Bugüne dön';
+
+  @override
+  String get monthNoRecords => 'Bu ayda kayıt yok';
+
+  @override
+  String monthPeriodDays(int count) {
+    return '$count regl günü';
+  }
+
+  @override
+  String monthLoggedDays(int count) {
+    return '$count günde kayıt';
+  }
+
+  @override
   String get pinNoRecoveryWarning => 'PIN’ini unutursan kurtarma yolu yok; tek çıkış tüm verini silmek olur. Hatırlayacağın bir sayı seç.';
 
   @override

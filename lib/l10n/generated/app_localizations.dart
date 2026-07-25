@@ -3085,6 +3085,42 @@ abstract class AppLocalizations {
   /// **'Sonraki gün'**
   String get nextDay;
 
+  /// No description provided for @showLegend.
+  ///
+  /// In tr, this message translates to:
+  /// **'Renk anlamları'**
+  String get showLegend;
+
+  /// No description provided for @hideLegend.
+  ///
+  /// In tr, this message translates to:
+  /// **'Renk anlamlarını gizle'**
+  String get hideLegend;
+
+  /// No description provided for @backToToday.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugüne dön'**
+  String get backToToday;
+
+  /// No description provided for @monthNoRecords.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ayda kayıt yok'**
+  String get monthNoRecords;
+
+  /// No description provided for @monthPeriodDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} regl günü'**
+  String monthPeriodDays(int count);
+
+  /// No description provided for @monthLoggedDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} günde kayıt'**
+  String monthLoggedDays(int count);
+
   /// No description provided for @pinNoRecoveryWarning.
   ///
   /// In tr, this message translates to:

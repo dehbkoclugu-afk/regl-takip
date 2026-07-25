@@ -706,6 +706,22 @@
   "lockImmediately": "Immediately",
   "previousDay": "Previous day",
   "nextDay": "Next day",
+  "showLegend": "Colour key",
+  "hideLegend": "Hide colour key",
+  "backToToday": "Back to today",
+  "monthNoRecords": "No records this month",
+  "monthPeriodDays": "{count} period days",
+  "@monthPeriodDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthLoggedDays": "{count} days logged",
+  "@monthLoggedDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "pinNoRecoveryWarning": "If you forget your PIN there is no way to recover it; the only way back in is deleting all your data. Choose something you will remember.",
   "lockAfterMinutes": "After {minutes} min",
   "@lockAfterMinutes": {

@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -39,6 +40,26 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   // Uzun-bas önizleme baloncuğu: sheet törenine girmeden hızlı bakış
   OverlayEntry? _peekEntry;
   Timer? _peekTimer;
+
+  /// Renk anlamları her açılışta yer kaplıyordu. İlk birkaç kullanımdan
+  /// sonra kullanıcı renkleri biliyor; kapatılabilir ve tercih kalıcı.
+  static const String _legendHiddenKey = 'calendar_legend_hidden';
+  bool _legendHidden = false;
+
+  @override
+  void initState() {
+    super.initState();
+    SharedPreferences.getInstance().then((prefs) {
+      final hidden = prefs.getBool(_legendHiddenKey) ?? false;
+      if (mounted && hidden) setState(() => _legendHidden = true);
+    });
+  }
+
+  Future<void> _setLegendHidden(bool hidden) async {
+    setState(() => _legendHidden = hidden);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_legendHiddenKey, hidden);
+  }
 
   @override
   void dispose() {
@@ -333,17 +354,54 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               .animateSafe(context)
               .fadeIn(delay: 150.ms, duration: 400.ms),
           const SizedBox(height: 16),
+          // Görünen ayın tek satırlık özeti: ay geçişinde bağlam
+          // kayboluyordu ("bu ayda ne oldu?" sorusu cevapsızdı)
+          _buildMonthSummary(l10n, records, dailyLogs)
+              .animateSafe(context)
+              .fadeIn(delay: 200.ms, duration: 400.ms),
+          const SizedBox(height: 12),
+          // Efsane kapatılabilir: renk anlamları ilk birkaç kullanımdan
+          // sonra biliniyor ama her açılışta yer kaplıyordu
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _legendItem(AppColors.periodDay, l10n.periodDayLabel),
-                _legendItem(AppColors.predictedPeriod, l10n.predicted),
-                _legendItem(AppColors.ovulationDay, l10n.ovulation),
-                _legendItem(AppColors.fertileWindow, l10n.fertile),
-              ],
-            ),
+            child: _legendHidden
+                ? Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton.icon(
+                      onPressed: () => _setLegendHidden(false),
+                      icon: const Icon(Icons.help_outline_rounded, size: 16),
+                      label: Text(l10n.showLegend),
+                      style: TextButton.styleFrom(
+                          foregroundColor: AppColors.ts(context),
+                          textStyle: const TextStyle(fontSize: 12)),
+                    ),
+                  )
+                : Row(
+                    children: [
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _legendItem(
+                                AppColors.periodDay, l10n.periodDayLabel),
+                            _legendItem(
+                                AppColors.predictedPeriod, l10n.predicted),
+                            _legendItem(
+                                AppColors.ovulationDay, l10n.ovulation),
+                            _legendItem(
+                                AppColors.fertileWindow, l10n.fertile),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => _setLegendHidden(true),
+                        icon: const Icon(Icons.close_rounded, size: 16),
+                        tooltip: l10n.hideLegend,
+                        color: AppColors.ts(context),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ],
+                  ),
           ).animateSafe(context).fadeIn(delay: 300.ms, duration: 500.ms),
           // Spacer uyarıyı en dibe itip üstte ölü boşluk bırakıyordu —
           // içerik doğal akışında, uyarı hemen lejantın altında
@@ -585,6 +643,62 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final day = CycleUtils.dayInCycleFor(date, lastStart, cycleLen);
     if (day == null) return trackColor;
     return segmentColorForDay(segments, day);
+  }
+
+  /// Görünen ayın tek satırlık özeti + bugüne dönüş.
+  ///
+  /// Önceki aya gidince "bu ayda ne oldu" sorusu cevapsız kalıyordu ve
+  /// birkaç ay geriye kaydıran kullanıcı bugüne elle dönmek zorundaydı.
+  Widget _buildMonthSummary(AppLocalizations l10n,
+      List<PeriodRecord> records, Map<String, DailyLog> dailyLogs) {
+    final now = DateTime.now();
+    final isCurrentMonth =
+        _focusedDay.year == now.year && _focusedDay.month == now.month;
+
+    // Görünen ayın gün sayısı: bir sonraki ayın 0. günü
+    final daysInMonth =
+        DateTime(_focusedDay.year, _focusedDay.month + 1, 0).day;
+    var periodDays = 0;
+    var loggedDays = 0;
+    for (var d = 1; d <= daysInMonth; d++) {
+      final day = DateTime(_focusedDay.year, _focusedDay.month, d);
+      if (_isPeriodDay(day, records)) periodDays++;
+      final key = '${day.year}-${day.month.toString().padLeft(2, '0')}-'
+          '${day.day.toString().padLeft(2, '0')}';
+      if (dailyLogs.containsKey(key)) loggedDays++;
+    }
+
+    final parts = <String>[
+      if (periodDays > 0) l10n.monthPeriodDays(periodDays),
+      if (loggedDays > 0) l10n.monthLoggedDays(loggedDays),
+    ];
+    final summary = parts.isEmpty ? l10n.monthNoRecords : parts.join(' · ');
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              summary,
+              style: TextStyle(fontSize: 12, color: AppColors.ts(context)),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (!isCurrentMonth)
+            TextButton(
+              onPressed: () => setState(() => _focusedDay = now),
+              style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primaryStrong,
+                  textStyle: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w700),
+                  visualDensity: VisualDensity.compact),
+              child: Text(l10n.backToToday),
+            ),
+        ],
+      ),
+    );
   }
 
   Widget _legendItem(Color color, String label) {

@@ -1584,6 +1584,28 @@ class AppLocalizationsRu extends AppLocalizations {
   String get nextDay => 'Следующий день';
 
   @override
+  String get showLegend => 'Обозначения цветов';
+
+  @override
+  String get hideLegend => 'Скрыть обозначения';
+
+  @override
+  String get backToToday => 'К сегодня';
+
+  @override
+  String get monthNoRecords => 'В этом месяце записей нет';
+
+  @override
+  String monthPeriodDays(int count) {
+    return 'дней месячных: $count';
+  }
+
+  @override
+  String monthLoggedDays(int count) {
+    return 'дней с записями: $count';
+  }
+
+  @override
   String get pinNoRecoveryWarning => 'Если вы забудете PIN, восстановить его нельзя — останется только удалить все данные. Выберите то, что запомните.';
 
   @override

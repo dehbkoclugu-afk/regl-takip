@@ -1584,6 +1584,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String get nextDay => 'Nächster Tag';
 
   @override
+  String get showLegend => 'Farblegende';
+
+  @override
+  String get hideLegend => 'Farblegende ausblenden';
+
+  @override
+  String get backToToday => 'Zu heute';
+
+  @override
+  String get monthNoRecords => 'Keine Einträge in diesem Monat';
+
+  @override
+  String monthPeriodDays(int count) {
+    return '$count Periodentage';
+  }
+
+  @override
+  String monthLoggedDays(int count) {
+    return '$count Tage erfasst';
+  }
+
+  @override
   String get pinNoRecoveryWarning => 'Wenn du deine PIN vergisst, gibt es keine Wiederherstellung; der einzige Weg zurück ist das Löschen aller Daten. Wähle etwas, das du dir merkst.';
 
   @override

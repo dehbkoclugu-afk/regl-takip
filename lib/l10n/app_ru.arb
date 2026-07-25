@@ -554,6 +554,22 @@
   "lockImmediately": "Сразу",
   "previousDay": "Предыдущий день",
   "nextDay": "Следующий день",
+  "showLegend": "Обозначения цветов",
+  "hideLegend": "Скрыть обозначения",
+  "backToToday": "К сегодня",
+  "monthNoRecords": "В этом месяце записей нет",
+  "monthPeriodDays": "дней месячных: {count}",
+  "@monthPeriodDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthLoggedDays": "дней с записями: {count}",
+  "@monthLoggedDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "pinNoRecoveryWarning": "Если вы забудете PIN, восстановить его нельзя — останется только удалить все данные. Выберите то, что запомните.",
   "lockAfterMinutes": "Через {minutes} мин",
   "@lockAfterMinutes": {

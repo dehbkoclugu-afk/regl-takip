@@ -1,5 +1,17 @@
 # Changelog
 
+## Yayınlanmamış — Takvim (2026-07-24)
+
+Tasarım incelemesinin on ikinci grubu (`docs/tasarim-onerileri.md` madde 40, 41, 45).
+
+- **Efsane kapatılabilir** (madde 40): renk anlamları her açılışta yer kaplıyordu. İlk birkaç kullanımdan sonra kullanıcı renkleri biliyor; kapatılabiliyor, tercih kalıcı ve tek dokunuşla geri açılıyor
+- **Ay özeti** (madde 41): önceki aya gidince "bu ayda ne oldu" sorusu cevapsız kalıyordu. Takvimin altında görünen ayın regl günü ve kayıtlı gün sayısı yazıyor; hiç kayıt yoksa bunu söylüyor
+- **Bugüne dön** (madde 45): birkaç ay geriye kaydıran kullanıcı bugüne elle dönmek zorundaydı. Görünen ay bu ay değilken özet satırının yanında kısayol çıkıyor
+
+### Düzeltme
+
+- Madde 42 (tahmin/gerçek ayrımı) 🟡'dan 🔵'ye indirildi: "aynı doluluğa sahip" demiştim, doğru değil — tahmin günlerinin hem daha açık dolgusu hem 1,5 px çerçevesi var ve kodda gerekçesi yazılı. Kalan iş yalnız kesikli çerçeve
+
 ## Yayınlanmamış — Hızlı kayıt (2026-07-24)
 
 Tasarım incelemesinin on birinci grubu (`docs/tasarim-onerileri.md` madde 26, 27).

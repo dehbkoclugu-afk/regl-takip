@@ -706,6 +706,22 @@
   "lockImmediately": "Hemen",
   "previousDay": "Önceki gün",
   "nextDay": "Sonraki gün",
+  "showLegend": "Renk anlamları",
+  "hideLegend": "Renk anlamlarını gizle",
+  "backToToday": "Bugüne dön",
+  "monthNoRecords": "Bu ayda kayıt yok",
+  "monthPeriodDays": "{count} regl günü",
+  "@monthPeriodDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthLoggedDays": "{count} günde kayıt",
+  "@monthLoggedDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "pinNoRecoveryWarning": "PIN’ini unutursan kurtarma yolu yok; tek çıkış tüm verini silmek olur. Hatırlayacağın bir sayı seç.",
   "lockAfterMinutes": "{minutes} dk sonra",
   "@lockAfterMinutes": {

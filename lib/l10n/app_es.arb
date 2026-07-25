@@ -554,6 +554,22 @@
   "lockImmediately": "Inmediatamente",
   "previousDay": "Día anterior",
   "nextDay": "Día siguiente",
+  "showLegend": "Leyenda de colores",
+  "hideLegend": "Ocultar leyenda",
+  "backToToday": "Volver a hoy",
+  "monthNoRecords": "Sin registros este mes",
+  "monthPeriodDays": "{count} días de regla",
+  "@monthPeriodDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthLoggedDays": "{count} días registrados",
+  "@monthLoggedDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "pinNoRecoveryWarning": "Si olvidas tu PIN no hay forma de recuperarlo; la única salida es borrar todos tus datos. Elige algo que recuerdes.",
   "lockAfterMinutes": "Tras {minutes} min",
   "@lockAfterMinutes": {
