@@ -8,6 +8,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/cycle_utils.dart';
+import '../../../core/utils/enum_labels.dart';
 import '../../../core/utils/motion.dart';
 import '../../../core/utils/phase_pattern.dart';
 import '../../../core/utils/ring_segments.dart';
@@ -155,9 +156,8 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
 
     // Faz değişiminde (ör. "Reglim başladı") ışıma ve merkez renkleri
     // atlamaz, yeni faza yumuşakça akar — motion bütçesi asıl bu ana
-    final phaseShift = motion
-        ? const Duration(milliseconds: 600)
-        : Duration.zero;
+    final phaseShift =
+        context.motionDuration(const Duration(milliseconds: 600));
 
     final ring = AnimatedContainer(
       duration: phaseShift,
@@ -199,9 +199,8 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
         ),
         child: Center(
           child: AnimatedSwitcher(
-            duration: motion
-                ? const Duration(milliseconds: 200)
-                : Duration.zero,
+            duration:
+                context.motionDuration(const Duration(milliseconds: 200)),
             child: _selected == null
                 ? _buildCenterContent(l10n, context)
                 : _buildSegmentDetail(l10n, context, _selected!, isDark),
@@ -217,11 +216,21 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
       child: ring,
     );
 
-    // Ekran okuyucu için ring tek bir özet olarak duyurulur
+    // Ekran okuyucu için ring tek bir özet olarak duyurulur.
+    //
+    // Etiket gördüğünün aynısını söylemeli: faz adı hiç duyurulmuyordu
+    // (ring'in ortasındaki glif ve renk görene faz bilgisi veriyor) ve
+    // gecikmede "bugün!" deniyordu — rozet metni gecikmeyi gösterirken
+    // ekran okuyucu üç gündür bekleyen kullanıcıya yanlış bilgi veriyordu.
+    final status = widget.delayDays > 0
+        ? l10n.delayDays(widget.delayDays)
+        : (widget.daysUntilNextPeriod > 0
+            ? l10n.daysLater(widget.daysUntilNextPeriod)
+            : l10n.todayExclamation);
     final labeled = Semantics(
-      label:
+      label: '${EnumLabels.phase(widget.phase, l10n)}. '
           '${l10n.cycleDay}: ${widget.cycleDay} / ${widget.cycleLength}. '
-          '${widget.daysUntilNextPeriod > 0 ? l10n.daysLater(widget.daysUntilNextPeriod) : l10n.todayExclamation}',
+          '$status',
       child: ExcludeSemantics(child: tappable),
     );
 
@@ -303,9 +312,8 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
   Widget _buildCenterContent(AppLocalizations l10n, BuildContext context) {
     final isDark = AppColors.isDark(context);
     final textColor = _textColor(isDark);
-    final phaseShift = context.motionEnabled
-        ? const Duration(milliseconds: 600)
-        : Duration.zero;
+    final phaseShift =
+        context.motionDuration(const Duration(milliseconds: 600));
     // Gecikmede rozet kendi rengini ve metnini alır: aynı kabuk içinde
     // "bugün!" demek, üç gündür bekleyen kullanıcıya yanlış bilgiydi
     final delayed = widget.delayDays > 0;

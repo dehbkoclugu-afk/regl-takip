@@ -1,6 +1,7 @@
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
 import '../../models/enums.dart';
+import 'cycle_utils.dart';
 
 /// Enum -> lokalize etiket eşlemeleri. Ekranlardaki kopya map'lerin
 /// tek kaynağı (statistics / quick status / calendar / symptom screen).
@@ -17,6 +18,22 @@ class EnumLabels {
       MoodType.neutral: l10n.neutralM,
     };
     return names[mood] ?? mood.name;
+  }
+
+  /// Döngü fazının okunur adı. Ana ekran ve istatistik ekranı aynı
+  /// switch'i birebir kopyalamıştı; ring'in ekran okuyucu etiketi de
+  /// aynısına ihtiyaç duyunca üçüncü kopya yerine buraya taşındı.
+  static String phase(CyclePhase phase, AppLocalizations l10n) {
+    switch (phase) {
+      case CyclePhase.menstrual:
+        return l10n.menstrualPhase;
+      case CyclePhase.follicular:
+        return l10n.follicularPhase;
+      case CyclePhase.ovulation:
+        return l10n.ovulationPhase;
+      case CyclePhase.luteal:
+        return l10n.lutealPhase;
+    }
   }
 
   static String flow(FlowIntensity intensity, AppLocalizations l10n) {

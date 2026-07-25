@@ -140,7 +140,8 @@ class _LogScreenState extends ConsumerState<LogScreen> {
               },
               child: ExcludeSemantics(
                 child: AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
+              duration:
+                  context.motionDuration(const Duration(milliseconds: 250)),
               width: 52,
               margin: const EdgeInsets.symmetric(horizontal: 4),
               decoration: BoxDecoration(

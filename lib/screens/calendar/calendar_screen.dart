@@ -123,7 +123,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         child: IgnorePointer(
           child: TweenAnimationBuilder<double>(
             tween: Tween(begin: 0, end: 1),
-            duration: const Duration(milliseconds: 160),
+            duration: context.motionDuration(const Duration(milliseconds: 160)),
             curve: Curves.easeOut,
             builder: (context, t, child) => Opacity(
               opacity: t,

@@ -307,7 +307,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   borderRadius: BorderRadius.circular(12),
                   onTap: () => setState(() => _filterMonths = months),
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
+                    duration: context.motionDuration(
+                        const Duration(milliseconds: 200)),
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
                       gradient: _filterMonths == months
@@ -1019,19 +1020,6 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     ).animateSafe(context).fadeIn(delay: 180.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
-  String _phaseNameFor(CyclePhase phase, AppLocalizations l10n) {
-    switch (phase) {
-      case CyclePhase.menstrual:
-        return l10n.menstrualPhase;
-      case CyclePhase.follicular:
-        return l10n.follicularPhase;
-      case CyclePhase.ovulation:
-        return l10n.ovulationPhase;
-      case CyclePhase.luteal:
-        return l10n.lutealPhase;
-    }
-  }
-
   /// Semptom kayıtlarını döngü fazlarına eşler; her semptomun en sık
   /// görüldüğü fazı yüzdesiyle listeler.
   Widget _buildPhaseInsights(
@@ -1084,7 +1072,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     child: Text(
                       l10n.insightLine(
                         _symptomName(insight.symptom, l10n),
-                        _phaseNameFor(insight.phase, l10n),
+                        EnumLabels.phase(insight.phase, l10n),
                         insight.percent,
                       ),
                       style: TextStyle(

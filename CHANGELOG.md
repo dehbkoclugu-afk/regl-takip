@@ -1,5 +1,16 @@
 # Changelog
 
+## Yayınlanmamış — Hareket azaltma ve ring'in ekran okuyucu etiketi (2026-07-25)
+
+Tasarım incelemesinin yirmi ikinci grubu (`docs/tasarim-onerileri.md` madde 81, 83).
+
+- **Madde 81'in gerekçesi yanlıştı**: "`animate()` doğrudan çağrılan yerler kalmış" demiştim; kod tabanındaki tek `.animate()` çağrısı `animateSafe`'in kendi içinde. flutter_animate tarafı eksiksizmiş
+- **Asıl boşluk örtük animasyonlardaydı**: `AnimatedContainer`, `AnimatedSwitcher`, `AnimatedScale`, `AnimatedSize`, `AnimatedDefaultTextStyle` ve `TweenAnimationBuilder` sistem "animasyonları azalt" ayarını kendiliğinden dinlemiyor. 26 örtük animasyonun 19'unda hiçbir şey yoktu; 6'sında elle `motionEnabled ? ... : Duration.zero` yazılmıştı
+- **Kalıp tek yere toplandı**: `context.motionDuration(...)`. Maddenin asıl sözü ("kalıp her yerde aynı olmalı") böyle yerine geldi. Süre sıfır olunca widget hedef durumuna anında geçiyor — `autoPlay: false`'un içeriği görünmez bırakma tuzağı burada yok
+- **Madde 83'ün örneği de yanlıştı**: ring'in etiketi zaten "Döngü günü: 12 / 28. 16 gün sonra" diyordu, gün numarası duyuruluyordu
+- **Ama etiketi okuyunca iki gerçek eksik çıktı**: faz adı hiç duyurulmuyordu (ortadaki glif ve renk göreni bilgilendiriyor, görmeyeni değil), ve **gecikmede "Bugün!" deniyordu** — görünen rozet "3 gün gecikme" yazarken ekran okuyucu yanlış bilgi veriyordu. Etiket artık gördüğünün aynısını söylüyor: faz + gün + durum
+- **Faz adı için üçüncü kopya yazılmadı**: ana ekran ve istatistik ekranı aynı switch'i birebir kopyalamıştı, `EnumLabels.phase` eklenip ikisi de ona bağlandı
+
 ## Yayınlanmamış — Sessiz bildirimler (2026-07-25)
 
 Tasarım incelemesinin yirmi birinci grubu (`docs/tasarim-onerileri.md` madde 71).

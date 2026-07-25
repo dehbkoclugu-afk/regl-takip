@@ -1046,7 +1046,7 @@ class SettingsScreen extends ConsumerWidget {
         onTap: () => _onModeChanged(context, ref, mode),
         child: ExcludeSemantics(
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: context.motionDuration(const Duration(milliseconds: 200)),
             padding: const EdgeInsets.symmetric(vertical: 14),
             decoration: BoxDecoration(
               gradient: selected
@@ -1101,7 +1101,7 @@ class SettingsScreen extends ConsumerWidget {
     final iconColor = value ? AppColors.primary : AppColors.ts(context);
     return ListTile(
       leading: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: context.motionDuration(const Duration(milliseconds: 200)),
         width: 40,
         height: 40,
         decoration: BoxDecoration(

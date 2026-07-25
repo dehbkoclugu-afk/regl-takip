@@ -180,7 +180,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
               }
             }),
             child: AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
+            duration: context.motionDuration(const Duration(milliseconds: 250)),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               gradient: isSelected

@@ -110,7 +110,8 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                             _selectedMood = _selectedMood == mood ? null : mood),
                         child: ExcludeSemantics(
                         child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 250),
+                          duration: context.motionDuration(
+                              const Duration(milliseconds: 250)),
                           decoration: BoxDecoration(
                             gradient: isSelected
                                 ? LinearGradient(

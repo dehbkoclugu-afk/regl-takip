@@ -42,19 +42,6 @@ class DashboardScreen extends ConsumerWidget {
     }
   }
 
-  String _phaseName(CyclePhase phase, AppLocalizations l10n) {
-    switch (phase) {
-      case CyclePhase.menstrual:
-        return l10n.menstrualPhase;
-      case CyclePhase.follicular:
-        return l10n.follicularPhase;
-      case CyclePhase.ovulation:
-        return l10n.ovulationPhase;
-      case CyclePhase.luteal:
-        return l10n.lutealPhase;
-    }
-  }
-
   String _phaseInfo(CyclePhase phase, AppLocalizations l10n) {
     switch (phase) {
       case CyclePhase.menstrual:
@@ -75,7 +62,7 @@ class DashboardScreen extends ConsumerWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         backgroundColor: AppColors.sf(context),
         title: Text(
-          _phaseName(phase, l10n),
+          EnumLabels.phase(phase, l10n),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         content: Text(
@@ -148,9 +135,7 @@ class DashboardScreen extends ConsumerWidget {
     // Faz değişince zemin rengi atlamak yerine yumuşakça akar
     // (AnimatedContainer gradyanı kendisi lerp'ler)
     return AnimatedContainer(
-      duration: context.motionEnabled
-          ? const Duration(milliseconds: 600)
-          : Duration.zero,
+      duration: context.motionDuration(const Duration(milliseconds: 600)),
       curve: Curves.easeOutQuart,
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -218,7 +203,7 @@ class DashboardScreen extends ConsumerWidget {
                 PressableScale(
                     child: Semantics(
                   button: true,
-                  label: _phaseName(phase, l10n),
+                  label: EnumLabels.phase(phase, l10n),
                   child: Material(
                     color: AppColors.sf(context),
                     borderRadius: BorderRadius.circular(16),
@@ -238,7 +223,7 @@ class DashboardScreen extends ConsumerWidget {
                             const SizedBox(width: 7),
                             Flexible(
                               child: Text(
-                                _phaseName(phase, l10n),
+                                EnumLabels.phase(phase, l10n),
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,

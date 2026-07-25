@@ -105,7 +105,8 @@ class _MedicationTrackingScreenState
                         height: 48,
                         child: Center(
                           child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
+                            duration: context.motionDuration(
+                                const Duration(milliseconds: 200)),
                             width: 28,
                             height: 28,
                             decoration: BoxDecoration(

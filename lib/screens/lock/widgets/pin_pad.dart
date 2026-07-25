@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../core/utils/motion.dart';
+
 /// Kilit ekranı ve PIN kurulumu aynı tuş takımını kullanır.
 class PinPad extends StatelessWidget {
   final ValueChanged<String> onDigit;
@@ -126,7 +128,8 @@ class PinDots extends StatelessWidget {
           children: List.generate(length, (i) {
             final isFilled = i < filled;
             return AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
+              duration:
+                  context.motionDuration(const Duration(milliseconds: 200)),
               margin: const EdgeInsets.symmetric(horizontal: 10),
               width: isFilled ? 18 : 14,
               height: isFilled ? 18 : 14,

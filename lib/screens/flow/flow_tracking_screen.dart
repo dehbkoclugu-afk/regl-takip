@@ -113,7 +113,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                 () => _intensity = _intensity == item.$1 ? null : item.$1),
             child: ExcludeSemantics(
               child: AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
+            duration: context.motionDuration(const Duration(milliseconds: 250)),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             decoration: BoxDecoration(
               gradient: isSelected
@@ -189,7 +189,8 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
               child: Column(
             children: [
               AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
+                duration:
+                    context.motionDuration(const Duration(milliseconds: 250)),
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(

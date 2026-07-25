@@ -219,7 +219,8 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
                         horizontal: 6, vertical: 4),
                     child: AnimatedScale(
                       scale: star <= _quality ? 1.1 : 1.0,
-                      duration: const Duration(milliseconds: 200),
+                      duration: context.motionDuration(
+                          const Duration(milliseconds: 200)),
                       child: Icon(
                         star <= _quality
                             ? Icons.star_rounded

@@ -78,7 +78,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
     return Center(
       child: TweenAnimationBuilder<double>(
         tween: Tween(begin: 0, end: progress.clamp(0.0, 1.0)),
-        duration: const Duration(milliseconds: 600),
+        duration: context.motionDuration(const Duration(milliseconds: 600)),
         curve: Curves.easeOutCubic,
         builder: (context, value, _) {
           return SizedBox(
@@ -303,7 +303,8 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
             itemBuilder: (context, index) {
               final isFilled = index < _glasses;
               return AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
+                duration:
+                    context.motionDuration(const Duration(milliseconds: 300)),
                 decoration: BoxDecoration(
                   color: isFilled
                       ? AppColors.water.withValues(alpha: 0.15)

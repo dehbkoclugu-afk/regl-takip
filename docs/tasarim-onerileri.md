@@ -3,7 +3,7 @@
 > **Durum:** 1, 2, 4, 6, 11, 12, 13, 14, 17, 18, 39, 48, 49, 50, 58, 59, 60,
 > 61, 62, 67, 68, 70, 75, 76, 77, 86, 87 ve 92 uygulandı; 5, 26, 27 (hızlı
 > kayıt), 16, 20, 22, 23, 31, 34, 40, 41, 45 (takvim), 51, 52, 69, 72, 73,
-> 74, 78 ve 93 de.
+> 74, 78, 81, 83 ve 93 de.
 > Kısmi olanlar:
 > 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı), 71 (ton yapıldı,
 > sıklık ayarının somut karşılığı yok), 77 (ana ekran ve
@@ -426,12 +426,30 @@ alternatifi yok; istatistik ekranı görme engelli kullanıcı için sessiz.
 
 **81. 🟡 Hareket azaltma kısmen uygulanmış.** `animateSafe` var ama
 `animate()` doğrudan çağrılan yerler kalmış — kalıp her yerde aynı olmalı.
+*Düzeltme:* gerekçe yanlıştı. Kod tabanındaki tek `.animate()` çağrısı
+`animateSafe`'in kendi içinde; flutter_animate tarafı eksiksiz. Asıl boşluk
+başka yerdeydi: **örtük animasyonlar** (AnimatedContainer, AnimatedSwitcher,
+AnimatedScale, TweenAnimationBuilder) sistem ayarını kendiliğinden
+dinlemiyor. 26 örtük animasyonun 19'unda hiçbir şey yoktu, 6'sında elle
+`motionEnabled ? ... : Duration.zero` yazılmıştı. *Uygulandı:* maddenin asıl
+sözü — "kalıp her yerde aynı olmalı" — yerine getirildi, hepsi tek bir
+`context.motionDuration(...)` yardımcısından geçiyor.
 
 **82. 🔵 Klavye gezinmesi test edilmemiş.** Tablet + klavye senaryosunda
 odak sırası belirsiz.
 
 **83. 🔵 Ekran okuyucu etiketleri değer taşımıyor.** Ring "döngü haritası"
 diyor ama kaçıncı gün olduğunu söylemiyor.
+*Düzeltme:* örnek yanlıştı — ring'in etiketi zaten "Döngü günü: 12 / 28. 16
+gün sonra" diyor, gün numarası duyuruluyordu. Ama etiketi okuyunca iki
+gerçek eksik çıktı: **faz adı hiç duyurulmuyordu** (ring'in ortasındaki
+glif ve renk göreni bilgilendiriyor, görmeyeni değil) ve **gecikmede
+"Bugün!" deniyordu** — görünen rozet "3 gün gecikme" yazarken ekran okuyucu
+üç gündür bekleyen kullanıcıya yanlış bilgi veriyordu. *Uygulandı:* etiket
+artık gördüğünün aynısını söylüyor (faz + gün + durum).
+
+Faz adı için ana ekran ve istatistik ekranı aynı switch'i birebir
+kopyalamıştı; üçüncü kopya yerine `EnumLabels.phase` eklendi.
 
 **84. 🔵 Dil ve bölge ayrımı yok.** Dil seçilebiliyor ama tarih biçimi ve
 haftanın ilk günü sistem yerelinden geliyor; Rusça seçen ama ABD yerelinde

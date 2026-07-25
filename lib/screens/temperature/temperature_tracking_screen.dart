@@ -133,7 +133,7 @@ class _TemperatureTrackingScreenState
           const SizedBox(height: 12),
           TweenAnimationBuilder<double>(
             tween: Tween(begin: 36.5, end: _temperature),
-            duration: const Duration(milliseconds: 300),
+            duration: context.motionDuration(const Duration(milliseconds: 300)),
             builder: (context, value, _) => Text(
               '${value.toStringAsFixed(1)}°C',
               // Tabular metrik ölçeği: sayaç akarken genişlik zıplamaz

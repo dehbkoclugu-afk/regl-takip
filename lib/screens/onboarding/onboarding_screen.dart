@@ -447,7 +447,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             final isActive = index <= _currentFormStep;
             return Expanded(
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
+                duration:
+                    context.motionDuration(const Duration(milliseconds: 300)),
                 height: 4,
                 margin: const EdgeInsets.symmetric(horizontal: 3),
                 decoration: BoxDecoration(
@@ -471,7 +472,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       children: [
         // Zorunlu adımda buton neden kapalı, kullanıcı bilmeli
         AnimatedSize(
-          duration: const Duration(milliseconds: 200),
+          duration: context.motionDuration(const Duration(milliseconds: 200)),
           child: canContinue
               ? const SizedBox(width: double.infinity)
               : Padding(
@@ -726,7 +727,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 onTap: () => setState(() => _mode = mode),
                 child: ExcludeSemantics(
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
+                    duration: context.motionDuration(
+                        const Duration(milliseconds: 200)),
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: isSelected
