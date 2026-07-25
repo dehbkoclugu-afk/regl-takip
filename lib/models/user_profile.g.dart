@@ -44,13 +44,14 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       cycleReminderHour: fields[23] as int?,
       cycleReminderMinute: fields[24] as int?,
       periodReminderLeadDays: fields[25] == null ? 1 : fields[25] as int,
+      quietNotifications: fields[26] == null ? false : fields[26] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(26)
+      ..writeByte(27)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -102,7 +103,9 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(24)
       ..write(obj.cycleReminderMinute)
       ..writeByte(25)
-      ..write(obj.periodReminderLeadDays);
+      ..write(obj.periodReminderLeadDays)
+      ..writeByte(26)
+      ..write(obj.quietNotifications);
   }
 
   @override

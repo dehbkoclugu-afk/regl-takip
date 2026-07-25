@@ -1549,6 +1549,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get periodReminderLead => 'Rappel de règles';
 
   @override
+  String get notificationQuietChannelSuffix => 'silencieux';
+
+  @override
+  String get quietNotifications => 'Notifications silencieuses';
+
+  @override
+  String get quietNotificationsDesc => 'Sans son ni fenêtre contextuelle, uniquement dans le volet des notifications';
+
+  @override
   String get leadSameDay => 'Le jour même';
 
   @override

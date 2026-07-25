@@ -69,6 +69,7 @@ void main() {
         medicationReminderHour: 8,
         medicationReminderMinute: 15,
         periodReminderLeadDays: 3,
+        quietNotifications: true,
       );
       final restored = UserProfile.fromJson(original.toJson());
 
@@ -77,6 +78,7 @@ void main() {
       expect(restored.medicationReminderHour, 8);
       expect(restored.medicationReminderMinute, 15);
       expect(restored.periodReminderLeadDays, 3);
+      expect(restored.quietNotifications, isTrue);
     });
 
     test('alanları olmayan eski yedek varsayılanlarla okunur', () {
@@ -94,6 +96,30 @@ void main() {
       expect(restored.effectiveCycleHour, 9);
       expect(restored.effectiveMedicationHour, 9);
       expect(restored.periodReminderLeadDays, 1);
+      // Eski yedekte alan yok: sessizlik kapalı, yani eski davranış
+      expect(restored.quietNotifications, isFalse);
+    });
+  });
+
+  group('sessiz bildirim tercihi', () {
+    test('varsayılan kapalı — mevcut kullanıcının davranışı değişmez', () {
+      expect(UserProfile().quietNotifications, isFalse);
+    });
+
+    test('copyWith tercihi taşır ve diğer alanları bozmaz', () {
+      final p = UserProfile(periodReminderLeadDays: 3);
+      final quiet = p.copyWith(quietNotifications: true);
+      expect(quiet.quietNotifications, isTrue);
+      expect(quiet.periodReminderLeadDays, 3);
+      // copyWith yeni nesne döndürür: kaynak değişmemeli
+      expect(p.quietNotifications, isFalse);
+    });
+
+    test('copyWith tercihi açıkken kapatabilir', () {
+      final p = UserProfile(quietNotifications: true);
+      expect(p.copyWith(quietNotifications: false).quietNotifications, isFalse);
+      // Verilmezse korunur
+      expect(p.copyWith(name: 'X').quietNotifications, isTrue);
     });
   });
 }

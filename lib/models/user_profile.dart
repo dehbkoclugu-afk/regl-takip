@@ -106,6 +106,16 @@ class UserProfile extends HiveObject {
   @HiveField(25, defaultValue: 1)
   int periodReminderLeadDays;
 
+  /// Sessiz bildirim: ses ve öne çıkan (heads-up) baloncuk yok, bildirim
+  /// yalnız gölgelikte durur.
+  ///
+  /// Ayarlarda yalnız aç/kapa vardı; "bildirim istiyorum ama telefonum
+  /// çalmasın" diyen kullanıcının tek seçeneği hepsini kapatmaktı. Gizlilik
+  /// tarafı da var: kilit ekranında öne çıkmayan bildirim yandaki kişiye
+  /// görünmüyor.
+  @HiveField(26, defaultValue: false)
+  bool quietNotifications;
+
   /// Döngü hatırlatmaları için etkin saat (özel saat yoksa genel saat).
   int get effectiveCycleHour => cycleReminderHour ?? reminderHour;
   int get effectiveCycleMinute => cycleReminderMinute ?? reminderMinute;
@@ -143,6 +153,7 @@ class UserProfile extends HiveObject {
     this.cycleReminderHour,
     this.cycleReminderMinute,
     this.periodReminderLeadDays = 1,
+    this.quietNotifications = false,
   });
 
   /// Yeni bir kopya döndürür; verilen alanlar güncellenir.
@@ -174,6 +185,7 @@ class UserProfile extends HiveObject {
     int? cycleReminderHour,
     int? cycleReminderMinute,
     int? periodReminderLeadDays,
+    bool? quietNotifications,
   }) {
     return UserProfile(
       name: name ?? this.name,
@@ -209,6 +221,7 @@ class UserProfile extends HiveObject {
       cycleReminderMinute: cycleReminderMinute ?? this.cycleReminderMinute,
       periodReminderLeadDays:
           periodReminderLeadDays ?? this.periodReminderLeadDays,
+      quietNotifications: quietNotifications ?? this.quietNotifications,
     );
   }
 
@@ -239,6 +252,7 @@ class UserProfile extends HiveObject {
         'cycleReminderHour': cycleReminderHour,
         'cycleReminderMinute': cycleReminderMinute,
         'periodReminderLeadDays': periodReminderLeadDays,
+        'quietNotifications': quietNotifications,
       };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
@@ -284,6 +298,7 @@ class UserProfile extends HiveObject {
         cycleReminderHour: json['cycleReminderHour'] as int?,
         cycleReminderMinute: json['cycleReminderMinute'] as int?,
         periodReminderLeadDays: json['periodReminderLeadDays'] as int? ?? 1,
+        quietNotifications: json['quietNotifications'] as bool? ?? false,
       );
 
   int? get age {

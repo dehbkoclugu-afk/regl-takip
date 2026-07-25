@@ -523,6 +523,9 @@
   "cycleReminderTime": "Uhrzeit für Zyklus-Erinnerungen",
   "medicationReminderTime": "Uhrzeit für Medikamenten-Erinnerungen",
   "periodReminderLead": "Perioden-Erinnerung",
+  "notificationQuietChannelSuffix": "leise",
+  "quietNotifications": "Leise Benachrichtigungen",
+  "quietNotificationsDesc": "Ohne Ton und Pop-up — nur in der Benachrichtigungsleiste",
   "leadSameDay": "Am selben Tag",
   "leadNDaysBefore": "{days} Tage vorher",
   "@leadNDaysBefore": {

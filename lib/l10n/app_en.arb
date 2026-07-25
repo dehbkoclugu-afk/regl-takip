@@ -675,6 +675,9 @@
   "cycleReminderTime": "Cycle reminder time",
   "medicationReminderTime": "Medication reminder time",
   "periodReminderLead": "Period reminder",
+  "notificationQuietChannelSuffix": "quiet",
+  "quietNotifications": "Quiet notifications",
+  "quietNotificationsDesc": "No sound or pop-up — they wait silently in the notification shade",
   "leadSameDay": "Same day",
   "leadNDaysBefore": "{days} days before",
   "@leadNDaysBefore": {

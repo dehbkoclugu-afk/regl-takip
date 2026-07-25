@@ -1549,6 +1549,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get periodReminderLead => 'Recordatorio de regla';
 
   @override
+  String get notificationQuietChannelSuffix => 'silencioso';
+
+  @override
+  String get quietNotifications => 'Notificaciones silenciosas';
+
+  @override
+  String get quietNotificationsDesc => 'Sin sonido ni ventana emergente, solo en la barra de notificaciones';
+
+  @override
   String get leadSameDay => 'El mismo día';
 
   @override

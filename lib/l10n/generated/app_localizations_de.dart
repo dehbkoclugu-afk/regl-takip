@@ -1549,6 +1549,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get periodReminderLead => 'Perioden-Erinnerung';
 
   @override
+  String get notificationQuietChannelSuffix => 'leise';
+
+  @override
+  String get quietNotifications => 'Leise Benachrichtigungen';
+
+  @override
+  String get quietNotificationsDesc => 'Ohne Ton und Pop-up — nur in der Benachrichtigungsleiste';
+
+  @override
   String get leadSameDay => 'Am selben Tag';
 
   @override

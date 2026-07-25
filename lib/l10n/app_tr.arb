@@ -675,6 +675,9 @@
   "cycleReminderTime": "Döngü hatırlatma saati",
   "medicationReminderTime": "İlaç hatırlatma saati",
   "periodReminderLead": "Regl hatırlatması",
+  "notificationQuietChannelSuffix": "sessiz",
+  "quietNotifications": "Sessiz bildirimler",
+  "quietNotificationsDesc": "Ses ve açılır baloncuk olmadan, yalnız bildirim gölgeliğinde",
   "leadSameDay": "Aynı gün",
   "leadNDaysBefore": "{days} gün önce",
   "@leadNDaysBefore": {

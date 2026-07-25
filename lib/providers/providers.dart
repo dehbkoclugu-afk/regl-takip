@@ -188,6 +188,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     int? cycleReminderHour,
     int? cycleReminderMinute,
     int? periodReminderLeadDays,
+    bool? quietNotifications,
   }) async {
     final current = state ?? UserProfile();
     final updated = current.copyWith(
@@ -220,6 +221,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
       cycleReminderHour: cycleReminderHour,
       cycleReminderMinute: cycleReminderMinute,
       periodReminderLeadDays: periodReminderLeadDays,
+      quietNotifications: quietNotifications,
     );
 
     await _hiveService.saveUserProfile(updated);
@@ -241,7 +243,10 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         // Saat ve pencere değişince planlar eski değerlerde kalırdı
         medicationReminderHour != null ||
         cycleReminderHour != null ||
-        periodReminderLeadDays != null) {
+        periodReminderLeadDays != null ||
+        // Sessizlik tercihi kanal kimliğini değiştiriyor: kurulu
+        // bildirimler yeniden planlanmazsa eski kanalda kalır
+        quietNotifications != null) {
       try {
         await NotificationService().rescheduleAll(
           updated,

@@ -3031,6 +3031,24 @@ abstract class AppLocalizations {
   /// **'Regl hatırlatması'**
   String get periodReminderLead;
 
+  /// No description provided for @notificationQuietChannelSuffix.
+  ///
+  /// In tr, this message translates to:
+  /// **'sessiz'**
+  String get notificationQuietChannelSuffix;
+
+  /// No description provided for @quietNotifications.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sessiz bildirimler'**
+  String get quietNotifications;
+
+  /// No description provided for @quietNotificationsDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ses ve açılır baloncuk olmadan, yalnız bildirim gölgeliğinde'**
+  String get quietNotificationsDesc;
+
   /// No description provided for @leadSameDay.
   ///
   /// In tr, this message translates to:

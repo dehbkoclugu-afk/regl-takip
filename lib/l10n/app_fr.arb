@@ -523,6 +523,9 @@
   "cycleReminderTime": "Heure des rappels de cycle",
   "medicationReminderTime": "Heure des rappels de médicament",
   "periodReminderLead": "Rappel de règles",
+  "notificationQuietChannelSuffix": "silencieux",
+  "quietNotifications": "Notifications silencieuses",
+  "quietNotificationsDesc": "Sans son ni fenêtre contextuelle, uniquement dans le volet des notifications",
   "leadSameDay": "Le jour même",
   "leadNDaysBefore": "{days} jours avant",
   "@leadNDaysBefore": {

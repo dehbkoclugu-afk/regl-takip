@@ -190,6 +190,54 @@ class NotificationService {
     return scheduled;
   }
 
+  /// Bildirim ayrıntılarını tek yerden kurar.
+  ///
+  /// Yedi ayrı çağrı yeri aynı bloğu kopyalıyordu; sessiz bildirim tercihi
+  /// (madde 71) bunların hepsine dokunmayı gerektirdiği için tek karar
+  /// noktasına indirildi.
+  ///
+  /// [quiet]: ses ve öne çıkan (heads-up) baloncuk yok — bildirim yalnız
+  /// gölgelikte durur. **Kanal kimliği de değişir**: Android'de kanalın
+  /// önem derecesi kanal OLUŞTURULURKEN sabitlenir, sonradan gönderilen
+  /// `importance` yok sayılır. Aynı kimlikle gönderilseydi tercih hiçbir
+  /// şey değiştirmezdi; sessiz sürüm kendi kanalını kullanıyor.
+  ///
+  /// [high]: bu bildirim dikkat çekmeli mi (regl/ovülasyon/ilaç: evet;
+  /// gecikme, faz ipucu, zincir sonu: hayır).
+  NotificationDetails _details({
+    required String channelId,
+    required String channelName,
+    required String channelDescription,
+    required AppLocalizations l10n,
+    required bool quiet,
+    bool high = true,
+    List<AndroidNotificationAction> actions = const [],
+  }) {
+    return NotificationDetails(
+      android: AndroidNotificationDetails(
+        quiet ? '${channelId}_quiet' : channelId,
+        quiet
+            ? '$channelName · ${l10n.notificationQuietChannelSuffix}'
+            : channelName,
+        channelDescription: channelDescription,
+        importance: quiet
+            ? Importance.low
+            : (high ? Importance.high : Importance.defaultImportance),
+        priority: quiet
+            ? Priority.low
+            : (high ? Priority.high : Priority.defaultPriority),
+        playSound: !quiet,
+        icon: '@mipmap/ic_launcher',
+        actions: actions,
+      ),
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: high && !quiet,
+        presentSound: high && !quiet,
+      ),
+    );
+  }
+
   /// Regl hatırlatmasının gövdesi: zamanlama cümlesi + dönüşümlü ipucu.
   ///
   /// İki ayrı sorunu birlikte çözer. Gövde "yarın başlayabilir" diye
@@ -236,6 +284,7 @@ class NotificationService {
     int id = _periodReminderBaseId,
     int leadDays = 1,
     bool discreet = false,
+    bool quiet = false,
     int variant = 0,
   }) async {
     final l10n = _l10n(locale);
@@ -258,22 +307,14 @@ class NotificationService {
           ? l10n.notificationDiscreetBody
           : _periodBody(l10n, lead, variant),
       scheduledDate,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'period_reminder',
-          l10n.notificationPeriodChannel,
-          channelDescription: l10n.notificationPeriodChannelDesc,
-          importance: Importance.high,
-          priority: Priority.high,
-          icon: '@mipmap/ic_launcher',
-          // Gizli modda aksiyon konmaz: etiketin kendisi kılığı deşifre eder
-          actions: discreet ? const [] : _periodActions(l10n),
-        ),
-        iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
+      _details(
+        channelId: 'period_reminder',
+        channelName: l10n.notificationPeriodChannel,
+        channelDescription: l10n.notificationPeriodChannelDesc,
+        l10n: l10n,
+        quiet: quiet,
+        // Gizli modda aksiyon konmaz: etiketin kendisi kılığı deşifre eder
+        actions: discreet ? const [] : _periodActions(l10n),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
@@ -289,6 +330,7 @@ class NotificationService {
     String locale, {
     int id = _ovulationReminderBaseId,
     bool discreet = false,
+    bool quiet = false,
   }) async {
     final l10n = _l10n(locale);
     await _plugin.cancel(id);
@@ -301,20 +343,12 @@ class NotificationService {
       discreet ? l10n.notificationDiscreetTitle : l10n.notificationOvulationTitle,
       discreet ? l10n.notificationDiscreetBody : l10n.notificationOvulationBody,
       scheduledDate,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'ovulation_reminder',
-          l10n.notificationOvulationChannel,
-          channelDescription: l10n.notificationOvulationChannelDesc,
-          importance: Importance.high,
-          priority: Priority.high,
-          icon: '@mipmap/ic_launcher',
-        ),
-        iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
+      _details(
+        channelId: 'ovulation_reminder',
+        channelName: l10n.notificationOvulationChannel,
+        channelDescription: l10n.notificationOvulationChannelDesc,
+        l10n: l10n,
+        quiet: quiet,
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
@@ -335,6 +369,7 @@ class NotificationService {
     String locale, {
     required int id,
     bool discreet = false,
+    bool quiet = false,
   }) async {
     final l10n = _l10n(locale);
     await _plugin.cancel(id);
@@ -347,20 +382,12 @@ class NotificationService {
       discreet ? l10n.notificationDiscreetTitle : l10n.notificationFertileTitle,
       discreet ? l10n.notificationDiscreetBody : l10n.notificationFertileBody,
       scheduledDate,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'ovulation_reminder',
-          l10n.notificationOvulationChannel,
-          channelDescription: l10n.notificationOvulationChannelDesc,
-          importance: Importance.high,
-          priority: Priority.high,
-          icon: '@mipmap/ic_launcher',
-        ),
-        iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
+      _details(
+        channelId: 'ovulation_reminder',
+        channelName: l10n.notificationOvulationChannel,
+        channelDescription: l10n.notificationOvulationChannelDesc,
+        l10n: l10n,
+        quiet: quiet,
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
@@ -383,6 +410,7 @@ class NotificationService {
     int minute,
     String locale, {
     int id = _chainEndReminderId,
+    bool quiet = false,
   }) async {
     final l10n = _l10n(locale);
     await _plugin.cancel(id);
@@ -395,20 +423,13 @@ class NotificationService {
       l10n.notificationChainEndTitle,
       l10n.notificationChainEndBody,
       scheduledDate,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'chain_end',
-          l10n.notificationChainEndTitle,
-          channelDescription: l10n.notificationChainEndBody,
-          importance: Importance.defaultImportance,
-          priority: Priority.defaultPriority,
-          icon: '@mipmap/ic_launcher',
-        ),
-        iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: false,
-          presentSound: false,
-        ),
+      _details(
+        channelId: 'chain_end',
+        channelName: l10n.notificationChainEndTitle,
+        channelDescription: l10n.notificationChainEndBody,
+        l10n: l10n,
+        quiet: quiet,
+        high: false,
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
@@ -427,6 +448,7 @@ class NotificationService {
     String locale, {
     required int id,
     bool discreet = false,
+    bool quiet = false,
     int variant = 0,
   }) async {
     final l10n = _l10n(locale);
@@ -442,21 +464,14 @@ class NotificationService {
           ? l10n.notificationDiscreetBody
           : _delayBody(l10n, variant),
       scheduledDate,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'period_delay',
-          l10n.notificationDelayChannel,
-          channelDescription: l10n.notificationDelayChannelDesc,
-          importance: Importance.defaultImportance,
-          priority: Priority.defaultPriority,
-          icon: '@mipmap/ic_launcher',
-          actions: discreet ? const [] : _periodActions(l10n),
-        ),
-        iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: false,
-          presentSound: false,
-        ),
+      _details(
+        channelId: 'period_delay',
+        channelName: l10n.notificationDelayChannel,
+        channelDescription: l10n.notificationDelayChannelDesc,
+        l10n: l10n,
+        quiet: quiet,
+        high: false,
+        actions: discreet ? const [] : _periodActions(l10n),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
@@ -470,6 +485,7 @@ class NotificationService {
     int minute,
     String locale, {
     bool discreet = false,
+    bool quiet = false,
   }) async {
     final l10n = _l10n(locale);
     await _plugin.cancel(_medicationReminderId);
@@ -492,20 +508,12 @@ class NotificationService {
       discreet ? l10n.notificationDiscreetTitle : l10n.notificationMedicationTitle,
       discreet ? l10n.notificationDiscreetBody : l10n.notificationMedicationBody,
       scheduledDate,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'medication_reminder',
-          l10n.notificationMedicationChannel,
-          channelDescription: l10n.notificationMedicationChannelDesc,
-          importance: Importance.high,
-          priority: Priority.high,
-          icon: '@mipmap/ic_launcher',
-        ),
-        iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
+      _details(
+        channelId: 'medication_reminder',
+        channelName: l10n.notificationMedicationChannel,
+        channelDescription: l10n.notificationMedicationChannelDesc,
+        l10n: l10n,
+        quiet: quiet,
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
@@ -526,6 +534,7 @@ class NotificationService {
     required int fallbackHour,
     required int fallbackMinute,
     bool discreet = false,
+    bool quiet = false,
   }) async {
     final l10n = _l10n(locale);
     final named =
@@ -569,21 +578,13 @@ class NotificationService {
         discreet ? l10n.notificationDiscreetTitle : l10n.notificationMedicationTitle,
         body,
         scheduledDate,
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-            'medication_reminder',
-            l10n.notificationMedicationChannel,
-            channelDescription: l10n.notificationMedicationChannelDesc,
-            importance: Importance.high,
-            priority: Priority.high,
-            icon: '@mipmap/ic_launcher',
-            actions: discreet ? const [] : _medicationActions(l10n),
-          ),
-          iOS: const DarwinNotificationDetails(
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
-          ),
+        _details(
+          channelId: 'medication_reminder',
+          channelName: l10n.notificationMedicationChannel,
+          channelDescription: l10n.notificationMedicationChannelDesc,
+          l10n: l10n,
+          quiet: quiet,
+          actions: discreet ? const [] : _medicationActions(l10n),
         ),
         // Hangi ilacın işaretleneceği aksiyonla birlikte taşınmalı
         payload: med.name,
@@ -616,6 +617,10 @@ class NotificationService {
       // Gizli mod: launcher "Notlar" kılığındayken bildirim metni döngü
       // bilgisi deşifre etmemeli — tüm hatırlatmalar nötr metinle kurulur
       final discreet = await DisguiseService.isDisguised();
+
+      // Sessiz bildirim tercihi (madde 71): tüm türler için geçerli,
+      // kanal kimliği de buna göre seçiliyor (bkz. _details).
+      final quiet = profile.quietNotifications;
 
       // Tek saat tüm hatırlatmaları yönetiyordu: ilacını sabah alan ama
       // regl uyarısını akşam isteyen kullanıcı birinden vazgeçiyordu.
@@ -655,6 +660,7 @@ class NotificationService {
               id: _periodReminderBaseId + i,
               leadDays: profile.periodReminderLeadDays,
               discreet: discreet,
+              quiet: quiet,
               // Ay numarası: hangi anda planlandığından bağımsız olarak
               // ardışık aylara farklı ipucu düşer. Döngü indeksi (i)
               // kullanılsaydı her yeniden planlamada havuz başa dönerdi.
@@ -672,6 +678,7 @@ class NotificationService {
               locale,
               id: _ovulationReminderBaseId + i,
               discreet: discreet,
+              quiet: quiet,
             );
 
             // TTC modunda pencerenin açılışı ovülasyon gününden daha
@@ -685,6 +692,7 @@ class NotificationService {
                 locale,
                 id: _fertileReminderBaseId + i,
                 discreet: discreet,
+                quiet: quiet,
               );
             }
           }
@@ -700,6 +708,7 @@ class NotificationService {
               locale,
               id: _delayReminderBaseId + i,
               discreet: discreet,
+              quiet: quiet,
               variant: periodDate.month,
             );
           }
@@ -715,6 +724,7 @@ class NotificationService {
             cycleHour,
             cycleMinute,
             locale,
+            quiet: quiet,
           );
         }
 
@@ -747,20 +757,13 @@ class NotificationService {
                 l10n.notificationInsightTitle,
                 l10n.notificationInsightBody(symptomName),
                 scheduled,
-                NotificationDetails(
-                  android: AndroidNotificationDetails(
-                    'phase_insight',
-                    l10n.notificationInsightTitle,
-                    channelDescription: l10n.notificationInsightTitle,
-                    importance: Importance.defaultImportance,
-                    priority: Priority.defaultPriority,
-                    icon: '@mipmap/ic_launcher',
-                  ),
-                  iOS: const DarwinNotificationDetails(
-                    presentAlert: true,
-                    presentBadge: false,
-                    presentSound: false,
-                  ),
+                _details(
+                  channelId: 'phase_insight',
+                  channelName: l10n.notificationInsightTitle,
+                  channelDescription: l10n.notificationInsightTitle,
+                  l10n: l10n,
+                  quiet: quiet,
+                  high: false,
                 ),
                 androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
                 uiLocalNotificationDateInterpretation:
@@ -778,6 +781,7 @@ class NotificationService {
           fallbackHour: medHour,
           fallbackMinute: medMinute,
           discreet: discreet,
+          quiet: quiet,
         );
       }
     } catch (e) {

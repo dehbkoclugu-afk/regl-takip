@@ -523,6 +523,9 @@
   "cycleReminderTime": "Hora de recordatorios del ciclo",
   "medicationReminderTime": "Hora de recordatorios de medicación",
   "periodReminderLead": "Recordatorio de regla",
+  "notificationQuietChannelSuffix": "silencioso",
+  "quietNotifications": "Notificaciones silenciosas",
+  "quietNotificationsDesc": "Sin sonido ni ventana emergente, solo en la barra de notificaciones",
   "leadSameDay": "El mismo día",
   "leadNDaysBefore": "{days} días antes",
   "@leadNDaysBefore": {

@@ -1549,6 +1549,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get periodReminderLead => 'Regl hatırlatması';
 
   @override
+  String get notificationQuietChannelSuffix => 'sessiz';
+
+  @override
+  String get quietNotifications => 'Sessiz bildirimler';
+
+  @override
+  String get quietNotificationsDesc => 'Ses ve açılır baloncuk olmadan, yalnız bildirim gölgeliğinde';
+
+  @override
   String get leadSameDay => 'Aynı gün';
 
   @override

@@ -523,6 +523,9 @@
   "cycleReminderTime": "Время напоминаний о цикле",
   "medicationReminderTime": "Время напоминаний о лекарствах",
   "periodReminderLead": "Напоминание о месячных",
+  "notificationQuietChannelSuffix": "тихо",
+  "quietNotifications": "Тихие уведомления",
+  "quietNotificationsDesc": "Без звука и всплывающего окна — только в шторке уведомлений",
   "leadSameDay": "В тот же день",
   "leadNDaysBefore": "за {days} дн.",
   "@leadNDaysBefore": {

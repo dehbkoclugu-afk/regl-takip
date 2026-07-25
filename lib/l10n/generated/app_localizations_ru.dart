@@ -1549,6 +1549,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get periodReminderLead => 'Напоминание о месячных';
 
   @override
+  String get notificationQuietChannelSuffix => 'тихо';
+
+  @override
+  String get quietNotifications => 'Тихие уведомления';
+
+  @override
+  String get quietNotificationsDesc => 'Без звука и всплывающего окна — только в шторке уведомлений';
+
+  @override
   String get leadSameDay => 'В тот же день';
 
   @override

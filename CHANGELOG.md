@@ -1,5 +1,17 @@
 # Changelog
 
+## Yayınlanmamış — Sessiz bildirimler (2026-07-25)
+
+Tasarım incelemesinin yirmi birinci grubu (`docs/tasarim-onerileri.md` madde 71).
+
+- **Tek anahtar, bütün türler** (madde 71): ayarlarda yalnız tür başına aç/kapa vardı, "bildirim istiyorum ama telefonum çalmasın" diyen kullanıcının tek seçeneği hepsini kapatmaktı. Yeni "sessiz bildirimler" anahtarı ses ve açılır baloncuğu kaldırıyor, bildirim yalnız gölgelikte duruyor
+- **Gizlilik faydası da var**: kilit ekranında öne çıkmayan bildirim yandaki kişiye görünmüyor
+- **Android'in kanal tuzağı**: kanalın önem derecesi kanal *oluşturulurken* sabitlenir, sonradan gönderilen `importance` yok sayılır. Aynı kanal kimliğiyle gönderilseydi anahtar hiçbir şey değiştirmezdi — sessiz sürüm kendi kanalını kullanıyor (`_quiet` sonekli kimlik, kanal adında da görünen bir işaret)
+- **Tercih değişince bildirimler yeniden planlanıyor**: kanal kimliği değiştiği için kurulu bildirimler eski kanalda kalırdı
+- **Yedi kopya bloğu bire indi**: her planlama metodu kendi `NotificationDetails` bloğunu kopyalıyordu; sessizlik hepsine dokunmayı gerektirdiği için tek bir `_details` yardımcısına toplandı. Sessizlik kapalıyken üretilen değerler eskisiyle birebir aynı (regl/ovülasyon/ilaç yüksek önem + ses; gecikme, faz ipucu, zincir sonu varsayılan önem + sessiz iOS)
+- **Sıklık ayarı yapılmadı**: türler zaten ayrı ayrı açılıp kapanıyor ve her tür döngüde bir kez gidiyor — "sıklık" burada somut bir karşılığı olmayan bir istek. Madde kısmi olarak işaretlendi
+- Profil alanı 26 (`quietNotifications`, varsayılan kapalı), Hive adaptörü elle güncellendi, üç yeni test + yedek gidiş-dönüşüne iki doğrulama. 3 yeni metin altı dile eklendi
+
 ## Yayınlanmamış — Bildirimler: zincirin sonu, verimli pencere, metin çeşitliliği (2026-07-25)
 
 Tasarım incelemesinin yirminci grubu (`docs/tasarim-onerileri.md` madde 72, 73, 74).

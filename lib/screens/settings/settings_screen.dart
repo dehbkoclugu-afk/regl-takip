@@ -341,6 +341,19 @@ class SettingsScreen extends ConsumerWidget {
             ),
             _divider(context),
             _leadDaysTile(context, ref, profile, l10n),
+            _divider(context),
+            // Ayarlarda yalnız tür başına aç/kapa vardı: "bildirim istiyorum
+            // ama telefonum çalmasın" diyen kullanıcının tek seçeneği hepsini
+            // kapatmaktı
+            _switchTile(context,
+              Icons.notifications_off_rounded,
+              l10n.quietNotifications,
+              profile?.quietNotifications ?? false,
+              (val) => ref
+                  .read(userProfileProvider.notifier)
+                  .saveProfile(quietNotifications: val),
+              subtitle: l10n.quietNotificationsDesc,
+            ),
           ]),
           const SizedBox(height: 16),
 

@@ -5,7 +5,8 @@
 > kayıt), 16, 20, 22, 23, 31, 34, 40, 41, 45 (takvim), 51, 52, 69, 72, 73,
 > 74, 78 ve 93 de.
 > Kısmi olanlar:
-> 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı), 77 (ana ekran ve
+> 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı), 71 (ton yapıldı,
+> sıklık ayarının somut karşılığı yok), 77 (ana ekran ve
 > paylaşılan bileşenler; diğer ekranlarda taşma taraması sürüyor) ve 89
 > (uyarı eklendi, parolalı yedek yapılmadı). Madde 7 (reklamın yerini kaydet
 > sonrasına almak) bilinçli olarak açık: gelir etkisi olan bir ürün kararı.
@@ -352,6 +353,16 @@ gönderilmiyor; oysa kullanıcının en çok merak ettiği an tam orası.
 
 **71. 🟡 Bildirim ayarları sınırlı.** Aç/kapa var, sıklık ve ton yok.
 "Sessiz özet" tercihi gizlilik açısından da değerli.
+*Kısmen uygulandı:* ton tarafı yapıldı — tek bir "sessiz bildirimler"
+anahtarı bütün türleri sessize alıyor (ses yok, açılır baloncuk yok,
+bildirim yalnız gölgelikte durur). Gizlilik faydası da bu: kilit ekranında
+öne çıkmayan bildirim yandaki kişiye görünmüyor. Uygulanırken bir tuzak
+çıktı: Android'de kanalın önem derecesi kanal **oluşturulurken** sabitlenir,
+sonradan gönderilen `importance` yok sayılır — sessiz sürüm kendi kanal
+kimliğini kullanıyor, yoksa anahtar hiçbir şey değiştirmezdi.
+*Yapılmayan:* sıklık ayarı. Bildirim türleri zaten ayrı ayrı açılıp
+kapanabiliyor ve her tür döngüde bir kez gidiyor; "sıklık" burada
+somut bir karşılığı olmayan bir istek. Somutlaşırsa yeniden bakılır.
 
 **72. 🔵 Üç döngü ileri planlama sessiz bir sınır.** Uygulama 3 ay açılmazsa
 hatırlatma zinciri kopuyor (`notification_service.dart:43`). Kullanıcı bunu
