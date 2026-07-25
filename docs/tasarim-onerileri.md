@@ -2,7 +2,8 @@
 
 > **Durum:** 1, 2, 4, 6, 11, 12, 13, 14, 17, 18, 39, 48, 49, 50, 58, 59, 60,
 > 61, 62, 67, 68, 70, 75, 76, 77, 86, 87 ve 92 uygulandı; 5, 26, 27 (hızlı
-> kayıt), 31, 34, 40, 41, 45 (takvim), 51, 52, 69 ve 93 de. Kısmi olanlar:
+> kayıt), 22, 23, 31, 34, 40, 41, 45 (takvim), 51, 52, 69 ve 93 de.
+> Kısmi olanlar:
 > 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı), 77 (ana ekran ve
 > paylaşılan bileşenler; diğer ekranlarda taşma taraması sürüyor) ve 89
 > (uyarı eklendi, parolalı yedek yapılmadı). Madde 7 (reklamın yerini kaydet

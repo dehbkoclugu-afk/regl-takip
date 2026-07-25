@@ -1614,6 +1614,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get actionMedicationTaken => 'Taken';
 
   @override
+  String get pregnancyTestReady => 'A pregnancy test can be meaningful now';
+
+  @override
+  String pregnancyTestFrom(String date) {
+    return 'Earliest useful test: $date';
+  }
+
+  @override
+  String pillBreakIn(int days) {
+    return 'Break starts in $days days';
+  }
+
+  @override
+  String pillNewPackIn(int days) {
+    return 'New pack in $days days';
+  }
+
+  @override
   String get healthImportNothingNew => 'No new records found to import';
 
   @override

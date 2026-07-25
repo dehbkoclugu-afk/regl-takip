@@ -1614,6 +1614,24 @@ class AppLocalizationsRu extends AppLocalizations {
   String get actionMedicationTaken => 'Принято';
 
   @override
+  String get pregnancyTestReady => 'Тест на беременность уже может быть информативным';
+
+  @override
+  String pregnancyTestFrom(String date) {
+    return 'Тест имеет смысл с $date';
+  }
+
+  @override
+  String pillBreakIn(int days) {
+    return 'Перерыв через $days дн.';
+  }
+
+  @override
+  String pillNewPackIn(int days) {
+    return 'Новая упаковка через $days дн.';
+  }
+
+  @override
   String get healthImportNothingNew => 'Новых записей для импорта не найдено';
 
   @override

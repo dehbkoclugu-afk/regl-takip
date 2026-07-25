@@ -564,6 +564,25 @@
   "allTime": "Gesamt",
   "actionPeriodStarted": "Periode hat begonnen",
   "actionMedicationTaken": "Eingenommen",
+  "pregnancyTestReady": "Ein Schwangerschaftstest kann jetzt aussagekräftig sein",
+  "pregnancyTestFrom": "Frühester sinnvoller Test: {date}",
+  "@pregnancyTestFrom": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "pillBreakIn": "Pause beginnt in {days} Tagen",
+  "@pillBreakIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "pillNewPackIn": "Neue Packung in {days} Tagen",
+  "@pillNewPackIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
   "healthImportNothingNew": "Keine neuen Einträge zum Importieren gefunden",
   "healthImportConfirm": "{count} Perioden in Health Connect gefunden, die nicht in der App sind. Zu deinen Einträgen hinzufügen? Deine vorhandenen Einträge bleiben unverändert.",
   "@healthImportConfirm": {

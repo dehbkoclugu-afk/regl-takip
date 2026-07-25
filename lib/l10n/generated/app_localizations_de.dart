@@ -1614,6 +1614,24 @@ class AppLocalizationsDe extends AppLocalizations {
   String get actionMedicationTaken => 'Eingenommen';
 
   @override
+  String get pregnancyTestReady => 'Ein Schwangerschaftstest kann jetzt aussagekräftig sein';
+
+  @override
+  String pregnancyTestFrom(String date) {
+    return 'Frühester sinnvoller Test: $date';
+  }
+
+  @override
+  String pillBreakIn(int days) {
+    return 'Pause beginnt in $days Tagen';
+  }
+
+  @override
+  String pillNewPackIn(int days) {
+    return 'Neue Packung in $days Tagen';
+  }
+
+  @override
   String get healthImportNothingNew => 'Keine neuen Einträge zum Importieren gefunden';
 
   @override

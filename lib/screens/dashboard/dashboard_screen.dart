@@ -106,6 +106,8 @@ class DashboardScreen extends ConsumerWidget {
     String nextPeriodStr = '-';
     String ovulationStr = '-';
     String fertileStr = '-';
+    // Tarih olarak da lazım: TTC kartındaki test günü bundan hesaplanıyor
+    DateTime? ovulationDate;
 
     final effectiveCycleLen = ref.watch(effectiveCycleLengthProvider);
     final access = ref.watch(accessProvider);
@@ -135,6 +137,7 @@ class DashboardScreen extends ConsumerWidget {
       if (confirmedOvulation != null) {
         ovulation = confirmedOvulation;
       }
+      ovulationDate = ovulation;
       ovulationStr = dateFormat.format(ovulation);
       final fStart = ovulation.subtract(const Duration(days: 5));
       final fEnd = ovulation.add(const Duration(days: 1));
@@ -255,7 +258,7 @@ class DashboardScreen extends ConsumerWidget {
                 if (mode == TrackingMode.pill &&
                     profile?.pillPackStartDate != null) ...[
                   const SizedBox(height: 8),
-                  _buildPillChip(context, l10n, profile!.pillPackStartDate!),
+                  _buildPillCard(context, l10n, profile!.pillPackStartDate!),
                 ],
                 const SizedBox(height: 28),
                 // Progress Ring
@@ -293,7 +296,7 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(height: 24),
                 if (mode == TrackingMode.ttc) ...[
                   _buildTtcCard(context, ref, l10n, cycleDay,
-                      effectiveCycleLen),
+                      effectiveCycleLen, ovulationDate, locale),
                   const SizedBox(height: 24),
                 ],
                 // Günlük faz koçluğu — faza göre pratik ipucu
@@ -655,8 +658,14 @@ class DashboardScreen extends ConsumerWidget {
     return messages[dayOfYear % messages.length];
   }
 
-  Widget _buildTtcCard(BuildContext context, WidgetRef ref,
-      AppLocalizations l10n, int cycleDay, int cycleLength) {
+  Widget _buildTtcCard(
+      BuildContext context,
+      WidgetRef ref,
+      AppLocalizations l10n,
+      int cycleDay,
+      int cycleLength,
+      DateTime? ovulationDate,
+      String locale) {
     final level = CycleUtils.fertilityLevelForDay(cycleDay, cycleLength);
     final isDark = AppColors.isDark(context);
     // Rozet METNİ pastel durum rengiyle yazılamaz (açık zeminde ~2:1):
@@ -718,6 +727,48 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ],
           ),
+          // TTC kullanıcısının en beklediği tarih buydu ve hiçbir yerde
+          // yazmıyordu. Daha erken test yanlış negatif verir.
+          if (ovulationDate != null) ...[
+            const SizedBox(height: 10),
+            Builder(builder: (context) {
+              final testDay =
+                  CycleUtils.earliestPregnancyTestDay(ovulationDate);
+              final now = DateTime.now();
+              final today = DateTime(now.year, now.month, now.day);
+              final ready = !testDay.isAfter(today);
+              return Row(
+                children: [
+                  Icon(
+                    ready
+                        ? Icons.check_circle_outline_rounded
+                        : Icons.schedule_rounded,
+                    size: 15,
+                    color: ready
+                        ? AppColors.fertileWindowText
+                        : AppColors.ts(context),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      ready
+                          ? l10n.pregnancyTestReady
+                          : l10n.pregnancyTestFrom(
+                              DateFormat('d MMMM', locale).format(testDay)),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: ready
+                            ? AppColors.fertileWindowText
+                            : AppColors.ts(context),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              );
+            }),
+          ],
           const SizedBox(height: 12),
           Text(l10n.lhTestTitle,
               style: TextStyle(
@@ -952,30 +1003,63 @@ class DashboardScreen extends ConsumerWidget {
     ).animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms);
   }
 
-  Widget _buildPillChip(
+  /// Hap paketi kartı.
+  ///
+  /// Tek bir çipti: kaçıncı gün olduğu yazıyordu ama bu modun asıl sorusu
+  /// ("ara ne zaman başlıyor", "yeni paket ne zaman") cevapsızdı.
+  Widget _buildPillCard(
       BuildContext context, AppLocalizations l10n, DateTime packStart) {
     final day = CycleUtils.pillDayInPack(packStart);
-    final isBreak = day > 21;
-    final label =
-        isBreak ? l10n.pillBreakLabel(day - 21) : l10n.pillDayLabel(day);
+    final isBreak = CycleUtils.pillIsBreak(day);
+    final accent = isBreak ? AppColors.warningText : AppColors.primaryDeep;
 
-    return GlassContainer(
-      borderRadius: 16,
+    final title = isBreak
+        ? l10n.pillBreakLabel(day - AppConstants.pillActiveDays)
+        : l10n.pillDayLabel(day);
+    final next = isBreak
+        ? l10n.pillNewPackIn(CycleUtils.pillDaysUntilNewPack(day))
+        : l10n.pillBreakIn(CycleUtils.pillDaysUntilBreak(day));
+
+    return GlassCard(
+      borderRadius: 18,
       blur: 0,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      opacity: 0.18,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.medication_rounded,
-              size: 16,
-              color: isBreak ? AppColors.warning : AppColors.primaryDeep),
-          const SizedBox(width: 6),
+          Icon(Icons.medication_rounded, size: 20, color: accent),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.tp(context),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  next,
+                  style: TextStyle(fontSize: 12, color: AppColors.ts(context)),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          // 28 günlük paketin neresindeyiz — sayı yerine oran
           Text(
-            label,
+            '$day/${AppConstants.pillPackDays}',
             style: TextStyle(
               fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.tp(context),
+              fontWeight: FontWeight.w700,
+              color: accent,
             ),
           ),
         ],

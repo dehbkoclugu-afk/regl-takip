@@ -260,6 +260,32 @@ class CycleUtils {
 
   /// 21+7 hap döngüsünde paket günü (1..28).
   /// 1-21 aktif hap, 22-28 ara hafta.
+  /// Hap paketinde ara (plasebo) döneminde miyiz?
+  static bool pillIsBreak(int dayInPack) =>
+      dayInPack > AppConstants.pillActiveDays;
+
+  /// Ara dönemin başlamasına kaç gün kaldığı. Ara dönemdeyse 0.
+  /// Hap modu ana ekranda tek bir çipti: kaçıncı gün olduğu yazıyordu ama
+  /// bu modun asıl sorusu "ara ne zaman başlıyor" cevapsızdı.
+  static int pillDaysUntilBreak(int dayInPack) {
+    if (pillIsBreak(dayInPack)) return 0;
+    return AppConstants.pillActiveDays + 1 - dayInPack;
+  }
+
+  /// Yeni paketin başlamasına kaç gün kaldığı. Etkin dönemdeyse 0.
+  static int pillDaysUntilNewPack(int dayInPack) {
+    if (!pillIsBreak(dayInPack)) return 0;
+    return AppConstants.pillPackDays + 1 - dayInPack;
+  }
+
+  /// Gebelik testinin anlamlı olduğu en erken gün.
+  /// TTC kullanıcısının en beklediği tarih buydu ve hiçbir yerde yoktu.
+  static DateTime earliestPregnancyTestDay(DateTime ovulation) => DateTime(
+        ovulation.year,
+        ovulation.month,
+        ovulation.day + AppConstants.pregnancyTestAfterOvulation,
+      );
+
   static int pillDayInPack(DateTime packStart) {
     final now = DateTime.now();
     final normalizedNow = DateTime(now.year, now.month, now.day);

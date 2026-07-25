@@ -1,5 +1,15 @@
 # Changelog
 
+## Yayınlanmamış — Hap ve TTC modları (2026-07-24)
+
+Tasarım incelemesinin on yedinci grubu (`docs/tasarim-onerileri.md` madde 22, 23).
+
+- **Hap modu kart oldu** (madde 22): tek bir çipti, kaçıncı gün olduğu yazıyordu ama bu modun asıl sorusu cevapsızdı. Artık ara dönemin ne zaman başlayacağını (ya da ara dönemdeyse yeni paketin ne zaman geleceğini) ve paketin 28 gününün neresinde olunduğunu söylüyor
+- **Gebelik testi günü** (madde 23): TTC kullanıcısının en beklediği tarih hiçbir yerde yoktu. Ovülasyondan 12 gün sonrası — daha erken test yanlış negatif verir, implantasyon ve hCG'nin ölçülebilir düzeye çıkması zaman ister. Gün geldiyse metin "artık anlamlı olabilir"e dönüyor
+- **Ovülasyon teyidi hesaba katılıyor**: sıcaklıktan teyit varsa test günü tahmin yerine ölçülen ovülasyondan sayılıyor (kart zaten teyitli tarihi kullanıyordu, artık test günü de ondan türüyor)
+- **Sabitler `AppConstants`'a taşındı**: `pillActiveDays`, `pillPackDays`, `pregnancyTestAfterOvulation` — 21/28/12 çıplak sayı olarak duruyordu
+- `pillIsBreak`, `pillDaysUntilBreak`, `pillDaysUntilNewPack` ve `earliestPregnancyTestDay` için 14 birim testi (dönem sınırları, ay ve yıl sınırını aşan test günü, saat bileşeni)
+
 ## Yayınlanmamış — Bildirim aksiyonları (2026-07-24)
 
 Tasarım incelemesinin on altıncı grubu (`docs/tasarim-onerileri.md` madde 69, 34).

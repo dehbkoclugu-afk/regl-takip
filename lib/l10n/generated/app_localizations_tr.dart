@@ -1614,6 +1614,24 @@ class AppLocalizationsTr extends AppLocalizations {
   String get actionMedicationTaken => 'Aldım';
 
   @override
+  String get pregnancyTestReady => 'Gebelik testi artık anlamlı olabilir';
+
+  @override
+  String pregnancyTestFrom(String date) {
+    return 'Gebelik testi için en erken: $date';
+  }
+
+  @override
+  String pillBreakIn(int days) {
+    return 'Ara dönem $days gün sonra';
+  }
+
+  @override
+  String pillNewPackIn(int days) {
+    return 'Yeni paket $days gün sonra';
+  }
+
+  @override
   String get healthImportNothingNew => 'İçe aktarılacak yeni kayıt bulunamadı';
 
   @override

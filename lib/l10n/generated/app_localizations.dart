@@ -3145,6 +3145,30 @@ abstract class AppLocalizations {
   /// **'Aldım'**
   String get actionMedicationTaken;
 
+  /// No description provided for @pregnancyTestReady.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gebelik testi artık anlamlı olabilir'**
+  String get pregnancyTestReady;
+
+  /// No description provided for @pregnancyTestFrom.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gebelik testi için en erken: {date}'**
+  String pregnancyTestFrom(String date);
+
+  /// No description provided for @pillBreakIn.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ara dönem {days} gün sonra'**
+  String pillBreakIn(int days);
+
+  /// No description provided for @pillNewPackIn.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni paket {days} gün sonra'**
+  String pillNewPackIn(int days);
+
   /// No description provided for @healthImportNothingNew.
   ///
   /// In tr, this message translates to:

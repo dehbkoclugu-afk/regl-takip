@@ -564,6 +564,25 @@
   "allTime": "Tout",
   "actionPeriodStarted": "Mes règles ont commencé",
   "actionMedicationTaken": "Pris",
+  "pregnancyTestReady": "Un test de grossesse peut désormais être fiable",
+  "pregnancyTestFrom": "Test fiable à partir du {date}",
+  "@pregnancyTestFrom": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "pillBreakIn": "La pause commence dans {days} jours",
+  "@pillBreakIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "pillNewPackIn": "Nouvelle plaquette dans {days} jours",
+  "@pillNewPackIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
   "healthImportNothingNew": "Aucune nouvelle donnée à importer",
   "healthImportConfirm": "{count} périodes trouvées dans Health Connect et absentes de l’app. Les ajouter à vos données ? Vos données existantes ne changent pas.",
   "@healthImportConfirm": {

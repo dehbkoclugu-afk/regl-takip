@@ -26,6 +26,15 @@ class AppConstants {
   static const int fertileWindowDays = 6;
   static const int ovulationDayBeforePeriod = 14;
 
+  // Hap paketi: 21 etkin + 7 ara/plasebo
+  static const int pillActiveDays = 21;
+  static const int pillPackDays = 28;
+
+  /// Gebelik testinin anlamlı olduğu en erken gün: ovülasyondan bu kadar
+  /// gün sonra. Daha erken test yanlış negatif verir — implantasyon ve
+  /// hCG'nin ölçülebilir düzeye çıkması zaman ister.
+  static const int pregnancyTestAfterOvulation = 12;
+
   // Su tüketimi
   static const int defaultWaterGoal = 8;
   static const int waterGlassMl = 250;

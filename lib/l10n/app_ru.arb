@@ -564,6 +564,25 @@
   "allTime": "Всё время",
   "actionPeriodStarted": "Месячные начались",
   "actionMedicationTaken": "Принято",
+  "pregnancyTestReady": "Тест на беременность уже может быть информативным",
+  "pregnancyTestFrom": "Тест имеет смысл с {date}",
+  "@pregnancyTestFrom": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "pillBreakIn": "Перерыв через {days} дн.",
+  "@pillBreakIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "pillNewPackIn": "Новая упаковка через {days} дн.",
+  "@pillNewPackIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
   "healthImportNothingNew": "Новых записей для импорта не найдено",
   "healthImportConfirm": "В Health Connect найдено периодов, которых нет в приложении: {count}. Добавить их к вашим записям? Существующие записи не изменятся.",
   "@healthImportConfirm": {

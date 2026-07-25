@@ -716,6 +716,25 @@
   "allTime": "Tümü",
   "actionPeriodStarted": "Reglim başladı",
   "actionMedicationTaken": "Aldım",
+  "pregnancyTestReady": "Gebelik testi artık anlamlı olabilir",
+  "pregnancyTestFrom": "Gebelik testi için en erken: {date}",
+  "@pregnancyTestFrom": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "pillBreakIn": "Ara dönem {days} gün sonra",
+  "@pillBreakIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "pillNewPackIn": "Yeni paket {days} gün sonra",
+  "@pillNewPackIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
   "healthImportNothingNew": "İçe aktarılacak yeni kayıt bulunamadı",
   "healthImportConfirm": "Health Connect’te uygulamada olmayan {count} adet dönemi bulundu. Kayıtlarına eklensin mi? Mevcut kayıtların değişmez.",
   "@healthImportConfirm": {

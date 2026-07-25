@@ -1614,6 +1614,24 @@ class AppLocalizationsEs extends AppLocalizations {
   String get actionMedicationTaken => 'Tomado';
 
   @override
+  String get pregnancyTestReady => 'Una prueba de embarazo ya puede ser fiable';
+
+  @override
+  String pregnancyTestFrom(String date) {
+    return 'Prueba fiable a partir del $date';
+  }
+
+  @override
+  String pillBreakIn(int days) {
+    return 'El descanso empieza en $days días';
+  }
+
+  @override
+  String pillNewPackIn(int days) {
+    return 'Nueva caja en $days días';
+  }
+
+  @override
   String get healthImportNothingNew => 'No se encontraron registros nuevos para importar';
 
   @override

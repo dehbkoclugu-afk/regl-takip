@@ -564,6 +564,25 @@
   "allTime": "Todo",
   "actionPeriodStarted": "Mi regla empezó",
   "actionMedicationTaken": "Tomado",
+  "pregnancyTestReady": "Una prueba de embarazo ya puede ser fiable",
+  "pregnancyTestFrom": "Prueba fiable a partir del {date}",
+  "@pregnancyTestFrom": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "pillBreakIn": "El descanso empieza en {days} días",
+  "@pillBreakIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "pillNewPackIn": "Nueva caja en {days} días",
+  "@pillNewPackIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
   "healthImportNothingNew": "No se encontraron registros nuevos para importar",
   "healthImportConfirm": "Se encontraron {count} periodos en Health Connect que no están en la app. ¿Añadirlos a tus registros? Tus registros actuales no cambian.",
   "@healthImportConfirm": {
