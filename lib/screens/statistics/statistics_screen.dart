@@ -1,5 +1,5 @@
 import 'dart:math' as math;
-import 'dart:ui' as ui show TextDirection;
+import 'dart:ui' as ui show TextDirection, ImageFilter;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +21,7 @@ import '../../models/period_record.dart';
 import '../../models/daily_log.dart';
 import '../../models/user_profile.dart';
 import '../../providers/providers.dart';
+import '../../services/export_service.dart';
 import '../period_history/period_record_editor.dart';
 import '../../core/utils/motion.dart';
 
@@ -39,50 +40,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     // İstatistik premium kapsamı. Sekme görünür kalır (kullanıcı neyi
-    // kaçırdığını bilsin) ama içerik kilit ekranına döner.
-    if (ref.watch(accessProvider) == AccessLevel.free) {
-      return Scaffold(
-        backgroundColor: AppColors.bg(context),
-        appBar: AppBar(
-          title: Text(l10n.statistics,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, color: AppColors.tp(context))),
-          backgroundColor: AppColors.bg(context),
-          elevation: 0,
-        ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.lock_outline_rounded,
-                    size: 56, color: AppColors.ts(context)),
-                const SizedBox(height: 16),
-                Text(l10n.premiumLockedTitle,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.tp(context))),
-                const SizedBox(height: 8),
-                Text(l10n.premiumLockedBody,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 14,
-                        height: 1.45,
-                        color: AppColors.ts(context))),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () => context.push('/paywall'),
-                  child: Text(l10n.seePlans),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
+    // kaçırdığını bilsin); içerik kilidin ardında bulanık duruyor.
+    final locked = ref.watch(accessProvider) == AccessLevel.free;
 
     final records = ref.watch(periodRecordsProvider);
     final dailyLogs = ref.watch(dailyLogProvider);
@@ -103,16 +62,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final avgPeriod = CycleUtils.averagePeriodDuration(
         filteredRecords, profile?.averagePeriodLength ?? 5);
 
-    return Scaffold(
-      backgroundColor: AppColors.bg(context),
-      appBar: AppBar(
-        title: Text(l10n.statistics,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
-        backgroundColor: AppColors.bg(context),
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
+    final content = SingleChildScrollView(
+        // Kilitliyken kaydırma kapalı: bulanık içerik gezilecek bir şey değil
+        physics: locked ? const NeverScrollableScrollPhysics() : null,
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 112),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,6 +84,12 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               ),
               const SizedBox(height: 20),
             ],
+            // Doktora götürülecek özet uygulamanın en somut faydası ama
+            // ayarların derinliğinde duruyordu — istatistiğin başında olmalı
+            _buildDoctorExportButton(l10n, records, dailyLogs, profile)
+                .animateSafe(context)
+                .fadeIn(duration: 400.ms),
+            const SizedBox(height: 20),
             // Tek parça segmentli filtre: üç ayrı baloncuk yerine
             // birleşik seçici — daha derli toplu, daha "ürün" his
             _buildFilterBar(l10n).animateSafe(context).fadeIn(duration: 400.ms),
@@ -189,6 +147,129 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               ),
             ),
             const SizedBox(height: 24),
+          ],
+        ),
+      );
+
+    return Scaffold(
+      backgroundColor: AppColors.bg(context),
+      appBar: AppBar(
+        title: Text(l10n.statistics,
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
+        backgroundColor: AppColors.bg(context),
+        elevation: 0,
+      ),
+      body: locked
+          ? Stack(
+              children: [
+                // Kilit ekranı ikon + metinden ibaretti: kullanıcı neyi
+                // kaçırdığını görmüyordu. Arkada kendi verisi duruyor —
+                // uydurma bir örnek değil, bulanıklaştırılmış gerçek.
+                Positioned.fill(
+                  child: ImageFiltered(
+                    imageFilter:
+                        ui.ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                    child: IgnorePointer(child: content),
+                  ),
+                ),
+                Positioned.fill(
+                  child: Container(
+                    color: AppColors.bg(context).withValues(alpha: 0.55),
+                  ),
+                ),
+                Center(child: _buildLockCard(l10n)),
+              ],
+            )
+          : content,
+    );
+  }
+
+  /// "Doktoruma özet çıkar": PDF raporu paylaşım sayfasına verir.
+  /// Ayarlar > Veri altındaki aynı akış; oradaki giriş de duruyor.
+  Widget _buildDoctorExportButton(
+    AppLocalizations l10n,
+    List<PeriodRecord> records,
+    Map<String, DailyLog> dailyLogs,
+    UserProfile? profile,
+  ) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        // Profil yoksa rapor üretilemez (exportPdf profil istiyor)
+        onPressed: profile == null
+            ? null
+            : () async {
+                final messenger = ScaffoldMessenger.of(context);
+                try {
+                  final service = ExportService();
+                  final path = await service.exportPdf(
+                      profile, records, dailyLogs, l10n);
+                  await service.shareFile(path);
+                } catch (e) {
+                  messenger.showSnackBar(SnackBar(
+                    content: Text(l10n.errorOccurred(e.toString())),
+                    backgroundColor: AppColors.error,
+                  ));
+                }
+              },
+        icon: const Icon(Icons.picture_as_pdf_rounded, size: 18),
+        label: Text(l10n.doctorSummary),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.primaryDeep,
+          side: BorderSide(color: AppColors.dv(context)),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLockCard(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: AppColors.sf(context),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.dv(context)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.12),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.lock_outline_rounded,
+                size: 40, color: AppColors.primaryStrong),
+            const SizedBox(height: 12),
+            Text(l10n.premiumLockedTitle,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.tp(context))),
+            const SizedBox(height: 8),
+            Text(l10n.premiumLockedBody,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 14,
+                    height: 1.45,
+                    color: AppColors.ts(context))),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => context.push('/paywall'),
+                child: Text(l10n.seePlans),
+              ),
+            ),
           ],
         ),
       ),

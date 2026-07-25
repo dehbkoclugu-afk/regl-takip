@@ -1596,6 +1596,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get monthNoRecords => 'В этом месяце записей нет';
 
   @override
+  String get doctorSummary => 'Выгрузить сводку для врача';
+
+  @override
   String monthPeriodDays(int count) {
     return 'дней месячных: $count';
   }

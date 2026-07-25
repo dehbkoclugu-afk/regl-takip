@@ -1,5 +1,14 @@
 # Changelog
 
+## Yayınlanmamış — İstatistik kilidi ve doktor özeti (2026-07-24)
+
+Tasarım incelemesinin on üçüncü grubu (`docs/tasarim-onerileri.md` madde 5, 51).
+
+- **Kilit ekranı artık neyin kilitli olduğunu gösteriyor** (madde 5): ikon + metin + butondan ibaretti, kullanıcı neyi kaçırdığını görmüyordu. Arkada kendi verisi bulanık olarak duruyor — uydurma bir örnek değil, gerçeğin bulanıklaştırılmışı. Üstünde kilit kartı, altında okunmaz ama tanınabilir grafikler
+- **Bulanık katman etkileşime kapalı**: `IgnorePointer` + kaydırma kapalı; arkadaki içerik gezilecek bir şey değil, gösterilecek bir şey
+- **Doktor özeti istatistiğin başında** (madde 51): PDF raporu uygulamanın en somut faydası ama ayarların derinliğinde duruyordu. İstatistik ekranının en üstüne alındı; ayarlardaki giriş de duruyor
+- **`dart:ui` importu düzeltildi**: `show TextDirection` kısıtlıydı, `ImageFilter` eklenmeden bulanıklık çözülmezdi
+
 ## Yayınlanmamış — Takvim (2026-07-24)
 
 Tasarım incelemesinin on ikinci grubu (`docs/tasarim-onerileri.md` madde 40, 41, 45).

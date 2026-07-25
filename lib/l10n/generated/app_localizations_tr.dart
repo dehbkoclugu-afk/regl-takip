@@ -1596,6 +1596,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get monthNoRecords => 'Bu ayda kayıt yok';
 
   @override
+  String get doctorSummary => 'Doktoruma özet çıkar';
+
+  @override
   String monthPeriodDays(int count) {
     return '$count regl günü';
   }

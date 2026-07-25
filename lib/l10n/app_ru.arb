@@ -558,6 +558,7 @@
   "hideLegend": "Скрыть обозначения",
   "backToToday": "К сегодня",
   "monthNoRecords": "В этом месяце записей нет",
+  "doctorSummary": "Выгрузить сводку для врача",
   "monthPeriodDays": "дней месячных: {count}",
   "@monthPeriodDays": {
     "placeholders": {

@@ -1596,6 +1596,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get monthNoRecords => 'No records this month';
 
   @override
+  String get doctorSummary => 'Export a summary for my doctor';
+
+  @override
   String monthPeriodDays(int count) {
     return '$count period days';
   }

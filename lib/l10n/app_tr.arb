@@ -710,6 +710,7 @@
   "hideLegend": "Renk anlamlarını gizle",
   "backToToday": "Bugüne dön",
   "monthNoRecords": "Bu ayda kayıt yok",
+  "doctorSummary": "Doktoruma özet çıkar",
   "monthPeriodDays": "{count} regl günü",
   "@monthPeriodDays": {
     "placeholders": {

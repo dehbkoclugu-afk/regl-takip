@@ -558,6 +558,7 @@
   "hideLegend": "Ocultar leyenda",
   "backToToday": "Volver a hoy",
   "monthNoRecords": "Sin registros este mes",
+  "doctorSummary": "Exportar resumen para mi médico",
   "monthPeriodDays": "{count} días de regla",
   "@monthPeriodDays": {
     "placeholders": {

@@ -558,6 +558,7 @@
   "hideLegend": "Farblegende ausblenden",
   "backToToday": "Zu heute",
   "monthNoRecords": "Keine Einträge in diesem Monat",
+  "doctorSummary": "Zusammenfassung für meine Ärztin",
   "monthPeriodDays": "{count} Periodentage",
   "@monthPeriodDays": {
     "placeholders": {

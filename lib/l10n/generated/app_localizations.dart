@@ -3109,6 +3109,12 @@ abstract class AppLocalizations {
   /// **'Bu ayda kayıt yok'**
   String get monthNoRecords;
 
+  /// No description provided for @doctorSummary.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doktoruma özet çıkar'**
+  String get doctorSummary;
+
   /// No description provided for @monthPeriodDays.
   ///
   /// In tr, this message translates to:

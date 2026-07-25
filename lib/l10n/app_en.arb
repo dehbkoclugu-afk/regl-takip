@@ -710,6 +710,7 @@
   "hideLegend": "Hide colour key",
   "backToToday": "Back to today",
   "monthNoRecords": "No records this month",
+  "doctorSummary": "Export a summary for my doctor",
   "monthPeriodDays": "{count} period days",
   "@monthPeriodDays": {
     "placeholders": {
