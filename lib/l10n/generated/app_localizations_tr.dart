@@ -530,6 +530,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get invalidWeight => 'Geçerli bir kilo gir (20-300 kg)';
 
   @override
+  String get invalidTemperature => 'Geçerli bir sıcaklık gir (35-40 °C)';
+
+  @override
   String get discardChangesTitle => 'Kaydedilmemiş değişiklik';
 
   @override
@@ -601,6 +604,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get dailyLog => 'Günlük Kayıt';
+
+  @override
+  String get dailyMeasurements => 'Günlük Ölçümler';
 
   @override
   String get flow => 'Akış';
@@ -780,6 +786,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get noMedicationsYet => 'Henüz ilaç eklenmedi';
+
+  @override
+  String get medicationPlanHint =>
+      'Bu plan her gün geçerlidir. Onay kutusu yalnız seçili günü kaydeder.';
+
+  @override
+  String get medicationAlreadyInPlan => 'Bu ilaç zaten planda';
 
   @override
   String get tapToAdd => '+ butonuna dokunarak ekleyin';
@@ -1102,6 +1115,25 @@ class AppLocalizationsTr extends AppLocalizations {
   String get trimester3 => '3. Trimester';
 
   @override
+  String get pregnancyDevelopmentTitle => 'Bu haftanın gelişimi';
+
+  @override
+  String get pregnancyDevelopment1 =>
+      'Bebeğin temel organ ve vücut sistemleri oluşurken hızlı bir gelişim dönemi sürüyor.';
+
+  @override
+  String get pregnancyDevelopment2 =>
+      'Bebeğin hareketleri daha düzenli hale geliyor; hareketleri hissetme zamanı kişiden kişiye değişebilir.';
+
+  @override
+  String get pregnancyDevelopment3 =>
+      'Bebeğin büyümesi sürerken doğuma hazırlık giderek öne çıkıyor.';
+
+  @override
+  String get pregnancyCheckupReminder =>
+      'Kontrol planını sağlık uzmanının önerdiği takvime göre takip et.';
+
+  @override
   String get pregnancyStartLabel => 'Son adet tarihi (gebelik başlangıcı)';
 
   @override
@@ -1164,6 +1196,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get quickLog => 'Hızlı Kayıt';
 
   @override
+  String get shortcutQuickLog => 'Hızlı Kayıt';
+
+  @override
+  String get shortcutToday => 'Bugünü Gör';
+
+  @override
   String get allTrackers => 'Tüm kayıt türleri';
 
   @override
@@ -1182,7 +1220,44 @@ class AppLocalizationsTr extends AppLocalizations {
   String get decoyHint => 'Bir şeyler yaz…';
 
   @override
-  String get backupData => 'Yedek Al (JSON)';
+  String get backupData => 'Parolalı Yedek Al';
+
+  @override
+  String get backupPassword => 'Yedek parolası';
+
+  @override
+  String get backupPasswordConfirm => 'Parolayı tekrar gir';
+
+  @override
+  String get backupPasswordLength => 'Parola 10–128 karakter olmalı';
+
+  @override
+  String get backupPasswordsDoNotMatch => 'Parolalar eşleşmiyor';
+
+  @override
+  String get backupNoRecovery =>
+      'Bu parola cihazda saklanmaz ve kurtarılamaz. Unutursan yedeği açamazsın.';
+
+  @override
+  String get unlockBackupTitle => 'Yedek parolasını gir';
+
+  @override
+  String get unlockBackupBody =>
+      'Bu yedek yalnız oluştururken kullandığın parolayla açılabilir.';
+
+  @override
+  String get backupPasswordOrFileInvalid =>
+      'Parola yanlış veya yedek dosyası bozuk.';
+
+  @override
+  String get legacyBackupWarning =>
+      'Bu eski yedek şifrelenmemiştir. Geri yüklersen yeni yedeklerin parolalı olacaktır.';
+
+  @override
+  String get showPassword => 'Parolayı göster';
+
+  @override
+  String get hidePassword => 'Parolayı gizle';
 
   @override
   String get restoreData => 'Yedekten Geri Yükle';
@@ -1516,6 +1591,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get privacyAssurance => 'Verilerin yalnızca bu cihazda, şifreli saklanır';
 
   @override
+  String get privacySummary =>
+      'Ana verilerin bu cihazda şifreli tutulur; yalnız dışa aktardığında veya Health Connect\'i açtığında cihazdan çıkar.';
+
+  @override
   String get dontRememberExactly => 'Tam hatırlamıyorum';
 
   @override
@@ -1588,12 +1667,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String regularityInfoInsufficient(int count) {
     return 'Düzenlilikten söz edebilmek için en az $count döngü aralığı gerekiyor. Daha az kayıtla yapılan yorum yanıltıcı olur.';
   }
-
-  @override
-  String get backupWarningTitle => 'Yedek dosyası şifresiz';
-
-  @override
-  String get backupWarningBody => 'Yedek, döngü ve sağlık kayıtlarının tamamını okunabilir biçimde içerir. Cihazdaki veriler şifreli tutulur ama bu dosya değildir. Nereye kaydettiğine ve kiminle paylaştığına dikkat et.';
 
   @override
   String get backupNever => 'Henüz hiç yedek almadın.';
@@ -1777,6 +1850,74 @@ class AppLocalizationsTr extends AppLocalizations {
   String get storyTrendFlat => 'Bu dönemde belirgin bir değişim yok — seyir yatay.';
 
   @override
+  String averageSeverity(String value) {
+    return 'Ort. $value/5';
+  }
+
+  @override
+  String get dataCoverage => 'Kayıt yoğunluğu';
+
+  @override
+  String dataCoverageValue(int logged, int total, int percent) {
+    return '$total günün $logged gününde kayıt var (%$percent)';
+  }
+
+  @override
+  String get tapChartPointHint => 'O günü açmak için bir noktaya dokun.';
+
+  @override
+  String get shareCalendarMonth => 'Takvim ayını paylaş';
+
+  @override
+  String get longPressDayHint => 'Hızlı önizleme için bir güne basılı tut.';
+
+  @override
+  String get markPeriodRange => 'Regl tarih aralığını işaretle';
+
+  @override
+  String get periodRangeOverlap => 'Bu aralık mevcut bir regl kaydıyla çakışıyor.';
+
+  @override
+  String get periodRangeSaved => 'Regl tarih aralığı kaydedildi';
+
+  @override
+  String trackingStreak(int count) {
+    return '$count günlük seri';
+  }
+
+  @override
+  String weeklyTracking(int count) {
+    return 'Son 7 günde $count kayıt';
+  }
+
+  @override
+  String get exportCalendarFile => 'Takvim dışa aktar (.ics)';
+
+  @override
+  String get ovulationMarkerHint => 'Kesikli çizgi: tahmini veya teyitli ovülasyon';
+
+  @override
+  String get addPastCycles => 'Geçmiş döngüleri ekle';
+
+  @override
+  String get addPastCyclesHint => 'En fazla 3 regl tarih aralığını seçip birlikte kaydet.';
+
+  @override
+  String get addPeriodRange => 'Regl aralığı ekle';
+
+  @override
+  String get cycleOverlayTitle => 'Döngü karşılaştırması';
+
+  @override
+  String get symptomLoadComparison => 'Günlük belirti şiddeti aynı döngü gününde karşılaştırılır';
+
+  @override
+  String get currentCycleLabel => 'Bu döngü';
+
+  @override
+  String get previousCycleLabel => 'Önceki döngü';
+
+  @override
   String get colorBlindPattern => 'Desenli faz renkleri';
 
   @override
@@ -1870,4 +2011,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get healthDisclaimer => 'Bu uygulama tıbbi tavsiye niteliğinde değildir. Sağlık sorunlarınız için lütfen bir sağlık uzmanına danışın.';
+
+  @override
+  String get homePriority => 'Ana ekran önceliği';
+
+  @override
+  String get cycleFirst => 'Döngü önce';
+
+  @override
+  String get todayFirst => 'Bugün önce';
 }

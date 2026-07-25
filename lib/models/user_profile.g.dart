@@ -34,8 +34,9 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       darkModeEnabled: fields[14] as bool,
       waterGoal: fields[15] == null ? 8 : fields[15] as int,
       smartPredictionEnabled: fields[16] == null ? true : fields[16] as bool,
-      trackingMode:
-          fields[17] == null ? TrackingMode.period : fields[17] as TrackingMode,
+      trackingMode: fields[17] == null
+          ? TrackingMode.period
+          : fields[17] as TrackingMode,
       pregnancyStartDate: fields[18] as DateTime?,
       pillPackStartDate: fields[19] as DateTime?,
       themePreference: fields[20] == null ? '' : fields[20] as String,
@@ -45,13 +46,20 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       cycleReminderMinute: fields[24] as int?,
       periodReminderLeadDays: fields[25] == null ? 1 : fields[25] as int,
       quietNotifications: fields[26] == null ? false : fields[26] as bool,
+      usePounds: fields[27] == null ? false : fields[27] as bool,
+      useFahrenheit: fields[28] == null ? false : fields[28] as bool,
+      medicationPlan: fields[29] == null
+          ? <MedicationEntry>[]
+          : (fields[29] as List).cast<MedicationEntry>(),
+      medicationPlanMigrated:
+          fields[30] == null ? false : fields[30] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(27)
+      ..writeByte(31)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -105,7 +113,15 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(25)
       ..write(obj.periodReminderLeadDays)
       ..writeByte(26)
-      ..write(obj.quietNotifications);
+      ..write(obj.quietNotifications)
+      ..writeByte(27)
+      ..write(obj.usePounds)
+      ..writeByte(28)
+      ..write(obj.useFahrenheit)
+      ..writeByte(29)
+      ..write(obj.medicationPlan)
+      ..writeByte(30)
+      ..write(obj.medicationPlanMigrated);
   }
 
   @override

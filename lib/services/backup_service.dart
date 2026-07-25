@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -8,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/daily_log.dart';
 import '../models/period_record.dart';
 import '../models/user_profile.dart';
+import 'encrypted_backup_codec.dart';
 import 'hive_service.dart';
 
 /// Yedek dosyası içeriği — parse ve restore arasındaki taşıyıcı.
@@ -86,14 +88,33 @@ class BackupService {
     return const JsonEncoder.withIndent('  ').convert(payload);
   }
 
-  /// Yedeği geçici dizine dosya olarak yazar; paylaşım için yolu döndürür.
-  Future<String> exportBackup() async {
+  /// Yedeği parolayla şifreleyip geçici dizine yazar.
+  Future<String> exportBackup(String password) async {
     final json = buildBackupJson();
+    final encrypted = await Isolate.run(
+      () => EncryptedBackupCodec().encrypt(json, password),
+    );
     final dir = await getTemporaryDirectory();
     final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-    final file = File('${dir.path}/regl_takip_backup_$timestamp.json');
-    await file.writeAsString(json);
+    final file = File('${dir.path}/regl_takip_backup_$timestamp.rtbackup');
+    await file.writeAsString(encrypted, flush: true);
     return file.path;
+  }
+
+  bool isEncryptedBackup(String source) =>
+      EncryptedBackupCodec().isEncryptedEnvelope(source);
+
+  Future<String> decryptBackup(String source, String password) =>
+      Isolate.run(
+        () => EncryptedBackupCodec().decrypt(source, password),
+      );
+
+  Future<String> readBackupFile(String path) async {
+    final file = File(path);
+    if (await file.length() > EncryptedBackupCodec.maxFileBytes) {
+      throw BackupException('Yedek dosyası çok büyük');
+    }
+    return file.readAsString();
   }
 
   /// JSON string'i doğrular ve BackupData'ya çözer.
@@ -157,5 +178,6 @@ class BackupService {
     for (final log in data.dailyLogs) {
       await _hiveService.saveDailyLog(log);
     }
+    await _hiveService.ensureMedicationPlanMigrated();
   }
 }

@@ -48,6 +48,10 @@
             <intent-filter>
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE"/>
             </intent-filter>
+            <intent-filter>
+                <action android:name="es.antonborri.home_widget.action.LAUNCH"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
         </activity>
         <!-- Gizli mod: launcher girişi alias'larda. Normalde Default aktif;
              gizli modda Disguised aktif olur ("Notlar" adı, nötr ikon).

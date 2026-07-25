@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/adaptive_layout.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/tracker_scaffold.dart';
 import '../../providers/providers.dart';
@@ -126,23 +127,36 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
   }
 
   Widget _buildTimeCards(AppLocalizations l10n) {
-    return Row(
-      children: [
-        Expanded(child: _buildTimeCard(
+    final cards = [
+      _buildTimeCard(
           Icons.nightlight_round, l10n.bedTimeLabel, _bedTime,
           () async {
             final p = await showTimePicker(context: context, initialTime: _bedTime);
             if (p != null) setState(() => _bedTime = p);
           },
-        )),
-        const SizedBox(width: 12),
-        Expanded(child: _buildTimeCard(
+        ),
+      _buildTimeCard(
           Icons.wb_sunny_rounded, l10n.wakeTimeLabel, _wakeTime,
           () async {
             final p = await showTimePicker(context: context, initialTime: _wakeTime);
             if (p != null) setState(() => _wakeTime = p);
           },
-        )),
+        ),
+    ];
+    if (usesLargeText(MediaQuery.textScalerOf(context))) {
+      return Column(
+        children: [
+          cards.first,
+          const SizedBox(height: 12),
+          cards.last,
+        ],
+      );
+    }
+    return Row(
+      children: [
+        Expanded(child: cards.first),
+        const SizedBox(width: 12),
+        Expanded(child: cards.last),
       ],
     );
   }

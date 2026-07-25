@@ -4,6 +4,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../providers/providers.dart';
 
+bool shouldShowTrialEndNotice({
+  required AccessLevel access,
+  required bool alreadyShown,
+  required bool onboardingCompleted,
+}) =>
+    access == AccessLevel.free && !alreadyShown && onboardingCompleted;
+
 /// Premium kapısı: erişim varsa true; ücretsiz katmandaysa paywall'ı
 /// açar ve false döner. Rota dışı giriş noktaları (sheet, buton) için —
 /// rotalar router redirect'iyle korunur.

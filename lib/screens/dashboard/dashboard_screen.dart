@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/access.dart';
+import '../../core/utils/adaptive_layout.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_insights.dart';
@@ -99,6 +100,8 @@ class DashboardScreen extends ConsumerWidget {
     final effectiveCycleLen = ref.watch(effectiveCycleLengthProvider);
     final access = ref.watch(accessProvider);
     final trialDaysLeft = ref.watch(trialDaysLeftProvider);
+    final todayFirst =
+        ref.watch(homePriorityProvider) == HomePriority.today;
     // Ücretsiz katman yalnız regl takibi: modlara özel arayüz (hamilelik
     // hero'su, hap çipi, TTC kartı) premium kapsamında — free'de veri
     // silinmez ama görünüm klasik regl takibine döner
@@ -158,9 +161,12 @@ class DashboardScreen extends ConsumerWidget {
           // Alt boşluk yüzen gezinme çubuğunu aşacak kadar — fazlası
           // sayfa sonunda ölü alan bırakıyordu
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 92),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1180),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
               const SizedBox(height: 20),
               // Selamlama artık display anı değil: ekranın en büyük yazısı
               // kullanıcının sorusuna ("ne zaman?") ait olmalı, ismine değil.
@@ -177,8 +183,6 @@ class DashboardScreen extends ConsumerWidget {
                   color: AppColors.ts(context),
                 ),
                 textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               )
                   .animateSafe(context)
                   .fadeIn(duration: 350.ms)
@@ -190,11 +194,24 @@ class DashboardScreen extends ConsumerWidget {
                     .fadeIn(delay: 60.ms, duration: 400.ms)
                     .slideY(begin: -0.15, end: 0, duration: 400.ms),
               ],
+              if (todayFirst) ...[
+                const SizedBox(height: 20),
+                const QuickStatusCards(),
+                const SizedBox(height: 14),
+              ],
               const SizedBox(height: 14),
               if (mode == TrackingMode.pregnancy) ...[
                 // Hamilelik modu: hafta sayacı hero, tahminler gizli
                 const SizedBox(height: 20),
                 _buildPregnancyHero(context, l10n, profile?.pregnancyStartDate),
+                if (profile?.pregnancyStartDate != null) ...[
+                  const SizedBox(height: 14),
+                  _buildPregnancyInsight(
+                    context,
+                    l10n,
+                    profile!.pregnancyStartDate!,
+                  ),
+                ],
                 const SizedBox(height: 24),
                 _buildActionRow(context, ref, l10n, mode),
                 const SizedBox(height: 24),
@@ -229,8 +246,6 @@ class DashboardScreen extends ConsumerWidget {
                                   fontWeight: FontWeight.w600,
                                   color: AppColors.tp(context),
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             const SizedBox(width: 6),
@@ -251,58 +266,94 @@ class DashboardScreen extends ConsumerWidget {
                   _buildPillCard(context, l10n, profile!.pillPackStartDate!),
                 ],
                 const SizedBox(height: 28),
-                // Progress Ring
-                CycleProgressRing(
-                  cycleDay: cycleDay,
-                  cycleLength: effectiveCycleLen,
-                  periodLength: profile?.averagePeriodLength ?? 5,
-                  phase: phase,
-                  daysUntilNextPeriod: daysUntil,
-                  delayDays: ref.watch(periodDelayProvider),
-                  lastPeriodStart: profile?.lastPeriodStart,
-                  patterned: ref.watch(phasePatternProvider),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final expanded = constraints.maxWidth >= 840;
+
+                    Widget cycleColumn() => Column(
+                          children: [
+                            CycleProgressRing(
+                              cycleDay: cycleDay,
+                              cycleLength: effectiveCycleLen,
+                              periodLength:
+                                  profile?.averagePeriodLength ?? 5,
+                              phase: phase,
+                              daysUntilNextPeriod: daysUntil,
+                              delayDays: ref.watch(periodDelayProvider),
+                              lastPeriodStart: profile?.lastPeriodStart,
+                              patterned: ref.watch(phasePatternProvider),
+                            ),
+                            const SizedBox(height: 20),
+                            const WeekStrip()
+                                .animateSafe(context)
+                                .fadeIn(delay: 150.ms, duration: 400.ms),
+                            const SizedBox(height: 24),
+                            _buildActionRow(context, ref, l10n, mode),
+                          ],
+                        );
+
+                    Widget insightColumn() => Column(
+                          children: [
+                            PredictionCardsRow(
+                              nextPeriodDate: nextPeriodStr,
+                              ovulationDate: ovulationStr,
+                              fertileWindowDate: fertileStr,
+                              ovulationConfirmed:
+                                  confirmedOvulation != null,
+                            ),
+                            const SizedBox(height: 24),
+                            if (mode == TrackingMode.ttc) ...[
+                              _buildTtcCard(
+                                context,
+                                ref,
+                                l10n,
+                                cycleDay,
+                                effectiveCycleLen,
+                                ovulationDate,
+                                locale,
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+                            _buildCoachCard(context, ref, phase, l10n),
+                          ],
+                        );
+
+                    return FocusTraversalGroup(
+                      policy: WidgetOrderTraversalPolicy(),
+                      child: expanded
+                          ? Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(child: cycleColumn()),
+                                const SizedBox(width: 32),
+                                Expanded(child: insightColumn()),
+                              ],
+                            )
+                          : Column(
+                              children: [
+                                cycleColumn(),
+                                const SizedBox(height: 28),
+                                insightColumn(),
+                              ],
+                            ),
+                    );
+                  },
                 ),
-                const SizedBox(height: 20),
-                // 7 günlük mini şerit: dün/bugün/yarın bağlamı takvime
-                // inmeden — imza faz haritasının beşinci yüzeyi
-                const WeekStrip()
-                    .animateSafe(context)
-                    .fadeIn(delay: 150.ms, duration: 400.ms),
-                const SizedBox(height: 24),
-                // Aksiyonlar ringin hemen altında: göz ring'den iner inmez
-                // bir numaralı iş ("Reglim başladı") elin altında —
-                // tahminler bilgidir, aşağıda yaşayabilir
-                _buildActionRow(context, ref, l10n, mode),
-                const SizedBox(height: 28),
-                // Prediction Cards
-                PredictionCardsRow(
-                  nextPeriodDate: nextPeriodStr,
-                  ovulationDate: ovulationStr,
-                  fertileWindowDate: fertileStr,
-                  ovulationConfirmed: confirmedOvulation != null,
-                ),
-                // Tahminlerden sonrası nefes alsın: bloklar arası eşit
-                // ve cömert boşluk (sıkışıklık şikayetinin adresi)
-                const SizedBox(height: 24),
-                if (mode == TrackingMode.ttc) ...[
-                  _buildTtcCard(context, ref, l10n, cycleDay,
-                      effectiveCycleLen, ovulationDate, locale),
-                  const SizedBox(height: 24),
-                ],
-                // Günlük faz koçluğu — faza göre pratik ipucu
-                _buildCoachCard(context, ref, phase, l10n),
               ],
               // Deneme/ücretsiz durumu görünür kalır ama ekranın tepesinde
               // değil: orası "ne zaman?" cevabının yeri
-              if (access != AccessLevel.premium) ...[
+              if (access == AccessLevel.free ||
+                  (access == AccessLevel.trial && trialDaysLeft <= 7)) ...[
                 const SizedBox(height: 24),
                 _buildAccessChip(context, l10n, access, trialDaysLeft),
               ],
-              const SizedBox(height: 28),
-              const QuickStatusCards(),
-              const SizedBox(height: 20),
-              _buildDisclaimer(context, l10n),
-            ],
+              if (!todayFirst) ...[
+                const SizedBox(height: 28),
+                const QuickStatusCards(),
+              ],
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -368,8 +419,6 @@ class DashboardScreen extends ConsumerWidget {
             height: 1.2,
             color: AppColors.tp(context),
           ),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
         ),
         if (subtitle != null) ...[
           const SizedBox(height: 2),
@@ -381,8 +430,6 @@ class DashboardScreen extends ConsumerWidget {
               fontWeight: FontWeight.w600,
               color: AppColors.ts(context),
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ],
@@ -397,11 +444,9 @@ class DashboardScreen extends ConsumerWidget {
     final showHint = mode != TrackingMode.pregnancy &&
         ref.watch(backdateHintProvider);
 
-    final row = Row(
-                children: [
-                  if (mode != TrackingMode.pregnancy) ...[
-                    Expanded(
-                      child: _buildActionButton(
+    final buttons = <Widget>[
+      if (mode != TrackingMode.pregnancy)
+        _buildActionButton(
                         context: context,
                         icon: Icons.water_drop_rounded,
                         label: ongoingPeriod != null
@@ -418,11 +463,7 @@ class DashboardScreen extends ConsumerWidget {
                         onLongPress: () => _pickPeriodDate(
                             context, ref, l10n, ongoingPeriod),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                  ],
-                  Expanded(
-                    child: _buildActionButton(
+      _buildActionButton(
                       context: context,
                       icon: Icons.add_reaction_rounded,
                       label: l10n.addRecord,
@@ -434,9 +475,24 @@ class DashboardScreen extends ConsumerWidget {
                         showQuickLogSheet(context, ref, DateTime.now());
                       },
                     ),
-                  ),
-                ],
-              );
+    ];
+    final row = usesLargeText(MediaQuery.textScalerOf(context)) &&
+            buttons.length > 1
+        ? Column(
+            children: [
+              SizedBox(width: double.infinity, child: buttons.first),
+              const SizedBox(height: 12),
+              SizedBox(width: double.infinity, child: buttons.last),
+            ],
+          )
+        : Row(
+            children: [
+              for (var i = 0; i < buttons.length; i++) ...[
+                Expanded(child: buttons[i]),
+                if (i < buttons.length - 1) const SizedBox(width: 12),
+              ],
+            ],
+          );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -952,9 +1008,11 @@ class DashboardScreen extends ConsumerWidget {
     }
 
     final week = CycleUtils.pregnancyWeek(start);
-    final trimester = week <= 13
-        ? l10n.trimester1
-        : (week <= 27 ? l10n.trimester2 : l10n.trimester3);
+    final trimester = switch (CycleUtils.pregnancyTrimester(week)) {
+      1 => l10n.trimester1,
+      2 => l10n.trimester2,
+      _ => l10n.trimester3,
+    };
 
     return Semantics(
       label:
@@ -991,6 +1049,90 @@ class DashboardScreen extends ConsumerWidget {
         ),
       ),
     ).animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms);
+  }
+
+  Widget _buildPregnancyInsight(
+    BuildContext context,
+    AppLocalizations l10n,
+    DateTime start,
+  ) {
+    final week = CycleUtils.pregnancyWeek(start);
+    final development = switch (CycleUtils.pregnancyTrimester(week)) {
+      1 => l10n.pregnancyDevelopment1,
+      2 => l10n.pregnancyDevelopment2,
+      _ => l10n.pregnancyDevelopment3,
+    };
+    final semantics =
+        '${l10n.pregnancyDevelopmentTitle}. $development. '
+        '${l10n.pregnancyCheckupReminder}';
+
+    return Semantics(
+      label: semantics,
+      child: ExcludeSemantics(
+        child: GlassCard(
+          borderRadius: 20,
+          blur: 0,
+          opacity: 0.16,
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(
+                    Icons.auto_awesome_rounded,
+                    size: 20,
+                    color: AppColors.primaryDeep,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      l10n.pregnancyDevelopmentTitle,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.tp(context),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                development,
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 1.45,
+                  color: AppColors.tp(context),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.event_available_rounded,
+                    size: 18,
+                    color: AppColors.ts(context),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      l10n.pregnancyCheckupReminder,
+                      style: TextStyle(
+                        fontSize: 12,
+                        height: 1.4,
+                        color: AppColors.ts(context),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    ).animateSafe(context).fadeIn(delay: 180.ms, duration: 400.ms);
   }
 
   /// Hap paketi kartı.
@@ -1030,15 +1172,11 @@ class DashboardScreen extends ConsumerWidget {
                     fontWeight: FontWeight.w700,
                     color: AppColors.tp(context),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
                 Text(
                   next,
                   style: TextStyle(fontSize: 12, color: AppColors.ts(context)),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -1055,53 +1193,6 @@ class DashboardScreen extends ConsumerWidget {
         ],
       ),
     ).animateSafe(context).fadeIn(delay: 120.ms, duration: 400.ms);
-  }
-
-  Widget _buildDisclaimer(BuildContext context, AppLocalizations l10n) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Icon(Icons.info_outline_rounded,
-                  size: 14, color: AppColors.ts(context)),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  l10n.healthDisclaimer,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: AppColors.ts(context),
-                    height: 1.4,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          // Yasal zorunluluk düzeyinde uyarı: tahminler korunma aracı değil
-          Row(
-            children: [
-              Icon(Icons.gpp_maybe_rounded,
-                  size: 14, color: AppColors.error),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  l10n.notContraceptionWarning,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.ts(context),
-                    height: 1.4,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildActionButton({
@@ -1151,8 +1242,6 @@ class DashboardScreen extends ConsumerWidget {
                       fontWeight: FontWeight.w700,
                       color: AppColors.tp(context),
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

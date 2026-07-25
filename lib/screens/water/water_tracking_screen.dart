@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/adaptive_layout.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/tracker_scaffold.dart';
 import '../../providers/providers.dart';
@@ -128,13 +129,15 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
 
   Widget _buildControls(int goal) {
     final l10n = AppLocalizations.of(context)!;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: usesLargeText(MediaQuery.textScalerOf(context)) ? 12 : 32,
+      runSpacing: 12,
       children: [
         _counterBtn(Icons.remove, l10n.decrease, () {
           if (_glasses > 0) setState(() => _glasses--);
         }),
-        const SizedBox(width: 32),
         Semantics(
           button: true,
           label: '${l10n.dailyGoal}: $goal',
@@ -173,7 +176,6 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
             ),
           ),
         ),
-        const SizedBox(width: 32),
         // Hedefin üstünde içilen su da kayda girmeli: sayaç hedefte
         // durduruluyordu, fazlası kaydedilemiyordu
         _counterBtn(Icons.add, l10n.increase,

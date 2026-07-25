@@ -15,12 +15,68 @@ import '../models/period_record.dart';
 import '../models/user_profile.dart';
 import 'disguise_service.dart';
 
+enum WidgetPeriodActionDestination { wait, discard, startPeriod }
+
+bool shouldShowWidgetPeriodAction({
+  required bool onboardingCompleted,
+  required bool disguised,
+  required TrackingMode? trackingMode,
+  required bool hasOngoingPeriod,
+}) =>
+    onboardingCompleted &&
+    !disguised &&
+    !hasOngoingPeriod &&
+    (trackingMode == TrackingMode.period || trackingMode == TrackingMode.ttc);
+
+String? widgetActionFromUri(Uri? uri) {
+  if (uri?.scheme == 'regltakip' &&
+      uri?.host == 'widget' &&
+      uri?.path == '/period-start') {
+    return WidgetService.periodStartAction;
+  }
+  return null;
+}
+
+WidgetPeriodActionDestination resolveWidgetPeriodAction({
+  required String? action,
+  required bool disguiseResolved,
+  required bool disguised,
+  required bool onboardingCompleted,
+  required TrackingMode? trackingMode,
+  required bool hasOngoingPeriod,
+  required bool hasRecordToday,
+  required bool locked,
+  required bool appResumed,
+  required bool navigatorReady,
+}) {
+  if (action != WidgetService.periodStartAction) {
+    return WidgetPeriodActionDestination.discard;
+  }
+  if (!disguiseResolved || locked || !appResumed || !navigatorReady) {
+    return WidgetPeriodActionDestination.wait;
+  }
+  if (!shouldShowWidgetPeriodAction(
+        onboardingCompleted: onboardingCompleted,
+        disguised: disguised,
+        trackingMode: trackingMode,
+        hasOngoingPeriod: hasOngoingPeriod,
+      ) ||
+      hasRecordToday) {
+    return WidgetPeriodActionDestination.discard;
+  }
+  return WidgetPeriodActionDestination.startPeriod;
+}
+
 /// Android ana ekran widget'ını besler. Metinler Dart tarafında
 /// lokalize edilip SharedPreferences üzerinden native provider'a geçer
 /// (native tarafta l10n altyapısı yok).
 class WidgetService {
   static const _androidProvider = 'CycleWidgetProvider';
   static const _androidWideProvider = 'CycleWideWidgetProvider';
+  static const periodStartAction = 'period_start';
+
+  static final ValueNotifier<String?> pendingAction = ValueNotifier(null);
+  static bool _initialized = false;
 
   static const _strings = {
     'tr': {
@@ -33,6 +89,7 @@ class WidgetService {
       'nextPeriod': 'Sonraki regl',
       'ovulation': 'Ovülasyon',
       'fertile': 'Verimli pencere',
+      'periodStarted': 'Reglim başladı',
     },
     'en': {
       'day': 'Day',
@@ -44,6 +101,7 @@ class WidgetService {
       'nextPeriod': 'Next period',
       'ovulation': 'Ovulation',
       'fertile': 'Fertile window',
+      'periodStarted': 'My period started',
     },
     'es': {
       'day': 'Día',
@@ -55,6 +113,7 @@ class WidgetService {
       'nextPeriod': 'Próxima regla',
       'ovulation': 'Ovulación',
       'fertile': 'Ventana fértil',
+      'periodStarted': 'Mi regla empezó',
     },
     'de': {
       'day': 'Tag',
@@ -66,6 +125,7 @@ class WidgetService {
       'nextPeriod': 'Nächste Periode',
       'ovulation': 'Eisprung',
       'fertile': 'Fruchtbares Fenster',
+      'periodStarted': 'Periode hat begonnen',
     },
     'fr': {
       'day': 'Jour',
@@ -77,6 +137,7 @@ class WidgetService {
       'nextPeriod': 'Prochaines règles',
       'ovulation': 'Ovulation',
       'fertile': 'Fenêtre fertile',
+      'periodStarted': 'Mes règles ont commencé',
     },
     'ru': {
       'day': 'День',
@@ -88,11 +149,31 @@ class WidgetService {
       'nextPeriod': 'След. месячные',
       'ovulation': 'Овуляция',
       'fertile': 'Фертильное окно',
+      'periodStarted': 'Месячные начались',
     },
   };
 
   static String _t(String locale, String key) =>
       _strings[locale]?[key] ?? _strings['en']![key]!;
+
+  static bool get _isSupported =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+
+  static Future<void> init() async {
+    if (_initialized || !_isSupported) return;
+    try {
+      _acceptUri(await HomeWidget.initiallyLaunchedFromHomeWidget());
+      HomeWidget.widgetClicked.listen(_acceptUri);
+      _initialized = true;
+    } catch (e) {
+      debugPrint('[WIDGET] click setup failed: $e');
+    }
+  }
+
+  static void _acceptUri(Uri? uri) {
+    final action = widgetActionFromUri(uri);
+    if (action != null) pendingAction.value = action;
+  }
 
   /// Widget verisini günceller. Android dışında no-op.
   static Future<void> update(
@@ -108,6 +189,9 @@ class WidgetService {
         await HomeWidget.saveWidgetData<String>('line1', 'Notlar');
         await HomeWidget.saveWidgetData<String>('line2', '');
         await HomeWidget.saveWidgetData<String>('ring_path', null);
+        await HomeWidget.saveWidgetData<bool>(
+            'period_action_visible', false);
+        await HomeWidget.saveWidgetData<String>('period_action_label', '');
         await _savePredictions(null, null, null, null);
         await HomeWidget.updateWidget(androidName: _androidProvider);
         await HomeWidget.updateWidget(androidName: _androidWideProvider);
@@ -184,9 +268,19 @@ class WidgetService {
         }
       }
 
+      final periodActionVisible = shouldShowWidgetPeriodAction(
+        onboardingCompleted: profile?.onboardingCompleted == true,
+        disguised: false,
+        trackingMode: profile?.trackingMode,
+        hasOngoingPeriod: records.any((record) => record.isOngoing),
+      );
       await HomeWidget.saveWidgetData<String>('line1', line1);
       await HomeWidget.saveWidgetData<String>('line2', line2);
       await HomeWidget.saveWidgetData<String>('ring_path', ringPath);
+      await HomeWidget.saveWidgetData<bool>(
+          'period_action_visible', periodActionVisible);
+      await HomeWidget.saveWidgetData<String>(
+          'period_action_label', _t(locale, 'periodStarted'));
       await _savePredictions(locale, predPeriod, predOvulation, predFertile);
       await HomeWidget.updateWidget(androidName: _androidProvider);
       await HomeWidget.updateWidget(androidName: _androidWideProvider);

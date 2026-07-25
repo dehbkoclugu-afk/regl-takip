@@ -530,6 +530,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get invalidWeight => 'Introduce un peso válido (20-300 kg)';
 
   @override
+  String get invalidTemperature =>
+      'Introduce una temperatura válida (35-40 °C)';
+
+  @override
   String get discardChangesTitle => 'Cambios sin guardar';
 
   @override
@@ -601,6 +605,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get dailyLog => 'Registro diario';
+
+  @override
+  String get dailyMeasurements => 'Mediciones diarias';
 
   @override
   String get flow => 'Flujo';
@@ -780,6 +787,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noMedicationsYet => 'Aún no hay medicamentos';
+
+  @override
+  String get medicationPlanHint =>
+      'Este plan se aplica cada día. La casilla solo registra el día seleccionado.';
+
+  @override
+  String get medicationAlreadyInPlan =>
+      'Este medicamento ya está en el plan';
 
   @override
   String get tapToAdd => 'Toca + para añadir';
@@ -1102,6 +1117,25 @@ class AppLocalizationsEs extends AppLocalizations {
   String get trimester3 => '3er trimestre';
 
   @override
+  String get pregnancyDevelopmentTitle => 'Desarrollo esta semana';
+
+  @override
+  String get pregnancyDevelopment1 =>
+      'Continúa una etapa de rápido desarrollo mientras se forman los principales órganos y sistemas del bebé.';
+
+  @override
+  String get pregnancyDevelopment2 =>
+      'Los movimientos del bebé se coordinan más; el momento de empezar a sentirlos varía de una persona a otra.';
+
+  @override
+  String get pregnancyDevelopment3 =>
+      'El bebé sigue creciendo mientras la preparación para el parto cobra más importancia.';
+
+  @override
+  String get pregnancyCheckupReminder =>
+      'Sigue el calendario de controles recomendado por tu profesional sanitario.';
+
+  @override
   String get pregnancyStartLabel => 'Fecha de la última regla (inicio del embarazo)';
 
   @override
@@ -1164,6 +1198,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get quickLog => 'Registro rápido';
 
   @override
+  String get shortcutQuickLog => 'Registro rápido';
+
+  @override
+  String get shortcutToday => 'Ver hoy';
+
+  @override
   String get allTrackers => 'Todos los registros';
 
   @override
@@ -1182,7 +1222,46 @@ class AppLocalizationsEs extends AppLocalizations {
   String get decoyHint => 'Escribe algo…';
 
   @override
-  String get backupData => 'Copia de seguridad (JSON)';
+  String get backupData => 'Crear copia con contraseña';
+
+  @override
+  String get backupPassword => 'Contraseña de la copia';
+
+  @override
+  String get backupPasswordConfirm =>
+      'Vuelve a introducir la contraseña';
+
+  @override
+  String get backupPasswordLength =>
+      'La contraseña debe tener entre 10 y 128 caracteres';
+
+  @override
+  String get backupPasswordsDoNotMatch => 'Las contraseñas no coinciden';
+
+  @override
+  String get backupNoRecovery =>
+      'Esta contraseña no se guarda en el dispositivo y no se puede recuperar. Si la olvidas, no podrás abrir la copia.';
+
+  @override
+  String get unlockBackupTitle => 'Introduce la contraseña de la copia';
+
+  @override
+  String get unlockBackupBody =>
+      'Esta copia solo se puede abrir con la contraseña usada al crearla.';
+
+  @override
+  String get backupPasswordOrFileInvalid =>
+      'La contraseña es incorrecta o el archivo de copia está dañado.';
+
+  @override
+  String get legacyBackupWarning =>
+      'Esta copia antigua no está cifrada. Tras restaurarla, las nuevas copias estarán protegidas con contraseña.';
+
+  @override
+  String get showPassword => 'Mostrar contraseña';
+
+  @override
+  String get hidePassword => 'Ocultar contraseña';
 
   @override
   String get restoreData => 'Restaurar copia';
@@ -1516,6 +1595,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get privacyAssurance => 'Tus datos quedan cifrados solo en este dispositivo';
 
   @override
+  String get privacySummary =>
+      'Tus datos principales se cifran en este dispositivo; solo salen cuando los exportas o activas Health Connect.';
+
+  @override
   String get dontRememberExactly => 'No lo recuerdo exactamente';
 
   @override
@@ -1588,12 +1671,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String regularityInfoInsufficient(int count) {
     return 'Hacen falta al menos $count intervalos de ciclo para hablar de regularidad. Con menos, el juicio induciría a error.';
   }
-
-  @override
-  String get backupWarningTitle => 'El archivo de copia no está cifrado';
-
-  @override
-  String get backupWarningBody => 'La copia contiene todos tus registros de ciclo y salud en formato legible. Los datos del dispositivo están cifrados, pero este archivo no. Ten cuidado con dónde lo guardas y con quién lo compartes.';
 
   @override
   String get backupNever => 'Aún no has hecho ninguna copia.';
@@ -1777,6 +1854,74 @@ class AppLocalizationsEs extends AppLocalizations {
   String get storyTrendFlat => 'Sin cambios relevantes en este período: la tendencia es plana.';
 
   @override
+  String averageSeverity(String value) {
+    return 'Prom. $value/5';
+  }
+
+  @override
+  String get dataCoverage => 'Cobertura de datos';
+
+  @override
+  String dataCoverageValue(int logged, int total, int percent) {
+    return 'Datos en $logged de $total días ($percent %)';
+  }
+
+  @override
+  String get tapChartPointHint => 'Toca un punto para abrir ese día.';
+
+  @override
+  String get shareCalendarMonth => 'Compartir mes del calendario';
+
+  @override
+  String get longPressDayHint => 'Mantén pulsado un día para ver una vista rápida.';
+
+  @override
+  String get markPeriodRange => 'Marcar intervalo de la regla';
+
+  @override
+  String get periodRangeOverlap => 'Este intervalo se solapa con un registro existente.';
+
+  @override
+  String get periodRangeSaved => 'Intervalo de la regla guardado';
+
+  @override
+  String trackingStreak(int count) {
+    return 'Racha de $count días';
+  }
+
+  @override
+  String weeklyTracking(int count) {
+    return '$count/7 días registrados';
+  }
+
+  @override
+  String get exportCalendarFile => 'Exportar calendario (.ics)';
+
+  @override
+  String get ovulationMarkerHint => 'Línea discontinua: ovulación estimada o confirmada';
+
+  @override
+  String get addPastCycles => 'Añadir ciclos anteriores';
+
+  @override
+  String get addPastCyclesHint => 'Selecciona hasta 3 intervalos de regla y guárdalos juntos.';
+
+  @override
+  String get addPeriodRange => 'Añadir intervalo de regla';
+
+  @override
+  String get cycleOverlayTitle => 'Comparación de ciclos';
+
+  @override
+  String get symptomLoadComparison => 'Gravedad diaria de síntomas alineada por día del ciclo';
+
+  @override
+  String get currentCycleLabel => 'Este ciclo';
+
+  @override
+  String get previousCycleLabel => 'Ciclo anterior';
+
+  @override
   String get colorBlindPattern => 'Colores de fase con textura';
 
   @override
@@ -1870,4 +2015,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get healthDisclaimer => 'Esta aplicación no sustituye el consejo médico. Consulta a un profesional de la salud ante cualquier duda.';
+
+  @override
+  String get homePriority => 'Prioridad de inicio';
+
+  @override
+  String get cycleFirst => 'Ciclo primero';
+
+  @override
+  String get todayFirst => 'Hoy primero';
 }

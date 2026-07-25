@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/adaptive_layout.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/widgets/tracker_scaffold.dart';
 import '../../models/enums.dart';
@@ -152,14 +153,25 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
 
   Widget _buildCategoryGrid(SymptomCategory category, AppLocalizations l10n) {
     final symptoms = _getSymptomsForCategory(category);
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, childAspectRatio: 1.4,
-        crossAxisSpacing: 12, mainAxisSpacing: 12,
-      ),
-      itemCount: symptoms.length,
-      itemBuilder: (context, index) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textScale =
+            effectiveTextScale(MediaQuery.textScalerOf(context));
+        return GridView.builder(
+          padding: const EdgeInsets.all(16),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: adaptiveGridColumns(
+              width: constraints.maxWidth - 32,
+              textScale: textScale,
+              maxColumns: 2,
+              minCardWidth: 130,
+            ),
+            mainAxisExtent: scaledGridExtent(105, textScale),
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+          ),
+          itemCount: symptoms.length,
+          itemBuilder: (context, index) {
         final symptom = symptoms[index];
         final isSelected = _selectedSymptoms.containsKey(symptom);
         final severity = _selectedSymptoms[symptom] ?? 1;
@@ -218,8 +230,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
                           ? AppColors.primaryDeep
                           : AppColors.tp(context),
                     ),
-                    textAlign: TextAlign.center, maxLines: 1,
-                    overflow: TextOverflow.ellipsis),
+                    textAlign: TextAlign.center),
                 if (isSelected) ...[
                   const SizedBox(height: 2),
                   // Şiddet noktaları 10 px ikon + 2 px boşluktu: dokunma
@@ -257,6 +268,8 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
           ),
           ),
         ).animateSafe(context).fadeIn(delay: (index * 50).ms, duration: 300.ms);
+          },
+        );
       },
     );
   }

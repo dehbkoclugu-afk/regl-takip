@@ -97,8 +97,10 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
       (FlowIntensity.veryHeavy, l10n.veryHeavy, 4, AppColors.flowVeryHeavy),
     ];
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return Wrap(
+      alignment: WrapAlignment.spaceAround,
+      spacing: 12,
+      runSpacing: 12,
       children: items.asMap().entries.map((entry) {
         final i = entry.key;
         final item = entry.value;
@@ -171,8 +173,10 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
       (FlowColor.brown, l10n.brown, const Color(0xFFA08070)),
     ];
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return Wrap(
+      alignment: WrapAlignment.spaceAround,
+      spacing: 12,
+      runSpacing: 12,
       children: colors.asMap().entries.map((entry) {
         final i = entry.key;
         final item = entry.value;
@@ -231,17 +235,19 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.clots,
-                  style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w700,
-                      color: AppColors.tp(context))),
-              Text(l10n.clotsQuestion,
-                  style: TextStyle(
-                      fontSize: 13, color: AppColors.ts(context))),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.clots,
+                    style: TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w700,
+                        color: AppColors.tp(context))),
+                Text(l10n.clotsQuestion,
+                    style: TextStyle(
+                        fontSize: 13, color: AppColors.ts(context))),
+              ],
+            ),
           ),
           Switch.adaptive(
             value: _hasClots,

@@ -10,6 +10,7 @@ import '../../screens/statistics/statistics_screen.dart';
 import '../../screens/settings/settings_screen.dart';
 import '../../screens/shell/app_shell.dart';
 import '../../screens/log/log_screen.dart';
+import '../../screens/measurements/daily_measurements_screen.dart';
 import '../../screens/flow/flow_tracking_screen.dart';
 import '../../screens/water/water_tracking_screen.dart';
 import '../../screens/temperature/temperature_tracking_screen.dart';
@@ -32,6 +33,7 @@ const _premiumPaths = {
   '/flow',
   '/symptoms',
   '/mood',
+  '/measurements',
   '/water',
   '/temperature',
   '/weight',
@@ -43,6 +45,7 @@ const _premiumPaths = {
 
 // Navigation keys for each branch in the StatefulShellRoute
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
+GlobalKey<NavigatorState> get rootNavigatorKey => _rootNavigatorKey;
 final _shellNavigatorDashboardKey =
     GlobalKey<NavigatorState>(debugLabel: 'dashboard');
 final _shellNavigatorCalendarKey =
@@ -164,6 +167,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/water',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const WaterTrackingScreen(),
+      ),
+      GoRoute(
+        path: '/measurements',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const DailyMeasurementsScreen(),
       ),
       GoRoute(
         path: '/temperature',

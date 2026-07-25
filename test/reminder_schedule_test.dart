@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:regl_takip/models/user_profile.dart';
+import 'package:regl_takip/models/period_record.dart';
 
 void main() {
   group('etkin hatırlatma saatleri', () {
@@ -70,6 +71,15 @@ void main() {
         medicationReminderMinute: 15,
         periodReminderLeadDays: 3,
         quietNotifications: true,
+        usePounds: true,
+        useFahrenheit: true,
+        medicationPlan: [
+          MedicationEntry(
+            name: 'Demir',
+            dose: '10 mg',
+            reminderTime: '08:00',
+          ),
+        ],
       );
       final restored = UserProfile.fromJson(original.toJson());
 
@@ -79,6 +89,11 @@ void main() {
       expect(restored.medicationReminderMinute, 15);
       expect(restored.periodReminderLeadDays, 3);
       expect(restored.quietNotifications, isTrue);
+      expect(restored.usePounds, isTrue);
+      expect(restored.useFahrenheit, isTrue);
+      expect(restored.medicationPlan.single.name, 'Demir');
+      expect(restored.medicationPlan.single.reminderTime, '08:00');
+      expect(restored.medicationPlanMigrated, isTrue);
     });
 
     test('alanları olmayan eski yedek varsayılanlarla okunur', () {
@@ -98,6 +113,10 @@ void main() {
       expect(restored.periodReminderLeadDays, 1);
       // Eski yedekte alan yok: sessizlik kapalı, yani eski davranış
       expect(restored.quietNotifications, isFalse);
+      expect(restored.usePounds, isFalse);
+      expect(restored.useFahrenheit, isFalse);
+      expect(restored.medicationPlan, isEmpty);
+      expect(restored.medicationPlanMigrated, isFalse);
     });
   });
 

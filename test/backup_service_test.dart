@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:regl_takip/models/daily_log.dart';
@@ -6,6 +7,7 @@ import 'package:regl_takip/models/enums.dart';
 import 'package:regl_takip/models/period_record.dart';
 import 'package:regl_takip/models/user_profile.dart';
 import 'package:regl_takip/services/backup_service.dart';
+import 'package:regl_takip/services/encrypted_backup_codec.dart';
 import 'package:regl_takip/services/hive_service.dart';
 
 void main() {
@@ -55,6 +57,25 @@ void main() {
           .parseBackup(jsonEncode({'app': 'regl_takip', 'version': 1}));
       expect(data.profile, isNull);
       expect(data.totalRecordCount, 0);
+    });
+
+    test('legacy JSON is not mistaken for an encrypted envelope', () {
+      final source = jsonEncode({'app': 'regl_takip', 'version': 1});
+      expect(service.isEncryptedBackup(source), isFalse);
+    });
+
+    test('oversized backup is rejected before reading', () async {
+      final directory = await Directory.systemTemp.createTemp('rtbackup_test');
+      addTearDown(() => directory.delete(recursive: true));
+      final file = File('${directory.path}/oversized.rtbackup');
+      final handle = await file.open(mode: FileMode.write);
+      await handle.truncate(EncryptedBackupCodec.maxFileBytes + 1);
+      await handle.close();
+
+      await expectLater(
+        service.readBackupFile(file.path),
+        throwsA(isA<BackupException>()),
+      );
     });
   });
 

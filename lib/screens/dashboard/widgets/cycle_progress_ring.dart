@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -57,6 +58,7 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
 
   /// Dokunuşla seçilen segment; null = normal merkez içerik
   RingSegment? _selected;
+  bool _focused = false;
   Timer? _revertTimer;
 
   @override
@@ -131,7 +133,10 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
     final hit = segments.where(
         (s) => day >= s.startDay && day <= s.endDay);
     if (hit.isEmpty) return;
-    final segment = hit.first;
+    _toggleSelection(hit.first);
+  }
+
+  void _toggleSelection(RingSegment segment) {
     if (_selected == segment) {
       _clearSelection();
       return;
@@ -139,6 +144,16 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
     setState(() => _selected = segment);
     _revertTimer?.cancel();
     _revertTimer = Timer(const Duration(seconds: 5), _clearSelection);
+  }
+
+  void _toggleCurrentSelection(List<RingSegment> segments) {
+    final current = segments.firstWhere(
+      (segment) =>
+          widget.cycleDay >= segment.startDay &&
+          widget.cycleDay <= segment.endDay,
+      orElse: () => segments.last,
+    );
+    _toggleSelection(current);
   }
 
   void _clearSelection() {
@@ -170,10 +185,12 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
             ? Colors.black.withValues(alpha: 0.35)
             : Colors.white.withValues(alpha: 0.65),
         border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.12)
-              : Colors.white.withValues(alpha: 0.8),
-          width: 1.5,
+          color: _focused
+              ? (isDark ? AppColors.primaryLight : AppColors.primaryDeep)
+              : isDark
+                  ? Colors.white.withValues(alpha: 0.12)
+                  : Colors.white.withValues(alpha: 0.8),
+          width: _focused ? 3 : 1.5,
         ),
         // Hero ışıması: yalnız ring'de — yumuşak, faz renginde hale.
         // Gece sahnesinde kısık: karanlık odada parlama rahatsız eder.
@@ -210,10 +227,27 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
     );
 
     // Ring artık dokunulabilir harita: segmente dokun -> faz + tarih aralığı
-    final tappable = GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTapUp: (details) => _handleTap(details, segments),
-      child: ring,
+    final tappable = FocusableActionDetector(
+      shortcuts: const <ShortcutActivator, Intent>{
+        SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+        SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+      },
+      actions: <Type, Action<Intent>>{
+        ActivateIntent: CallbackAction<ActivateIntent>(
+          onInvoke: (_) {
+            _toggleCurrentSelection(segments);
+            return null;
+          },
+        ),
+      },
+      onShowFocusHighlight: (focused) {
+        if (_focused != focused) setState(() => _focused = focused);
+      },
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapUp: (details) => _handleTap(details, segments),
+        child: ring,
+      ),
     );
 
     // Ekran okuyucu için ring tek bir özet olarak duyurulur.
@@ -228,6 +262,8 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
             ? l10n.daysLater(widget.daysUntilNextPeriod)
             : l10n.todayExclamation);
     final labeled = Semantics(
+      button: true,
+      onTap: () => _toggleCurrentSelection(segments),
       label: '${EnumLabels.phase(widget.phase, l10n)}. '
           '${l10n.cycleDay}: ${widget.cycleDay} / ${widget.cycleLength}. '
           '$status',

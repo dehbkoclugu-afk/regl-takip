@@ -6,20 +6,19 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/adaptive_layout.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../models/daily_log.dart';
 import '../../providers/providers.dart';
 import '../../core/utils/motion.dart';
+import '../../core/utils/unit_conversion.dart';
 import '../flow/flow_tracking_screen.dart';
 import '../medication/medication_tracking_screen.dart';
+import '../measurements/daily_measurements_screen.dart';
 import '../mood/mood_tracking_screen.dart';
 import '../notes/notes_screen.dart';
 import '../sexual_activity/sexual_activity_screen.dart';
-import '../sleep/sleep_tracking_screen.dart';
 import '../symptoms/symptom_tracking_screen.dart';
-import '../temperature/temperature_tracking_screen.dart';
-import '../water/water_tracking_screen.dart';
-import '../weight/weight_tracking_screen.dart';
 
 class LogScreen extends ConsumerStatefulWidget {
   const LogScreen({super.key});
@@ -45,10 +44,15 @@ class _LogScreenState extends ConsumerState<LogScreen> {
   /// Hafta şeridi seçili günü son eleman olarak gösterir (geçmiş güne
   /// gidildiğinde şerit o güne kayar); bugünden ileri gitmez.
   void _buildWeekDates() {
-    final anchor =
-        DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
-    _weekDates =
-        List.generate(7, (i) => anchor.subtract(Duration(days: 6 - i)));
+    final anchor = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+    );
+    _weekDates = List.generate(
+      7,
+      (i) => anchor.subtract(Duration(days: 6 - i)),
+    );
   }
 
   Future<void> _pickDate() async {
@@ -76,16 +80,18 @@ class _LogScreenState extends ConsumerState<LogScreen> {
     final log = dailyLogs[dateKey];
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final logBg = isDark
-        ? const Color(0xFF1A1020)
-        : const Color(0xFFEDE0F0);
+    final logBg = isDark ? const Color(0xFF1A1020) : const Color(0xFFEDE0F0);
 
     return Scaffold(
       backgroundColor: logBg,
       appBar: AppBar(
-        title: Text(l10n.dailyLog,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
+        title: Text(
+          l10n.dailyLog,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppColors.tp(context),
+          ),
+        ),
         backgroundColor: logBg,
         elevation: 0,
         iconTheme: IconThemeData(color: AppColors.tp(context)),
@@ -112,81 +118,113 @@ class _LogScreenState extends ConsumerState<LogScreen> {
   }
 
   Widget _buildDateSelector() {
+    final largeText = usesLargeText(MediaQuery.textScalerOf(context));
     return SizedBox(
-      height: 76,
+      height: largeText ? 112 : 76,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: _weekDates.length,
         itemBuilder: (context, index) {
           final date = _weekDates[index];
-          final isSelected = date.year == _selectedDate.year &&
+          final isSelected =
+              date.year == _selectedDate.year &&
               date.month == _selectedDate.month &&
               date.day == _selectedDate.day;
-          final isToday = date.year == DateTime.now().year &&
+          final isToday =
+              date.year == DateTime.now().year &&
               date.month == DateTime.now().month &&
               date.day == DateTime.now().day;
 
           final locale = Localizations.localeOf(context).toString();
           return Semantics(
-            button: true,
-            selected: isSelected,
-            label: DateFormat('d MMMM EEEE', locale).format(date),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(16),
-              onTap: () {
-                setState(() => _selectedDate = date);
-                // Kategori ekranları bu provider'daki güne kayıt yazar
-                ref.read(selectedDateProvider.notifier).state = date;
-              },
-              child: ExcludeSemantics(
-                child: AnimatedContainer(
-              duration:
-                  context.motionDuration(const Duration(milliseconds: 250)),
-              width: 52,
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              decoration: BoxDecoration(
-                gradient: isSelected
-                    ? const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [AppColors.primary, AppColors.primaryDark],
-                      )
-                    : null,
-                color: isSelected ? null : AppColors.sf(context),
-                borderRadius: BorderRadius.circular(16),
-                border: isToday && !isSelected
-                    ? Border.all(color: AppColors.primary.withValues(alpha: 0.5), width: 1.5)
-                    : null,
-                boxShadow: isSelected
-                    ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.25), blurRadius: 12, offset: const Offset(0, 4))]
-                    : [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 6)],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    DateFormat('E', Localizations.localeOf(context).toString()).format(date).substring(0, 2).toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.white70 : AppColors.ts(context),
+                button: true,
+                selected: isSelected,
+                label: DateFormat('d MMMM EEEE', locale).format(date),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () {
+                    setState(() => _selectedDate = date);
+                    // Kategori ekranları bu provider'daki güne kayıt yazar
+                    ref.read(selectedDateProvider.notifier).state = date;
+                  },
+                  child: ExcludeSemantics(
+                    child: AnimatedContainer(
+                      duration: context.motionDuration(
+                        const Duration(milliseconds: 250),
+                      ),
+                      width: largeText ? 68 : 52,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                        gradient: isSelected
+                            ? const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  AppColors.primary,
+                                  AppColors.primaryDark,
+                                ],
+                              )
+                            : null,
+                        color: isSelected ? null : AppColors.sf(context),
+                        borderRadius: BorderRadius.circular(16),
+                        border: isToday && !isSelected
+                            ? Border.all(
+                                color: AppColors.primary.withValues(alpha: 0.5),
+                                width: 1.5,
+                              )
+                            : null,
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.25,
+                                  ),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ]
+                            : [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.03),
+                                  blurRadius: 6,
+                                ),
+                              ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            DateFormat(
+                              'E',
+                              Localizations.localeOf(context).toString(),
+                            ).format(date).substring(0, 2).toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: isSelected
+                                  ? Colors.white70
+                                  : AppColors.ts(context),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${date.day}',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: isSelected
+                                  ? Colors.white
+                                  : AppColors.tp(context),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${date.day}',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: isSelected ? Colors.white : AppColors.tp(context),
-                    ),
-                  ),
-                ],
-              ),
                 ),
-              ),
-            ),
-          ).animateSafe(context).fadeIn(delay: (index * 50).ms, duration: 300.ms);
+              )
+              .animateSafe(context)
+              .fadeIn(delay: (index * 50).ms, duration: 300.ms);
         },
       ),
     );
@@ -194,48 +232,84 @@ class _LogScreenState extends ConsumerState<LogScreen> {
 
   Widget _buildCategoryGrid(DailyLog? log, AppLocalizations l10n) {
     final categories = [
-      _CategoryItem(Icons.water_drop_rounded, l10n.flow, AppColors.menstrual,
-          _getFlowSummary(log, l10n), '/flow',
-          (_) => const FlowTrackingScreen()),
-      _CategoryItem(Icons.face_rounded, l10n.symptoms, AppColors.secondary,
-          _getSymptomSummary(log, l10n), '/symptoms',
-          (_) => const SymptomTrackingScreen()),
-      _CategoryItem(Icons.mood_rounded, l10n.mood, AppColors.moodHappy,
-          _getMoodSummary(log, l10n), '/mood',
-          (_) => const MoodTrackingScreen()),
-      _CategoryItem(Icons.thermostat_rounded, l10n.temperature,
-          AppColors.temperature, _getTempSummary(log), '/temperature',
-          (_) => const TemperatureTrackingScreen()),
-      _CategoryItem(Icons.monitor_weight_rounded, l10n.weight,
-          AppColors.weightColor, _getWeightSummary(log), '/weight',
-          (_) => const WeightTrackingScreen()),
-      _CategoryItem(Icons.local_drink_rounded, l10n.waterIntake,
-          AppColors.water, _getWaterSummary(log, l10n), '/water',
-          (_) => const WaterTrackingScreen()),
-      _CategoryItem(Icons.bedtime_rounded, l10n.sleep, AppColors.sleep,
-          _getSleepSummary(log), '/sleep',
-          (_) => const SleepTrackingScreen()),
-      _CategoryItem(Icons.favorite_rounded, l10n.sexualActivity,
-          AppColors.moodRomantic, _getSexualSummary(log, l10n),
-          '/sexual-activity', (_) => const SexualActivityScreen()),
-      _CategoryItem(Icons.medication_rounded, l10n.medication,
-          AppColors.medication, _getMedSummary(log, l10n), '/medication',
-          (_) => const MedicationTrackingScreen()),
-      _CategoryItem(Icons.edit_note_rounded, l10n.notes, AppColors.notesColor,
-          _getNotesSummary(log), '/notes', (_) => const NotesScreen()),
+      _CategoryItem(
+        Icons.water_drop_rounded,
+        l10n.flow,
+        AppColors.menstrual,
+        _getFlowSummary(log, l10n),
+        '/flow',
+        (_) => const FlowTrackingScreen(),
+      ),
+      _CategoryItem(
+        Icons.face_rounded,
+        l10n.symptoms,
+        AppColors.secondary,
+        _getSymptomSummary(log, l10n),
+        '/symptoms',
+        (_) => const SymptomTrackingScreen(),
+      ),
+      _CategoryItem(
+        Icons.mood_rounded,
+        l10n.mood,
+        AppColors.moodHappy,
+        _getMoodSummary(log, l10n),
+        '/mood',
+        (_) => const MoodTrackingScreen(),
+      ),
+      _CategoryItem(
+        Icons.monitor_heart_rounded,
+        l10n.dailyMeasurements,
+        AppColors.temperature,
+        _getMeasurementsSummary(log, l10n),
+        '/measurements',
+        (_) => const DailyMeasurementsScreen(),
+      ),
+      _CategoryItem(
+        Icons.favorite_rounded,
+        l10n.sexualActivity,
+        AppColors.moodRomantic,
+        _getSexualSummary(log, l10n),
+        '/sexual-activity',
+        (_) => const SexualActivityScreen(),
+      ),
+      _CategoryItem(
+        Icons.medication_rounded,
+        l10n.medication,
+        AppColors.medication,
+        _getMedSummary(log, l10n),
+        '/medication',
+        (_) => const MedicationTrackingScreen(),
+      ),
+      _CategoryItem(
+        Icons.edit_note_rounded,
+        l10n.notes,
+        AppColors.notesColor,
+        _getNotesSummary(log),
+        '/notes',
+        (_) => const NotesScreen(),
+      ),
     ];
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1.45,
-      ),
-      itemCount: categories.length,
-      itemBuilder: (context, index) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textScale =
+            effectiveTextScale(MediaQuery.textScalerOf(context));
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: adaptiveGridColumns(
+              width: constraints.maxWidth,
+              textScale: textScale,
+              maxColumns: 2,
+              minCardWidth: 124,
+            ),
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            mainAxisExtent: scaledGridExtent(100, textScale),
+          ),
+          itemCount: categories.length,
+          itemBuilder: (context, index) {
         final cat = categories[index];
         final motion = context.motionEnabled;
         // Container transform: kart, açılan ekranın kendisine BÜYÜR —
@@ -249,15 +323,14 @@ class _LogScreenState extends ConsumerState<LogScreen> {
             closedElevation: 0,
             openElevation: 0,
             closedShape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20)),
+              borderRadius: BorderRadius.circular(20),
+            ),
             closedColor: AppColors.sf(context),
             middleColor: AppColors.bg(context),
             openColor: AppColors.bg(context),
             openBuilder: (context, _) => cat.screenBuilder(context),
-            closedBuilder: (context, open) => InkWell(
-              onTap: open,
-              child: _buildCategoryCardBody(cat),
-            ),
+            closedBuilder: (context, open) =>
+                InkWell(onTap: open, child: _buildCategoryCardBody(cat)),
           );
         } else {
           card = Material(
@@ -271,74 +344,87 @@ class _LogScreenState extends ConsumerState<LogScreen> {
           );
         }
         return Semantics(
-          button: true,
-          label: cat.summary.isEmpty
-              ? cat.label
-              : '${cat.label}: ${cat.summary}',
-          child: card,
-        ).animateSafe(context)
+              button: true,
+              label: cat.summary.isEmpty
+                  ? cat.label
+                  : '${cat.label}: ${cat.summary}',
+              child: card,
+            )
+            .animateSafe(context)
             .fadeIn(delay: (index * 50).ms, duration: 300.ms)
-            .scale(begin: const Offset(0.95, 0.95), end: const Offset(1, 1),
-                delay: (index * 50).ms, duration: 300.ms);
+            .scale(
+              begin: const Offset(0.95, 0.95),
+              end: const Offset(1, 1),
+              delay: (index * 50).ms,
+              duration: 300.ms,
+            );
+          },
+        );
       },
     );
   }
 
   Widget _buildCategoryCardBody(_CategoryItem cat) {
     return Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: ExcludeSemantics(
-                    child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        cat.color.withValues(alpha: 0.25),
-                        cat.color.withValues(alpha: 0.1),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(cat.icon, color: cat.color, size: 20),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(cat.label,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.tp(context),
-                              ),
-                              overflow: TextOverflow.ellipsis),
-                          if (cat.summary.isNotEmpty)
-                            Text(cat.summary,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: AppColors.ts(context),
-                                ),
-                                overflow: TextOverflow.ellipsis),
-                        ],
-                      ),
-                    ),
-                    Icon(Icons.chevron_right_rounded,
-                        color: AppColors.ts(context), size: 18),
+      padding: const EdgeInsets.all(14),
+      child: ExcludeSemantics(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    cat.color.withValues(alpha: 0.25),
+                    cat.color.withValues(alpha: 0.1),
                   ],
                 ),
-              ],
-                    ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(cat.icon, color: cat.color, size: 20),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        cat.label,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.tp(context),
+                        ),
+                      ),
+                      if (cat.summary.isNotEmpty)
+                        Text(
+                          cat.summary,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: AppColors.ts(context),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                    ],
                   ),
+                ),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: AppColors.ts(context),
+                  size: 18,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -365,13 +451,19 @@ class _LogScreenState extends ConsumerState<LogScreen> {
   String _getTempSummary(DailyLog? log) {
     final temp = log?.temperature;
     if (temp == null) return '';
-    return '${temp.toStringAsFixed(1)}°C';
+    final useFahrenheit = ref.read(userProfileProvider)?.useFahrenheit ?? false;
+    final shown = useFahrenheit
+        ? UnitConversion.celsiusToFahrenheit(temp)
+        : temp;
+    return '${shown.toStringAsFixed(1)}°${useFahrenheit ? 'F' : 'C'}';
   }
 
   String _getWeightSummary(DailyLog? log) {
     final weight = log?.weight;
     if (weight == null) return '';
-    return '${weight.toStringAsFixed(1)} kg';
+    final usePounds = ref.read(userProfileProvider)?.usePounds ?? false;
+    final shown = usePounds ? UnitConversion.kilogramsToPounds(weight) : weight;
+    return '${shown.toStringAsFixed(1)} ${usePounds ? 'lb' : 'kg'}';
   }
 
   String _getWaterSummary(DailyLog? log, AppLocalizations l10n) {
@@ -383,6 +475,20 @@ class _LogScreenState extends ConsumerState<LogScreen> {
     final start = log?.sleepStart;
     if (start == null) return '';
     return '$start - ${log!.sleepEnd ?? '?'}';
+  }
+
+  String _getMeasurementsSummary(
+    DailyLog? log,
+    AppLocalizations l10n,
+  ) {
+    if (log == null) return '';
+    final values = [
+      _getTempSummary(log),
+      _getWeightSummary(log),
+      _getWaterSummary(log, l10n),
+      _getSleepSummary(log),
+    ].where((value) => value.isNotEmpty);
+    return values.join(' · ');
   }
 
   String _getSexualSummary(DailyLog? log, AppLocalizations l10n) {
@@ -414,6 +520,12 @@ class _CategoryItem {
   /// Container transform'un açtığı ekran (rota tablosuyla aynı ekranlar)
   final WidgetBuilder screenBuilder;
 
-  _CategoryItem(this.icon, this.label, this.color, this.summary, this.route,
-      this.screenBuilder);
+  _CategoryItem(
+    this.icon,
+    this.label,
+    this.color,
+    this.summary,
+    this.route,
+    this.screenBuilder,
+  );
 }

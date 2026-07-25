@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/adaptive_layout.dart';
 import '../../../core/utils/enum_labels.dart';
+import '../../../core/utils/statistics_summary.dart';
 import '../../../models/enums.dart';
 import '../../../providers/providers.dart';
 import '../../../core/utils/motion.dart';
@@ -73,6 +75,7 @@ class QuickStatusCards extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final largeText = usesLargeText(MediaQuery.textScalerOf(context));
     final dailyLogs = ref.watch(dailyLogProvider);
     final now = DateTime.now();
     final todayKey =
@@ -83,38 +86,85 @@ class QuickStatusCards extends ConsumerWidget {
     final hasSymptoms =
         todayLog != null && todayLog.symptoms.isNotEmpty;
     final hasAnyLog = hasMood || hasSymptoms;
+    final consistency = calculateTrackingConsistency(
+      dailyLogs.values,
+      today: now,
+    );
+    final consistencyText = consistency.streakDays > 0
+        ? '${l10n.trackingStreak(consistency.streakDays)} · '
+            '${l10n.weeklyTracking(consistency.lastSevenDays)}'
+        : l10n.weeklyTracking(consistency.lastSevenDays);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 12),
-          child: Text(
-            l10n.todaySummary,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: AppColors.tp(context),
-            ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.todaySummary,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.tp(context),
+                  ),
+                ),
+              ),
+              if (consistency.lastSevenDays > 0)
+                Flexible(
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      consistencyText,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryDeep,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
         if (!hasAnyLog) _buildEmptyState(context, ref, l10n),
         if (hasAnyLog) ...[
-          Row(
-            children: [
-              if (hasMood)
-                Expanded(
-                  child: _buildMoodCard(
-                      context, ref, todayLog!.mood!.type, l10n),
-                ),
-              if (hasMood && hasSymptoms) const SizedBox(width: 12),
-              if (hasSymptoms)
-                Expanded(
-                  child: _buildSymptomCard(
-                      context, ref, todayLog!.symptoms.length, l10n),
-                ),
-            ],
-          ),
+          if (largeText && hasMood && hasSymptoms)
+            Column(
+              children: [
+                _buildMoodCard(context, ref, todayLog!.mood!.type, l10n),
+                const SizedBox(height: 12),
+                _buildSymptomCard(
+                    context, ref, todayLog!.symptoms.length, l10n),
+              ],
+            )
+          else
+            Row(
+              children: [
+                if (hasMood)
+                  Expanded(
+                    child: _buildMoodCard(
+                        context, ref, todayLog!.mood!.type, l10n),
+                  ),
+                if (hasMood && hasSymptoms) const SizedBox(width: 12),
+                if (hasSymptoms)
+                  Expanded(
+                    child: _buildSymptomCard(
+                        context, ref, todayLog!.symptoms.length, l10n),
+                  ),
+              ],
+            ),
           // Kısmi gün: biri girilmiş, diğeri boş. Boş durumda yönlendirme
           // vardı ama yarısı dolu günde eksik olan hiç istenmiyordu.
           if (!hasMood || !hasSymptoms) ...[
@@ -197,8 +247,6 @@ class QuickStatusCards extends ConsumerWidget {
                     l10n.notLoggedToday(label),
                     style: TextStyle(
                         fontSize: 13, color: AppColors.ts(context)),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Icon(Icons.chevron_right_rounded,

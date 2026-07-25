@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/adaptive_layout.dart';
 import '../../providers/providers.dart';
 import '../../services/premium_service.dart';
 
@@ -148,6 +150,26 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                 valueListenable: service.productsRevision,
                 builder: (context, revision, _) {
                   final resolved = revision > 0;
+                  final yearly = service.yearlyProduct;
+                  final monthly = service.monthlyProduct;
+                  String? yearlyComparison;
+                  if (yearly != null &&
+                      monthly != null &&
+                      monthly.rawPrice > 0) {
+                    final monthlyEquivalent = yearly.rawPrice / 12;
+                    final saving = ((1 -
+                                yearly.rawPrice /
+                                    (monthly.rawPrice * 12)) *
+                            100)
+                        .round()
+                        .clamp(0, 99);
+                    final formatted = NumberFormat.simpleCurrency(
+                      locale: Localizations.localeOf(context).toString(),
+                      name: yearly.currencyCode,
+                    ).format(monthlyEquivalent);
+                    yearlyComparison =
+                        '$formatted${l10n.perMonth} · −$saving%';
+                  }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -156,6 +178,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                         title: l10n.planYearly,
                         price: service.yearlyProduct?.price,
                         suffix: l10n.perYear,
+                        detail: yearlyComparison,
                         badge: l10n.bestValue,
                         highlighted: true,
                         busy: _busy,
@@ -276,6 +299,7 @@ class _PlanCard extends StatelessWidget {
   /// göstermektense beklemek dürüst olan.
   final String? price;
   final String suffix;
+  final String? detail;
   final String? badge;
   final bool highlighted;
   final bool busy;
@@ -285,6 +309,7 @@ class _PlanCard extends StatelessWidget {
     required this.title,
     required this.price,
     required this.suffix,
+    this.detail,
     this.badge,
     required this.highlighted,
     required this.busy,
@@ -295,6 +320,66 @@ class _PlanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ready = price != null;
     final foreground = highlighted ? Colors.white : AppColors.tp(context);
+    final largeText = usesLargeText(MediaQuery.textScalerOf(context));
+    final info = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 8,
+          runSpacing: 6,
+          children: [
+            Text(title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: foreground,
+                )),
+            if (badge != null)
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(badge!,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primaryStrong,
+                    )),
+              ),
+          ],
+        ),
+        if (detail != null) ...[
+          const SizedBox(height: 5),
+          Text(
+            detail!,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: foreground.withValues(alpha: 0.82),
+            ),
+          ),
+        ],
+      ],
+    );
+    final priceWidget = ready
+        ? Text('$price$suffix',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+              color: foreground,
+            ))
+        : SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: foreground,
+            ),
+          );
 
     return Semantics(
       button: true,
@@ -317,60 +402,22 @@ class _PlanCard extends StatelessWidget {
                   ? null
                   : Border.all(color: AppColors.dv(context)),
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
+            child: largeText
+                ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Text(title,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: foreground,
-                              )),
-                          if (badge != null) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(badge!,
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.primaryStrong,
-                                  )),
-                            ),
-                          ],
-                        ],
-                      ),
+                      info,
+                      const SizedBox(height: 12),
+                      priceWidget,
+                    ],
+                  )
+                : Row(
+                    children: [
+                      Expanded(child: info),
+                      const SizedBox(width: 12),
+                      priceWidget,
                     ],
                   ),
-                ),
-                if (ready)
-                  Text('$price$suffix',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                        color: foreground,
-                      ))
-                else
-                  SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: foreground,
-                    ),
-                  ),
-              ],
-            ),
           ),
         ),
       ),

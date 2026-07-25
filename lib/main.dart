@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'services/hive_service.dart';
 import 'services/notification_service.dart';
 import 'services/premium_service.dart';
+import 'services/quick_action_service.dart';
 import 'services/widget_service.dart';
 import 'providers/providers.dart';
 import 'app.dart';
@@ -43,6 +44,8 @@ Future<void> _run() async {
 
   // Initialize Hive
   await HiveService().init();
+  await QuickActionService().init();
+  await WidgetService.init();
 
   final profile = HiveService().getUserProfile();
 
@@ -54,6 +57,8 @@ Future<void> _run() async {
   final cachedPremium = prefs.getBool('premium_active') ?? false;
   final phasePattern = prefs.getBool('phase_pattern') ?? false;
   final backdateHint = prefs.getBool('backdate_hint_needed') ?? true;
+  final homePriority =
+      HomePriority.fromStorage(prefs.getString(homePriorityKey));
 
   // Premium durumu ve widget güncellemesi arka planda
   unawaited(PremiumService().init());
@@ -74,18 +79,10 @@ Future<void> _run() async {
       // izin verilmişse çağrı zaten sessiz, reddedilmişse sistem sormuyor.
       if (profile != null) {
         await notificationService.requestPermission();
-        // İlaç hatırlatmaları ilaçların kendi saatlerinde kurulur: soğuk
-        // açılışta liste verilmezse yalnız genel hatırlatma planlanıyordu
-        final logsWithMeds = HiveService()
-            .getAllDailyLogs()
-            .where((l) => l.medications.isNotEmpty)
-            .toList()
-          ..sort((a, b) => b.date.compareTo(a.date));
         await notificationService.rescheduleAll(
           profile,
           records: HiveService().getAllPeriodRecords(),
-          medications:
-              logsWithMeds.isEmpty ? const [] : logsWithMeds.first.medications,
+          medications: profile.medicationPlan,
           logs: HiveService().getAllDailyLogs(),
         );
       }
@@ -102,6 +99,7 @@ Future<void> _run() async {
         isPremiumProvider.overrideWith((ref) => cachedPremium),
         phasePatternProvider.overrideWith((ref) => phasePattern),
         backdateHintProvider.overrideWith((ref) => backdateHint),
+        homePriorityProvider.overrideWith((ref) => homePriority),
         if (profile != null) ...[
           themeModeProvider.overrideWith((ref) => themeModeFromProfile(profile)),
           // 'system' = override yok, MaterialApp cihaz dilini izler

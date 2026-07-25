@@ -4,8 +4,10 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
+import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetProvider
 
 /**
@@ -24,6 +26,34 @@ class CycleWideWidgetProvider : HomeWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.cycle_widget_wide).apply {
                 setTextViewText(R.id.widget_line1, widgetData.getString("line1", "Regl Takip"))
                 setTextViewText(R.id.widget_line2, widgetData.getString("line2", "") ?: "")
+
+                setOnClickPendingIntent(
+                    R.id.widget_root,
+                    HomeWidgetLaunchIntent.getActivity(
+                        context,
+                        MainActivity::class.java,
+                        Uri.parse("regltakip://widget/open")
+                    )
+                )
+                val actionVisible = widgetData.getBoolean("period_action_visible", false)
+                setViewVisibility(
+                    R.id.widget_period_action,
+                    if (actionVisible) View.VISIBLE else View.GONE
+                )
+                if (actionVisible) {
+                    setContentDescription(
+                        R.id.widget_period_action,
+                        widgetData.getString("period_action_label", "") ?: ""
+                    )
+                    setOnClickPendingIntent(
+                        R.id.widget_period_action,
+                        HomeWidgetLaunchIntent.getActivity(
+                            context,
+                            MainActivity::class.java,
+                            Uri.parse("regltakip://widget/period-start")
+                        )
+                    )
+                }
 
                 val ringPath = widgetData.getString("ring_path", null)
                 val bitmap = ringPath?.let { BitmapFactory.decodeFile(it) }

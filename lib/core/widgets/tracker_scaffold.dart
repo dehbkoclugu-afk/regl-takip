@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
 import '../theme/app_colors.dart';
+import '../utils/adaptive_layout.dart';
 
 /// 10 takip ekranının ortak iskeleti: Scaffold + AppBar + kaydırılan
 /// gövde + alt aksiyon alanı + kaydedilmemiş değişiklik koruması.
@@ -70,6 +71,7 @@ class TrackerScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final largeText = usesLargeText(MediaQuery.textScalerOf(context));
     return PopScope(
       canPop: !isDirty,
       onPopInvokedWithResult: (didPop, _) async {
@@ -83,8 +85,10 @@ class TrackerScaffold extends StatelessWidget {
         backgroundColor: AppColors.bg(context),
         appBar: AppBar(
           title: Text(title,
+              maxLines: largeText ? 2 : 1,
               style: TextStyle(
                   fontWeight: FontWeight.bold, color: AppColors.tp(context))),
+          toolbarHeight: largeText ? 80 : null,
           backgroundColor: AppColors.bg(context),
           elevation: 0,
           iconTheme: IconThemeData(color: AppColors.tp(context)),

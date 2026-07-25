@@ -5,6 +5,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/tracker_scaffold.dart';
+import '../../core/utils/unit_conversion.dart';
 import '../../providers/providers.dart';
 import '../../core/utils/motion.dart';
 
@@ -29,10 +30,18 @@ class _TemperatureTrackingScreenState
   bool get _isDirty =>
       _temperature != _initialTemperature || _measureTime != _initialTime;
 
+  bool get _useFahrenheit =>
+      ref.read(userProfileProvider)?.useFahrenheit ?? false;
+  String get _unit => _useFahrenheit ? '°F' : '°C';
+  double _displayTemperature(double celsius) =>
+      _useFahrenheit ? UnitConversion.celsiusToFahrenheit(celsius) : celsius;
+
   @override
   void initState() {
     super.initState();
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
+    final log = ref
+        .read(dailyLogProvider.notifier)
+        .getDailyLog(ref.read(selectedDateProvider));
     if (log != null) {
       _temperature = log.temperature ?? 36.5;
       _hasExistingMeasurement = log.temperature != null;
@@ -40,8 +49,9 @@ class _TemperatureTrackingScreenState
         final parts = log.temperatureTime!.split(':');
         if (parts.length == 2) {
           _measureTime = TimeOfDay(
-              hour: int.tryParse(parts[0]) ?? 7,
-              minute: int.tryParse(parts[1]) ?? 0);
+            hour: int.tryParse(parts[0]) ?? 7,
+            minute: int.tryParse(parts[1]) ?? 0,
+          );
         }
       }
     }
@@ -70,53 +80,62 @@ class _TemperatureTrackingScreenState
       title: l10n.temperature,
       isDirty: _isDirty,
       body: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  const SizedBox(height: 16),
-                  _buildTempDisplay(l10n)
-                      .animateSafe(context).fadeIn(duration: 500.ms)
-                      .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1), duration: 500.ms),
-                  const SizedBox(height: 28),
-                  _buildSlider()
-                      .animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
-                  const SizedBox(height: 24),
-                  _buildTimeSelector(l10n)
-                      .animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
-                  const SizedBox(height: 16),
-                  // Ovülasyon teyidi bu ölçümlere dayanıyor: gün içi rastgele
-                  // ölçüm BBT eğrisini işe yaramaz hale getirir
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.info_outline_rounded,
-                          size: 16, color: AppColors.ts(context)),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          l10n.bbtHint,
-                          style: TextStyle(
-                            fontSize: 12,
-                            height: 1.4,
-                            color: AppColors.ts(context),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ).animateSafe(context).fadeIn(delay: 500.ms, duration: 400.ms),
-                  if (_hasExistingMeasurement) ...[
-                    const SizedBox(height: 8),
-                    TextButton.icon(
-                      onPressed: _delete,
-                      icon: const Icon(Icons.delete_outline_rounded, size: 18),
-                      label: Text(l10n.deleteMeasurement),
-                      style: TextButton.styleFrom(
-                          foregroundColor: AppColors.error),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            const SizedBox(height: 16),
+            _buildTempDisplay(l10n)
+                .animateSafe(context)
+                .fadeIn(duration: 500.ms)
+                .scale(
+                  begin: const Offset(0.9, 0.9),
+                  end: const Offset(1, 1),
+                  duration: 500.ms,
+                ),
+            const SizedBox(height: 28),
+            _buildSlider()
+                .animateSafe(context)
+                .fadeIn(delay: 200.ms, duration: 400.ms),
+            const SizedBox(height: 24),
+            _buildTimeSelector(
+              l10n,
+            ).animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
+            const SizedBox(height: 16),
+            // Ovülasyon teyidi bu ölçümlere dayanıyor: gün içi rastgele
+            // ölçüm BBT eğrisini işe yaramaz hale getirir
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.info_outline_rounded,
+                  size: 16,
+                  color: AppColors.ts(context),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.bbtHint,
+                    style: TextStyle(
+                      fontSize: 12,
+                      height: 1.4,
+                      color: AppColors.ts(context),
                     ),
-                  ],
-                ],
+                  ),
+                ),
+              ],
+            ).animateSafe(context).fadeIn(delay: 500.ms, duration: 400.ms),
+            if (_hasExistingMeasurement) ...[
+              const SizedBox(height: 8),
+              TextButton.icon(
+                onPressed: _delete,
+                icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                label: Text(l10n.deleteMeasurement),
+                style: TextButton.styleFrom(foregroundColor: AppColors.error),
               ),
-            ),
+            ],
+          ],
+        ),
+      ),
       bottomBar: _buildSaveButton(l10n),
     );
   }
@@ -135,19 +154,22 @@ class _TemperatureTrackingScreenState
             tween: Tween(begin: 36.5, end: _temperature),
             duration: context.motionDuration(const Duration(milliseconds: 300)),
             builder: (context, value, _) => Text(
-              '${value.toStringAsFixed(1)}°C',
+              '${_displayTemperature(value).toStringAsFixed(1)}$_unit',
               // Tabular metrik ölçeği: sayaç akarken genişlik zıplamaz
-              style: Theme.of(context)
-                  .textTheme
-                  .displayLarge!
-                  .copyWith(color: _getTempColor()),
+              style: Theme.of(
+                context,
+              ).textTheme.displayLarge!.copyWith(color: _getTempColor()),
             ),
           ),
           const SizedBox(height: 8),
-          Text(_getTempLabel(l10n),
-              style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w600,
-                  color: _getTempColor())),
+          Text(
+            _getTempLabel(l10n),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: _getTempColor(),
+            ),
+          ),
         ],
       ),
     );
@@ -164,10 +186,14 @@ class _TemperatureTrackingScreenState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('35.0°C', style: TextStyle(
-                  fontSize: 12, color: AppColors.ts(context))),
-              Text('40.0°C', style: TextStyle(
-                  fontSize: 12, color: AppColors.ts(context))),
+              Text(
+                '${_displayTemperature(35).toStringAsFixed(1)}$_unit',
+                style: TextStyle(fontSize: 12, color: AppColors.ts(context)),
+              ),
+              Text(
+                '${_displayTemperature(40).toStringAsFixed(1)}$_unit',
+                style: TextStyle(fontSize: 12, color: AppColors.ts(context)),
+              ),
             ],
           ),
           SliderTheme(
@@ -183,10 +209,13 @@ class _TemperatureTrackingScreenState
               min: 35.0,
               max: 40.0,
               divisions: 50,
-              label: '${_temperature.toStringAsFixed(1)}°C',
-              semanticFormatterCallback: (v) => '${v.toStringAsFixed(1)}°C',
-              onChanged: (v) => setState(() =>
-                  _temperature = double.parse(v.toStringAsFixed(1))),
+              label:
+                  '${_displayTemperature(_temperature).toStringAsFixed(1)}$_unit',
+              semanticFormatterCallback: (v) =>
+                  '${_displayTemperature(v).toStringAsFixed(1)}$_unit',
+              onChanged: (v) => setState(
+                () => _temperature = double.parse(v.toStringAsFixed(1)),
+              ),
             ),
           ),
         ],
@@ -206,42 +235,59 @@ class _TemperatureTrackingScreenState
           borderRadius: BorderRadius.circular(20),
           onTap: () async {
             final picked = await showTimePicker(
-                context: context, initialTime: _measureTime);
+              context: context,
+              initialTime: _measureTime,
+            );
             if (picked != null) setState(() => _measureTime = picked);
           },
           child: Container(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: AppColors.temperature.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.access_time_rounded,
-                  color: AppColors.categoryText(context, AppColors.temperature)),
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: AppColors.temperature.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.access_time_rounded,
+                    color: AppColors.categoryText(
+                      context,
+                      AppColors.temperature,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.measurementTime,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.ts(context),
+                        ),
+                      ),
+                      Text(
+                        _measureTime.format(context),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.categoryText(
+                            context,
+                            AppColors.temperature,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right_rounded, color: AppColors.ts(context)),
+              ],
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.measurementTime,
-                      style: TextStyle(
-                          fontSize: 14, color: AppColors.ts(context))),
-                  Text(_measureTime.format(context),
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold,
-                          color: AppColors.categoryText(context, AppColors.temperature))),
-                ],
-              ),
-            ),
-            Icon(Icons.chevron_right_rounded,
-                color: AppColors.ts(context)),
-          ],
-        ),
           ),
         ),
       ),
@@ -257,11 +303,14 @@ class _TemperatureTrackingScreenState
           backgroundColor: AppColors.temperature,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
-        child: Text(l10n.save,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        child: Text(
+          l10n.save,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
@@ -276,8 +325,9 @@ class _TemperatureTrackingScreenState
     final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-          content: Text(l10n.measurementDeleted),
-          backgroundColor: AppColors.success),
+        content: Text(l10n.measurementDeleted),
+        backgroundColor: AppColors.success,
+      ),
     );
     Navigator.of(context).pop();
   }
@@ -285,16 +335,20 @@ class _TemperatureTrackingScreenState
   Future<void> _save() async {
     final timeStr =
         '${_measureTime.hour.toString().padLeft(2, '0')}:${_measureTime.minute.toString().padLeft(2, '0')}';
-    await ref.read(dailyLogProvider.notifier).updateTemperature(
-      ref.read(selectedDateProvider),
-      _temperature,
-      temperatureTime: timeStr,
-    );
+    await ref
+        .read(dailyLogProvider.notifier)
+        .updateTemperature(
+          ref.read(selectedDateProvider),
+          _temperature,
+          temperatureTime: timeStr,
+        );
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.temperatureSaved),
-            backgroundColor: AppColors.success),
+        SnackBar(
+          content: Text(l10n.temperatureSaved),
+          backgroundColor: AppColors.success,
+        ),
       );
       Navigator.of(context).pop();
     }

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/adaptive_layout.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/symptom_ranking.dart';
 import '../../models/enums.dart';
@@ -15,7 +16,10 @@ import '../../providers/providers.dart';
 /// Detay isteyen "Tüm kayıt türleri" ile log ekranına iner.
 /// Mevcut log prefill edilir; kaydet üçünü birden yazar.
 Future<void> showQuickLogSheet(
-    BuildContext context, WidgetRef ref, DateTime date) {
+  BuildContext context,
+  WidgetRef ref,
+  DateTime date,
+) {
   // Sheet açılırken tarih provider'a yazılır: "tüm kayıt türleri"
   // yolundan gidilen tracker'lar da aynı güne yazar
   ref.read(selectedDateProvider.notifier).state = date;
@@ -92,7 +96,8 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     final notifier = ref.read(dailyLogProvider.notifier);
     final note = _noteController.text.trim();
     final hasExistingLog = notifier.getDailyLog(date) != null;
-    final hasInput = _flow != null ||
+    final hasInput =
+        _flow != null ||
         _mood != null ||
         _symptoms.isNotEmpty ||
         note.isNotEmpty;
@@ -102,7 +107,9 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     // updateFlow null'ı "dokunma" sayıyor, eski değer kalıyordu.
     await notifier.setFlowIntensity(date, _flow);
     await notifier.updateMood(
-        date, _mood != null ? MoodEntry(type: _mood!) : null);
+      date,
+      _mood != null ? MoodEntry(type: _mood!) : null,
+    );
     await notifier.updateSymptoms(
       date,
       _symptoms.entries
@@ -143,8 +150,9 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     if (!wrote) return;
     messenger.showSnackBar(
       SnackBar(
-          content: Text(l10n.savedGeneric),
-          backgroundColor: AppColors.success),
+        content: Text(l10n.savedGeneric),
+        backgroundColor: AppColors.success,
+      ),
     );
   }
 
@@ -187,11 +195,14 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(l10n.quickLog,
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.tp(context))),
+              Text(
+                l10n.quickLog,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.tp(context),
+                ),
+              ),
               const SizedBox(height: 4),
               // Gün gezinmesi: sheet açıldığı güne çakılıydı, dünü girmek
               // için kapatıp takvime inmek gerekiyordu
@@ -208,11 +219,10 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                       dateStr,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.tp(context)),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.tp(context),
+                      ),
                     ),
                   ),
                   IconButton(
@@ -230,13 +240,38 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               // Akış şiddeti
               _sectionLabel(l10n.flow),
               const SizedBox(height: 8),
-              Row(
-                children: [
-                  _flowOption(FlowIntensity.light, l10n.light, 1),
-                  _flowOption(FlowIntensity.normal, l10n.medium, 2),
-                  _flowOption(FlowIntensity.heavy, l10n.heavy, 3),
-                  _flowOption(FlowIntensity.veryHeavy, l10n.veryHeavy, 4),
-                ],
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final columns = adaptiveGridColumns(
+                    width: constraints.maxWidth,
+                    textScale: effectiveTextScale(
+                      MediaQuery.textScalerOf(context),
+                    ),
+                    maxColumns: 4,
+                    minCardWidth: 64,
+                    spacing: 8,
+                  );
+                  final optionWidth =
+                      (constraints.maxWidth - (columns - 1) * 8) / columns;
+                  final options = [
+                    (FlowIntensity.light, l10n.light, 1),
+                    (FlowIntensity.normal, l10n.medium, 2),
+                    (FlowIntensity.heavy, l10n.heavy, 3),
+                    (FlowIntensity.veryHeavy, l10n.veryHeavy, 4),
+                  ];
+                  return Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final option in options)
+                        SizedBox(
+                          width: optionWidth,
+                          child:
+                              _flowOption(option.$1, option.$2, option.$3),
+                        ),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 20),
 
@@ -244,7 +279,9 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               _sectionLabel(l10n.mood),
               const SizedBox(height: 8),
               SizedBox(
-                height: 48,
+                height: usesLargeText(MediaQuery.textScalerOf(context))
+                    ? 72
+                    : 48,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: MoodType.values.map((m) {
@@ -270,23 +307,59 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: SymptomRanking.reorder(
-                  _commonSymptoms,
-                  ref.read(dailyLogProvider).values,
-                ).map((s) {
-                  final selected = _symptoms.containsKey(s);
-                  return _chip(
-                    label: EnumLabels.symptom(s, l10n),
-                    selected: selected,
-                    onTap: () => setState(() {
-                      if (selected) {
-                        _symptoms.remove(s);
-                      } else {
-                        _symptoms[s] = 2;
-                      }
-                    }),
-                  );
-                }).toList(),
+                children:
+                    SymptomRanking.reorder(
+                      _commonSymptoms,
+                      ref.read(dailyLogProvider).values,
+                    ).map((s) {
+                      final selected = _symptoms.containsKey(s);
+                      final severity = _symptoms[s] ?? 2;
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _chip(
+                            label: EnumLabels.symptom(s, l10n),
+                            selected: selected,
+                            onTap: () => setState(() {
+                              if (selected) {
+                                _symptoms.remove(s);
+                              } else {
+                                _symptoms[s] = 2;
+                              }
+                            }),
+                          ),
+                          if (selected)
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: List.generate(
+                                5,
+                                (index) => Semantics(
+                                  button: true,
+                                  selected: index < severity,
+                                  label: l10n.severityLevel(index + 1),
+                                  child: InkWell(
+                                    customBorder: const CircleBorder(),
+                                    onTap: () => setState(
+                                      () => _symptoms[s] = index + 1,
+                                    ),
+                                    child: SizedBox(
+                                      width: 28,
+                                      height: 28,
+                                      child: Icon(
+                                        index < severity
+                                            ? Icons.circle
+                                            : Icons.circle_outlined,
+                                        size: 11,
+                                        color: AppColors.primaryStrong,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 20),
 
@@ -301,12 +374,16 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                 style: TextStyle(fontSize: 14, color: AppColors.tp(context)),
                 decoration: InputDecoration(
                   hintText: l10n.notesHint,
-                  hintStyle:
-                      TextStyle(fontSize: 13, color: AppColors.ts(context)),
+                  hintStyle: TextStyle(
+                    fontSize: 13,
+                    color: AppColors.ts(context),
+                  ),
                   filled: true,
                   fillColor: AppColors.bg(context),
                   contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 12),
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide.none,
@@ -317,10 +394,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
 
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _save,
-                  child: Text(l10n.save),
-                ),
+                child: ElevatedButton(onPressed: _save, child: Text(l10n.save)),
               ),
               const SizedBox(height: 8),
               Center(
@@ -329,9 +403,13 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                     Navigator.of(context).pop();
                     context.push('/log');
                   },
-                  child: Text(l10n.allTrackers,
-                      style: TextStyle(
-                          fontSize: 13, color: AppColors.ts(context))),
+                  child: Text(
+                    l10n.allTrackers,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.ts(context),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -342,17 +420,19 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
   }
 
   Widget _sectionLabel(String text) {
-    return Text(text,
-        style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: AppColors.ts(context)));
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w700,
+        color: AppColors.ts(context),
+      ),
+    );
   }
 
   Widget _flowOption(FlowIntensity intensity, String label, int drops) {
     final selected = _flow == intensity;
-    return Expanded(
-      child: Semantics(
+    return Semantics(
         button: true,
         selected: selected,
         label: label,
@@ -364,8 +444,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color:
-                  selected ? AppColors.primaryStrong : AppColors.dv(context),
+              color: selected ? AppColors.primaryStrong : AppColors.dv(context),
               width: selected ? 1.5 : 1,
             ),
           ),
@@ -377,35 +456,38 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    drops,
-                    (_) => Icon(Icons.water_drop_rounded,
-                        size: 10,
-                        color: selected
-                            ? AppColors.primaryStrong
-                            : AppColors.ts(context)),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        drops,
+                        (_) => Icon(
+                          Icons.water_drop_rounded,
+                          size: 10,
+                          color: selected
+                              ? AppColors.primaryStrong
+                              : AppColors.ts(context),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      label,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
                         color: selected
                             ? AppColors.primaryStrong
-                            : AppColors.ts(context))),
+                            : AppColors.ts(context),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
           ),
         ),
-      ),
     );
   }
 
@@ -433,18 +515,22 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color:
-                    selected ? AppColors.primaryStrong : AppColors.dv(context),
+                color: selected
+                    ? AppColors.primaryStrong
+                    : AppColors.dv(context),
                 width: selected ? 1.5 : 1,
               ),
             ),
-            child: Text(label,
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: selected
-                        ? AppColors.primaryStrong
-                        : AppColors.tp(context))),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: selected
+                    ? AppColors.primaryStrong
+                    : AppColors.tp(context),
+              ),
+            ),
           ),
         ),
       ),

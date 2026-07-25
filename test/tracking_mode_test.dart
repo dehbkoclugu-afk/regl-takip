@@ -43,6 +43,15 @@ void main() {
     });
   });
 
+  test('pregnancyTrimester uses the dashboard boundaries', () {
+    expect(CycleUtils.pregnancyTrimester(1), 1);
+    expect(CycleUtils.pregnancyTrimester(13), 1);
+    expect(CycleUtils.pregnancyTrimester(14), 2);
+    expect(CycleUtils.pregnancyTrimester(27), 2);
+    expect(CycleUtils.pregnancyTrimester(28), 3);
+    expect(CycleUtils.pregnancyTrimester(42), 3);
+  });
+
   group('pillDayInPack', () {
     test('day 1 on pack start', () {
       expect(CycleUtils.pillDayInPack(DateTime.now()), 1);

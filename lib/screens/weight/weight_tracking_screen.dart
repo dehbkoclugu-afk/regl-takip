@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/input_parsing.dart';
+import '../../core/utils/unit_conversion.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/tracker_scaffold.dart';
 import '../../providers/providers.dart';
@@ -13,7 +14,8 @@ class WeightTrackingScreen extends ConsumerStatefulWidget {
   const WeightTrackingScreen({super.key});
 
   @override
-  ConsumerState<WeightTrackingScreen> createState() => _WeightTrackingScreenState();
+  ConsumerState<WeightTrackingScreen> createState() =>
+      _WeightTrackingScreenState();
 }
 
 class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
@@ -24,17 +26,35 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
 
   bool get _isDirty => _weight != _initialWeight;
 
-  static double? _parseWeight(String raw) => InputParsing.weightKg(raw);
+  bool get _usePounds => ref.read(userProfileProvider)?.usePounds ?? false;
+  String get _unit => _usePounds ? 'lb' : 'kg';
+  double get _displayWeight =>
+      _usePounds ? UnitConversion.kilogramsToPounds(_weight) : _weight;
+
+  double? _parseWeight(String raw) {
+    final parsed = double.tryParse(raw.trim().replaceAll(',', '.'));
+    if (parsed == null || parsed.isNaN) return null;
+    final kilograms = _usePounds
+        ? UnitConversion.poundsToKilograms(parsed)
+        : parsed;
+    if (kilograms < InputParsing.minWeightKg ||
+        kilograms > InputParsing.maxWeightKg) {
+      return null;
+    }
+    return double.parse(kilograms.toStringAsFixed(1));
+  }
 
   @override
   void initState() {
     super.initState();
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
+    final log = ref
+        .read(dailyLogProvider.notifier)
+        .getDailyLog(ref.read(selectedDateProvider));
     if (log?.weight != null) {
       _weight = log!.weight!;
       _hasExistingWeight = true;
     }
-    _controller.text = _weight.toStringAsFixed(1);
+    _controller.text = _displayWeight.toStringAsFixed(1);
     _initialWeight = _weight;
   }
 
@@ -46,9 +66,19 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
 
   void _adjust(double delta) {
     setState(() {
+      final display = (_displayWeight + delta).clamp(
+        _usePounds
+            ? UnitConversion.kilogramsToPounds(InputParsing.minWeightKg)
+            : InputParsing.minWeightKg,
+        _usePounds
+            ? UnitConversion.kilogramsToPounds(InputParsing.maxWeightKg)
+            : InputParsing.maxWeightKg,
+      );
       _weight = double.parse(
-          (_weight + delta).clamp(20.0, 300.0).toStringAsFixed(1));
-      _controller.text = _weight.toStringAsFixed(1);
+        (_usePounds ? UnitConversion.poundsToKilograms(display) : display)
+            .toStringAsFixed(1),
+      );
+      _controller.text = _displayWeight.toStringAsFixed(1);
     });
   }
 
@@ -64,14 +94,21 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
           children: [
             const SizedBox(height: 16),
             _buildWeightDisplay()
-                .animateSafe(context).fadeIn(duration: 500.ms)
-                .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1), duration: 500.ms),
+                .animateSafe(context)
+                .fadeIn(duration: 500.ms)
+                .scale(
+                  begin: const Offset(0.9, 0.9),
+                  end: const Offset(1, 1),
+                  duration: 500.ms,
+                ),
             const SizedBox(height: 28),
-            _buildQuickAdjust(l10n)
-                .animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
+            _buildQuickAdjust(
+              l10n,
+            ).animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
             const SizedBox(height: 20),
-            _buildManualInput(l10n)
-                .animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
+            _buildManualInput(
+              l10n,
+            ).animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
           ],
         ),
       ),
@@ -87,24 +124,35 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          const Icon(Icons.monitor_weight_rounded,
-              color: AppColors.weightColor, size: 48),
+          const Icon(
+            Icons.monitor_weight_rounded,
+            color: AppColors.weightColor,
+            size: 48,
+          ),
           const SizedBox(height: 12),
           Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(_weight.toStringAsFixed(1),
-                  style: Theme.of(context)
-                      .textTheme
-                      .displayLarge!
-                      .copyWith(color: AppColors.categoryText(context, AppColors.weightColor))),
+              Text(
+                _displayWeight.toStringAsFixed(1),
+                style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                  color: AppColors.categoryText(context, AppColors.weightColor),
+                ),
+              ),
               const SizedBox(width: 4),
-              Text('kg',
-                  style: TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.w600,
-                      color: AppColors.categoryText(context, AppColors.weightColor).withValues(alpha: 0.7))),
+              Text(
+                _unit,
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.categoryText(
+                    context,
+                    AppColors.weightColor,
+                  ).withValues(alpha: 0.7),
+                ),
+              ),
             ],
           ),
         ],
@@ -121,10 +169,14 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.quickAdjust,
-              style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w700,
-                  color: AppColors.tp(context))),
+          Text(
+            l10n.quickAdjust,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.tp(context),
+            ),
+          ),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -143,7 +195,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   Widget _adjustBtn(String label, VoidCallback onTap) {
     return Semantics(
       button: true,
-      label: '$label kg',
+      label: '$label $_unit',
       child: Material(
         color: AppColors.weightColor.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(12),
@@ -154,11 +206,14 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
             constraints: const BoxConstraints(minHeight: 48),
             alignment: Alignment.center,
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(label,
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.categoryText(context, AppColors.weightColor))),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: AppColors.categoryText(context, AppColors.weightColor),
+              ),
+            ),
           ),
         ),
       ),
@@ -174,28 +229,40 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.manualEntry,
-              style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w700,
-                  color: AppColors.tp(context))),
+          Text(
+            l10n.manualEntry,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.tp(context),
+            ),
+          ),
           const SizedBox(height: 12),
           TextField(
             controller: _controller,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.bold,
-                color: AppColors.categoryText(context, AppColors.weightColor)),
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: AppColors.categoryText(context, AppColors.weightColor),
+            ),
             decoration: InputDecoration(
-              suffixText: 'kg',
+              suffixText: _unit,
               suffixStyle: TextStyle(
-                  fontSize: 16, color: AppColors.categoryText(context, AppColors.weightColor)),
+                fontSize: 16,
+                color: AppColors.categoryText(context, AppColors.weightColor),
+              ),
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.dv(context))),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppColors.dv(context)),
+              ),
               focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                      color: AppColors.weightColor, width: 2)),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(
+                  color: AppColors.weightColor,
+                  width: 2,
+                ),
+              ),
             ),
             onChanged: (v) {
               final parsed = _parseWeight(v);
@@ -228,11 +295,14 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
           backgroundColor: AppColors.weightColor,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
-        child: Text(l10n.save,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        child: Text(
+          l10n.save,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
@@ -245,8 +315,9 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
     final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-          content: Text(l10n.recordDeleted),
-          backgroundColor: AppColors.success),
+        content: Text(l10n.recordDeleted),
+        backgroundColor: AppColors.success,
+      ),
     );
     Navigator.of(context).pop();
   }
@@ -258,8 +329,9 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
     if (parsed == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(l10n.invalidWeight),
-            backgroundColor: AppColors.error),
+          content: Text(l10n.invalidWeight),
+          backgroundColor: AppColors.error,
+        ),
       );
       return;
     }
@@ -270,8 +342,10 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
         .updateWeight(ref.read(selectedDateProvider), _weight);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.weightSaved),
-            backgroundColor: AppColors.success),
+        SnackBar(
+          content: Text(l10n.weightSaved),
+          backgroundColor: AppColors.success,
+        ),
       );
       Navigator.of(context).pop();
     }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/adaptive_layout.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/widgets/tracker_scaffold.dart';
 import '../../models/enums.dart';
@@ -84,15 +85,28 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                           color: AppColors.tp(context)))
                       .animateSafe(context).fadeIn(duration: 400.ms),
                   const SizedBox(height: 20),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3, childAspectRatio: 0.9,
-                      crossAxisSpacing: 12, mainAxisSpacing: 12,
-                    ),
-                    itemCount: MoodType.values.length,
-                    itemBuilder: (context, index) {
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final textScale = effectiveTextScale(
+                        MediaQuery.textScalerOf(context),
+                      );
+                      return GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: adaptiveGridColumns(
+                            width: constraints.maxWidth,
+                            textScale: textScale,
+                            maxColumns: 3,
+                            minCardWidth: 80,
+                          ),
+                          mainAxisExtent: scaledGridExtent(110, textScale),
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                        ),
+                        itemCount: MoodType.values.length,
+                        itemBuilder: (context, index) {
                       final mood = MoodType.values[index];
                       final emojiData = _moodEmojis[mood]!;
                       // Etiketler tek kaynaktan (EnumLabels); ekranın kendi
@@ -158,6 +172,8 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                           .scale(begin: const Offset(0.9, 0.9),
                               end: const Offset(1.0, 1.0),
                               delay: (index * 40).ms, duration: 300.ms);
+                        },
+                      );
                     },
                   ),
                   const SizedBox(height: 24),

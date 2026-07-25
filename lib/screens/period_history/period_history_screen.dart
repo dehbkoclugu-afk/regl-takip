@@ -107,17 +107,20 @@ class _RecordTile extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     color: AppColors.tp(context),
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(width: 8),
-              Text(l10n.nDays(record.durationDays),
-                  style: TextStyle(
-                      fontSize: 13, color: AppColors.ts(context))),
-              const SizedBox(width: 4),
-              Icon(Icons.edit_rounded,
-                  size: 16, color: AppColors.ts(context)),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(l10n.nDays(record.durationDays),
+                      style: TextStyle(
+                          fontSize: 13, color: AppColors.ts(context))),
+                  const SizedBox(height: 4),
+                  Icon(Icons.edit_rounded,
+                      size: 16, color: AppColors.ts(context)),
+                ],
+              ),
             ],
           ),
         ),

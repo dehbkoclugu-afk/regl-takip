@@ -1,4 +1,7 @@
 
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -7,12 +10,15 @@ import 'package:go_router/go_router.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/adaptive_layout.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../providers/providers.dart';
 import '../../models/enums.dart';
 import '../../models/user_profile.dart';
 import '../../services/hive_service.dart';
+import '../../services/backup_service.dart';
 import '../../services/notification_service.dart';
+import '../../services/widget_service.dart';
 import 'widgets/animated_ring_intro.dart';
 import 'widgets/onboarding_page.dart';
 import '../../core/utils/motion.dart';
@@ -68,6 +74,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               style: const TextStyle(fontSize: 14, height: 1.5)),
         ),
         actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _restoreFromBackup();
+            },
+            child: Text(l10n.restoreData),
+          ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(l10n.done),
@@ -75,6 +88,87 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _restoreFromBackup() async {
+    final l10n = AppLocalizations.of(context)!;
+    final result = await FilePicker.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['json'],
+    );
+    final path = result?.files.single.path;
+    if (path == null) return;
+
+    final BackupData data;
+    try {
+      data = BackupService(
+        HiveService(),
+      ).parseBackup(await File(path).readAsString());
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.invalidBackupFile),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    if (!mounted) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.restoreConfirmTitle),
+        content: Text(l10n.restoreConfirmBody(data.totalRecordCount)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.restore),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    await BackupService(HiveService()).restoreBackup(data);
+    ref.read(userProfileProvider.notifier).refresh();
+    ref.read(periodRecordsProvider.notifier).refresh();
+    ref.read(dailyLogProvider.notifier).refresh();
+
+    final profile = HiveService().getUserProfile();
+    if (profile != null) {
+      final logs = HiveService().getAllDailyLogs();
+      try {
+        await NotificationService().rescheduleAll(
+          profile,
+          records: HiveService().getAllPeriodRecords(),
+          medications: profile.medicationPlan,
+          logs: logs,
+        );
+      } catch (_) {
+        // Geri yükleme bildirim kurulumu başarısız olsa da geçerlidir.
+      }
+      await WidgetService.update(
+        profile,
+        HiveService().getAllPeriodRecords(),
+      );
+    }
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.backupRestored),
+        backgroundColor: AppColors.success,
+      ),
+    );
+    if (profile?.onboardingCompleted ?? false) {
+      GoRouter.of(context).go('/dashboard');
+    }
   }
 
   @override
@@ -468,6 +562,29 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Widget _buildFormNavigation() {
     final l10n = AppLocalizations.of(context)!;
     final canContinue = _canContinue;
+    final largeText = usesLargeText(MediaQuery.textScalerOf(context));
+    final backButton = OutlinedButton.icon(
+      onPressed: _isSaving ? null : _prevFormStep,
+      icon: const Icon(Icons.arrow_back_rounded, size: 20),
+      label: Text(l10n.back),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: Colors.white,
+        disabledForegroundColor: Colors.white.withValues(alpha: 0.5),
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.4)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        minimumSize: const Size(48, 52),
+      ),
+    );
+    final nextButton = _ActionButton(
+      label: _currentFormStep == _totalFormSteps - 1
+          ? l10n.completeBtn
+          : l10n.continueBtn,
+      onPressed: (_isSaving || !canContinue) ? null : _nextFormStep,
+      isLoading: _isSaving,
+    );
     return Column(
       children: [
         // Zorunlu adımda buton neden kapalı, kullanıcı bilmeli
@@ -487,42 +604,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   ),
                 ),
         ),
-        Row(
-          children: [
-            SizedBox(
-              height: 52,
-              child: OutlinedButton.icon(
-                onPressed: _isSaving ? null : _prevFormStep,
-                icon: const Icon(Icons.arrow_back_rounded, size: 20),
-                label: Text(l10n.back),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  disabledForegroundColor: Colors.white.withValues(alpha: 0.5),
-                  side: BorderSide(
-                    color: Colors.white.withValues(alpha: 0.4),
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: SizedBox(
-                height: 52,
-                child: _ActionButton(
-                  label: _currentFormStep == _totalFormSteps - 1
-                      ? l10n.completeBtn
-                      : l10n.continueBtn,
-                  onPressed: (_isSaving || !canContinue) ? null : _nextFormStep,
-                  isLoading: _isSaving,
-                ),
-              ),
-            ),
-          ],
-        ),
+        if (largeText) ...[
+          SizedBox(width: double.infinity, child: backButton),
+          const SizedBox(height: 10),
+          SizedBox(width: double.infinity, child: nextButton),
+        ] else
+          Row(
+            children: [
+              SizedBox(height: 52, child: backButton),
+              const SizedBox(width: 12),
+              Expanded(child: SizedBox(height: 52, child: nextButton)),
+            ],
+          ),
       ],
     );
   }
@@ -705,17 +798,27 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         _stepIcon(Icons.route_rounded),
         _stepTitle(l10n.modeStepTitle),
         _stepSubtitle(l10n.modeStepSubtitle),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 1.25,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-          ),
-          itemCount: modes.length,
-          itemBuilder: (context, index) {
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final textScale =
+                effectiveTextScale(MediaQuery.textScalerOf(context));
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: adaptiveGridColumns(
+                  width: constraints.maxWidth,
+                  textScale: textScale,
+                  maxColumns: 2,
+                  minCardWidth: 120,
+                  spacing: 10,
+                ),
+                mainAxisExtent: scaledGridExtent(130, textScale),
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              itemCount: modes.length,
+              itemBuilder: (context, index) {
             final (mode, icon, title, desc) = modes[index];
             final isSelected = _mode == mode;
             return Semantics(
@@ -753,8 +856,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         const SizedBox(height: 6),
                         Text(title,
                             textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
@@ -765,8 +866,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         const SizedBox(height: 2),
                         Text(desc,
                             textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontSize: 10.5,
                               height: 1.2,
@@ -777,6 +876,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   ),
                 ),
               ),
+            );
+              },
             );
           },
         ),
@@ -1013,19 +1114,43 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('${min.round()}',
-                  style: const TextStyle(color: AppColors.textSecondary)),
-              Text('$averageLabel (${l10n.averageLabel})',
-                  style: const TextStyle(
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w500)),
-              Text('${max.round()}',
-                  style: const TextStyle(color: AppColors.textSecondary)),
-            ],
-          ),
+          child: usesLargeText(MediaQuery.textScalerOf(context))
+              ? Column(
+                  children: [
+                    Text('$averageLabel (${l10n.averageLabel})',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w500)),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('${min.round()}',
+                            style: const TextStyle(
+                                color: AppColors.textSecondary)),
+                        Text('${max.round()}',
+                            style: const TextStyle(
+                                color: AppColors.textSecondary)),
+                      ],
+                    ),
+                  ],
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('${min.round()}',
+                        style: const TextStyle(
+                            color: AppColors.textSecondary)),
+                    Text('$averageLabel (${l10n.averageLabel})',
+                        style: const TextStyle(
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w500)),
+                    Text('${max.round()}',
+                        style: const TextStyle(
+                            color: AppColors.textSecondary)),
+                  ],
+                ),
         ),
       ],
     );
@@ -1041,29 +1166,36 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       child: InkWell(
         onTap: onPressed,
         borderRadius: BorderRadius.circular(16),
-        child: Center(
-          child: isLoading
-              ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    color: AppColors.primaryStrong,
-                  ),
-                )
-              : Text(
-                  label,
-                  // primaryStrong: pastel primary beyaz zeminde 2.06:1 —
-                  // buton metni okunmuyordu
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: enabled
-                        ? AppColors.primaryStrong
-                        : AppColors.primaryStrong.withValues(alpha: 0.6),
-                    letterSpacing: 0.3,
-                  ),
-                ),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 52),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Center(
+              child: isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: AppColors.primaryStrong,
+                      ),
+                    )
+                  : Text(
+                      label,
+                      textAlign: TextAlign.center,
+                      // primaryStrong: pastel primary beyaz zeminde 2.06:1 —
+                      // buton metni okunmuyordu
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: enabled
+                            ? AppColors.primaryStrong
+                            : AppColors.primaryStrong.withValues(alpha: 0.6),
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+            ),
+          ),
         ),
       ),
     );

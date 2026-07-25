@@ -12,6 +12,7 @@ import '../models/user_profile.dart';
 import '../models/period_record.dart';
 import '../models/daily_log.dart';
 import '../models/enums.dart';
+import '../core/utils/medication_plan.dart';
 
 class HiveService {
   static final HiveService _instance = HiveService._internal();
@@ -135,6 +136,7 @@ class HiveService {
       unawaited(deleteLegacyPlaintextSnapshot());
     }
 
+    await ensureMedicationPlanMigrated();
     _isInitialized = true;
   }
 
@@ -357,6 +359,19 @@ class HiveService {
 
   Future<void> saveUserProfile(UserProfile profile) async {
     await _userProfileBox.put(AppConstants.currentUserKey, profile);
+  }
+
+  /// Eski sürümde ilaç tanımları günlük kayıttaydı. En yeni listeyi profile
+  /// yalnız bir kez taşır; işaret boş planı da kapsar ki kullanıcı planı
+  /// sildikten sonra tarihsel kayıtlar yeniden canlanmasın.
+  Future<void> ensureMedicationPlanMigrated() async {
+    final profile = getUserProfile();
+    if (profile == null || profile.medicationPlanMigrated) return;
+    final updated = profile.copyWith(
+      medicationPlan: medicationPlanFromLogs(getAllDailyLogs()),
+      medicationPlanMigrated: true,
+    );
+    await saveUserProfile(updated);
   }
 
   bool isOnboardingCompleted() {

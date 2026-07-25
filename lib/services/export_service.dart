@@ -83,6 +83,67 @@ class ExportService {
     return file.path;
   }
 
+  static String buildCalendarIcs(
+    List<PeriodRecord> periods, {
+    required String eventTitle,
+    DateTime? generatedAt,
+  }) {
+    String date(DateTime value) => DateFormat('yyyyMMdd').format(value);
+    String timestamp(DateTime value) =>
+        DateFormat("yyyyMMdd'T'HHmmss'Z'").format(value.toUtc());
+    String escape(String value) => value
+        .replaceAll('\\', '\\\\')
+        .replaceAll('\n', '\\n')
+        .replaceAll(',', '\\,')
+        .replaceAll(';', '\\;');
+
+    final now = generatedAt ?? DateTime.now();
+    final sorted = List<PeriodRecord>.from(periods)
+      ..sort((a, b) => a.startDate.compareTo(b.startDate));
+    final lines = <String>[
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Regl Takip//Cycle Calendar//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+    ];
+    for (final period in sorted) {
+      final rawEnd = period.endDate ?? now;
+      final end = rawEnd.isBefore(period.startDate)
+          ? period.startDate
+          : rawEnd;
+      lines.addAll([
+        'BEGIN:VEVENT',
+        'UID:${period.id}@regl-takip',
+        'DTSTAMP:${timestamp(now)}',
+        'DTSTART;VALUE=DATE:${date(period.startDate)}',
+        'DTEND;VALUE=DATE:${date(end.add(const Duration(days: 1)))}',
+        'SUMMARY:${escape(eventTitle)}',
+        'TRANSP:TRANSPARENT',
+        'END:VEVENT',
+      ]);
+    }
+    lines.add('END:VCALENDAR');
+    return '${lines.join('\r\n')}\r\n';
+  }
+
+  /// Regl geçmişini standart, tüm gün etkinliklerinden oluşan ICS dosyası
+  /// olarak dışa aktarır. DTEND iCalendar standardında kapsayıcı değildir.
+  Future<String> exportCalendar(
+    List<PeriodRecord> periods,
+    AppLocalizations l10n,
+  ) async {
+    final contents = buildCalendarIcs(
+      periods,
+      eventTitle: l10n.periodDayLabel,
+    );
+    final dir = await getTemporaryDirectory();
+    final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+    final file = File('${dir.path}/period_calendar_$timestamp.ics');
+    await file.writeAsString(contents);
+    return file.path;
+  }
+
   /// Exports a PDF report. Returns the file path.
   Future<String> exportPdf(
     UserProfile profile,

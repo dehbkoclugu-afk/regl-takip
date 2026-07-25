@@ -3,6 +3,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/adaptive_layout.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/utils/motion.dart';
 
@@ -67,8 +68,7 @@ class PredictionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // Kart ekran okuyucuya tek parça okunur ("Sonraki regl: 1 Tem") ve
     // bilgi metni varsa buton gibi davranır — dokunuşta ripple verir
-    return Expanded(
-      child: Semantics(
+    return Semantics(
         button: infoText != null,
         label: '$title: $value',
         child: GlassCard(
@@ -115,11 +115,7 @@ class PredictionCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Flexible(
-                    // Uzun başlık ("Verimli Pencere") kesilmek yerine
-                    // sığacak kadar küçülür — yarım kelime hoş durmuyordu
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
+                    child: Text(
                         title,
                         style: TextStyle(
                           fontSize: 11,
@@ -128,10 +124,8 @@ class PredictionCard extends StatelessWidget {
                           letterSpacing: 0.3,
                         ),
                         textAlign: TextAlign.center,
-                        maxLines: 1,
                       ),
                     ),
-                  ),
                   if (infoText != null) ...[
                     const SizedBox(width: 2),
                     Icon(Icons.info_outline_rounded,
@@ -148,8 +142,6 @@ class PredictionCard extends StatelessWidget {
                   color: AppColors.tp(context),
                 ),
                 textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
                     ],
                   ),
@@ -158,7 +150,6 @@ class PredictionCard extends StatelessWidget {
             ),
           ),
         ),
-      ),
     );
   }
 }
@@ -183,16 +174,15 @@ class PredictionCardsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Row(
-      children: [
-        PredictionCard(
+    final cards = [
+      PredictionCard(
           icon: Icons.water_drop_rounded,
           title: l10n.nextPeriod,
           value: nextPeriodDate,
           color: AppColors.menstrual,
           infoText: l10n.nextPeriodInfo,
         ),
-        PredictionCard(
+      PredictionCard(
           icon: ovulationConfirmed
               ? Icons.verified_rounded
               : Icons.egg_rounded,
@@ -205,15 +195,29 @@ class PredictionCardsRow extends StatelessWidget {
               ? l10n.ovulationConfirmedInfo
               : l10n.ovulationCardInfo,
         ),
-        PredictionCard(
+      PredictionCard(
           icon: Icons.favorite_rounded,
           title: l10n.fertileWindow,
           value: fertileWindowDate,
           color: AppColors.fertileWindow,
           infoText: l10n.fertileWindowInfo,
         ),
-      ],
-    )
+    ];
+    final content = usesLargeText(MediaQuery.textScalerOf(context))
+        ? Column(
+            children: [
+              for (var i = 0; i < cards.length; i++) ...[
+                SizedBox(width: double.infinity, child: cards[i]),
+                if (i < cards.length - 1) const SizedBox(height: 12),
+              ],
+            ],
+          )
+        : Row(
+            children: [
+              for (final card in cards) Expanded(child: card),
+            ],
+          );
+    return content
         .animateSafe(context)
         .fadeIn(delay: 400.ms, duration: 600.ms)
         .slideY(begin: 0.15, end: 0, delay: 400.ms, duration: 600.ms);

@@ -259,6 +259,13 @@ class CycleUtils {
     return ((days ~/ 7) + 1).clamp(1, 42);
   }
 
+  /// Ana ekrandaki gebelik içeriği için trimester grubu.
+  static int pregnancyTrimester(int week) {
+    if (week <= 13) return 1;
+    if (week <= 27) return 2;
+    return 3;
+  }
+
   /// 21+7 hap döngüsünde paket günü (1..28).
   /// 1-21 aktif hap, 22-28 ara hafta.
   /// Hap paketinde ara (plasebo) döneminde miyiz?

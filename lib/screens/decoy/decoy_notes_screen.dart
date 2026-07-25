@@ -61,11 +61,45 @@ class _DecoyNotesScreenState extends State<_DecoyNotesHome> {
 
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getStringList(_prefsKey);
+    final notes = saved ?? _starterNotes();
+    if (saved == null) {
+      await prefs.setStringList(_prefsKey, notes);
+    }
     if (!mounted) return;
     setState(() {
-      _notes = prefs.getStringList(_prefsKey) ?? [];
+      _notes = notes;
       _loaded = true;
     });
+  }
+
+  /// İlk açılışta boş bir "Notlar" uygulaması kılık gibi görünür. Yalnız
+  /// anahtar hiç yazılmadıysa iki sıradan başlangıç notu eklenir; kullanıcı
+  /// hepsini silerse boş liste korunur ve notlar yeniden doğmaz.
+  List<String> _starterNotes() {
+    return switch (Localizations.localeOf(context).languageCode) {
+      'tr' => ['Alışveriş listesi\nSüt, ekmek, kahve', 'Hafta sonu\nEvi toparla'],
+      'de' => [
+          'Einkaufsliste\nMilch, Brot, Kaffee',
+          'Wochenende\nWohnung aufräumen'
+        ],
+      'es' => [
+          'Lista de compras\nLeche, pan, café',
+          'Fin de semana\nOrdenar la casa'
+        ],
+      'fr' => [
+          'Liste de courses\nLait, pain, café',
+          'Week-end\nRanger la maison'
+        ],
+      'ru' => [
+          'Список покупок\nМолоко, хлеб, кофе',
+          'Выходные\nУбраться дома'
+        ],
+      _ => [
+          'Shopping list\nMilk, bread, coffee',
+          'Weekend\nTidy the house'
+        ],
+    };
   }
 
   Future<void> _persist() async {

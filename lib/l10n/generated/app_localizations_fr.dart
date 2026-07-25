@@ -530,6 +530,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get invalidWeight => 'Saisissez un poids valide (20-300 kg)';
 
   @override
+  String get invalidTemperature =>
+      'Saisissez une température valide (35-40 °C)';
+
+  @override
   String get discardChangesTitle => 'Modifications non enregistrées';
 
   @override
@@ -601,6 +605,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get dailyLog => 'Journal quotidien';
+
+  @override
+  String get dailyMeasurements => 'Mesures quotidiennes';
 
   @override
   String get flow => 'Flux';
@@ -780,6 +787,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noMedicationsYet => 'Aucun médicament pour l\'instant';
+
+  @override
+  String get medicationPlanHint =>
+      'Ce plan s\'applique chaque jour. La case enregistre uniquement le jour sélectionné.';
+
+  @override
+  String get medicationAlreadyInPlan =>
+      'Ce médicament figure déjà dans le plan';
 
   @override
   String get tapToAdd => 'Touchez + pour ajouter';
@@ -1102,6 +1117,25 @@ class AppLocalizationsFr extends AppLocalizations {
   String get trimester3 => '3e trimestre';
 
   @override
+  String get pregnancyDevelopmentTitle => 'Développement cette semaine';
+
+  @override
+  String get pregnancyDevelopment1 =>
+      'Une période de développement rapide se poursuit pendant la formation des principaux organes et systèmes de votre bébé.';
+
+  @override
+  String get pregnancyDevelopment2 =>
+      'Les mouvements de votre bébé deviennent plus coordonnés ; le moment où vous les ressentez varie selon les personnes.';
+
+  @override
+  String get pregnancyDevelopment3 =>
+      'Votre bébé continue de grandir tandis que la préparation à la naissance prend de l\'importance.';
+
+  @override
+  String get pregnancyCheckupReminder =>
+      'Suivez le calendrier de consultations recommandé par votre professionnel de santé.';
+
+  @override
   String get pregnancyStartLabel => 'Dernières règles (début de grossesse)';
 
   @override
@@ -1164,6 +1198,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get quickLog => 'Saisie rapide';
 
   @override
+  String get shortcutQuickLog => 'Saisie rapide';
+
+  @override
+  String get shortcutToday => 'Voir aujourd’hui';
+
+  @override
   String get allTrackers => 'Tous les suivis';
 
   @override
@@ -1182,7 +1222,47 @@ class AppLocalizationsFr extends AppLocalizations {
   String get decoyHint => 'Écrivez quelque chose…';
 
   @override
-  String get backupData => 'Sauvegarder (JSON)';
+  String get backupData => 'Créer une sauvegarde protégée';
+
+  @override
+  String get backupPassword => 'Mot de passe de sauvegarde';
+
+  @override
+  String get backupPasswordConfirm =>
+      'Saisissez à nouveau le mot de passe';
+
+  @override
+  String get backupPasswordLength =>
+      'Le mot de passe doit contenir entre 10 et 128 caractères';
+
+  @override
+  String get backupPasswordsDoNotMatch =>
+      'Les mots de passe ne correspondent pas';
+
+  @override
+  String get backupNoRecovery =>
+      'Ce mot de passe n’est pas stocké sur l’appareil et ne peut pas être récupéré. Si vous l’oubliez, vous ne pourrez pas ouvrir la sauvegarde.';
+
+  @override
+  String get unlockBackupTitle => 'Saisissez le mot de passe';
+
+  @override
+  String get unlockBackupBody =>
+      'Cette sauvegarde ne peut être ouverte qu’avec le mot de passe utilisé lors de sa création.';
+
+  @override
+  String get backupPasswordOrFileInvalid =>
+      'Le mot de passe est incorrect ou le fichier de sauvegarde est endommagé.';
+
+  @override
+  String get legacyBackupWarning =>
+      'Cette ancienne sauvegarde n’est pas chiffrée. Après sa restauration, les nouvelles sauvegardes seront protégées par mot de passe.';
+
+  @override
+  String get showPassword => 'Afficher le mot de passe';
+
+  @override
+  String get hidePassword => 'Masquer le mot de passe';
 
   @override
   String get restoreData => 'Restaurer une sauvegarde';
@@ -1516,6 +1596,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get privacyAssurance => 'Vos données restent chiffrées sur cet appareil uniquement';
 
   @override
+  String get privacySummary =>
+      'Vos données principales sont chiffrées sur cet appareil; elles n\'en sortent que si vous les exportez ou activez Health Connect.';
+
+  @override
   String get dontRememberExactly => 'Je ne sais plus exactement';
 
   @override
@@ -1588,12 +1672,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String regularityInfoInsufficient(int count) {
     return 'Il faut au moins $count intervalles de cycle pour parler de régularité. En dessous, le jugement serait trompeur.';
   }
-
-  @override
-  String get backupWarningTitle => 'Le fichier de sauvegarde n’est pas chiffré';
-
-  @override
-  String get backupWarningBody => 'La sauvegarde contient toutes vos données de cycle et de santé en clair. Les données sur l’appareil sont chiffrées, mais pas ce fichier. Faites attention à l’endroit où vous l’enregistrez et à qui vous le partagez.';
 
   @override
   String get backupNever => 'Vous n’avez encore jamais fait de sauvegarde.';
@@ -1777,6 +1855,74 @@ class AppLocalizationsFr extends AppLocalizations {
   String get storyTrendFlat => 'Pas de changement notable sur cette période — la tendance est stable.';
 
   @override
+  String averageSeverity(String value) {
+    return 'Moy. $value/5';
+  }
+
+  @override
+  String get dataCoverage => 'Densité des données';
+
+  @override
+  String dataCoverageValue(int logged, int total, int percent) {
+    return 'Données sur $logged jours sur $total ($percent %)';
+  }
+
+  @override
+  String get tapChartPointHint => 'Touchez un point pour ouvrir ce jour.';
+
+  @override
+  String get shareCalendarMonth => 'Partager le mois du calendrier';
+
+  @override
+  String get longPressDayHint => 'Appuyez longuement sur un jour pour un aperçu rapide.';
+
+  @override
+  String get markPeriodRange => 'Marquer la période des règles';
+
+  @override
+  String get periodRangeOverlap => 'Cette période chevauche un enregistrement existant.';
+
+  @override
+  String get periodRangeSaved => 'Période des règles enregistrée';
+
+  @override
+  String trackingStreak(int count) {
+    return 'Série de $count jours';
+  }
+
+  @override
+  String weeklyTracking(int count) {
+    return '$count/7 jours suivis';
+  }
+
+  @override
+  String get exportCalendarFile => 'Exporter le calendrier (.ics)';
+
+  @override
+  String get ovulationMarkerHint => 'Ligne pointillée : ovulation estimée ou confirmée';
+
+  @override
+  String get addPastCycles => 'Ajouter des cycles passés';
+
+  @override
+  String get addPastCyclesHint => 'Sélectionnez jusqu’à 3 périodes de règles et enregistrez-les ensemble.';
+
+  @override
+  String get addPeriodRange => 'Ajouter une période de règles';
+
+  @override
+  String get cycleOverlayTitle => 'Comparaison des cycles';
+
+  @override
+  String get symptomLoadComparison => 'Intensité quotidienne des symptômes alignée sur le jour du cycle';
+
+  @override
+  String get currentCycleLabel => 'Ce cycle';
+
+  @override
+  String get previousCycleLabel => 'Cycle précédent';
+
+  @override
   String get colorBlindPattern => 'Couleurs de phase texturées';
 
   @override
@@ -1870,4 +2016,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get healthDisclaimer => 'Cette application ne remplace pas un avis médical. Pour toute question de santé, consultez un professionnel.';
+
+  @override
+  String get homePriority => 'Priorité de l’accueil';
+
+  @override
+  String get cycleFirst => 'Cycle d’abord';
+
+  @override
+  String get todayFirst => 'Aujourd’hui d’abord';
 }

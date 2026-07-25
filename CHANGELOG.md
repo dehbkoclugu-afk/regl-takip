@@ -1,5 +1,327 @@
 # Changelog
 
+## Yayınlanmamış — Parolalı yedekleme (2026-07-26)
+
+Tasarım incelemesinin veri güvenliği turu
+(`docs/tasarim-onerileri.md` madde 89).
+
+- Yeni yedekler düz JSON yerine `.rtbackup` uzantılı, AES-256-GCM ile
+  şifrelenmiş ve bütünlüğü doğrulanan dosyalar olarak oluşturuluyor
+- Anahtar, her dosyaya özel 16 bayt salt ve Argon2id (19 MiB, 2 tur,
+  paralellik 1) ile 10–128 karakterlik kullanıcı parolasından türetiliyor
+- Parola iki kez doğrulanıyor; cihazda saklanmadığı ve kurtarılamadığı
+  yedek oluşturulmadan önce açıkça belirtiliyor
+- Şifreleme ve çözme arka plan isolate'ında çalışıyor; engelleyici ilerleme
+  durumu çift işlem başlatılmasını önlüyor
+- Yanlış parola, değiştirilmiş yük ve bozuk şifreli dosya aynı güvenli
+  mesajla reddediliyor; başarılı çözme ve iç JSON doğrulaması bitmeden
+  mevcut kayıtlar değiştirilmiyor
+- Eski düz `.json` yedekleri yalnız geri yükleme için destekleniyor ve
+  onaydan önce şifresiz oldukları açıklanıyor; yeni düz JSON yedeği
+  üretilmiyor
+- Zarf sürümü, algoritmalar, KDF parametreleri, Base64 alan uzunlukları ve
+  50 MiB dosya sınırı doğrulanıyor; kötü amaçlı KDF başlığı kabul edilmiyor
+
+## Yayınlanmamış — Klavye gezinmesi (2026-07-26)
+
+Tasarım incelemesinin erişilebilir giriş turu
+(`docs/tasarim-onerileri.md` madde 82).
+
+- Uygulamadaki etkileşim yüzeyleri tablet klavyesi için tarandı; standart
+  Material Tab/Shift+Tab ve Enter/Space davranışı yeniden yazılmadan korundu
+- Açık ve koyu temaya yüksek kontrastlı ortak odak göstergesi eklendi
+- Döngü halkası görünür klavye odağı aldı; Enter ve Space güncel faz
+  ayrıntısını dokunmayla aynı veri yolu üzerinden açıp kapatıyor
+- Takvim günleri doğrudan odaklanabilir Material yüzeylerine dönüştürüldü;
+  seçme ve uzun basma davranışları korunuyor
+- Tablet yıl ızgarası sırası, özel yüzey etkinleştirmesi, Escape ile modal
+  kapanışı ve odağın açan kontrole dönüşü widget testleriyle kapsandı
+
+## Yayınlanmamış — Büyük yazı düzeni (2026-07-26)
+
+Tasarım incelemesinin erişilebilir düzen turu
+(`docs/tasarim-onerileri.md` madde 77).
+
+- %200 sistem yazısı için 320 ve 600 dp genişliklerde tüm ekranlar tarandı;
+  genel ölçek kısıtlamak yerine yalnız gerçek sabit geometri riskleri düzeltildi
+- Metin taşıyan seçim ızgaraları genişlik ve yazı ölçeğine göre sütun azaltıp
+  kart yüksekliğini artırıyor; ikon veya gün noktası ızgaraları değişmedi
+- Ana ekran, hızlı kayıt, onboarding, ayarlar, istatistikler ve takip
+  ekranlarındaki sıkışan satırlar büyük yazıda sarılıyor veya dikey akıyor
+- Birincil etiketlerdeki kesmeler kaldırıldı, en az 48 dp dokunma hedefleri ve
+  normal yazı ölçeğindeki mevcut görsel düzen korundu
+- Ortak düzen hesapları birim testiyle; yıl görünümü 320/600 dp ve 1×/2×
+  widget düzen testiyle kapsandı
+
+## Yayınlanmamış — Widget'tan regl başlangıcı (2026-07-26)
+
+Tasarım incelemesinin sistem entegrasyonu turu
+(`docs/tasarim-onerileri.md` madde 97).
+
+- Kompakt ve geniş Android widget'a yerelleştirilmiş “Reglim başladı”
+  eylemi eklendi; hedef en az 48 dp ve ekran okuyucu açıklaması taşıyor
+- Widget tıklaması soğuk/sıcak açılışta çalışıyor; PIN/biyometri,
+  onboarding, kılık ve takip modu kurallarını atlamıyor
+- Devam eden regl veya bugüne ait başlangıç varken yinelenen kayıt
+  oluşturulmuyor
+- Başarılı kayıttan sonra altı saniyelik geri alma gösteriliyor ve önceki
+  profil tarihi geri yükleniyor
+- Amaçlı widget açılışı uygulama-açılış reklamıyla kesilmiyor; güvenlik
+  kararları saf birim testiyle kapsandı
+
+## Yayınlanmamış — Uygulama kısayolları (2026-07-25)
+
+Tasarım incelemesinin sistem entegrasyonu turu
+(`docs/tasarim-onerileri.md` madde 98).
+
+- Android ve iOS ikon menüsüne “Hızlı Kayıt” ile “Bugünü Gör” eklendi
+- Kısayol eylemleri onboarding, PIN/biyometri ve premium kapılarını atlamıyor
+- Kılık modu sağlık kısayollarını anında kaldırıyor; kapatıldığında etkin
+  dilde geri getiriyor
+- Kısayolla başlatılan amaçlı akış uygulama-açılış reklamıyla kesilmiyor
+- Kısayol kararları saf birim testiyle kapsandı
+
+## Yayınlanmamış — Kalıcı ilaç planı (2026-07-25)
+
+Tasarım incelemesinin ilaç veri modeli turu
+(`docs/tasarim-onerileri.md` madde 33).
+
+- İlaç adı, doz ve hatırlatma saati günlük kayıttan ayrılıp profil içindeki
+  kalıcı plana taşındı; “alındı” durumu seçili güne ait kalmaya devam ediyor
+- Eski kullanıcıların en yeni ilaç listesi bir kez otomatik taşınıyor;
+  `taken` sıfırlanıyor ve geçiş işareti silinen planın yeniden doğmasını
+  engelliyor
+- Ekleme/silme planı ve bildirimleri güncelliyor; onay kutusu yalnız seçili
+  günün geçmişini yazıyor
+- Bildirimden “alındı” eylemi günlük kayıt yoksa profil planından oluşturuyor
+- Plandan kaldırılmış ilaçlar geçmiş günlük kayıtlarda ve JSON yedeklerinde
+  korunuyor
+- Plan geçişi, günlük durum birleştirmesi ve tarihsel kayıt koruması birim
+  testleriyle kapsandı
+
+## Yayınlanmamış — Hamilelik haftası bağlamı (2026-07-25)
+
+Tasarım incelemesinin hamilelik modu turu
+(`docs/tasarim-onerileri.md` madde 21).
+
+- Hamilelik hero’sunun altına trimester grubuna göre değişen kısa gelişim
+  bilgisi eklendi
+- Kişiye özel tıbbi takvim varsaymak yerine, sağlık uzmanının önerdiği
+  kontrol planını izlemeyi hatırlatan sakin bir satır kullanıldı
+- Başlangıç tarihi yokken gelişim metni gösterilmiyor; mevcut tarih ayarlama
+  yönlendirmesi korunuyor
+- Kart büyük metin ve uzun çevirilerde büyüyebiliyor; ekran okuyucu gelişim
+  ve kontrol hatırlatmasını tek bağlamda duyuyor
+- Trimester sınır eşlemesi ortak yardımcıya taşındı ve sınır günleri birim
+  testiyle kapsandı
+
+## Yayınlanmamış — Birleşik günlük ölçümler (2026-07-25)
+
+Tasarım incelemesinin günlük kayıt sadeleştirme turu
+(`docs/tasarim-onerileri.md` madde 28).
+
+- Su, uyku, kilo ve sıcaklık tek “Günlük Ölçümler” ekranında toplandı;
+  günlük kayıt ızgarasındaki dört ayrı kart tek girişe indirildi
+- Boş kilo/sıcaklık alanları ve kapalı uyku bölümü veri üretmiyor; kullanıcı
+  birleşik ekrandan mevcut ölçümleri temizleyebiliyor
+- kg/lb ve °C/°F tercihleri, sıcaklık saati, uyku saatleri ve kalite puanı
+  aynı akışta korunuyor; dört grup tek Hive yazımıyla kaydediliyor
+- Eski ayrı ölçüm rotaları bildirim ve derin bağlantı uyumluluğu için
+  tutuldu; birleşik kayıt/temizleme davranışı provider testiyle kapsandı
+
+## Yayınlanmamış — Ana ekran önceliği (2026-07-25)
+
+Tasarım incelemesinin kişiselleştirme turu
+(`docs/tasarim-onerileri.md` madde 24).
+
+- Ayarlar > Tercihler bölümüne “Döngü önce / Bugün önce” seçimi eklendi
+- “Bugün önce” seçildiğinde günlük özet ana ekranın üst bölümüne taşınıyor;
+  varsayılan döngü odaklı mevcut sıra değişmiyor
+- Tercih cihazda kalıcı tutuluyor ve bilinmeyen/eski değerler güvenle
+  varsayılan düzene dönüyor
+- Seçici uzun çevirilerde ve büyük metinde satır kırabilen chip yapısını
+  kullanıyor; kalıcı değer çözümlemesi birim testiyle kapsandı
+
+## Yayınlanmamış — Deneme bitişi geçişi (2026-07-25)
+
+Tasarım incelemesinin erişim geçişi turu
+(`docs/tasarim-onerileri.md` madde 3).
+
+- Denemenin son üç gününde ana ekran erişim çipi uyarı tonuna geçiyor
+- Deneme bittiğinde yalnız ilk ücretsiz açılışta ücretsiz kapsamı ve
+  kayıtların cihazda kalacağını anlatan erişilebilir bir diyalog gösteriliyor
+- Kullanıcı aynı diyalogdan ücretsiz devam edebiliyor veya planları açabiliyor
+- Geçiş açıklaması kalıcı olarak tek seferle sınırlandı; ilk ücretsiz
+  oturumda açılış reklamı açıklamanın önüne geçmiyor
+- Diyaloğun yalnız tamamlanmış onboarding, ücretsiz erişim ve gösterilmemiş
+  durum birleşiminde açılması birim testiyle kapsandı
+
+## Yayınlanmamış — Tablet içerik düzeni (2026-07-25)
+
+Tasarım incelemesinin tablet uyarlama turu
+(`docs/tasarim-onerileri.md` madde 99; madde 82 kısmi).
+
+- Ana ekran geniş görünümde döngü/eylem ve tahmin/içgörü kümelerini iki
+  dengeli kolona ayırıyor; mobilde mevcut okuma sırası korunuyor
+- Takvim geniş görünümde aylık ızgara ile faz, ay özeti, legend ve açıklama
+  panelini yan yana gösteriyor
+- Her iki ekran masaüstünde aşırı gerilmeyi önlemek için 1180 px ile
+  sınırlandırıldı
+- İki kolonlu bölgeler widget sıralı klavye odak gruplarına alındı; takvim
+  legend'i uzun çevirilerde taşmak yerine satır kırıyor
+
+## Yayınlanmamış — Takvim yıl görünümü (2026-07-25)
+
+Tasarım incelemesinin takvim yıl görünümü turu
+(`docs/tasarim-onerileri.md` madde 43; madde 82 kısmi).
+
+- Takvim araç çubuğuna 12 aylık kuş bakışı eklendi; gerçek regl günleri dolu,
+  tahmin günleri içi boş işaretle ayrılıyor
+- Bir aya dokunmak aylık takvimi doğrudan seçilen aya götürüyor
+- Izgara telefon ve tablet genişliklerine uyarlanıyor; ay kartları doğal
+  okuma sıralı klavye odağı ve ekran okuyucu özeti taşıyor
+- Yerel hafta başlangıcı, artık yıl görünümündeki mini ayları da belirliyor;
+  ay ızgarası ve artık yıl sınırı birim testiyle kapsandı
+
+## Yayınlanmamış — Geçmiş veri ve döngü karşılaştırması (2026-07-25)
+
+Tasarım incelemesinin geçmiş veri/karşılaştırma turu
+(`docs/tasarim-onerileri.md` madde 37 ve 53).
+
+- Takvimden en fazla üç geçmiş regl aralığı tek akışta eklenebiliyor;
+  çakışan paket veri yazılmadan reddediliyor ve kayıtlar birlikte geri
+  alınabiliyor
+- Son iki döngünün günlük toplam belirti şiddeti aynı döngü günlerine
+  hizalanarak düz ve kesikli çizgilerle üst üste gösteriliyor
+- Önceki döngü verisi adil karşılaştırma için mevcut döngünün ulaştığı günle
+  sınırlandırılıyor
+- Toplu kayıt atomik doğrulaması ve döngü günü hizalaması birim testleriyle
+  kapsandı
+
+## Yayınlanmamış — Tahmin ayrımı ve döngü işaretleri (2026-07-25)
+
+Tasarım incelemesinin görsel döngü turu (`docs/tasarim-onerileri.md` madde
+42 ve 55).
+
+- Takvimde tahmini regl günleri açık dolgu ve kesikli daireyle gerçek
+  kayıtlardan renk dışı ikinci bir kanalla ayrıldı
+- Sıcaklık ve kilo trendlerine her döngünün ovülasyon çizgisi eklendi;
+  mevcut döngüde BBT/LH teyidi tahmini tarihin yerini alıyor
+- Grafik noktasının araç ipucu ölçümle birlikte o günün döngü fazını da
+  gösteriyor; ovülasyon işareti ekran okuyucu özetine eklendi
+
+## Yayınlanmamış — Devamlılık, yerel takvim ve ICS (2026-07-25)
+
+Tasarım incelemesinin devamlılık/veri turu (`docs/tasarim-onerileri.md`
+madde 30, 84 ve 95).
+
+- Bugünün özetine günlük seri ve son yedi gün kayıt doluluğu eklendi; bugün
+  henüz boşsa dün biten seri korunuyor
+- Takvim hafta başlangıcı seçilen Material yerelleştirmesinin pazar,
+  pazartesi veya cumartesi kuralını izliyor
+- Regl geçmişi standart tüm-gün etkinlikleri içeren `.ics` dosyası olarak
+  paylaşılabiliyor
+- Seri hesabı ve iCalendar tarih/kaçış kuralları birim testleriyle kapsandı
+
+## Yayınlanmamış — Takvim aralık kaydı ve paylaşım (2026-07-25)
+
+Tasarım incelemesinin takvim turu (`docs/tasarim-onerileri.md` madde 44, 46
+ve 47).
+
+- Uzun-bas gün önizlemesi, ilk kullanımdan sonra kalıcı olarak kaybolan kısa
+  bir ipucuyla keşfedilebilir hâle getirildi
+- Başlangıç ve bitiş günü tek tarih aralığı seçicisinden kapalı regl kaydı
+  olarak eklenebiliyor; çakışmalar engelleniyor ve işlem geri alınabiliyor
+- Görünen ay kartı uygulama içinden PNG olarak sistem paylaşım menüsüne
+  gönderilebiliyor
+- Tarih normalizasyonu ve çakışma koruması provider testine eklendi
+
+## Yayınlanmamış — İstatistik güveni ve ayrıntı (2026-07-25)
+
+Tasarım incelemesinin istatistik turu (`docs/tasarim-onerileri.md` madde 32,
+54, 56 ve 57).
+
+- Belirti sıklığı grafiğine ilk beş belirtinin ortalama 1–5 şiddeti eklendi
+- Faz içgörülerinin her belirti için en sık fazı ve yüzdesini zaten gösterdiği
+  doğrulandı; tasarım belgesindeki açık durum kapatıldı
+- Seçili dönemin kayıt doluluğu ile son 12 aya kadar aylık yoğunluk çubukları
+  eklendi; içeriksiz günlük nesneleri hesaba katılmıyor
+- Sıcaklık ve kilo grafiklerinde dokunulan nokta ilgili günlük kaydı açıyor
+- Belirti özeti ve veri yoğunluğu sınırları için birim testleri eklendi
+
+## Yayınlanmamış — Not arama ve ortak boş durumlar (2026-07-25)
+
+Tasarım incelemesinin günlük kullanım turu (`docs/tasarim-onerileri.md`
+madde 36, 96 ve 100).
+
+- Geçmiş notlar metne ve kapsayıcı tarih aralığına göre aranabiliyor; sonuçlar
+  yeniden eskiye sıralanıyor ve dokunulan gün aynı düzenleyicide açılıyor
+- Ayarların en üstüne, cihaz şifrelemesini ve kullanıcı kontrollü dışa
+  aktarma/Health Connect istisnalarını birlikte söyleyen kısa gizlilik özeti
+  eklendi
+- İstatistik genel boşluğu ve not arama sonucu ortak `EmptyState` bileşenine
+  bağlandı; mevcut dönem geçmişi, ilaç ve istatistik kartlarıyla aynı görsel
+  dil tamamlandı
+- Not filtreleme için büyük/küçük harf, tarih sınırları ve sıralamayı kapsayan
+  birim testi eklendi
+
+## Yayınlanmamış — Gizli mod ve geri alınamaz silme (2026-07-25)
+
+Tasarım incelemesinin güvenlik turu (`docs/tasarim-onerileri.md` madde 85,
+88, 90 ve 91).
+
+- Gizli mod Güvenlik kartının ilk sırasına taşındı; onboarding uzatılmadan
+  görünürlüğü artırıldı
+- Sahte Notlar ekranı ilk açılışta arayüz diline uygun iki sıradan notla
+  geliyor; kullanıcı boşaltırsa örnekler yeniden oluşturulmuyor
+- Android'de PIN'den bağımsız ekran görüntüsü ve son uygulamalar önizleme
+  koruması eklendi; tercih değişikliği `FLAG_SECURE` durumuna anında yansıyor
+- Tüm verileri silme butonu, kullanıcı yerelleştirilmiş "Sil" sözcüğünü
+  yazmadan etkinleşmiyor
+
+## Yayınlanmamış — Onboarding geri dönüş ve kurtarma (2026-07-25)
+
+Tasarım incelemesinin onboarding turu (`docs/tasarim-onerileri.md` madde
+63–66).
+
+- İlk günlük kayıt yönlendirmesi ile görünür ve sistem geri hareketlerinin
+  zaten mevcut olduğu doğrulandı; tasarım belgesi gerçek durumla eşitlendi
+- Takip modu değişmeden önce modun etkisini açıklayan onay adımı eklendi;
+  hamilelik modu tahmin ve regl bildirimlerinin duracağını açıkça söylüyor
+- Veri sıfırlama uyarısına doğrudan JSON yedeği geri yükleme eylemi eklendi
+- Onboarding içinden geri yükleme profil, dönem ve günlük provider'larını
+  yeniliyor; bildirimleri ve ana ekran widget'ını yeniden kuruyor
+
+## Yayınlanmamış — Deneme görünürlüğü ve plan karşılaştırması (2026-07-25)
+
+Tasarım incelemesinin para/ana ekran turu (`docs/tasarim-onerileri.md` madde
+8, 10 ve 15).
+
+- Yıllık plan kartı, mağazanın güncel fiyatlarından aylık karşılığı ve gerçek
+  tasarruf yüzdesini hesaplıyor; sabit veya ülkeye özgü varsayımsal fiyat yok
+- Deneme çipi ilk 23 gün ana ekranda yer kaplamıyor, yalnız son 7 günde
+  görünerek bitişi haber veriyor
+- Her açılışta tekrarlanan tıbbi uyarılar ana ekrandan kaldırıldı; ayarlar,
+  takvim ve istatistik yüzeylerinde erişilebilir olmaya devam ediyor
+
+## Yayınlanmamış — Hızlı akış, semptom şiddeti ve birim tercihleri (2026-07-25)
+
+Tasarım incelemesinin yeni kayıt turu (`docs/tasarim-onerileri.md` madde 25,
+29, 32, 35 ve 38).
+
+- Hafta şeridindeki geçmiş veya bugünkü güne uzun basınca doğrudan akış
+  yoğunluğu seçilebiliyor
+- Hızlı kayıtta seçilen semptomun şiddeti 1–5 arasında ayarlanabiliyor
+- Ayarlara kg/lb ve °C/°F tercihleri eklendi; kayıt ekranları ile günlük
+  özetler seçilen birimi gösteriyor
+- Ölçümler içeride kg ve °C kalıyor; mevcut kayıtlar, grafikler ve sağlık
+  hesapları birim değişiminden etkilenmiyor
+- Birim tercihleri Hive profilinde geriye uyumlu iki alanla ve yedek JSON'unda
+  korunuyor
+- Kayıt izi ve kayıt sonrası sheet kapanışı kodda zaten vardı; tasarım
+  belgesinin durum özeti gerçek uygulamayla eşitlendi
+- Dönüşümler ve yedek gidiş-dönüşü için testler eklendi
+
 ## Yayınlanmamış — Renk körlüğü: takvim hücreleri ve pasta lejantı (2026-07-25)
 
 Tasarım incelemesinin yirmi üçüncü grubu (`docs/tasarim-onerileri.md` madde 79, 80).
@@ -185,7 +507,11 @@ Tasarım incelemesinin sekizinci grubu (`docs/tasarim-onerileri.md` madde 92, 89
 
 - **Yedek hatırlatması** (madde 92): yedekleme tamamen kullanıcıya bırakılmıştı, hatırlatan hiçbir şey yoktu ve telefon kaybında yılların verisi gidiyordu. Ayarlardaki veri bölümü artık son yedeğin ne zaman alındığını gösteriyor; 30 günü geçtiyse veya hiç alınmadıysa uyarı tonuna geçip sonucunu söylüyor
 - **Zaman damgası paylaşım sonrası yazılıyor**: dosyayı yazmak yeterli değil, kullanıcı paylaşım sayfasını iptal etmiş olabilir. Damga `shareFile` döndükten sonra atılıyor
-- **Şifresiz yedek uyarısı** (madde 89, kısmi): dışa aktarmadan önce dosyanın tüm döngü ve sağlık kayıtlarını okunabilir biçimde içerdiği, cihazdaki verinin şifreli ama bu dosyanın şifresiz olduğu söyleniyor. Kullanıcı onaylamadan dosya oluşmuyor. **Parolalı yedeğin kendisi yapılmadı** — kriptografi derlenemeyen ve test edilemeyen bir ortamda yazılacak son şey; ayrı bir tur istiyor
+- **Şifresiz yedek uyarısı** (madde 89, ilk adım): dışa aktarmadan önce
+  dosyanın tüm döngü ve sağlık kayıtlarını okunabilir biçimde içerdiği,
+  cihazdaki verinin şifreli ama bu dosyanın şifresiz olduğu söyleniyordu.
+  Bu geçici akış daha sonra yukarıdaki parolalı `.rtbackup` uygulamasıyla
+  değiştirildi
 - **Yedek durumu Hive'da değil SharedPreferences'ta**: "tüm verileri sil" yedek geçmişini de silmemeli
 - `isStale` için 5 birim testi (hiç yedek yok, eşik değeri, eşiğin bir altı)
 

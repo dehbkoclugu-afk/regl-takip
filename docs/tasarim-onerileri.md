@@ -1,14 +1,29 @@
 # 100 kritik tasarım önerisi
 
 > **Durum:** 1, 2, 4, 6, 11, 12, 13, 14, 17, 18, 39, 48, 49, 50, 58, 59, 60,
-> 61, 62, 67, 68, 70, 75, 76, 77, 86, 87 ve 92 uygulandı; 5, 26, 27 (hızlı
-> kayıt), 16, 20, 22, 23, 31, 34, 40, 41, 45 (takvim), 51, 52, 69, 72, 73,
-> 74, 78, 79, 81, 83 ve 93 de. Madde 80 geri çekildi (zaten yapılmıştı).
+> 61, 62, 63, 64, 65, 66, 67, 68, 70, 75, 76, 77, 85, 86, 87, 88, 90, 91 ve 92 uygulandı; 5, 26, 27 (hızlı
+> kayıt), 8, 10, 15, 16, 20, 22, 23, 25, 29, 31, 34, 35, 38, 40, 41, 45 (takvim), 51, 52, 69, 72, 73,
+> 74, 78, 79, 81, 83, 93, 96 ve 100 de. Madde 36 da uygulandı. Madde 80
+> geri çekildi (zaten yapılmıştı). İstatistik turunda 32, 54, 56 ve 57 de
+> tamamlandı. Takvim turunda 44, 46 ve 47 de uygulandı.
+> Devamlılık/veri turunda 30, 84 ve 95 de tamamlandı.
+> Görsel döngü turunda 42 ve 55 de tamamlandı.
+> Geçmiş veri/karşılaştırma turunda 37 ve 53 de tamamlandı.
+> Yıl görünümü turunda 43 de tamamlandı.
+> Tablet uyarlama turunda 99 da tamamlandı.
+> Deneme geçişi turunda 3 de tamamlandı.
+> Ana ekran önceliği turunda 24 de tamamlandı.
+> Günlük ölçümler turunda 28 de tamamlandı.
+> Hamilelik modu turunda 21 de tamamlandı.
+> Kalıcı ilaç planı turunda 33 de tamamlandı.
+> Uygulama kısayolları turunda 98 de tamamlandı.
+> Widget hızlı kayıt turunda 97 de tamamlandı.
+> Büyük yazı uyarlama turunda 77 de tamamlandı.
+> Klavye gezinmesi turunda 82 de tamamlandı.
+> Parolalı yedekleme turunda 89 da tamamlandı.
 > Kısmi olanlar:
-> 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı), 71 (ton yapıldı,
-> sıklık ayarının somut karşılığı yok), 77 (ana ekran ve
-> paylaşılan bileşenler; diğer ekranlarda taşma taraması sürüyor) ve 89
-> (uyarı eklendi, parolalı yedek yapılmadı). Madde 7 (reklamın yerini kaydet
+> 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı) ve 71 (ton yapıldı,
+> sıklık ayarının somut karşılığı yok). Madde 7 (reklamın yerini kaydet
 > sonrasına almak) bilinçli olarak açık: gelir etkisi olan bir ürün kararı.
 > Ayrıntı için CHANGELOG'a bakın.
 
@@ -41,6 +56,13 @@ birden kapanıyor. Kullanıcı bir aydır girdiği veriye erişemez hale geliyor
 Bitişten 3 gün önce uyarı, bitişte de "verilerin duruyor, görüntüleme açık,
 yeni kayıt premium" gibi yumuşak bir iniş daha az öfke üretir.
 
+*Uygulandı:* ana ekrandaki erişim çipi son üç günde uyarı tonuna geçiyor.
+Deneme gerçekten bittiğinde yalnız ilk ücretsiz açılışta hangi özelliklerin
+açık kaldığını ve kayıtların cihazda silinmeden durduğunu anlatan bir geçiş
+diyaloğu gösteriliyor. Kullanıcı ücretsiz devam edebiliyor veya planlara
+gidebiliyor; açıklama tekrar çıkmıyor ve o ilk geçiş oturumunda açılış reklamı
+gösterilmiyor.
+
 **4. 🟠 Deneme boyunca değer gösterilmiyor.** Paywall'a gelindiğinde
 kullanıcının 30 günde ne biriktirdiği söylenmiyor. "38 kayıt, 2 döngü, 14
 semptom girdisi — bunlar sende kalır" cümlesi soyut özellik listesinden
@@ -63,6 +85,11 @@ işini bitirmiş oluyor.
 rozeti taşıyor ama tasarruf oranı yazmıyor. "Ayda ₺16,6 — %43 tasarruf"
 karşılaştırmayı kullanıcı adına yapar.
 
+*Uygulandı:* mağazadan iki ürünün de yerelleştirilmiş fiyatı geldiğinde yıllık
+kart aylık karşılığını ve aylık plana göre gerçek tasarruf yüzdesini hesaplayıp
+gösteriyor. Kur, ülke veya mağaza fiyatı değiştiğinde karşılaştırma da
+kendiliğinden güncelleniyor.
+
 **9. 🔵 Tek seferlik "ömür boyu" seçeneği yok.** Sağlık verisi gibi uzun
 ömürlü bir şeyi abonelikle kiralamak bazı kullanıcıyı tümden uzaklaştırıyor.
 Eski `premium_no_ads` alıcıları zaten var, kalıp tanıdık.
@@ -70,6 +97,9 @@ Eski `premium_no_ads` alıcıları zaten var, kalıp tanıdık.
 **10. 🔵 Ana ekrandaki erişim çipi sürekli görünür.** Deneme sayacı her
 açılışta göz hizasında (`dashboard_screen.dart:231`). Son 7 güne kadar
 gizlenmesi, kalan sürede uygulamanın kendi işine odaklanmasını sağlar.
+
+*Uygulandı:* deneme çipi yalnız son 7 günde görünür; ücretsiz katman çipi
+erişim durumunu açıklamak için görünmeye devam eder.
 
 ---
 
@@ -95,6 +125,10 @@ ve tam genişlik. Tarih + döngü günüyle birleştirilirse aynı yer bilgi ta�
 **15. 🟡 Sorumluluk metni her açılışta.** Tıbbi uyarı ana ekranın dibinde
 sabit (`dashboard_screen.dart:333`). Onboarding'de bir kez ve ayarlarda
 kalıcı olması yeterli; her gün tekrarlanan uyarı okunmaz hale gelir.
+
+*Uygulandı:* tekrarlanan iki uyarı ana ekrandan kaldırıldı. Tıbbi sorumluluk
+metni ayarlarda ve sağlık verisi gösteren takvim/istatistik yüzeylerinde
+erişilebilir kalıyor.
 
 **16. 🟠 Faz gradyanı metin kontrastını düşürüyor.** Zemin fazın rengiyle
 %35 alfa boyanıyor. İkincil metin (`textSecondary`) gradyanın üstünde
@@ -129,6 +163,12 @@ dokunulamıyor.
 satırı kalıyor, gerisi düşüyor. Hamilelik haftasına göre bilgi kartı
 (bebek gelişimi, kontrol randevusu hatırlatması) o boşluğu doldurur.
 
+*Uygulandı:* hafta sayacının altına trimester grubuna göre değişen kısa
+gelişim bilgisi ve sağlık uzmanının önerdiği kontrol planını izleme
+hatırlatması eklendi. Başlangıç tarihi yoksa bilgi uydurulmuyor; mevcut tarih
+girme yönlendirmesi korunuyor. Kart uzun çevirilerde doğal olarak büyüyor ve
+gelişim ile kontrol metnini ekran okuyucuya tek anlamlı özet olarak aktarıyor.
+
 **22. 🔵 Hap modu yalnız bir çip.** Hap paketi başlangıcı çip olarak
 gösteriliyor (`dashboard_screen.dart:287`). Paketin kaçıncı günü, plasebo
 dönemi ne zaman başlıyor — bu modun asıl sorusu bu.
@@ -141,6 +181,11 @@ en beklediği bilgi.
 göre değişir (TTC ovülasyonu, hap kullanıcısı paketi ister). Ayarlarda basit
 bir sıralama tercihi düşünülebilir.
 
+*Uygulandı:* Ayarlar > Tercihler bölümündeki “Döngü önce / Bugün önce”
+seçimi, günlük özet ile döngü içeriğinin ana ekrandaki sırasını değiştiriyor.
+Varsayılan mevcut döngü odaklı düzen; seçim cihazda kalıcı. Seçici uzun
+çevirilerde ve büyük metinde satır kırabilen iki chip kullanıyor.
+
 ---
 
 ## C. Kayıt akışı — uygulamanın asıl işi (25–38)
@@ -148,6 +193,9 @@ bir sıralama tercihi düşünülebilir.
 **25. 🔴 Kaydetmek en az üç dokunuş.** Ana ekran → "Kayıt ekle" → sheet →
 seç → kaydet. Günlük tekrarlanan iş için fazla. Hafta şeridindeki güne uzun
 basınca tek dokunuşla akış yoğunluğu girilebilmeli.
+
+*Uygulandı:* hafta şeridindeki geçmiş veya bugünkü bir güne uzun basınca
+doğrudan akış yoğunluğu seçicisi açılıyor; seçim aynı günün kaydına yazılıyor.
 
 **26. 🟠 Hızlı kayıt sheet'i üç alanla sınırlı.** Akış, ruh hâli, semptom
 (`quick_log_sheet.dart:154-190`). Sık kullanılan not ve ağrı kesici bilgisi
@@ -163,13 +211,26 @@ kartı listeliyor (`log_screen.dart:196-223`), her biri ayrı sayfa. Su, uyku,
 kilo gibi sayısal olanlar tek "günlük ölçümler" sayfasında toplanabilirdi;
 şu anki hâli on kere geri tuşu demek.
 
+*Uygulandı:* su, uyku, kilo ve sıcaklık tek “Günlük Ölçümler” ekranında
+toplandı. Günlük kayıt ızgarasındaki dört kart tek karta indi; girilmemiş
+ölçümler varsayılan değerle hayalet kayıt oluşturmuyor. Birim tercihleri,
+ölçüm saatleri ve uyku kalitesi korunuyor; eski ayrı ekran rotaları mevcut
+bildirim ve derin bağlantılar için çalışmaya devam ediyor.
+
 **29. 🟡 Kaydedilen şey geri bildirim vermiyor.** Kayıttan sonra "Kaydedildi"
 snackbar'ı çıkıyor (`quick_log_sheet.dart:101`) ama ana ekranda ne değişti
 görünmüyor. Hafta şeridindeki noktanın dolması gibi görünür bir iz gerekiyor.
 
+*Zaten uygulanmış:* hafta şeridi günlük kaydı bulunan günlerin altında kalıcı
+bir kayıt noktası gösteriyor ve provider değişikliğini anında izliyor.
+
 **30. 🟡 Alışkanlık kurma mekaniği yok.** Seri (streak), haftalık doluluk
 oranı gibi hafif bir geri bildirim, günlük kaydı sürdürmenin tek gerçek
 motivasyonu. Sağlık uygulamasında agresif olmadan yapılabilir.
+
+*Uygulandı:* bugünün özeti başlığında, yalnız kayıt bulunan kullanıcıya
+günlük seri ile son yedi gündeki kayıt sayısını gösteren sakin bir rozet
+eklendi. Bugün henüz kayıt yoksa dün biten seri gün içinde sıfırlanmıyor.
 
 **31. 🟡 Semptom listesi uzun ve düzsüz.** Sık kullanılanlar öne alınmıyor.
 Kullanıcının son 30 günde seçtiği semptomlar listenin başında olmalı.
@@ -180,12 +241,22 @@ Kullanıcının son 30 günde seçtiği semptomlar listenin başında olmalı.
 
 *(İlk yazımda "semptom var/yok olarak kaydediliyor" demiştim, doğru değil —
 `SymptomEntry.severity` var ve semptom ekranında beş noktalı seçici duruyor.
-Kalan iş şiddeti hızlı kayda ve istatistiğe taşımak.)*
+Şiddet hızlı kayda da taşındı: seçilen semptomun altında 1–5 noktalı seçici
+açılıyor. İstatistikte en sık belirtilerin ortalama şiddeti de artık sıklık
+grafiğinin altında gösteriliyor.)*
 
 **33. 🟡 İlaç modeli günlük kayda bağlı.** İlaçlar günlük log içinde
 tutuluyor ve hatırlatmalar en son ilaç içeren logdan okunuyor
 (`main.dart:71-78`). Tekrarlayan bir ilaç aslında profile ait; bugünkü model
 "dün girdiysem bugün de hatırlatılır" varsayımına yaslanıyor.
+
+*Uygulandı:* ilaç adı, doz ve saat profil içindeki kalıcı plana taşındı;
+“alındı” durumu günlük kayıtta kaldı. Eski kurulumlarda en yeni ilaçlı gün
+plana yalnız bir kez aktarılıyor ve tarihsel kayıtlar değiştirilmeden
+korunuyor. Ekleme/silme planı ve bildirimleri güncellerken onay kutusu yalnız
+seçili günü yazar. Bildirimden “alındı” eylemi o gün kayıt yoksa planı temel
+alarak günlük kayıt oluşturuyor. Kullanıcı planı tamamen sildikten sonra eski
+günler ilaçları yeniden canlandıramıyor.
 
 **34. 🟡 İlaç alındı bildirimden işaretlenemiyor.** Alındı kaydı tutuluyor
 (`MedicationEntry.taken`, ilaç ekranında dokunulabilir) ama hatırlatma
@@ -198,15 +269,33 @@ yani madde 69'un kapsamı.)*
 **35. 🔵 Ölçümlerde birim tercihi yok.** Kilo ve sıcaklık tek birimde.
 İngilizce/Almanca kullanıcı için lb ve °F beklentisi gerçek.
 
+*Uygulandı:* ayarlara kg/lb ve °C/°F seçicileri eklendi. Kayıt ekranları ve
+günlük özetler seçilen birimi gösteriyor; geçmiş veri ve hesaplamalar
+etkilenmesin diye değerler içeride daima kg ve °C olarak saklanıyor. Tercihler
+yedek JSON'una ve geriye uyumlu Hive alanlarına da eklendi.
+
 **36. 🔵 Not alanı arama ve tarih filtresi istemiyor.** Notlar tek gün
 üzerinden yazılıyor (`notes_screen.dart`), geçmiş notlarda arama yok.
+
+*Uygulandı:* not ekranındaki arama eylemi, not bulunan bütün günleri
+yeniden eskiye listeliyor. Metin araması büyük/küçük harften bağımsız;
+takvim eylemiyle başlangıç ve bitiş tarihi birlikte daraltılabiliyor. Sonuca
+dokununca o günün notu aynı düzenleyicide açılıyor.
 
 **37. 🔵 Toplu giriş yok.** Uygulamayı yeni kuran kullanıcı geçmiş 3 döngüsünü
 girmek istiyor; şu an tek tek tarih seçmek zorunda.
 
+*Uygulandı:* takvim araç çubuğundaki toplu giriş akışından en fazla üç geçmiş
+regl aralığı seçilip birlikte kaydedilebiliyor. Paket, mevcut kayıtlarla ve
+kendi içinde çakışma açısından yazmadan önce doğrulanıyor; işlem tek eylemle
+geri alınabiliyor.
+
 **38. 🔵 Kayıt sonrası akış bitmiyor.** Kaydet sonrası ekranda kalınıyor.
 Sheet kapanıp ana ekrana dönmek ve değişikliği orada göstermek daha temiz
 bir kapanış.
+
+*Zaten uygulanmış:* hızlı kayıt kaydedilince sheet kapanıyor, ana ekrandaki
+hafta şeridi ve durum kartları güncellenen provider'ı anında yansıtıyor.
 
 ---
 
@@ -234,21 +323,41 @@ dolgu + ince çerçeve, gerçek günler dolu zemin. Ayrım var ama kesikli çer�
 *(Önceliği düşürüldü: ilk yazımda "aynı doluluğa sahip" demiştim, doğru
 değil — `calendar_screen.dart` tahmin günlerine hem daha açık dolgu hem
 1,5 px çerçeve veriyor ve kodda bunun gerekçesi de yazılı. Kalan iş kesikli
-çerçeve, o da CustomPainter istiyor.)*
+çerçeveydi.)*
+
+*Uygulandı:* tahmin hücrelerinin düz çerçevesi kesikli daireye çevrildi.
+Gerçek regl günü dolu zeminle, tahmin günü açık zemin + kesikli sınırla
+renkten bağımsız olarak ayrılıyor.
 
 **43. 🟡 Yıl görünümü yok.** 12 aylık kuş bakışı, düzensizliği tek bakışta
 gösteren en güçlü görünüm — istatistikte yıl halkası var ama takvimde yok.
 
+*Uygulandı:* takvim araç çubuğundan açılan yıl görünümü 12 ayı aynı yüzeyde
+gösteriyor. Gerçek regl günleri dolu, tahmin günleri içi boş işaretle renk
+dışında da ayrılıyor; aya dokunmak aylık takvimi doğrudan o aya götürüyor.
+Izgara telefon ve tablet genişliğine uyarlanıyor.
+
 **44. 🔵 Uzun-bas önizlemesi keşfedilmiyor.** Güzel bir detay ama hiçbir yerde
 öğretilmiyor. İlk kullanımda tek seferlik ipucu yeter.
+
+*Uygulandı:* takvimin altında uzun-bas önizlemesini anlatan kısa ipucu ilk
+kullanıma kadar gösteriliyor; hareket ilk kez yapıldığında kalıcı olarak
+kapanıyor.
 
 **45. 🔵 Bugüne dönüş butonu yok.** Üç ay geriye kaydıran kullanıcı bugüne
 elle dönüyor.
 
 **46. 🔵 Çoklu gün seçimi yok.** "12–16 arası regldim" demek beş ayrı dokunuş.
 
+*Uygulandı:* gün ayrıntısından sistem tarih aralığı seçicisi açılıyor ve
+başlangıç–bitiş tek kapalı regl kaydı olarak ekleniyor. Mevcut kayıtla
+çakışan aralık reddediliyor; yeni kayıt 6 saniye içinde geri alınabiliyor.
+
 **47. 🔵 Takvimden paylaşım yok.** Doktora göstermek için ay görünümünün
 görüntüsünü almak yaygın bir ihtiyaç.
+
+*Uygulandı:* takvim başlığındaki paylaş eylemi görünen ay kartını yüksek
+çözünürlüklü PNG olarak yakalayıp sistem paylaşım menüsünü açıyor.
 
 ---
 
@@ -275,17 +384,38 @@ daha doğal birimler — döngü uygulamasında zaman ayla değil döngüyle öl
 **53. 🟡 Grafiklerde karşılaştırma yok.** Bu döngü ile önceki döngüyü üst üste
 koymak, trend cümlelerinden daha okunur.
 
+*Uygulandı:* son iki döngünün günlük toplam belirti şiddeti, döngü gününe göre
+hizalanıp aynı çizgi grafikte gösteriliyor. Önceki döngü yalnız mevcut
+döngünün ulaştığı güne kadar karşılaştırılıyor; düz/kesikli çizgi ayrımı renk
+dışında ikinci bir görsel kanal sağlıyor.
+
 **54. 🔵 Semptom-faz ilişkisi tek yönlü.** Faz içgörüleri var ama tersi yok:
 "baş ağrısı en çok hangi günlerde" sorusu cevapsız.
+
+*Uygulandı:* mevcut faz içgörüleri her belirtiyi en sık görüldüğü döngü fazı
+ve o fazdaki yüzdesiyle gösteriyor; belge durumu gerçek davranışla eşitlendi.
 
 **55. 🔵 Kilo ve sıcaklık grafikleri döngüyle ilişkilendirilmiyor.** Bazal
 sıcaklığın asıl anlamı ovülasyonla birlikte okunmasında.
 
+*Uygulandı:* sıcaklık ve kilo trendlerinde her döngünün tahmini ovülasyonu
+kesikli dikey çizgiyle gösteriliyor; mevcut döngüde BBT/LH teyidi varsa
+tahminin yerini teyitli tarih alıyor. Nokta araç ipucu ayrıca o günün döngü
+fazını yazıyor.
+
 **56. 🔵 Veri yoğunluğu göstergesi yok.** Hangi ayda ne kadar kayıt girildiği,
 grafiklerin ne kadar güvenilir olduğunu anlatır.
 
+*Uygulandı:* seçili dönemin toplam doluluk oranı ve son 12 aya kadar aylık
+doluluk çubukları istatistik özetine eklendi; boş günlük nesneleri kayıt
+sayılmıyor.
+
 **57. 🔵 Grafikten güne gidilemiyor.** Bir noktaya dokununca o günün kaydına
 inmek beklenen davranış.
+
+*Uygulandı:* sıcaklık ve kilo trendlerinde bir noktaya dokunmak o tarihi seçip
+günlük kayıt ekranını açıyor; davranış kartın altında kısa bir ipucuyla
+görünür kılındı.
 
 ---
 
@@ -323,15 +453,30 @@ kategoride en güçlü satış argümanı ve kurulumun ilk ekranında olmalı.
 **63. 🔵 Kurulum sonrası ekran boş.** İlk açılışta tahmin var ama kayıt yok.
 "İlk kaydını ekle" yönlendirmesi ilk günü boş geçirtmez.
 
+*Zaten uygulanmış:* ana ekrandaki "Bugün özeti", bugüne ait ruh hâli veya
+semptom yoksa tam genişlikte ilk kayıt yönlendirmesi gösteriyor ve günlük
+kayıt ekranını açıyor.
+
 **64. 🔵 Mod değişiminin sonucu anlatılmıyor.** Hamilelik moduna geçince
 tahminlerin duracağı önceden söylenmiyor.
+
+*Uygulandı:* ayarlarda mod değişmeden önce seçilen modun etkisini açıklayan
+bir onay diyaloğu gösteriliyor. Hamilelik modu özellikle regl tahminleri ve
+bildirimlerinin duracağını değişiklik kaydedilmeden önce söylüyor.
 
 **65. 🔵 Geri dönüş yok.** Kurulum sırasında önceki adıma dönmek mümkün mü
 belirsiz; adım göstergesi var ama geri hareketi net değil.
 
+*Zaten uygulanmış:* her form adımında etiketli geri butonu var; Android sistem
+geri hareketi de uygulamadan çıkmak yerine önceki onboarding adımına dönüyor.
+
 **66. 🔵 Veri sıfırlama uyarısı korkutucu.** Kutular çözülemediğinde çıkan
 uyarı (`onboarding_screen.dart:50`) teknik bir olayı kullanıcıya yüklüyor;
 dili sadeleşmeli ve yedekten geri yükleme yolu aynı ekranda önerilmeli.
+
+*Uygulandı:* uyarı nedenini sade dille açıklıyor ve aynı diyalogdan JSON
+yedeği seçilip doğrulanabiliyor. Onaydan sonra profil, dönemler ve günlükler
+geri yükleniyor; provider'lar, bildirimler ve ana ekran widget'ı yenileniyor.
 
 ---
 
@@ -413,6 +558,15 @@ verilmeli, metin okunur tonda kalmalı.
 koruması yok. Sistem yazı tipi büyütüldüğünde ana ekranın taşması bekleniyor.
 Cihaz erişilebilirlik ayarı %200'e kadar çıkabiliyor.
 
+*Uygulandı:* genel bir metin küçültme veya ölçeği sınırlama eklenmedi.
+Etkin yazı ölçeğini kullanan ortak düzen hesabıyla ruh hâli, semptom, günlük
+kategori, onboarding ve yıl görünümü ızgaraları dar ekranda sütun azaltıp
+yükseklik kazanıyor. Ana ekran özetleri, eylemler, tahminler, ayarlar, ödeme
+planları, uyku, su, akış, regl geçmişi ve istatistik satırları gerektiğinde
+dikey akıyor; kilit ekranı kaydırılabiliyor. Birincil başlık ve eylemlerdeki
+kesmeler kaldırıldı, 48 dp dokunma hedefleri korundu. Saf hesaplar ve yıl
+görünümünün 320/600 dp ile 1×/2× yerleşimi test kapsamına alındı.
+
 **78. 🟠 Dokunma hedefleri kontrol edilmemiş.** Tema düğmesi 10 px iç
 boşluklu 22 px ikon = 42 px; Material'ın 48 px asgarisinin altında. Küçük
 ikon butonlarının hepsi taranmalı.
@@ -462,6 +616,16 @@ sözü — "kalıp her yerde aynı olmalı" — yerine getirildi, hepsi tek bir
 **82. 🔵 Klavye gezinmesi test edilmemiş.** Tablet + klavye senaryosunda
 odak sırası belirsiz.
 
+*Uygulandı:* 212 etkileşim yüzeyi tarandı. Standart Material kontrollerinin
+yerleşik Tab, Shift+Tab ve Enter/Space davranışı korundu; geniş ana ekran,
+takvim ve yıl görünümündeki karmaşık sıralar açık odak gruplarında kaldı.
+Yalnız dokunma koordinatıyla çalışan döngü halkası klavye odağı, Enter/Space
+etkinleştirmesi ve görünür sınır aldı. Üçüncü taraf takvimdeki gün hücreleri
+doğrudan odaklanıp klavyeyle açılabilen Material yüzeylerine dönüştürüldü.
+Açık/koyu tema ortak yüksek kontrastlı odak rengi taşıyor. Tab/Shift+Tab
+okuma sırası, özel yüzey etkinleştirmesi, Escape ile en üst diyaloğun
+kapanması ve odağın açan kontrole dönmesi widget testleriyle kapsandı.
+
 **83. 🔵 Ekran okuyucu etiketleri değer taşımıyor.** Ring "döngü haritası"
 diyor ama kaçıncı gün olduğunu söylemiyor.
 *Düzeltme:* örnek yanlıştı — ring'in etiketi zaten "Döngü günü: 12 / 28. 16
@@ -479,6 +643,10 @@ kopyalamıştı; üçüncü kopya yerine `EnumLabels.phase` eklendi.
 haftanın ilk günü sistem yerelinden geliyor; Rusça seçen ama ABD yerelinde
 olan kullanıcıda hafta pazar başlıyor.
 
+*Uygulandı:* tarih biçimleri zaten seçilen uygulama dilini izliyordu; takvim
+hafta başlangıcı da sabit pazartesi olmaktan çıkarılıp aynı Material
+yerelleştirmesinin pazar/pazartesi/cumartesi kuralına bağlandı.
+
 ---
 
 ## I. Gizlilik, gizli mod, güvenlik (85–91)
@@ -492,6 +660,10 @@ değildi. Kurulumda ayrı bir tanıtım adımı ise madde 58'in tersi yönde
 çalışıyor. Gerçek çözüm kurulum akışının yeniden kurgulanmasıyla birlikte
 düşünülmeli.)*
 
+*Uygulandı:* ayrı bir onboarding adımı ekleyip akışı uzatmadan, gizli mod
+Güvenlik kartının ilk sırasına taşındı. Ayrıntılı açıklaması ve paywall
+özellik listesi korunuyor.
+
 **86. 🟠 Kilit ekranı zaman aşımı yok.** Kilit yalnız arka plana alınınca
 devreye giriyor (`app.dart:120-133`). "5 dakika sonra kilitle" seçeneği
 beklenen davranış.
@@ -503,20 +675,37 @@ bu, kurulum sırasında açıkça söylenmeli.
 gerçek not tutabiliyor mu, boşsa şüphe çeker. Kılık modu birkaç örnek notla
 gelmeli.
 
-**89. 🟡 Yedek dosyası şifresiz.** Hive kutuları cihazda şifreli ama dışa
+*Uygulandı:* sahte ekran zaten not ekleme, düzenleme ve silmeyi destekliyordu.
+İlk açılışta arayüz diline göre iki sıradan başlangıç notu ekleniyor. Kullanıcı
+notları silerse boş liste tercih olarak korunuyor ve örnekler geri gelmiyor.
+
+**89. 🔵 Yedek dosyası şifresiz.** Hive kutuları cihazda şifreli ama dışa
 aktarılan yedek düz JSON. En hassas veri en korumasız hâlde cihazdan çıkıyor;
 parolalı yedek seçeneği gerekiyor.
 
-*(Kısmen ele alındı: dışa aktarmadan önce dosyanın şifresiz olduğunu ve
-içeriğini söyleyen bir onay adımı eklendi. Parolalı yedeğin kendisi
-yapılmadı — kriptografi derlenemeyen ve test edilemeyen bir ortamda
-yazılacak son şey; ayrı, gözden geçirilebilir bir tur istiyor.)*
+*Uygulandı:* yeni yedekler 10–128 karakterlik, cihazda saklanmayan kullanıcı
+parolasından Argon2id ile türetilen anahtar ve AES-256-GCM ile şifrelenmiş
+`.rtbackup` dosyalarıdır. Her dosyada yeni salt/nonce kullanılır; başlık ve
+yük değişiklikleri doğrulanır. Yanlış parola ile bozuk dosya aynı güvenli
+mesajı verir ve doğrulama tamamlanmadan mevcut veri silinmez. Eski düz JSON
+yedekleri yalnız geriye uyumlu geri yükleme için açıkça uyarılarak kabul
+edilir; artık yeni şifresiz JSON yedeği üretilmez. Kurtarma anahtarı yoktur:
+parola unutulursa yedek açılamaz.*
 
 **90. 🔵 Ekran görüntüsü koruması yalnız kilitliyken.** `FLAG_SECURE` kilit
 gerektiğinde açılıyor; kilit kullanmayan kullanıcı da bu korumayı isteyebilir.
 
+*Uygulandı:* Android güvenlik ayarlarına kilitten bağımsız ekran görüntüsü
+koruması eklendi. Açıldığında ekran görüntülerini ve son uygulamalar
+önizlemesini `FLAG_SECURE` ile engelliyor; PIN/biyometri kapalı olsa da çalışıyor.
+Tercih cihazda saklanıyor ve değişiklik uygulama köküne anında yansıyor.
+
 **91. 🔵 Veri silme geri alınamaz ama tek onaylı.** Yazarak onay
 (ör. "SİL" yazmak) bu ağırlıktaki işlem için standart.
+
+*Uygulandı:* silme düğmesi, kullanıcı arayüz dilindeki "Sil" sözcüğünü
+yazmadıkça etkinleşmiyor. Büyük/küçük harf farkı kabul ediliyor; iptal ve
+geri hareketi hiçbir veriye dokunmuyor.
 
 ---
 
@@ -536,9 +725,18 @@ geçmişini getiremiyor; en büyük geçiş engeli bu.
 **95. 🔵 Dışa aktarma biçimleri sınırlı.** CSV ve PDF var; takvim (.ics)
 çıktısı da doğal bir talep.
 
+*Uygulandı:* veri bölümüne standart `.ics` dışa aktarımı eklendi. Her regl
+kaydı tüm gün etkinliği olarak, iCalendar'ın kapsayıcı olmayan `DTEND`
+kuralına uygun biçimde sistem paylaşım menüsüne veriliyor.
+
 **96. 🔵 Veri politikası uygulama içinde özetlenmemiş.** Gizlilik metni tam
 sayfa; "hiçbir veri cihazdan çıkmaz" cümlesi ayarların en üstünde tek satır
 olarak durmalı.
+
+*Uygulandı:* ayarların en üstünde, yasal metne girmeden görülen kısa bir
+gizlilik özeti var. Cihazdaki ana verinin şifreli olduğunu söylerken dışa
+aktarma ve Health Connect'in kullanıcı tarafından açılan iki çıkış yolu
+olduğunu da saklamıyor.
 
 ---
 
@@ -548,17 +746,42 @@ olarak durmalı.
 "Reglim başladı" widget üzerinden tek dokunuşla girilebilse, uygulamanın en
 sık işi uygulamayı açmadan biterdi.
 
+*Uygulandı:* iki Android widget boyuna yerelleştirilmiş “Reglim başladı”
+eylemi eklendi. Dokunuş uygulamayı açıyor; varsa PIN/biyometri çözüldükten
+sonra güncel kılık, onboarding, takip modu ve devam eden kayıt durumu yeniden
+doğrulanarak bugünün başlangıcı kaydediliyor. Altı saniyelik geri alma mevcut
+kayıt akışını izliyor ve amaçlı widget açılışı reklamla kesilmiyor. Eylem
+uygun olmadığında gizleniyor; küçük widget'ta halkayla yer değiştirerek metin
+alanını, geniş widget'ta ayrı 48 dp hedef olarak tahminleri koruyor.
+
 **98. 🟡 Kısayol menüsü yok.** Uygulama ikonuna uzun basınca "hızlı kayıt" ve
 "bugünü gör" kısayolları (Android shortcuts / iOS quick actions) düşük
 maliyetli, yüksek kullanımlı.
+
+*Uygulandı:* Android ve iOS ikon menüsüne yerelleştirilmiş “Hızlı Kayıt” ve
+“Bugünü Gör” eylemleri eklendi. Hızlı kayıt mevcut günlük sheet'ini açıyor,
+ücretsiz erişimde mevcut paywall kuralını izliyor ve PIN/biyometri açıksa
+kilit çözülene kadar bekliyor. Kılık modu açıldığında sağlık kısayolları
+tamamen kaldırılıyor; kısayolla başlatılan iş de açılış reklamıyla kesilmiyor.
 
 **99. 🔵 Tablet düzeni yalnız gezinme çubuğunda ele alınmış.** 600 px üstünde
 yan rail'e geçiliyor (`app_shell.dart:47`) ama içerik hâlâ tek kolon; geniş
 ekranda ana ekran ve takvim yan yana durabilirdi.
 
+*Uygulandı:* gezinme rail'ine ek olarak ana ekran geniş içerikte döngü/eylem
+ve tahmin/içgörü kümelerini iki kolona ayırıyor. Takvim de aylık ızgarayı
+faz şeridi, ay özeti ve legend paneliyle yan yana gösteriyor. Her iki ekran
+çok geniş masaüstünde gerilmemek için 1180 px ile sınırlandırıldı; dar
+ekranda mevcut tek kolon sırası korunuyor.
+
 **100. 🔵 Boş durum dili ekranlar arasında tutarsız.** `EmptyState` bileşeni
 var ama her ekran kullanmıyor — istatistikteki boş kartlar kendi metnini
 yazıyor. Tek bileşene bağlanması hem tutarlılık hem bakım kolaylığı.
+
+*Uygulandı:* istatistikteki genel boş durum ve kart içi boşluklar, dönem
+geçmişi, ilaç listesi ve not arama sonucu aynı `EmptyState` kompozisyonunu
+kullanıyor. Eylem isteyen ana ekran yönlendirmesi ile gün özeti gibi bağlamsal
+satırlar ayrı bırakıldı; onlar boş durum değil, doğrudan işlem çağrısı.
 
 ---
 

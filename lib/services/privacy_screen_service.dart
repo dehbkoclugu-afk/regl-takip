@@ -22,6 +22,28 @@ class PrivacyScreenService {
   }
 }
 
+/// Kilitten bağımsız ekran görüntüsü/son uygulamalar koruması.
+///
+/// Cihaza özgüdür ve yedeğe taşınmaz. Değer değişince uygulama kökü
+/// [enabled] üzerinden FLAG_SECURE durumunu anında yeniden hesaplar.
+class ScreenProtection {
+  ScreenProtection._();
+
+  static const String prefsKey = 'screen_protection_enabled';
+  static final ValueNotifier<bool> enabled = ValueNotifier(false);
+
+  static Future<void> load() async {
+    final prefs = await SharedPreferences.getInstance();
+    enabled.value = prefs.getBool(prefsKey) ?? false;
+  }
+
+  static Future<void> write(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(prefsKey, value);
+    enabled.value = value;
+  }
+}
+
 /// Kilit gecikmesi tercihi.
 ///
 /// Kilit yalnız uygulama arka plana alındığında devreye giriyordu ve

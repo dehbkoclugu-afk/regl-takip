@@ -530,6 +530,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get invalidWeight => 'Введите корректный вес (20-300 кг)';
 
   @override
+  String get invalidTemperature =>
+      'Введите корректную температуру (35-40 °C)';
+
+  @override
   String get discardChangesTitle => 'Несохранённые изменения';
 
   @override
@@ -601,6 +605,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get dailyLog => 'Дневник';
+
+  @override
+  String get dailyMeasurements => 'Ежедневные измерения';
 
   @override
   String get flow => 'Выделения';
@@ -780,6 +787,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get noMedicationsYet => 'Лекарств пока нет';
+
+  @override
+  String get medicationPlanHint =>
+      'Этот план действует каждый день. Флажок отмечает приём только за выбранный день.';
+
+  @override
+  String get medicationAlreadyInPlan => 'Это лекарство уже есть в плане';
 
   @override
   String get tapToAdd => 'Нажмите +, чтобы добавить';
@@ -1102,6 +1116,25 @@ class AppLocalizationsRu extends AppLocalizations {
   String get trimester3 => '3-й триместр';
 
   @override
+  String get pregnancyDevelopmentTitle => 'Развитие на этой неделе';
+
+  @override
+  String get pregnancyDevelopment1 =>
+      'Продолжается период быстрого развития: формируются основные органы и системы организма ребёнка.';
+
+  @override
+  String get pregnancyDevelopment2 =>
+      'Движения ребёнка становятся более скоординированными; время, когда вы их почувствуете, у всех разное.';
+
+  @override
+  String get pregnancyDevelopment3 =>
+      'Ребёнок продолжает расти, а подготовка к родам выходит на первый план.';
+
+  @override
+  String get pregnancyCheckupReminder =>
+      'Следуйте графику осмотров, рекомендованному вашим медицинским специалистом.';
+
+  @override
   String get pregnancyStartLabel => 'Последние месячные (начало беременности)';
 
   @override
@@ -1164,6 +1197,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get quickLog => 'Быстрая запись';
 
   @override
+  String get shortcutQuickLog => 'Быстрая запись';
+
+  @override
+  String get shortcutToday => 'Сегодня';
+
+  @override
   String get allTrackers => 'Все трекеры';
 
   @override
@@ -1182,7 +1221,45 @@ class AppLocalizationsRu extends AppLocalizations {
   String get decoyHint => 'Напишите что-нибудь…';
 
   @override
-  String get backupData => 'Резервная копия (JSON)';
+  String get backupData => 'Создать копию с паролем';
+
+  @override
+  String get backupPassword => 'Пароль резервной копии';
+
+  @override
+  String get backupPasswordConfirm => 'Введите пароль ещё раз';
+
+  @override
+  String get backupPasswordLength =>
+      'Пароль должен содержать от 10 до 128 символов';
+
+  @override
+  String get backupPasswordsDoNotMatch => 'Пароли не совпадают';
+
+  @override
+  String get backupNoRecovery =>
+      'Пароль не хранится на устройстве и не может быть восстановлен. Если вы его забудете, открыть копию будет невозможно.';
+
+  @override
+  String get unlockBackupTitle => 'Введите пароль резервной копии';
+
+  @override
+  String get unlockBackupBody =>
+      'Эту копию можно открыть только паролем, заданным при её создании.';
+
+  @override
+  String get backupPasswordOrFileInvalid =>
+      'Неверный пароль или повреждённый файл резервной копии.';
+
+  @override
+  String get legacyBackupWarning =>
+      'Эта старая копия не зашифрована. После восстановления новые копии будут защищены паролем.';
+
+  @override
+  String get showPassword => 'Показать пароль';
+
+  @override
+  String get hidePassword => 'Скрыть пароль';
 
   @override
   String get restoreData => 'Восстановить из копии';
@@ -1516,6 +1593,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get privacyAssurance => 'Ваши данные хранятся в зашифрованном виде только на этом устройстве';
 
   @override
+  String get privacySummary =>
+      'Основные данные зашифрованы на этом устройстве; они покидают его только при экспорте или включении Health Connect.';
+
+  @override
   String get dontRememberExactly => 'Точно не помню';
 
   @override
@@ -1588,12 +1669,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String regularityInfoInsufficient(int count) {
     return 'Чтобы говорить о регулярности, нужно минимум $count интервалов цикла. Меньше — вывод будет вводить в заблуждение.';
   }
-
-  @override
-  String get backupWarningTitle => 'Файл резервной копии не зашифрован';
-
-  @override
-  String get backupWarningBody => 'Резервная копия содержит все записи о цикле и здоровье в читаемом виде. Данные на устройстве зашифрованы, а этот файл — нет. Будьте внимательны, где вы его сохраняете и с кем делитесь.';
 
   @override
   String get backupNever => 'Вы ещё ни разу не делали резервную копию.';
@@ -1777,6 +1852,74 @@ class AppLocalizationsRu extends AppLocalizations {
   String get storyTrendFlat => 'Заметных изменений за этот период нет — тренд ровный.';
 
   @override
+  String averageSeverity(String value) {
+    return 'Сред. $value/5';
+  }
+
+  @override
+  String get dataCoverage => 'Плотность данных';
+
+  @override
+  String dataCoverageValue(int logged, int total, int percent) {
+    return 'Записи за $logged из $total дней ($percent %)';
+  }
+
+  @override
+  String get tapChartPointHint => 'Нажмите на точку, чтобы открыть этот день.';
+
+  @override
+  String get shareCalendarMonth => 'Поделиться месяцем календаря';
+
+  @override
+  String get longPressDayHint => 'Нажмите и удерживайте день для быстрого просмотра.';
+
+  @override
+  String get markPeriodRange => 'Отметить диапазон менструации';
+
+  @override
+  String get periodRangeOverlap => 'Этот диапазон пересекается с существующей записью.';
+
+  @override
+  String get periodRangeSaved => 'Диапазон менструации сохранён';
+
+  @override
+  String trackingStreak(int count) {
+    return 'Серия: $count дн.';
+  }
+
+  @override
+  String weeklyTracking(int count) {
+    return 'Записи за $count из 7 дней';
+  }
+
+  @override
+  String get exportCalendarFile => 'Экспорт календаря (.ics)';
+
+  @override
+  String get ovulationMarkerHint => 'Пунктир: предполагаемая или подтверждённая овуляция';
+
+  @override
+  String get addPastCycles => 'Добавить прошлые циклы';
+
+  @override
+  String get addPastCyclesHint => 'Выберите до 3 диапазонов менструации и сохраните их вместе.';
+
+  @override
+  String get addPeriodRange => 'Добавить диапазон менструации';
+
+  @override
+  String get cycleOverlayTitle => 'Сравнение циклов';
+
+  @override
+  String get symptomLoadComparison => 'Дневная выраженность симптомов по дням цикла';
+
+  @override
+  String get currentCycleLabel => 'Этот цикл';
+
+  @override
+  String get previousCycleLabel => 'Предыдущий цикл';
+
+  @override
   String get colorBlindPattern => 'Узорные цвета фаз';
 
   @override
@@ -1870,4 +2013,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get healthDisclaimer => 'Это приложение не заменяет консультацию врача. По вопросам здоровья обращайтесь к специалисту.';
+
+  @override
+  String get homePriority => 'Приоритет главного экрана';
+
+  @override
+  String get cycleFirst => 'Сначала цикл';
+
+  @override
+  String get todayFirst => 'Сначала сегодня';
 }

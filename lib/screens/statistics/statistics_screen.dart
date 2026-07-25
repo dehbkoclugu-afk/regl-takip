@@ -10,10 +10,12 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/adaptive_layout.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_insights.dart';
 import '../../core/utils/ring_segments.dart';
+import '../../core/utils/statistics_summary.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../models/enums.dart';
@@ -57,6 +59,30 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         records.where((r) => r.startDate.isAfter(cutoff)).toList();
     final filteredLogs =
         dailyLogs.values.where((l) => l.date.isAfter(cutoff)).toList();
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final meaningfulLogs = dailyLogs.values
+        .where((log) =>
+            hasMeaningfulDailyData(log) && !log.date.isAfter(today))
+        .toList();
+    final coverageStart = _filterMonths == 0
+        ? (meaningfulLogs.isEmpty
+            ? today
+            : meaningfulLogs
+                .map((log) =>
+                    DateTime(log.date.year, log.date.month, log.date.day))
+                .reduce((a, b) => a.isBefore(b) ? a : b))
+        : today.subtract(Duration(days: _filterMonths * 30));
+    final coverage = calculateDataCoverage(
+      dailyLogs.values,
+      start: coverageStart,
+      end: today,
+    );
+    final monthlyCoverage = calculateMonthlyDataCoverage(
+      dailyLogs.values,
+      start: coverageStart,
+      end: today,
+    );
 
     // Filtre çipleri KARTIN TAMAMINA işler: önceden Ort. Döngü ve
     // Düzenlilik tüm kayıtlardan, Ort. Regl filtreden hesaplanıyordu —
@@ -78,12 +104,12 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             // (kart içi boşlukların üstünde, tekrarı önler)
             if (records.isEmpty) ...[
               Center(
-                child: Text(
-                  l10n.noDataYet,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.ts(context),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: EmptyState(
+                    icon: Icons.insights_outlined,
+                    title: l10n.statistics,
+                    message: l10n.noDataYet,
                   ),
                 ),
               ),
@@ -109,6 +135,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             // "Yılım": son 12 ay tek halka — düzenlilik bir bakışta.
             // Ring/faz şeridiyle aynı görsel aile (imza dili üçüncü yüzeyde)
             _buildYearRing(l10n, records, profile),
+            const SizedBox(height: 16),
+            _buildDataCoverageCard(l10n, coverage, monthlyCoverage),
             const SizedBox(height: 28),
             _sectionHeader(l10n.statsSectionCharts),
             _buildSymptomChart(l10n, filteredLogs),
@@ -116,6 +144,12 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             _buildMoodChart(l10n, filteredLogs),
             const SizedBox(height: 16),
             _buildPhaseInsights(l10n, filteredLogs, records, profile),
+            const SizedBox(height: 16),
+            _buildCycleSymptomComparison(
+              l10n,
+              dailyLogs.values.toList(),
+              records,
+            ),
             const SizedBox(height: 28),
             _sectionHeader(l10n.statsSectionHistory),
             _buildCycleHistory(l10n, filteredRecords),
@@ -123,11 +157,13 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             _buildTrendChart(
               l10n.temperatureTrend, filteredLogs,
               (log) => log.temperature, AppColors.temperature, '°C',
+              records, profile,
             ),
             const SizedBox(height: 16),
             _buildTrendChart(
               l10n.weightTrend, filteredLogs,
               (log) => log.weight, AppColors.weightColor, 'kg',
+              records, profile,
             ),
             const SizedBox(height: 16),
             Padding(
@@ -464,6 +500,128 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         .slideY(begin: 0.1, end: 0);
   }
 
+  Widget _buildDataCoverageCard(
+    AppLocalizations l10n,
+    DataCoverage coverage,
+    List<MonthlyDataCoverage> monthlyCoverage,
+  ) {
+    final monthFormat =
+        DateFormat('MMM yyyy', Localizations.localeOf(context).toString());
+    return GlassCard(
+      borderRadius: 20,
+      blur: 0,
+      opacity: 0.18,
+      padding: const EdgeInsets.all(20),
+      child: Semantics(
+        label: l10n.dataCoverageValue(
+          coverage.loggedDays,
+          coverage.totalDays,
+          coverage.percent,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.calendar_view_month_rounded,
+                    size: 20, color: AppColors.primaryStrong),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.dataCoverage,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.tp(context),
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  '%${coverage.percent}',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primaryStrong,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: LinearProgressIndicator(
+                value: coverage.percent / 100,
+                minHeight: 8,
+                backgroundColor: AppColors.dv(context),
+                color: AppColors.primaryStrong,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.dataCoverageValue(
+                coverage.loggedDays,
+                coverage.totalDays,
+                coverage.percent,
+              ),
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColors.ts(context),
+              ),
+            ),
+            if (monthlyCoverage.length > 1) ...[
+              const SizedBox(height: 16),
+              ...monthlyCoverage.map(
+                (month) => Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 72,
+                        child: Text(
+                          monthFormat.format(month.month),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: AppColors.ts(context),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: LinearProgressIndicator(
+                            value: month.percent / 100,
+                            minHeight: 6,
+                            backgroundColor: AppColors.dv(context),
+                            color: AppColors.primaryStrong,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      SizedBox(
+                        width: 34,
+                        child: Text(
+                          '%${month.percent}',
+                          textAlign: TextAlign.end,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.tp(context),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    )
+        .animateSafe(context)
+        .fadeIn(delay: 115.ms, duration: 400.ms)
+        .slideY(begin: 0.1, end: 0);
+  }
+
   /// Son döngü ve son regl, kullanıcının kendi ortalamasıyla kıyaslanır
   /// (Clue'nun sevilen deseni: "normalin nasıl?" sorusuna tek bakış).
   Widget _buildComparisonCard(
@@ -563,6 +721,31 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     // düzensiz sayılır (CycleUtils.isIrregular)
     final irregular = CycleUtils.isIrregular(records);
     final gapCount = CycleUtils.validCycleGaps(records).length;
+    final statItems = <Widget>[
+      _statItem(l10n.avgCycle, avgCycle.toStringAsFixed(1), l10n.days,
+          Icons.loop_rounded, AppColors.primaryStrong),
+      _statItem(l10n.avgPeriod, avgPeriod.toStringAsFixed(1), l10n.days,
+          Icons.water_drop_rounded, AppColors.menstrual),
+      InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => _showRegularityInfo(l10n, irregular, gapCount),
+        child: _statItem(
+            l10n.regularity,
+            irregular == null
+                ? l10n.insufficientData
+                : (irregular ? l10n.irregular : l10n.regular),
+            null,
+            irregular == true
+                ? Icons.info_outline_rounded
+                : Icons.check_circle_rounded,
+            irregular == null
+                ? AppColors.warningText
+                : (irregular
+                    ? AppColors.warningText
+                    : AppColors.fertileWindowText)),
+      ),
+    ];
+    final largeText = usesLargeText(MediaQuery.textScalerOf(context));
     return GlassCard(
       borderRadius: 20,
       blur: 0,
@@ -577,45 +760,21 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   fontWeight: FontWeight.bold,
                   color: AppColors.tp(context))),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _statItem(l10n.avgCycle,
-                    avgCycle.toStringAsFixed(1), l10n.days,
-                    Icons.loop_rounded, AppColors.primaryStrong),
-              ),
-              Expanded(
-                child: _statItem(l10n.avgPeriod,
-                    avgPeriod.toStringAsFixed(1), l10n.days,
-                    Icons.water_drop_rounded, AppColors.menstrual),
-              ),
-              Expanded(
-                // Dokunulabilir: "Düzensiz" tıbbi ağırlığı olan bir yargı,
-                // ne anlama geldiği ve ne zaman hekime danışılacağı
-                // söylenmeden bırakılamaz
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(12),
-                  onTap: () => _showRegularityInfo(l10n, irregular, gapCount),
-                  child: _statItem(
-                      l10n.regularity,
-                      irregular == null
-                          ? l10n.insufficientData
-                          : (irregular ? l10n.irregular : l10n.regular),
-                      null,
-                      irregular == true
-                          ? Icons.info_outline_rounded
-                          : Icons.check_circle_rounded,
-                      // Kırmızı "sende bir sorun var" diye okunuyordu:
-                      // değişkenlik bir bulgu, hata değil
-                      irregular == null
-                          ? AppColors.warningText
-                          : (irregular
-                              ? AppColors.warningText
-                              : AppColors.fertileWindowText)),
-                ),
-              ),
-            ],
-          ),
+          if (largeText)
+            Column(
+              children: [
+                for (var i = 0; i < statItems.length; i++) ...[
+                  SizedBox(width: double.infinity, child: statItems[i]),
+                  if (i < statItems.length - 1) const SizedBox(height: 20),
+                ],
+              ],
+            )
+          else
+            Row(
+              children: [
+                for (final item in statItems) Expanded(child: item),
+              ],
+            ),
           const SizedBox(height: 14),
           // Sayının tek başına anlamı yok: "29,3 gün" iyi mi kötü mü?
           Text(
@@ -714,56 +873,44 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           child: Icon(icon, color: color, size: 20),
         ),
         const SizedBox(height: 10),
-        // "Yetersiz veri" gibi uzun değerler dar sütunda taşıyordu
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          child: unit == null
-              ? Text(value,
-                  maxLines: 1,
+        if (unit == null)
+          Text(value,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: color))
+        else
+          Text.rich(
+            TextSpan(
+              text: value,
+              style: Theme.of(context)
+                  .textTheme
+                  .displaySmall!
+                  .copyWith(color: AppColors.tp(context)),
+              children: [
+                TextSpan(
+                  text: ' $unit',
                   style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: color))
-              : Text.rich(
-                  TextSpan(
-                    text: value,
-                    style: Theme.of(context)
-                        .textTheme
-                        .displaySmall!
-                        .copyWith(color: AppColors.tp(context)),
-                    children: [
-                      TextSpan(
-                        text: ' $unit',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.ts(context),
-                        ),
-                      ),
-                    ],
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.ts(context),
                   ),
-                  maxLines: 1,
                 ),
-        ),
+              ],
+            ),
+            textAlign: TextAlign.center,
+          ),
         const SizedBox(height: 2),
         Text(label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
             style: TextStyle(fontSize: 11, color: AppColors.ts(context))),
       ],
     );
   }
 
   Widget _buildSymptomChart(AppLocalizations l10n, List<DailyLog> logs) {
-    final symptomCount = <SymptomType, int>{};
-    for (final log in logs) {
-      for (final s in log.symptoms) {
-        symptomCount[s.type] = (symptomCount[s.type] ?? 0) + 1;
-      }
-    }
-    final sorted = symptomCount.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-    final top5 = sorted.take(5).toList();
+    final top5 = summarizeSymptoms(logs);
 
     if (top5.isEmpty) {
       return _emptyCard(l10n.symptomFrequency, l10n.noSymptomData);
@@ -813,7 +960,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           // Ekran okuyucu için grafik verisi metin özeti olarak sunulur
           Semantics(
             label: top5
-                .map((e) => '${_symptomName(e.key, l10n)}: ${e.value}')
+                .map((e) =>
+                    '${_symptomName(e.type, l10n)}: ${e.count}, '
+                    '${l10n.averageSeverity(e.averageSeverity.toStringAsFixed(1))}')
                 .join(', '),
             child: ExcludeSemantics(
               child: SizedBox(
@@ -821,7 +970,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             child: BarChart(
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
-                maxY: (top5.first.value + 2).toDouble(),
+                maxY: (top5.first.count + 2).toDouble(),
                 // Değer çubuğun üstünde kalıcı yazılır: dokunma kapalıyken
                 // gören kullanıcı yalnız göreli yükseklik görüyordu (ekran
                 // okuyucu özeti sayı alırken görene sayı yoktu)
@@ -853,7 +1002,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                       getTitlesWidget: (value, meta) {
                         final idx = value.toInt();
                         if (idx >= 0 && idx < top5.length) {
-                          final name = _symptomName(top5[idx].key, l10n);
+                          final name = _symptomName(top5[idx].type, l10n);
                           return Padding(
                             padding: const EdgeInsets.only(top: 6),
                             child: SizedBox(
@@ -891,7 +1040,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     x: entry.key,
                     barRods: [
                       BarChartRodData(
-                        toY: entry.value.value.toDouble(),
+                        toY: entry.value.count.toDouble(),
                         gradient: const LinearGradient(
                           begin: Alignment.bottomCenter,
                           end: Alignment.topCenter,
@@ -908,6 +1057,32 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             ),
           ),
             ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: top5
+                .map(
+                  (summary) => Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${_symptomName(summary.type, l10n)} · '
+                      '${l10n.averageSeverity(summary.averageSeverity.toStringAsFixed(1))}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.tp(context),
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ],
       ),
@@ -1096,6 +1271,194 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     ).animateSafe(context).fadeIn(delay: 220.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
+  Widget _buildCycleSymptomComparison(
+    AppLocalizations l10n,
+    List<DailyLog> logs,
+    List<PeriodRecord> records,
+  ) {
+    final comparison = compareLastTwoCycleSymptoms(
+      logs: logs,
+      periodStarts: records.map((record) => record.startDate),
+      today: DateTime.now(),
+    );
+    if (records.length < 2 || comparison.isEmpty) {
+      return _emptyCard(l10n.cycleOverlayTitle, l10n.noInsightsYet);
+    }
+
+    List<FlSpot> spots(Map<int, double> values) {
+      final entries = values.entries.toList()
+        ..sort((a, b) => a.key.compareTo(b.key));
+      return entries
+          .map((entry) => FlSpot(entry.key.toDouble(), entry.value))
+          .toList();
+    }
+
+    final currentSpots = spots(comparison.current);
+    final previousSpots = spots(comparison.previous);
+    final allSpots = [...currentSpots, ...previousSpots];
+    final maxX = allSpots
+        .map((spot) => spot.x)
+        .reduce((a, b) => a > b ? a : b);
+    final maxY = allSpots
+        .map((spot) => spot.y)
+        .reduce((a, b) => a > b ? a : b);
+    final currentTotal = comparison.current.values
+        .fold<double>(0, (total, value) => total + value);
+    final previousTotal = comparison.previous.values
+        .fold<double>(0, (total, value) => total + value);
+
+    Widget legend(Color color, String label, {bool dashed = false}) => Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 18,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  for (var i = 0; i < (dashed ? 3 : 1); i++)
+                    Container(
+                      width: dashed ? 4 : 18,
+                      height: 3,
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text(label,
+                style:
+                    TextStyle(fontSize: 11, color: AppColors.ts(context))),
+          ],
+        );
+
+    return GlassCard(
+      borderRadius: 20,
+      blur: 0,
+      opacity: 0.18,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.cycleOverlayTitle,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.tp(context),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            l10n.symptomLoadComparison,
+            style: TextStyle(fontSize: 12, color: AppColors.ts(context)),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 16,
+            runSpacing: 8,
+            children: [
+              legend(AppColors.primaryStrong, l10n.currentCycleLabel),
+              legend(
+                AppColors.secondaryStrong,
+                l10n.previousCycleLabel,
+                dashed: true,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Semantics(
+            label: '${l10n.currentCycleLabel}: '
+                '${currentTotal.toStringAsFixed(0)}. '
+                '${l10n.previousCycleLabel}: '
+                '${previousTotal.toStringAsFixed(0)}.',
+            child: ExcludeSemantics(
+              child: SizedBox(
+                height: 190,
+                child: LineChart(
+                  LineChartData(
+                    minX: 1,
+                    maxX: maxX < 2 ? 2.0 : maxX,
+                    minY: 0,
+                    maxY: maxY + 1,
+                    gridData: FlGridData(
+                      show: true,
+                      drawVerticalLine: false,
+                      getDrawingHorizontalLine: (_) => FlLine(
+                        color: AppColors.dv(context),
+                        strokeWidth: 1,
+                      ),
+                    ),
+                    borderData: FlBorderData(show: false),
+                    titlesData: FlTitlesData(
+                      leftTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
+                      topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
+                      rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          interval: (maxX / 4)
+                              .ceilToDouble()
+                              .clamp(1, 30)
+                              .toDouble(),
+                          getTitlesWidget: (value, _) => Text(
+                            value.round().toString(),
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: AppColors.ts(context),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    lineTouchData: LineTouchData(
+                      touchTooltipData: LineTouchTooltipData(
+                        getTooltipItems: (touched) => touched
+                            .map((spot) => LineTooltipItem(
+                                  '${l10n.day} ${spot.x.round()}\n'
+                                  '${spot.y.toStringAsFixed(0)}',
+                                  const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ))
+                            .toList(),
+                      ),
+                    ),
+                    lineBarsData: [
+                      if (previousSpots.isNotEmpty)
+                        LineChartBarData(
+                          spots: previousSpots,
+                          color: AppColors.secondaryStrong,
+                          barWidth: 2,
+                          dashArray: const [6, 4],
+                          dotData: FlDotData(show: false),
+                          isCurved: true,
+                        ),
+                      if (currentSpots.isNotEmpty)
+                        LineChartBarData(
+                          spots: currentSpots,
+                          color: AppColors.primaryStrong,
+                          barWidth: 3,
+                          dotData: FlDotData(show: true),
+                          isCurved: true,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ).animateSafe(context).fadeIn(delay: 240.ms, duration: 400.ms);
+  }
+
   Widget _buildCycleHistory(AppLocalizations l10n, List<PeriodRecord> records) {
     if (records.isEmpty) {
       return _emptyCard(l10n.cycleHistory, l10n.noCycleData);
@@ -1169,8 +1532,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                                   ),
                               ],
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            maxLines: usesLargeText(
+                                    MediaQuery.textScalerOf(context))
+                                ? null
+                                : 1,
+                            overflow: usesLargeText(
+                                    MediaQuery.textScalerOf(context))
+                                ? null
+                                : TextOverflow.ellipsis,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -1203,6 +1572,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     double? Function(DailyLog) valueExtractor,
     Color color,
     String unit,
+    List<PeriodRecord> records,
+    UserProfile? profile,
   ) {
     final dataPoints = <MapEntry<DateTime, double>>[];
     for (final log in logs) {
@@ -1225,6 +1596,40 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     double dayOf(DateTime d) =>
         DateTime(d.year, d.month, d.day).difference(firstDay).inDays.toDouble();
     DateTime dateOf(double x) => firstDay.add(Duration(days: x.round()));
+
+    final cycleLength = ref.watch(effectiveCycleLengthProvider);
+    final periodLength = profile?.averagePeriodLength ?? 5;
+    final starts = records.map((record) => DateUtils.dateOnly(record.startDate))
+        .toList()
+      ..sort();
+    CyclePhase? phaseOf(DateTime date) {
+      DateTime? anchor;
+      for (final start in starts) {
+        if (!start.isAfter(date)) {
+          anchor = start;
+        } else {
+          break;
+        }
+      }
+      if (anchor == null) return null;
+      final rawDay = DateUtils.dateOnly(date).difference(anchor).inDays + 1;
+      return CycleUtils.phaseForDay(
+        CycleUtils.wrappedCycleDay(rawDay, cycleLength),
+        cycleLength,
+        periodLength,
+      );
+    }
+
+    final confirmedOvulation = ref.watch(confirmedOvulationProvider);
+    final ovulationDates = profile?.trackingMode == TrackingMode.pregnancy
+        ? const <DateTime>[]
+        : ovulationMarkersForRange(
+            periodStarts: starts,
+            cycleLength: cycleLength,
+            rangeStart: firstDay,
+            rangeEnd: dataPoints.last.key,
+            confirmedLatest: confirmedOvulation,
+          );
 
     final spots = dataPoints
         .map((e) => FlSpot(dayOf(e.key), e.value))
@@ -1275,7 +1680,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           Semantics(
             label:
                 '$title: ${spots.last.y.toStringAsFixed(1)} $unit. '
-                'Min ${minY.toStringAsFixed(1)}, Max ${maxY.toStringAsFixed(1)} $unit.',
+                'Min ${minY.toStringAsFixed(1)}, Max ${maxY.toStringAsFixed(1)} $unit.'
+                '${ovulationDates.isEmpty ? '' : ' ${l10nStory.ovulationMarkerHint}.'}',
             child: ExcludeSemantics(
               child: SizedBox(
             height: 180,
@@ -1283,6 +1689,19 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               LineChartData(
                 minY: minY - padding.clamp(0.5, 5),
                 maxY: maxY + padding.clamp(0.5, 5),
+                extraLinesData: ExtraLinesData(
+                  verticalLines: ovulationDates
+                      .map(
+                        (date) => VerticalLine(
+                          x: dayOf(date),
+                          color: AppColors.ringOvulation
+                              .withValues(alpha: 0.75),
+                          strokeWidth: 1.5,
+                          dashArray: const [5, 4],
+                        ),
+                      )
+                      .toList(),
+                ),
                 gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
@@ -1331,12 +1750,22 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 ),
                 borderData: FlBorderData(show: false),
                 lineTouchData: LineTouchData(
+                  touchCallback: (event, response) {
+                    if (event is! FlTapUpEvent) return;
+                    final touchedSpots = response?.lineBarSpots;
+                    if (touchedSpots == null || touchedSpots.isEmpty) return;
+                    ref.read(selectedDateProvider.notifier).state =
+                        dateOf(touchedSpots.first.x);
+                    context.push('/log');
+                  },
                   touchTooltipData: LineTouchTooltipData(
                     getTooltipItems: (spots) {
                       return spots.map((spot) {
+                        final phase = phaseOf(dateOf(spot.x));
                         return LineTooltipItem(
                           '${dateFormat.format(dateOf(spot.x))}\n'
-                          '${spot.y.toStringAsFixed(1)} $unit',
+                          '${spot.y.toStringAsFixed(1)} $unit'
+                          '${phase == null ? '' : '\n${EnumLabels.phase(phase, l10nStory)}'}',
                           TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
@@ -1382,6 +1811,47 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           ),
             ),
           ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Icon(Icons.touch_app_rounded,
+                  size: 14, color: AppColors.ts(context)),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  l10n.tapChartPointHint,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: AppColors.ts(context),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (ovulationDates.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                SizedBox(
+                  width: 14,
+                  child: Divider(
+                    color: AppColors.ringOvulation,
+                    thickness: 1.5,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    l10nStory.ovulationMarkerHint,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AppColors.ts(context),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     ).animateSafe(context).fadeIn(delay: 300.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
