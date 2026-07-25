@@ -737,5 +737,13 @@
   "healthDisclaimer": "Cette application ne remplace pas un avis médical. Pour toute question de santé, consultez un professionnel.",
   "homePriority": "Priorité de l’accueil",
   "cycleFirst": "Cycle d’abord",
-  "todayFirst": "Aujourd’hui d’abord"
+  "todayFirst": "Aujourd’hui d’abord",
+  "planLifetime": "À vie",
+  "planLifetimeDetail": "Un paiement, premium pour toujours",
+  "cycleNotificationFrequency": "Niveau des notifications du cycle",
+  "cycleNotificationFrequencyDesc": "Les rappels de médicaments ne changent pas",
+  "notificationFrequencyEssential": "Essentiel",
+  "notificationFrequencyBalanced": "Équilibré",
+  "notificationFrequencyDetailed": "Détaillé",
+  "readOnlyHistoryNotice": "Vous pouvez consulter vos anciens suivis ; les nouveaux suivis et modifications nécessitent Premium."
 }

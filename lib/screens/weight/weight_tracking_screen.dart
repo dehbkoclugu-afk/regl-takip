@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/input_parsing.dart';
+import '../../core/utils/access.dart';
 import '../../core/utils/unit_conversion.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/tracker_scaffold.dart';
@@ -308,6 +309,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   }
 
   Future<void> _delete() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     await ref
         .read(dailyLogProvider.notifier)
         .updateWeight(ref.read(selectedDateProvider), null);
@@ -323,6 +325,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   }
 
   Future<void> _save() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     final l10n = AppLocalizations.of(context)!;
     // Geçersiz giriş sessizce eski değeri kaydediyordu — kullanıcıya söyle
     final parsed = _parseWeight(_controller.text);
@@ -340,6 +343,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
     await ref
         .read(dailyLogProvider.notifier)
         .updateWeight(ref.read(selectedDateProvider), _weight);
+    notifyTrackingRecordSaved();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

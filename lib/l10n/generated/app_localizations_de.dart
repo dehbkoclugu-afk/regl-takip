@@ -2024,4 +2024,21 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get todayFirst => 'Heute zuerst';
+
+  @override
+  String get planLifetime => 'Lebenslang';
+  @override
+  String get planLifetimeDetail => 'Einmal zahlen, dauerhaft Premium';
+  @override
+  String get cycleNotificationFrequency => 'Zyklus-Benachrichtigungsstufe';
+  @override
+  String get cycleNotificationFrequencyDesc => 'Medikamentenerinnerungen bleiben unverändert';
+  @override
+  String get notificationFrequencyEssential => 'Basis';
+  @override
+  String get notificationFrequencyBalanced => 'Ausgewogen';
+  @override
+  String get notificationFrequencyDetailed => 'Detailliert';
+  @override
+  String get readOnlyHistoryNotice => 'Du kannst frühere Einträge ansehen; neue Einträge und Änderungen benötigen Premium.';
 }

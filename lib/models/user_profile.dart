@@ -134,6 +134,11 @@ class UserProfile extends HiveObject {
   @HiveField(30, defaultValue: false)
   bool medicationPlanMigrated;
 
+  /// Döngü başına bildirim yoğunluğu: 1 temel, 2 dengeli, 3 ayrıntılı.
+  /// İlaç hatırlatmaları bu tercihten etkilenmez.
+  @HiveField(31, defaultValue: 3)
+  int cycleNotificationFrequency;
+
   /// Döngü hatırlatmaları için etkin saat (özel saat yoksa genel saat).
   int get effectiveCycleHour => cycleReminderHour ?? reminderHour;
   int get effectiveCycleMinute => cycleReminderMinute ?? reminderMinute;
@@ -176,6 +181,7 @@ class UserProfile extends HiveObject {
     this.useFahrenheit = false,
     this.medicationPlan = const [],
     this.medicationPlanMigrated = true,
+    this.cycleNotificationFrequency = 3,
   });
 
   /// Yeni bir kopya döndürür; verilen alanlar güncellenir.
@@ -212,6 +218,7 @@ class UserProfile extends HiveObject {
     bool? useFahrenheit,
     List<MedicationEntry>? medicationPlan,
     bool? medicationPlanMigrated,
+    int? cycleNotificationFrequency,
   }) {
     return UserProfile(
       name: name ?? this.name,
@@ -253,6 +260,8 @@ class UserProfile extends HiveObject {
       medicationPlan: medicationPlan ?? this.medicationPlan,
       medicationPlanMigrated:
           medicationPlanMigrated ?? this.medicationPlanMigrated,
+      cycleNotificationFrequency:
+          cycleNotificationFrequency ?? this.cycleNotificationFrequency,
     );
   }
 
@@ -288,6 +297,7 @@ class UserProfile extends HiveObject {
     'useFahrenheit': useFahrenheit,
     'medicationPlan': medicationPlan.map((m) => m.toJson()).toList(),
     'medicationPlanMigrated': medicationPlanMigrated,
+    'cycleNotificationFrequency': cycleNotificationFrequency,
   };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
@@ -340,6 +350,8 @@ class UserProfile extends HiveObject {
         .toList(),
     medicationPlanMigrated:
         json['medicationPlanMigrated'] as bool? ?? false,
+    cycleNotificationFrequency:
+        (json['cycleNotificationFrequency'] as int? ?? 3).clamp(1, 3) as int,
   );
 
   int? get age {

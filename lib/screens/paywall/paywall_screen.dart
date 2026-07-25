@@ -152,6 +152,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   final resolved = revision > 0;
                   final yearly = service.yearlyProduct;
                   final monthly = service.monthlyProduct;
+                  final lifetime = service.lifetimeProduct;
                   String? yearlyComparison;
                   if (yearly != null &&
                       monthly != null &&
@@ -193,11 +194,24 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                         busy: _busy,
                         onTap: () => _buy(service.buyMonthly),
                       ),
+                      if (lifetime != null) ...[
+                        const SizedBox(height: 12),
+                        _PlanCard(
+                          title: l10n.planLifetime,
+                          price: lifetime.price,
+                          suffix: '',
+                          detail: l10n.planLifetimeDetail,
+                          highlighted: false,
+                          busy: _busy,
+                          onTap: () => _buy(service.buyLifetime),
+                        ),
+                      ],
                       // Mağaza cevap verdi ama ürünleri döndürmediyse sebebi
                       // söylenmeli — boş kartlara bakıp beklemesin
                       if (resolved &&
                           service.yearlyProduct == null &&
-                          service.monthlyProduct == null) ...[
+                          service.monthlyProduct == null &&
+                          service.lifetimeProduct == null) ...[
                         const SizedBox(height: 12),
                         Text(
                           l10n.storeUnavailable,

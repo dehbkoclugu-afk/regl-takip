@@ -3,8 +3,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:regl_takip/core/utils/access.dart';
 import 'package:regl_takip/providers/providers.dart';
 
-/// Erişim modeli: 30 gün deneme → premium yoksa yalnız regl takibi.
+/// Erişim modeli: 30 gün deneme → geçmiş salt okunur, yeni günlük kayıt
+/// premium; regl takibi ücretsiz kalır.
 void main() {
+  test('daily history is writable only during trial or premium', () {
+    expect(canWriteDailyTracking(AccessLevel.premium), isTrue);
+    expect(canWriteDailyTracking(AccessLevel.trial), isTrue);
+    expect(canWriteDailyTracking(AccessLevel.free), isFalse);
+  });
+
   ProviderContainer container({
     bool premium = false,
     DateTime? trialStart,

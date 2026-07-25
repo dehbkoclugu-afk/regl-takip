@@ -24,25 +24,6 @@ import '../../screens/period_history/period_history_screen.dart';
 import '../../screens/profile/profile_edit_screen.dart';
 import '../../providers/providers.dart';
 
-/// Ücretsiz katmanda kilitli rotalar: günlük takip ekranlarının tamamı.
-/// Ücretsiz sürüm = regl takibi + takvim + tahminler (dashboard/calendar/
-/// settings açık; istatistik sekmesi kendi içinde kilit gösterir ki
-/// kullanıcı neyi kaçırdığını görsün).
-const _premiumPaths = {
-  '/log',
-  '/flow',
-  '/symptoms',
-  '/mood',
-  '/measurements',
-  '/water',
-  '/temperature',
-  '/weight',
-  '/sleep',
-  '/sexual-activity',
-  '/medication',
-  '/notes',
-};
-
 // Navigation keys for each branch in the StatefulShellRoute
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 GlobalKey<NavigatorState> get rootNavigatorKey => _rootNavigatorKey;
@@ -71,12 +52,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       final atOnboarding = state.matchedLocation == '/onboarding';
       if (!onboarded && !atOnboarding) return '/onboarding';
       if (onboarded && atOnboarding) return '/dashboard';
-      // Deneme bitti + abonelik yok: takip ekranları tek kapıdan paywall'a.
-      // Bildirim/deep-link girişleri dahil her yol burada kesilir.
-      if (_premiumPaths.contains(state.matchedLocation) &&
-          ref.read(accessProvider) == AccessLevel.free) {
-        return '/paywall';
-      }
+      // Deneme bittikten sonra takip rotaları salt-okunur açılır. Yazma
+      // eylemleri ekranlardaki ortak premium kapısında durdurulur; böylece
+      // kullanıcı yıllardır tuttuğu geçmişi görmeye devam eder.
       return null;
     },
     // Bilinmeyen yol (eski bildirim payload'ı, hatalı deep link) kırmızı
@@ -208,8 +186,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ProfileEditScreen(),
       ),
-      // Bilerek _premiumPaths dışında: ücretsiz katmanın vaadi regl takibi,
-      // yanlış girilen kaydı düzeltmek o vaadin parçası
+      // Ücretsiz katmanın vaadi regl takibi; yanlış girilen kaydı
+      // düzeltmek o vaadin parçası ve yazma istisnası olarak kalır.
       GoRoute(
         path: '/period-history',
         parentNavigatorKey: _rootNavigatorKey,

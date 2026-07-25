@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/access.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/tracker_scaffold.dart';
 import '../../core/utils/unit_conversion.dart';
@@ -318,6 +319,7 @@ class _TemperatureTrackingScreenState
   /// Yanlışlıkla kaydedilen ölçüm BBT eğrisini (ve ovülasyon teyidini)
   /// bozar — silinebilmeli.
   Future<void> _delete() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     await ref
         .read(dailyLogProvider.notifier)
         .updateTemperature(ref.read(selectedDateProvider), null);
@@ -333,6 +335,7 @@ class _TemperatureTrackingScreenState
   }
 
   Future<void> _save() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     final timeStr =
         '${_measureTime.hour.toString().padLeft(2, '0')}:${_measureTime.minute.toString().padLeft(2, '0')}';
     await ref
@@ -342,6 +345,7 @@ class _TemperatureTrackingScreenState
           _temperature,
           temperatureTime: timeStr,
         );
+    notifyTrackingRecordSaved();
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(

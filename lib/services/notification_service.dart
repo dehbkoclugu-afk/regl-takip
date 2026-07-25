@@ -24,6 +24,11 @@ class NotificationAction {
   const NotificationAction(this.id, {this.payload});
 }
 
+/// Döngü başına bildirim yoğunluğu. Tür anahtarları yine üst sınırdır:
+/// kapatılmış bir tür, yüksek yoğunlukta da planlanmaz.
+bool cycleNotificationEnabled(int frequency, int minimumFrequency) =>
+    frequency.clamp(1, 3) >= minimumFrequency;
+
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
@@ -629,6 +634,8 @@ class NotificationService {
       final cycleMinute = profile.effectiveCycleMinute;
       final medHour = profile.effectiveMedicationHour;
       final medMinute = profile.effectiveMedicationMinute;
+      final cycleFrequency =
+          profile.cycleNotificationFrequency.clamp(1, 3) as int;
       // 'system' tercihi somut dile çözülür (bildirim metinleri için)
       final locale = resolveLanguageCode(profile.language);
 
@@ -651,7 +658,8 @@ class NotificationService {
         for (int i = 0; i < _cyclesToSchedule; i++) {
           final periodDate = nextPeriod.add(Duration(days: cycleLen * i));
 
-          if (profile.periodReminderEnabled) {
+          if (profile.periodReminderEnabled &&
+              cycleNotificationEnabled(cycleFrequency, 1)) {
             await schedulePeriodReminder(
               periodDate,
               cycleHour,
@@ -668,7 +676,8 @@ class NotificationService {
             );
           }
 
-          if (profile.ovulationReminderEnabled) {
+          if (profile.ovulationReminderEnabled &&
+              cycleNotificationEnabled(cycleFrequency, 2)) {
             final ovulation = periodDate.subtract(
                 const Duration(days: AppConstants.ovulationDayBeforePeriod));
             await scheduleOvulationReminder(
@@ -683,7 +692,8 @@ class NotificationService {
 
             // TTC modunda pencerenin açılışı ovülasyon gününden daha
             // kritik; takip modunda böyle bir bildirim gereksiz gürültü.
-            if (profile.trackingMode == TrackingMode.ttc) {
+            if (profile.trackingMode == TrackingMode.ttc &&
+                cycleNotificationEnabled(cycleFrequency, 3)) {
               await scheduleFertileWindowReminder(
                 ovulation.subtract(const Duration(
                     days: AppConstants.fertileWindowStartBeforeOvulation)),
@@ -700,7 +710,8 @@ class NotificationService {
           // Gecikme kontrolü: tahmini tarih geçtiği hâlde kayıt gelmediyse
           // uygulamanın söyleyecek sözü yoktu. Regl başlatıldığında
           // rescheduleAll yeniden çalıştığı için bu hatırlatma iptal olur.
-          if (profile.periodReminderEnabled) {
+          if (profile.periodReminderEnabled &&
+              cycleNotificationEnabled(cycleFrequency, 3)) {
             await scheduleDelayReminder(
               periodDate.add(const Duration(days: _delayCheckAfterDays)),
               cycleHour,
@@ -717,8 +728,9 @@ class NotificationService {
         // Zincirin sonu: son planlanan döngüden bir döngü sonrası. O tarihe
         // gelindiğinde kurulu tek bildirim bu olur; kullanıcı uygulamayı
         // açınca rescheduleAll yeniden çalışır ve zincir uzar.
-        if (profile.periodReminderEnabled ||
-            profile.ovulationReminderEnabled) {
+        if (cycleNotificationEnabled(cycleFrequency, 3) &&
+            (profile.periodReminderEnabled ||
+                profile.ovulationReminderEnabled)) {
           await scheduleChainEndReminder(
             nextPeriod.add(Duration(days: cycleLen * _cyclesToSchedule)),
             cycleHour,
@@ -731,7 +743,10 @@ class NotificationService {
         // Kişisel semptom tahmini: kullanıcının kayıtları luteal fazda
         // belirgin bir semptom gösteriyorsa, luteal başlarken haber ver.
         // Gizli modda kurulmaz (nötrlenince bilgi değeri kalmıyor).
-        if (profile.periodReminderEnabled && !discreet && logs.isNotEmpty) {
+        if (profile.periodReminderEnabled &&
+            cycleNotificationEnabled(cycleFrequency, 3) &&
+            !discreet &&
+            logs.isNotEmpty) {
           final insights = topPhaseSymptoms(
             logs: logs,
             periodStarts: records.map((r) => r.startDate).toList(),

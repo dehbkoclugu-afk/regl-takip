@@ -899,5 +899,13 @@
   "healthDisclaimer": "This app is not a substitute for medical advice. Please consult a healthcare professional for health concerns.",
   "homePriority": "Home screen priority",
   "cycleFirst": "Cycle first",
-  "todayFirst": "Today first"
+  "todayFirst": "Today first",
+  "planLifetime": "Lifetime",
+  "planLifetimeDetail": "One payment, premium forever",
+  "cycleNotificationFrequency": "Cycle notification level",
+  "cycleNotificationFrequencyDesc": "Medication reminders are not affected",
+  "notificationFrequencyEssential": "Essential",
+  "notificationFrequencyBalanced": "Balanced",
+  "notificationFrequencyDetailed": "Detailed",
+  "readOnlyHistoryNotice": "You can view your past entries; new daily entries and changes require Premium."
 }

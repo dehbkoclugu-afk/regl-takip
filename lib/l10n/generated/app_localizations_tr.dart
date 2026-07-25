@@ -2020,4 +2020,21 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get todayFirst => 'Bugün önce';
+
+  @override
+  String get planLifetime => 'Ömür boyu';
+  @override
+  String get planLifetimeDetail => 'Tek ödeme, süresiz premium';
+  @override
+  String get cycleNotificationFrequency => 'Döngü bildirimi yoğunluğu';
+  @override
+  String get cycleNotificationFrequencyDesc => 'İlaç hatırlatmaları bu ayardan etkilenmez';
+  @override
+  String get notificationFrequencyEssential => 'Temel';
+  @override
+  String get notificationFrequencyBalanced => 'Dengeli';
+  @override
+  String get notificationFrequencyDetailed => 'Ayrıntılı';
+  @override
+  String get readOnlyHistoryNotice => 'Geçmiş kayıtlarını görüntüleyebilirsin; yeni günlük kayıt ve değişiklikler Premium\'da.';
 }

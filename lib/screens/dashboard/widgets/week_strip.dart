@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
@@ -102,7 +103,11 @@ class WeekStrip extends ConsumerWidget {
         onTap: isFuture
             ? null
             : () {
-                if (!ensurePremiumAccess(context, ref)) return;
+                ref.read(selectedDateProvider.notifier).state = date;
+                if (ref.read(accessProvider) == AccessLevel.free) {
+                  context.push('/log');
+                  return;
+                }
                 showQuickLogSheet(context, ref, date);
               },
         onLongPress: isFuture

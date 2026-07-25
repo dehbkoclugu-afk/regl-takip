@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/adaptive_layout.dart';
+import '../../core/utils/access.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/widgets/tracker_scaffold.dart';
 import '../../models/enums.dart';
@@ -275,6 +276,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
   }
 
   Future<void> _save() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     final notifier = ref.read(dailyLogProvider.notifier);
     final date = ref.read(selectedDateProvider);
     final entries = _selectedSymptoms.entries
@@ -288,6 +290,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
     }
 
     await notifier.updateSymptoms(date, entries);
+    notifyTrackingRecordSaved();
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(

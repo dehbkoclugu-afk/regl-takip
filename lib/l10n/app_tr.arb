@@ -899,5 +899,13 @@
   "healthDisclaimer": "Bu uygulama tıbbi tavsiye niteliğinde değildir. Sağlık sorunlarınız için lütfen bir sağlık uzmanına danışın.",
   "homePriority": "Ana ekran önceliği",
   "cycleFirst": "Döngü önce",
-  "todayFirst": "Bugün önce"
+  "todayFirst": "Bugün önce",
+  "planLifetime": "Ömür boyu",
+  "planLifetimeDetail": "Tek ödeme, süresiz premium",
+  "cycleNotificationFrequency": "Döngü bildirimi yoğunluğu",
+  "cycleNotificationFrequencyDesc": "İlaç hatırlatmaları bu ayardan etkilenmez",
+  "notificationFrequencyEssential": "Temel",
+  "notificationFrequencyBalanced": "Dengeli",
+  "notificationFrequencyDetailed": "Ayrıntılı",
+  "readOnlyHistoryNotice": "Geçmiş kayıtlarını görüntüleyebilirsin; yeni günlük kayıt ve değişiklikler Premium'da."
 }

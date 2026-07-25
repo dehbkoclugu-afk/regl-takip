@@ -1,8 +1,17 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:regl_takip/services/notification_service.dart';
 import 'package:regl_takip/models/user_profile.dart';
 import 'package:regl_takip/models/period_record.dart';
 
 void main() {
+  test('cycle notification frequency grows from essential to detailed', () {
+    expect(cycleNotificationEnabled(1, 1), isTrue);
+    expect(cycleNotificationEnabled(1, 2), isFalse);
+    expect(cycleNotificationEnabled(2, 2), isTrue);
+    expect(cycleNotificationEnabled(2, 3), isFalse);
+    expect(cycleNotificationEnabled(3, 3), isTrue);
+  });
+
   group('etkin hatırlatma saatleri', () {
     test('özel saat yoksa genel saate düşer', () {
       final p = UserProfile(reminderHour: 9, reminderMinute: 30);
@@ -117,6 +126,7 @@ void main() {
       expect(restored.useFahrenheit, isFalse);
       expect(restored.medicationPlan, isEmpty);
       expect(restored.medicationPlanMigrated, isFalse);
+      expect(restored.cycleNotificationFrequency, 3);
     });
   });
 
@@ -139,6 +149,31 @@ void main() {
       expect(p.copyWith(quietNotifications: false).quietNotifications, isFalse);
       // Verilmezse korunur
       expect(p.copyWith(name: 'X').quietNotifications, isTrue);
+    });
+  });
+
+  group('döngü bildirimi yoğunluğu', () {
+    test('varsayılan ayrıntılıdır ve copyWith ile değişir', () {
+      final profile = UserProfile();
+      expect(profile.cycleNotificationFrequency, 3);
+      expect(
+        profile.copyWith(cycleNotificationFrequency: 1)
+            .cycleNotificationFrequency,
+        1,
+      );
+    });
+
+    test('yedekten gelen değer güvenli aralığa sıkıştırılır', () {
+      expect(
+        UserProfile.fromJson({'cycleNotificationFrequency': 99})
+            .cycleNotificationFrequency,
+        3,
+      );
+      expect(
+        UserProfile.fromJson({'cycleNotificationFrequency': -2})
+            .cycleNotificationFrequency,
+        1,
+      );
     });
   });
 }

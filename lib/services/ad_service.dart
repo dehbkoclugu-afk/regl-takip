@@ -23,6 +23,12 @@ class AdService {
 
   static InterstitialAd? _openAd;
 
+  /// Başarılı kullanıcı kaydı olayı. Reklam kararı uygulama kökünde verilir;
+  /// veri katmanı veya ekran reklam SDK'sını doğrudan çağırmaz.
+  static final ValueNotifier<int> recordSavedRevision = ValueNotifier(0);
+
+  static void notifyRecordSaved() => recordSavedRevision.value++;
+
   /// Açılış reklamının en son ne zaman gösterildiği (SharedPreferences).
   static const String _lastOpenAdKey = 'last_open_ad_epoch';
 
@@ -193,5 +199,6 @@ class AdService {
 
   static void dispose() {
     _openAd?.dispose();
+    recordSavedRevision.dispose();
   }
 }

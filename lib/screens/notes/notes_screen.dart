@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/access.dart';
 import '../../core/utils/note_search.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/glass_card.dart';
@@ -166,6 +167,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
   }
 
   Future<void> _save() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     final l10n = AppLocalizations.of(context)!;
     final notifier = ref.read(dailyLogProvider.notifier);
     final date = ref.read(selectedDateProvider);
@@ -179,6 +181,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
     }
 
     await notifier.updateNotes(date, text.isEmpty ? null : text);
+    notifyTrackingRecordSaved();
     // Kaydettikten sonra "kaydedilmemiş değişiklik" uyarısı çıkmasın
     _initialText = _controller.text;
     _dirty = false;

@@ -737,5 +737,13 @@
   "healthDisclaimer": "Это приложение не заменяет консультацию врача. По вопросам здоровья обращайтесь к специалисту.",
   "homePriority": "Приоритет главного экрана",
   "cycleFirst": "Сначала цикл",
-  "todayFirst": "Сначала сегодня"
+  "todayFirst": "Сначала сегодня",
+  "planLifetime": "Навсегда",
+  "planLifetimeDetail": "Один платёж, премиум навсегда",
+  "cycleNotificationFrequency": "Уровень уведомлений о цикле",
+  "cycleNotificationFrequencyDesc": "Не влияет на напоминания о лекарствах",
+  "notificationFrequencyEssential": "Основные",
+  "notificationFrequencyBalanced": "Сбалансированные",
+  "notificationFrequencyDetailed": "Подробные",
+  "readOnlyHistoryNotice": "Прошлые записи доступны для просмотра; новые записи и изменения требуют Premium."
 }

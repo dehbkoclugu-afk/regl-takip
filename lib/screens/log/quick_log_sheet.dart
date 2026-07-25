@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/access.dart';
 import '../../core/utils/adaptive_layout.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/symptom_ranking.dart';
@@ -123,6 +124,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
   /// Gün değiştirir. Ekrandaki hâl önce mevcut güne yazılır: kullanıcı
   /// "dünü girdim, şimdi bugüne geçeyim" derken girdisini kaybetmemeli.
   Future<void> _switchDay(int deltaDays) async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     final target = DateTime(_date.year, _date.month, _date.day + deltaDays);
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -139,6 +141,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
   }
 
   Future<void> _save() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
@@ -148,6 +151,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     navigator.pop();
     // Hiçbir şey yazılmadıysa "Kaydedildi" demek yanlış bilgi
     if (!wrote) return;
+    notifyTrackingRecordSaved();
     messenger.showSnackBar(
       SnackBar(
         content: Text(l10n.savedGeneric),

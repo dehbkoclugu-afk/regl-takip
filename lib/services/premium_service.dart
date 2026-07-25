@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Ürünler (Play Console'da abonelik olarak tanımlanmalı):
 /// - premium_monthly  (₺29/ay)
 /// - premium_yearly   (₺199/yıl)
-/// - premium_no_ads   (eski tek seferlik alıcılar — hak korunur)
+/// - premium_no_ads   (tek seferlik ömür boyu premium; eski hak korunur)
 class PremiumService {
   static final PremiumService _instance = PremiumService._internal();
   factory PremiumService() => _instance;
@@ -35,6 +35,7 @@ class PremiumService {
 
   ProductDetails? monthlyProduct;
   ProductDetails? yearlyProduct;
+  ProductDetails? lifetimeProduct;
 
   /// Ürün detayları mağazadan asenkron gelir. Paywall bu bildiriciyi dinler:
   /// aksi halde ekran ürünler dönmeden açıldığında tanıtım fiyatlarında
@@ -78,6 +79,7 @@ class PremiumService {
       for (final product in response.productDetails) {
         if (product.id == monthlyId) monthlyProduct = product;
         if (product.id == yearlyId) yearlyProduct = product;
+        if (product.id == legacyId) lifetimeProduct = product;
       }
       // Sorgu sonuçsuz bitse de haber ver: paywall "hâlâ yükleniyor" ile
       // "mağaza ürünü döndürmedi" durumlarını ancak böyle ayırt edebilir
@@ -147,6 +149,7 @@ class PremiumService {
 
   Future<bool> buyMonthly() => buy(monthlyProduct);
   Future<bool> buyYearly() => buy(yearlyProduct);
+  Future<bool> buyLifetime() => buy(lifetimeProduct);
 
   /// Geri yükleme akışı; hak dönerse true.
   ///

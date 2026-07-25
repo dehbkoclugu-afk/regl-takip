@@ -567,6 +567,8 @@ class SettingsScreen extends ConsumerWidget {
             _divider(context),
             _leadDaysTile(context, ref, profile, l10n),
             _divider(context),
+            _notificationFrequencyTile(context, ref, profile, l10n),
+            _divider(context),
             // Ayarlarda yalnız tür başına aç/kapa vardı: "bildirim istiyorum
             // ama telefonum çalmasın" diyen kullanıcının tek seçeneği hepsini
             // kapatmaktı
@@ -1901,6 +1903,65 @@ class SettingsScreen extends ConsumerWidget {
           ref
               .read(userProfileProvider.notifier)
               .saveProfile(periodReminderLeadDays: value);
+        },
+      ),
+    );
+  }
+
+  Widget _notificationFrequencyTile(
+    BuildContext context,
+    WidgetRef ref,
+    UserProfile? profile,
+    AppLocalizations l10n,
+  ) {
+    final frequency = profile?.cycleNotificationFrequency ?? 3;
+    return ListTile(
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.primary.withValues(alpha: 0.25),
+              AppColors.primary.withValues(alpha: 0.1),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Icon(
+          Icons.tune_rounded,
+          color: AppColors.primary,
+          size: 22,
+        ),
+      ),
+      title: Text(
+        l10n.cycleNotificationFrequency,
+        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+      ),
+      subtitle: Text(l10n.cycleNotificationFrequencyDesc),
+      trailing: DropdownButton<int>(
+        value: frequency.clamp(1, 3) as int,
+        underline: const SizedBox.shrink(),
+        borderRadius: BorderRadius.circular(14),
+        items: [
+          DropdownMenuItem(
+            value: 1,
+            child: Text(l10n.notificationFrequencyEssential),
+          ),
+          DropdownMenuItem(
+            value: 2,
+            child: Text(l10n.notificationFrequencyBalanced),
+          ),
+          DropdownMenuItem(
+            value: 3,
+            child: Text(l10n.notificationFrequencyDetailed),
+          ),
+        ],
+        onChanged: (value) {
+          if (value == null) return;
+          ref
+              .read(userProfileProvider.notifier)
+              .saveProfile(cycleNotificationFrequency: value);
         },
       ),
     );

@@ -2025,4 +2025,21 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get todayFirst => 'Aujourd’hui d’abord';
+
+  @override
+  String get planLifetime => 'À vie';
+  @override
+  String get planLifetimeDetail => 'Un paiement, premium pour toujours';
+  @override
+  String get cycleNotificationFrequency => 'Niveau des notifications du cycle';
+  @override
+  String get cycleNotificationFrequencyDesc => 'Les rappels de médicaments ne changent pas';
+  @override
+  String get notificationFrequencyEssential => 'Essentiel';
+  @override
+  String get notificationFrequencyBalanced => 'Équilibré';
+  @override
+  String get notificationFrequencyDetailed => 'Détaillé';
+  @override
+  String get readOnlyHistoryNotice => 'Vous pouvez consulter vos anciens suivis ; les nouveaux suivis et modifications nécessitent Premium.';
 }

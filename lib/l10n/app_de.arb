@@ -737,5 +737,13 @@
   "healthDisclaimer": "Diese App ersetzt keinen ärztlichen Rat. Bei gesundheitlichen Fragen wende dich bitte an medizinisches Fachpersonal.",
   "homePriority": "Startseiten-Priorität",
   "cycleFirst": "Zyklus zuerst",
-  "todayFirst": "Heute zuerst"
+  "todayFirst": "Heute zuerst",
+  "planLifetime": "Lebenslang",
+  "planLifetimeDetail": "Einmal zahlen, dauerhaft Premium",
+  "cycleNotificationFrequency": "Zyklus-Benachrichtigungsstufe",
+  "cycleNotificationFrequencyDesc": "Medikamentenerinnerungen bleiben unverändert",
+  "notificationFrequencyEssential": "Basis",
+  "notificationFrequencyBalanced": "Ausgewogen",
+  "notificationFrequencyDetailed": "Detailliert",
+  "readOnlyHistoryNotice": "Du kannst frühere Einträge ansehen; neue Einträge und Änderungen benötigen Premium."
 }

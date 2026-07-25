@@ -3790,6 +3790,15 @@ abstract class AppLocalizations {
 
   /// No description provided for @todayFirst.
   String get todayFirst;
+
+  String get planLifetime;
+  String get planLifetimeDetail;
+  String get cycleNotificationFrequency;
+  String get cycleNotificationFrequencyDesc;
+  String get notificationFrequencyEssential;
+  String get notificationFrequencyBalanced;
+  String get notificationFrequencyDetailed;
+  String get readOnlyHistoryNotice;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

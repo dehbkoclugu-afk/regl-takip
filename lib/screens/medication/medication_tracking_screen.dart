@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/access.dart';
 import '../../core/utils/medication_plan.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/glass_card.dart';
@@ -109,6 +110,8 @@ class _MedicationTrackingScreenState
             // anahtarı kayıyor ve yanlış satır animasyonla siliniyordu
             key: ObjectKey(med),
             direction: DismissDirection.endToStart,
+            confirmDismiss: (_) async =>
+                ensureTrackingWriteAccess(context, ref),
             onDismissed: (_) {
               setState(() => _medications.remove(med));
               _savePlan();
@@ -135,6 +138,7 @@ class _MedicationTrackingScreenState
                     child: InkWell(
                       customBorder: const CircleBorder(),
                       onTap: () {
+                        if (!ensureTrackingWriteAccess(context, ref)) return;
                         setState(() => med.taken = !med.taken);
                         _saveDailyStatus();
                       },
@@ -205,6 +209,7 @@ class _MedicationTrackingScreenState
   }
 
   void _showAddSheet() {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     final l10n = AppLocalizations.of(context)!;
     final nameCtrl = TextEditingController();
     final doseCtrl = TextEditingController();
@@ -358,6 +363,7 @@ class _MedicationTrackingScreenState
   }
 
   Future<void> _savePlan() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     await ref.read(userProfileProvider.notifier).saveProfile(
           medicationPlan:
               _medications.map(medicationDefinition).toList(),
@@ -366,6 +372,7 @@ class _MedicationTrackingScreenState
   }
 
   Future<void> _saveDailyStatus() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     final dailyRecord = medicationDailyRecord(
       _medications,
       _existingDailyMedications,
@@ -375,5 +382,6 @@ class _MedicationTrackingScreenState
           dailyRecord,
         );
     _existingDailyMedications = dailyRecord;
+    notifyTrackingRecordSaved();
   }
 }

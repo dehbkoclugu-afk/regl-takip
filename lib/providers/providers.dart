@@ -197,6 +197,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     bool? useFahrenheit,
     List<MedicationEntry>? medicationPlan,
     bool? medicationPlanMigrated,
+    int? cycleNotificationFrequency,
   }) async {
     final current = state ?? UserProfile();
     final updated = current.copyWith(
@@ -235,6 +236,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
       useFahrenheit: useFahrenheit,
       medicationPlan: medicationPlan,
       medicationPlanMigrated: medicationPlanMigrated,
+      cycleNotificationFrequency: cycleNotificationFrequency,
     );
 
     await _hiveService.saveUserProfile(updated);
@@ -260,6 +262,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         // Sessizlik tercihi kanal kimliğini değiştiriyor: kurulu
         // bildirimler yeniden planlanmazsa eski kanalda kalır
         quietNotifications != null ||
+        cycleNotificationFrequency != null ||
         medicationPlan != null) {
       try {
         await NotificationService().rescheduleAll(

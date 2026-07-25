@@ -737,5 +737,13 @@
   "healthDisclaimer": "Esta aplicación no sustituye el consejo médico. Consulta a un profesional de la salud ante cualquier duda.",
   "homePriority": "Prioridad de inicio",
   "cycleFirst": "Ciclo primero",
-  "todayFirst": "Hoy primero"
+  "todayFirst": "Hoy primero",
+  "planLifetime": "De por vida",
+  "planLifetimeDetail": "Un pago, premium para siempre",
+  "cycleNotificationFrequency": "Nivel de notificaciones del ciclo",
+  "cycleNotificationFrequencyDesc": "No afecta a los recordatorios de medicación",
+  "notificationFrequencyEssential": "Esencial",
+  "notificationFrequencyBalanced": "Equilibrado",
+  "notificationFrequencyDetailed": "Detallado",
+  "readOnlyHistoryNotice": "Puedes ver tus registros anteriores; los registros nuevos y los cambios requieren Premium."
 }

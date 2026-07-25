@@ -108,6 +108,28 @@ class _LogScreenState extends ConsumerState<LogScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (ref.watch(accessProvider) == AccessLevel.free) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.warning.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.warning.withValues(alpha: 0.35),
+                  ),
+                ),
+                child: Text(
+                  l10n.readOnlyHistoryNotice,
+                  style: TextStyle(
+                    fontSize: 13,
+                    height: 1.4,
+                    color: AppColors.warningText,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             _buildDateSelector(),
             const SizedBox(height: 24),
             _buildCategoryGrid(log, l10n),

@@ -5,6 +5,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/adaptive_layout.dart';
+import '../../core/utils/access.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/tracker_scaffold.dart';
 import '../../providers/providers.dart';
@@ -243,6 +244,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
               ),
               TextButton(
                 onPressed: () {
+                  if (!ensureTrackingWriteAccess(context, ref)) return;
                   ref
                       .read(userProfileProvider.notifier)
                       .saveProfile(waterGoal: tempGoal);
@@ -349,7 +351,9 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
   }
 
   Future<void> _save() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     await ref.read(dailyLogProvider.notifier).updateWater(ref.read(selectedDateProvider), _glasses);
+    notifyTrackingRecordSaved();
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(

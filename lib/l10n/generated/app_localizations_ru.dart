@@ -2022,4 +2022,21 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get todayFirst => 'Сначала сегодня';
+
+  @override
+  String get planLifetime => 'Навсегда';
+  @override
+  String get planLifetimeDetail => 'Один платёж, премиум навсегда';
+  @override
+  String get cycleNotificationFrequency => 'Уровень уведомлений о цикле';
+  @override
+  String get cycleNotificationFrequencyDesc => 'Не влияет на напоминания о лекарствах';
+  @override
+  String get notificationFrequencyEssential => 'Основные';
+  @override
+  String get notificationFrequencyBalanced => 'Сбалансированные';
+  @override
+  String get notificationFrequencyDetailed => 'Подробные';
+  @override
+  String get readOnlyHistoryNotice => 'Прошлые записи доступны для просмотра; новые записи и изменения требуют Premium.';
 }

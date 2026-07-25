@@ -53,13 +53,15 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
           : (fields[29] as List).cast<MedicationEntry>(),
       medicationPlanMigrated:
           fields[30] == null ? false : fields[30] as bool,
+      cycleNotificationFrequency:
+          fields[31] == null ? 3 : fields[31] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(31)
+      ..writeByte(32)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -121,7 +123,9 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(29)
       ..write(obj.medicationPlan)
       ..writeByte(30)
-      ..write(obj.medicationPlanMigrated);
+      ..write(obj.medicationPlanMigrated)
+      ..writeByte(31)
+      ..write(obj.cycleNotificationFrequency);
   }
 
   @override

@@ -1,31 +1,8 @@
 # 100 kritik tasarım önerisi
 
-> **Durum:** 1, 2, 4, 6, 11, 12, 13, 14, 17, 18, 39, 48, 49, 50, 58, 59, 60,
-> 61, 62, 63, 64, 65, 66, 67, 68, 70, 75, 76, 77, 85, 86, 87, 88, 90, 91 ve 92 uygulandı; 5, 26, 27 (hızlı
-> kayıt), 8, 10, 15, 16, 20, 22, 23, 25, 29, 31, 34, 35, 38, 40, 41, 45 (takvim), 51, 52, 69, 72, 73,
-> 74, 78, 79, 81, 83, 93, 96 ve 100 de. Madde 36 da uygulandı. Madde 80
-> geri çekildi (zaten yapılmıştı). İstatistik turunda 32, 54, 56 ve 57 de
-> tamamlandı. Takvim turunda 44, 46 ve 47 de uygulandı.
-> Devamlılık/veri turunda 30, 84 ve 95 de tamamlandı.
-> Görsel döngü turunda 42 ve 55 de tamamlandı.
-> Geçmiş veri/karşılaştırma turunda 37 ve 53 de tamamlandı.
-> Yıl görünümü turunda 43 de tamamlandı.
-> Tablet uyarlama turunda 99 da tamamlandı.
-> Deneme geçişi turunda 3 de tamamlandı.
-> Ana ekran önceliği turunda 24 de tamamlandı.
-> Günlük ölçümler turunda 28 de tamamlandı.
-> Hamilelik modu turunda 21 de tamamlandı.
-> Kalıcı ilaç planı turunda 33 de tamamlandı.
-> Uygulama kısayolları turunda 98 de tamamlandı.
-> Widget hızlı kayıt turunda 97 de tamamlandı.
-> Büyük yazı uyarlama turunda 77 de tamamlandı.
-> Klavye gezinmesi turunda 82 de tamamlandı.
-> Parolalı yedekleme turunda 89 da tamamlandı.
-> Kısmi olanlar:
-> 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı) ve 71 (ton yapıldı,
-> sıklık ayarının somut karşılığı yok). Madde 7 (reklamın yerini kaydet
-> sonrasına almak) bilinçli olarak açık: gelir etkisi olan bir ürün kararı.
-> Ayrıntı için CHANGELOG'a bakın.
+> **Durum:** 1–18, 20–79 ve 81–100 uygulandı. 19 ve 80, incelemenin
+> mevcut davranışı yanlış okuduğu doğrulanınca geri çekildi. Açık veya kısmi
+> madde kalmadı; uygulama ayrıntıları için CHANGELOG'a bakın.
 
 Uygulamanın mevcut hâli üzerinden yapılmış eleştirel bir okuma. Öneriler
 gözlemden çıktı: her madde neyin sorun olduğunu söyler, sonra ne yapılacağını.
@@ -63,6 +40,11 @@ diyaloğu gösteriliyor. Kullanıcı ücretsiz devam edebiliyor veya planlara
 gidebiliyor; açıklama tekrar çıkmıyor ve o ilk geçiş oturumunda açılış reklamı
 gösterilmiyor.
 
+*Tamamlandı:* denemesi biten kullanıcı günlük takip ekranlarını ve geçmiş
+verisini artık açabiliyor. Ekranlar salt okunur; kaydetme, silme ve canlı
+ilaç durumu gibi yazma eylemleri plan ekranına giderken regl başlangıcı,
+bitişi ve geçmiş düzeltmesi ücretsiz kalıyor.
+
 **4. 🟠 Deneme boyunca değer gösterilmiyor.** Paywall'a gelindiğinde
 kullanıcının 30 günde ne biriktirdiği söylenmiyor. "38 kayıt, 2 döngü, 14
 semptom girdisi — bunlar sende kalır" cümlesi soyut özellik listesinden
@@ -81,6 +63,10 @@ Günde bir kez sınırı ve ilk açılışta hiç göstermemek makul.
 sonrasına bağlamak hem daha az can sıkıcı hem dönüşümü yüksek: kullanıcı
 işini bitirmiş oluyor.
 
+*Uygulandı:* uygulama açılışı ve kilit açılışı artık reklam tetiklemiyor.
+Reklam yalnız başarılı günlük kayıttan sonra; ücretsiz katman, 24 saat sınırı,
+kılık/kilit ve oturumdaki tek gösterim koşulları yeniden doğrulanarak geliyor.
+
 **8. 🟡 İki plan arasındaki fark okunmuyor.** Yıllık kart "en iyi değer"
 rozeti taşıyor ama tasarruf oranı yazmıyor. "Ayda ₺16,6 — %43 tasarruf"
 karşılaştırmayı kullanıcı adına yapar.
@@ -93,6 +79,11 @@ kendiliğinden güncelleniyor.
 **9. 🔵 Tek seferlik "ömür boyu" seçeneği yok.** Sağlık verisi gibi uzun
 ömürlü bir şeyi abonelikle kiralamak bazı kullanıcıyı tümden uzaklaştırıyor.
 Eski `premium_no_ads` alıcıları zaten var, kalıp tanıdık.
+
+*Uygulandı:* mevcut `premium_no_ads` tek seferlik ürünü mağaza tarafından
+döndürülürse paywall'da yerelleştirilmiş fiyatıyla “Ömür boyu” planı olarak
+gösteriliyor. Ürün mağazada tanımlı değilse boş veya satın alınamaz kart
+çizilmiyor; eski alıcıların geri yükleme hakkı korunuyor.
 
 **10. 🔵 Ana ekrandaki erişim çipi sürekli görünür.** Deneme sayacı her
 açılışta göz hizasında (`dashboard_screen.dart:231`). Son 7 güne kadar
@@ -498,16 +489,17 @@ gönderilmiyor; oysa kullanıcının en çok merak ettiği an tam orası.
 
 **71. 🟡 Bildirim ayarları sınırlı.** Aç/kapa var, sıklık ve ton yok.
 "Sessiz özet" tercihi gizlilik açısından da değerli.
-*Kısmen uygulandı:* ton tarafı yapıldı — tek bir "sessiz bildirimler"
+*Uygulandı:* ton tarafında tek bir "sessiz bildirimler"
 anahtarı bütün türleri sessize alıyor (ses yok, açılır baloncuk yok,
 bildirim yalnız gölgelikte durur). Gizlilik faydası da bu: kilit ekranında
 öne çıkmayan bildirim yandaki kişiye görünmüyor. Uygulanırken bir tuzak
 çıktı: Android'de kanalın önem derecesi kanal **oluşturulurken** sabitlenir,
 sonradan gönderilen `importance` yok sayılır — sessiz sürüm kendi kanal
 kimliğini kullanıyor, yoksa anahtar hiçbir şey değiştirmezdi.
-*Yapılmayan:* sıklık ayarı. Bildirim türleri zaten ayrı ayrı açılıp
-kapanabiliyor ve her tür döngüde bir kez gidiyor; "sıklık" burada
-somut bir karşılığı olmayan bir istek. Somutlaşırsa yeniden bakılır.
+Sıklık “Temel / Dengeli / Ayrıntılı” yoğunluğuna somutlaştırıldı: temel
+yalnız etkin regl uyarısını, dengeli etkin ovülasyonu da, ayrıntılı ise
+gecikme/TTC pencere/faz içgörüsü/zincir sonu uyarılarını ekliyor. Tür başına
+aç/kapa üst sınır; ilaç hatırlatmaları tedavi güvenliği için etkilenmiyor.
 
 **72. 🔵 Üç döngü ileri planlama sessiz bir sınır.** Uygulama 3 ay açılmazsa
 hatırlatma zinciri kopuyor (`notification_service.dart:43`). Kullanıcı bunu

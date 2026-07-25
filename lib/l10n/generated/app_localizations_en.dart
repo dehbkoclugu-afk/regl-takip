@@ -2022,4 +2022,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get todayFirst => 'Today first';
+
+  @override
+  String get planLifetime => 'Lifetime';
+  @override
+  String get planLifetimeDetail => 'One payment, premium forever';
+  @override
+  String get cycleNotificationFrequency => 'Cycle notification level';
+  @override
+  String get cycleNotificationFrequencyDesc => 'Medication reminders are not affected';
+  @override
+  String get notificationFrequencyEssential => 'Essential';
+  @override
+  String get notificationFrequencyBalanced => 'Balanced';
+  @override
+  String get notificationFrequencyDetailed => 'Detailed';
+  @override
+  String get readOnlyHistoryNotice => 'You can view your past entries; new daily entries and changes require Premium.';
 }

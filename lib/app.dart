@@ -80,6 +80,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     NotificationService().pendingAction.addListener(_onNotificationAction);
     QuickActionService().pendingAction.addListener(_onQuickAction);
     WidgetService.pendingAction.addListener(_onWidgetAction);
+    AdService.recordSavedRevision.addListener(_onRecordSaved);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _onNotificationAction();
       _onQuickAction();
@@ -93,8 +94,14 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     LockTimeout.read().then((value) {
       if (mounted) _lockTimeoutSeconds = value;
     });
-    // Kilit varsa reklam kilit açıldıktan sonra gösterilir (_onUnlocked)
-    if (!_needsLock) _showOpenAd();
+  }
+
+  void _onRecordSaved() {
+    if (!mounted || _isLocked || _decoyActive) return;
+    // Eski açılış bastırma bayrağı yalnız eylem tamamlanana kadar anlamlıydı.
+    // Reklam artık iş bittikten sonra geldiği için başarılı kayıt onu kaldırır.
+    _suppressOpenAd = false;
+    _showOpenAd();
   }
 
   /// Bildirimden gelen aksiyonu uygular. Aksiyon tek seferlik: uygulandıktan
@@ -114,6 +121,12 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
             .saveProfile(lastPeriodStart: record.startDate);
         break;
       case NotificationService.actionMedicationTaken:
+        // Deneme bittikten sonra geçmiş görünür, yeni günlük yazma premium.
+        // Daha önce kurulmuş bir bildirim bu kuralı arkadan delemesin.
+        if (ref.read(accessProvider) == AccessLevel.free) {
+          ref.read(routerProvider).push('/paywall');
+          break;
+        }
         final name = action.payload;
         if (name == null || name.isEmpty) break;
         final plan = ref.read(userProfileProvider)?.medicationPlan ?? const [];
@@ -333,6 +346,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     });
   }
 
+  /// 24 saat sınırına tabi kayıt sonrası reklam.
   Future<void> _showOpenAd() async {
     if (_openAdShown || _suppressOpenAd) return;
     if (QuickActionService().pendingAction.value != null) return;
@@ -346,9 +360,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     final prefs = await SharedPreferences.getInstance();
     if (!(prefs.getBool(_trialEndNoticeKey) ?? false)) return;
 
-    // Sıklık sınırı: reklam her açılışta çıkıyordu. Regl takibi
-    // "gir-kaydet-çık" uygulaması, üç saniyelik işin önündeki tam ekran
-    // reklam uygulamayı açmayı caydırıyor. Kurulum anı için deneme
+    // Sıklık sınırı kayıt sonrasında da korunur. Kurulum anı için deneme
     // başlangıcı kullanılır — ilk açılışta sabitlenen tek tarih o.
     final installedAt = ref.read(trialStartProvider) ?? DateTime.now();
     if (!await AdService.canShowOpenAd(installedAt: installedAt)) return;
@@ -432,10 +444,6 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
       _onQuickAction();
       _onWidgetAction();
     });
-    if (QuickActionService().pendingAction.value == null &&
-        WidgetService.pendingAction.value == null) {
-      _showOpenAd();
-    }
   }
 
   @override
@@ -445,6 +453,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     NotificationService().pendingAction.removeListener(_onNotificationAction);
     QuickActionService().pendingAction.removeListener(_onQuickAction);
     WidgetService.pendingAction.removeListener(_onWidgetAction);
+    AdService.recordSavedRevision.removeListener(_onRecordSaved);
     PremiumService().isPremiumNotifier.removeListener(_onPremiumChanged);
     ScreenProtection.enabled.removeListener(_onScreenProtectionChanged);
     super.dispose();

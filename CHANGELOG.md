@@ -1,5 +1,20 @@
 # Changelog
 
+## Yayınlanmamış — Tasarım incelemesini kapatma (2026-07-26)
+
+Tasarım incelemesinin kalan 3, 7, 9 ve 71. maddeleri tamamlandı.
+
+- Denemesi biten kullanıcı günlük takip ekranlarında geçmişini salt okunur
+  görebiliyor; yazma ve silme eylemleri veriye dokunmadan plan ekranına gidiyor
+- Tam ekran reklam uygulama açılışından kaldırıldı; yalnız başarılı kayıt
+  sonrasında, ücretsiz katmanda ve mevcut 24 saat sınırıyla çalışıyor
+- Mağazanın `premium_no_ads` ürününü döndürdüğü kurulumlarda yerelleştirilmiş
+  fiyatlı ömür boyu premium planı paywall'da koşullu gösteriliyor
+- Döngü bildirimlerine Temel/Dengeli/Ayrıntılı yoğunluk tercihi eklendi;
+  ilaç hatırlatmaları bu ayardan bağımsız tutuldu
+- Yeni bildirim tercihi Hive ve yedek JSON'unda geriye uyumlu saklanıyor;
+  altı dilin arayüz metinleri eşitlendi
+
 ## Yayınlanmamış — Parolalı yedekleme (2026-07-26)
 
 Tasarım incelemesinin veri güvenliği turu

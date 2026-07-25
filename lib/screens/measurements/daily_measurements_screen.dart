@@ -4,6 +4,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/access.dart';
 import '../../core/utils/input_parsing.dart';
 import '../../core/utils/unit_conversion.dart';
 import '../../core/widgets/glass_card.dart';
@@ -454,6 +455,7 @@ class _DailyMeasurementsScreenState
       '${value.minute.toString().padLeft(2, '0')}';
 
   Future<void> _save() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     final l10n = AppLocalizations.of(context)!;
     final weight = _parseWeight(_weightController.text);
     if (weight?.isNaN == true) {
@@ -477,6 +479,7 @@ class _DailyMeasurementsScreenState
       sleepEnd: _sleepEnabled ? _timeString(_wakeTime) : null,
       sleepQuality: _sleepEnabled ? _sleepQuality : null,
     );
+    notifyTrackingRecordSaved();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

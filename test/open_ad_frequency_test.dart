@@ -5,7 +5,7 @@ void main() {
   final now = DateTime(2026, 7, 24, 12);
   final longAgo = now.subtract(const Duration(days: 90));
 
-  group('açılış reklamı sıklığı', () {
+  group('kayıt sonrası reklam sıklığı', () {
     test('kurulumdan hemen sonra gösterilmez', () {
       expect(
         AdService.shouldShowOpenAd(
@@ -28,7 +28,7 @@ void main() {
       );
     });
 
-    test('aynı gün ikinci açılışta gösterilmez', () {
+    test('aynı gün ikinci kayıtta gösterilmez', () {
       expect(
         AdService.shouldShowOpenAd(
           now: now,
@@ -74,5 +74,11 @@ void main() {
         isFalse,
       );
     });
+  });
+
+  test('başarılı kayıt olayı uygulama köküne ulaşır', () {
+    final before = AdService.recordSavedRevision.value;
+    AdService.notifyRecordSaved();
+    expect(AdService.recordSavedRevision.value, before + 1);
   });
 }
