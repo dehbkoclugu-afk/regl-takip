@@ -2653,6 +2653,654 @@ abstract class AppLocalizations {
   /// **'Luteal faz başlıyor. Kayıtlarına göre bu fazda en sık: {symptom}.'**
   String notificationInsightBody(String symptom);
 
+  /// No description provided for @notificationPeriodTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adet Hatırlatması'**
+  String get notificationPeriodTitle;
+
+  /// No description provided for @notificationPeriodTimingToday.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adetin bugün başlayabilir.'**
+  String get notificationPeriodTimingToday;
+
+  /// No description provided for @notificationPeriodTimingTomorrow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adetin yarın başlayabilir.'**
+  String get notificationPeriodTimingTomorrow;
+
+  /// No description provided for @notificationPeriodTimingInDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adetin {days} gün sonra başlayabilir.'**
+  String notificationPeriodTimingInDays(int days);
+
+  /// No description provided for @notificationPeriodTip1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yanına bir ped ya da tampon almayı unutma.'**
+  String get notificationPeriodTip1;
+
+  /// No description provided for @notificationPeriodTip2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hazırlıklı olmak işleri kolaylaştırır.'**
+  String get notificationPeriodTip2;
+
+  /// No description provided for @notificationPeriodTip3.
+  ///
+  /// In tr, this message translates to:
+  /// **'Başladığında kaydetmen tahminleri iyileştirir.'**
+  String get notificationPeriodTip3;
+
+  /// No description provided for @notificationPeriodChannel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adet Hatırlatması'**
+  String get notificationPeriodChannel;
+
+  /// No description provided for @notificationPeriodChannelDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adet döngüsü hatırlatmaları'**
+  String get notificationPeriodChannelDesc;
+
+  /// No description provided for @notificationOvulationTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ovülasyon Hatırlatması'**
+  String get notificationOvulationTitle;
+
+  /// No description provided for @notificationOvulationBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün ovülasyon gününüz. Doğurgan dönemdesiniz!'**
+  String get notificationOvulationBody;
+
+  /// No description provided for @notificationOvulationChannel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ovülasyon Hatırlatması'**
+  String get notificationOvulationChannel;
+
+  /// No description provided for @notificationOvulationChannelDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ovülasyon hatırlatmaları'**
+  String get notificationOvulationChannelDesc;
+
+  /// No description provided for @notificationMedicationTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlaç Hatırlatması'**
+  String get notificationMedicationTitle;
+
+  /// No description provided for @notificationMedicationBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlacınızı almayı unutmayın!'**
+  String get notificationMedicationBody;
+
+  /// No description provided for @notificationMedicationChannel.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlaç Hatırlatması'**
+  String get notificationMedicationChannel;
+
+  /// No description provided for @notificationMedicationChannelDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlaç hatırlatmaları'**
+  String get notificationMedicationChannelDesc;
+
+  /// No description provided for @notificationDiscreetTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hatırlatma'**
+  String get notificationDiscreetTitle;
+
+  /// No description provided for @notificationDiscreetBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün için bir hatırlatman var'**
+  String get notificationDiscreetBody;
+
+  /// No description provided for @notificationFertileTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verimli pencere başlıyor'**
+  String get notificationFertileTitle;
+
+  /// No description provided for @notificationFertileBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugünden itibaren gebe kalma olasılığın en yüksek günlerdesin.'**
+  String get notificationFertileBody;
+
+  /// No description provided for @notificationChainEndTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hatırlatmalar duraklıyor'**
+  String get notificationChainEndTitle;
+
+  /// No description provided for @notificationChainEndBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Planlanan hatırlatmalar bitti. Uygulamayı açtığında yenileri kurulur.'**
+  String get notificationChainEndBody;
+
+  /// No description provided for @noPurchasesToRestore.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geri yüklenecek bir satın alma bulunamadı'**
+  String get noPurchasesToRestore;
+
+  /// No description provided for @restoringPurchases.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satın alımlar geri yükleniyor…'**
+  String get restoringPurchases;
+
+  /// No description provided for @backdateHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Farklı bir gün için butona uzun bas'**
+  String get backdateHint;
+
+  /// No description provided for @periodStartDateHelp.
+  ///
+  /// In tr, this message translates to:
+  /// **'Regl hangi gün başladı?'**
+  String get periodStartDateHelp;
+
+  /// No description provided for @periodEndDateHelp.
+  ///
+  /// In tr, this message translates to:
+  /// **'Regl hangi gün bitti?'**
+  String get periodEndDateHelp;
+
+  /// No description provided for @headlinePeriodToday.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglin bugün başlayabilir'**
+  String get headlinePeriodToday;
+
+  /// No description provided for @headlinePeriodTomorrow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglin yarın başlayabilir'**
+  String get headlinePeriodTomorrow;
+
+  /// No description provided for @headlineNoData.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son regl tarihini ekle'**
+  String get headlineNoData;
+
+  /// No description provided for @headlinePeriodInDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglin {days} gün sonra'**
+  String headlinePeriodInDays(int days);
+
+  /// No description provided for @headlinePeriodDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglinin {day}. günü'**
+  String headlinePeriodDay(int day);
+
+  /// No description provided for @headlineDelaySubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sapma olağan olabilir. Başladıysa kaydet.'**
+  String get headlineDelaySubtitle;
+
+  /// No description provided for @notificationDelayTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tahmini tarih geçti'**
+  String get notificationDelayTitle;
+
+  /// No description provided for @notificationDelayBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglin başladıysa kaydetmeyi unutma. Sapma olağan olabilir.'**
+  String get notificationDelayBody;
+
+  /// No description provided for @notificationDelayBodyAlt1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz bir kayıt yok. Başladıysa eklemek tek dokunuş.'**
+  String get notificationDelayBodyAlt1;
+
+  /// No description provided for @notificationDelayBodyAlt2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Birkaç günlük kayma sık görülür. Kaydın güncel mi?'**
+  String get notificationDelayBodyAlt2;
+
+  /// No description provided for @notificationDelayChannel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gecikme Hatırlatması'**
+  String get notificationDelayChannel;
+
+  /// No description provided for @notificationDelayChannelDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tahmini tarih geçtiğinde hatırlatma'**
+  String get notificationDelayChannelDesc;
+
+  /// No description provided for @headlineDelay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglin {days} gün gecikti'**
+  String headlineDelay(int days);
+
+  /// No description provided for @delayDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'{days} gün gecikme'**
+  String delayDays(int days);
+
+  /// No description provided for @yourDataStays.
+  ///
+  /// In tr, this message translates to:
+  /// **'Deneme bitse de kayıtların cihazında kalır.'**
+  String get yourDataStays;
+
+  /// No description provided for @periodStartedOnThisDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglim bu gün başladı'**
+  String get periodStartedOnThisDay;
+
+  /// No description provided for @nCyclesRecorded.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} döngü kaydı'**
+  String nCyclesRecorded(int count);
+
+  /// No description provided for @nLogsRecorded.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} günlük kayıt'**
+  String nLogsRecorded(int count);
+
+  /// No description provided for @notifPermissionTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hatırlatmaları açalım mı?'**
+  String get notifPermissionTitle;
+
+  /// No description provided for @notifPermissionBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglin yaklaştığında, ovülasyon gününde ve tahmini tarih geçtiğinde haber veririz. Bildirimler cihazından çıkmaz. İstersen sonra ayarlardan da açabilirsin.'**
+  String get notifPermissionBody;
+
+  /// No description provided for @enableNotifications.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirimleri aç'**
+  String get enableNotifications;
+
+  /// No description provided for @notNow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şimdi değil'**
+  String get notNow;
+
+  /// No description provided for @optionalField.
+  ///
+  /// In tr, this message translates to:
+  /// **'İsteğe bağlı'**
+  String get optionalField;
+
+  /// No description provided for @privacyAssurance.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verilerin yalnızca bu cihazda, şifreli saklanır'**
+  String get privacyAssurance;
+
+  /// No description provided for @dontRememberExactly.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tam hatırlamıyorum'**
+  String get dontRememberExactly;
+
+  /// No description provided for @approxTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yaklaşık ne zamandı?'**
+  String get approxTitle;
+
+  /// No description provided for @approxSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yaklaşık bir tarih yeter. Tahminler sen kayıt girdikçe kendini düzeltir.'**
+  String get approxSubtitle;
+
+  /// No description provided for @approxThisWeek.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu hafta'**
+  String get approxThisWeek;
+
+  /// No description provided for @approxLastWeek.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçen hafta'**
+  String get approxLastWeek;
+
+  /// No description provided for @approxTwoWeeks.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yaklaşık 2 hafta önce'**
+  String get approxTwoWeeks;
+
+  /// No description provided for @approxThreeWeeks.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yaklaşık 3 hafta önce'**
+  String get approxThreeWeeks;
+
+  /// No description provided for @approxMonthOrMore.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir ay veya daha önce'**
+  String get approxMonthOrMore;
+
+  /// No description provided for @cycleReminderTime.
+  ///
+  /// In tr, this message translates to:
+  /// **'Döngü hatırlatma saati'**
+  String get cycleReminderTime;
+
+  /// No description provided for @medicationReminderTime.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlaç hatırlatma saati'**
+  String get medicationReminderTime;
+
+  /// No description provided for @periodReminderLead.
+  ///
+  /// In tr, this message translates to:
+  /// **'Regl hatırlatması'**
+  String get periodReminderLead;
+
+  /// No description provided for @notificationQuietChannelSuffix.
+  ///
+  /// In tr, this message translates to:
+  /// **'sessiz'**
+  String get notificationQuietChannelSuffix;
+
+  /// No description provided for @quietNotifications.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sessiz bildirimler'**
+  String get quietNotifications;
+
+  /// No description provided for @quietNotificationsDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ses ve açılır baloncuk olmadan, yalnız bildirim gölgeliğinde'**
+  String get quietNotificationsDesc;
+
+  /// No description provided for @leadSameDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aynı gün'**
+  String get leadSameDay;
+
+  /// No description provided for @leadNDaysBefore.
+  ///
+  /// In tr, this message translates to:
+  /// **'{days} gün önce'**
+  String leadNDaysBefore(int days);
+
+  /// No description provided for @regularityInfoIrregular.
+  ///
+  /// In tr, this message translates to:
+  /// **'En kısa ve en uzun döngün arasında 9 gün veya daha fazla fark var. Döngü uzunluğunun değişmesi çok yaygındır; stres, uyku, hastalık ve yaşam değişiklikleri etkiler. Bu bir tanı değildir.'**
+  String get regularityInfoIrregular;
+
+  /// No description provided for @regularityInfoRegular.
+  ///
+  /// In tr, this message translates to:
+  /// **'En kısa ve en uzun döngün arasındaki fark 9 günden az. Tahminler bu tutarlılıkta daha isabetli olur.'**
+  String get regularityInfoRegular;
+
+  /// No description provided for @regularityInfoSeeDoctor.
+  ///
+  /// In tr, this message translates to:
+  /// **'Döngün sürekli 21 günden kısa ya da 35 günden uzunsa, üç aydan fazla hiç regl görmediysen ya da kanaman olağandışı yoğunsa bir sağlık uzmanına danışman iyi olur.'**
+  String get regularityInfoSeeDoctor;
+
+  /// No description provided for @typicalRangeNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yaygın kabul edilen aralık: döngü {min}–{max} gün, regl {pmax} güne kadar. Tanı ölçütü değildir.'**
+  String typicalRangeNote(int min, int max, int pmax);
+
+  /// No description provided for @lowConfidenceNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ortalamalar yalnız {count} döngüden hesaplandı; kayıt geldikçe netleşecek.'**
+  String lowConfidenceNote(int count);
+
+  /// No description provided for @regularityInfoInsufficient.
+  ///
+  /// In tr, this message translates to:
+  /// **'Düzenlilikten söz edebilmek için en az {count} döngü aralığı gerekiyor. Daha az kayıtla yapılan yorum yanıltıcı olur.'**
+  String regularityInfoInsufficient(int count);
+
+  /// No description provided for @backupWarningTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedek dosyası şifresiz'**
+  String get backupWarningTitle;
+
+  /// No description provided for @backupWarningBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedek, döngü ve sağlık kayıtlarının tamamını okunabilir biçimde içerir. Cihazdaki veriler şifreli tutulur ama bu dosya değildir. Nereye kaydettiğine ve kiminle paylaştığına dikkat et.'**
+  String get backupWarningBody;
+
+  /// No description provided for @backupNever.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz hiç yedek almadın.'**
+  String get backupNever;
+
+  /// No description provided for @backupStaleHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Telefonunu kaybedersen kayıtlar geri gelmez.'**
+  String get backupStaleHint;
+
+  /// No description provided for @backupLastAt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son yedek: {date}'**
+  String backupLastAt(String date);
+
+  /// No description provided for @durationsStepTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Döngü bilgilerin'**
+  String get durationsStepTitle;
+
+  /// No description provided for @durationsStepHelp.
+  ///
+  /// In tr, this message translates to:
+  /// **'Emin değilsen olduğu gibi bırak — ayarlardan sonra değiştirebilirsin.'**
+  String get durationsStepHelp;
+
+  /// No description provided for @lockTimeoutTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kilit gecikmesi'**
+  String get lockTimeoutTitle;
+
+  /// No description provided for @lockTimeoutDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Uygulamadan kısa süre ayrılınca PIN tekrar sorulmasın'**
+  String get lockTimeoutDesc;
+
+  /// No description provided for @lockImmediately.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hemen'**
+  String get lockImmediately;
+
+  /// No description provided for @previousDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önceki gün'**
+  String get previousDay;
+
+  /// No description provided for @nextDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonraki gün'**
+  String get nextDay;
+
+  /// No description provided for @showLegend.
+  ///
+  /// In tr, this message translates to:
+  /// **'Renk anlamları'**
+  String get showLegend;
+
+  /// No description provided for @hideLegend.
+  ///
+  /// In tr, this message translates to:
+  /// **'Renk anlamlarını gizle'**
+  String get hideLegend;
+
+  /// No description provided for @backToToday.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugüne dön'**
+  String get backToToday;
+
+  /// No description provided for @monthNoRecords.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ayda kayıt yok'**
+  String get monthNoRecords;
+
+  /// No description provided for @doctorSummary.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doktoruma özet çıkar'**
+  String get doctorSummary;
+
+  /// No description provided for @healthImport.
+  ///
+  /// In tr, this message translates to:
+  /// **'Health Connect’ten içe aktar'**
+  String get healthImport;
+
+  /// No description provided for @healthImportAction.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçe aktar'**
+  String get healthImportAction;
+
+  /// No description provided for @allTime.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümü'**
+  String get allTime;
+
+  /// No description provided for @actionPeriodStarted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglim başladı'**
+  String get actionPeriodStarted;
+
+  /// No description provided for @actionMedicationTaken.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aldım'**
+  String get actionMedicationTaken;
+
+  /// No description provided for @pregnancyTestReady.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gebelik testi artık anlamlı olabilir'**
+  String get pregnancyTestReady;
+
+  /// No description provided for @notLoggedToday.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün {what} girilmemiş'**
+  String notLoggedToday(String what);
+
+  /// No description provided for @pregnancyTestFrom.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gebelik testi için en erken: {date}'**
+  String pregnancyTestFrom(String date);
+
+  /// No description provided for @pillBreakIn.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ara dönem {days} gün sonra'**
+  String pillBreakIn(int days);
+
+  /// No description provided for @pillNewPackIn.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni paket {days} gün sonra'**
+  String pillNewPackIn(int days);
+
+  /// No description provided for @healthImportNothingNew.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçe aktarılacak yeni kayıt bulunamadı'**
+  String get healthImportNothingNew;
+
+  /// No description provided for @healthImportConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'Health Connect’te uygulamada olmayan {count} adet dönemi bulundu. Kayıtlarına eklensin mi? Mevcut kayıtların değişmez.'**
+  String healthImportConfirm(int count);
+
+  /// No description provided for @healthImportDone.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} dönem içe aktarıldı'**
+  String healthImportDone(int count);
+
+  /// No description provided for @monthPeriodDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} regl günü'**
+  String monthPeriodDays(int count);
+
+  /// No description provided for @monthLoggedDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} günde kayıt'**
+  String monthLoggedDays(int count);
+
+  /// No description provided for @pinNoRecoveryWarning.
+  ///
+  /// In tr, this message translates to:
+  /// **'PIN’ini unutursan kurtarma yolu yok; tek çıkış tüm verini silmek olur. Hatırlayacağın bir sayı seç.'**
+  String get pinNoRecoveryWarning;
+
+  /// No description provided for @lockAfterMinutes.
+  ///
+  /// In tr, this message translates to:
+  /// **'{minutes} dk sonra'**
+  String lockAfterMinutes(int minutes);
+
   /// No description provided for @reportTitle.
   ///
   /// In tr, this message translates to:

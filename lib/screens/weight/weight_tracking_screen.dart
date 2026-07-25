@@ -99,12 +99,12 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
                   style: Theme.of(context)
                       .textTheme
                       .displayLarge!
-                      .copyWith(color: AppColors.weightColor)),
+                      .copyWith(color: AppColors.categoryText(context, AppColors.weightColor))),
               const SizedBox(width: 4),
               Text('kg',
                   style: TextStyle(
                       fontSize: 22, fontWeight: FontWeight.w600,
-                      color: AppColors.weightColor.withValues(alpha: 0.7))),
+                      color: AppColors.categoryText(context, AppColors.weightColor).withValues(alpha: 0.7))),
             ],
           ),
         ],
@@ -155,10 +155,10 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
             alignment: Alignment.center,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(label,
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.weightColor)),
+                    color: AppColors.categoryText(context, AppColors.weightColor))),
           ),
         ),
       ),
@@ -184,11 +184,11 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             style: TextStyle(
                 fontSize: 22, fontWeight: FontWeight.bold,
-                color: AppColors.weightColor),
+                color: AppColors.categoryText(context, AppColors.weightColor)),
             decoration: InputDecoration(
               suffixText: 'kg',
               suffixStyle: TextStyle(
-                  fontSize: 16, color: AppColors.weightColor),
+                  fontSize: 16, color: AppColors.categoryText(context, AppColors.weightColor)),
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: AppColors.dv(context))),

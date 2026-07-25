@@ -113,7 +113,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                 () => _intensity = _intensity == item.$1 ? null : item.$1),
             child: ExcludeSemantics(
               child: AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
+            duration: context.motionDuration(const Duration(milliseconds: 250)),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             decoration: BoxDecoration(
               gradient: isSelected
@@ -143,7 +143,13 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                      color: isSelected ? item.$4 : AppColors.ts(context),
+                      // Akış tonları yalnız parlaklıkla ayrışıyor (1,36:1 —
+                      // 2,93:1): metin olarak okunmuyorlar, koyulaştırılınca
+                      // da dördü aynı renge çöküyor. Yoğunluğu damla sayısı,
+                      // çerçeve ve zemin taşıyor; etiket okunur kalmalı
+                      color: isSelected
+                          ? AppColors.tp(context)
+                          : AppColors.ts(context),
                     )),
               ],
             ),
@@ -183,7 +189,8 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
               child: Column(
             children: [
               AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
+                duration:
+                    context.motionDuration(const Duration(milliseconds: 250)),
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(

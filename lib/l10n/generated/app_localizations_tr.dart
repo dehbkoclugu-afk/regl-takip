@@ -1346,6 +1346,372 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get notificationPeriodTitle => 'Adet Hatırlatması';
+
+  @override
+  String get notificationPeriodTimingToday => 'Adetin bugün başlayabilir.';
+
+  @override
+  String get notificationPeriodTimingTomorrow => 'Adetin yarın başlayabilir.';
+
+  @override
+  String notificationPeriodTimingInDays(int days) {
+    return 'Adetin $days gün sonra başlayabilir.';
+  }
+
+  @override
+  String get notificationPeriodTip1 => 'Yanına bir ped ya da tampon almayı unutma.';
+
+  @override
+  String get notificationPeriodTip2 => 'Hazırlıklı olmak işleri kolaylaştırır.';
+
+  @override
+  String get notificationPeriodTip3 => 'Başladığında kaydetmen tahminleri iyileştirir.';
+
+  @override
+  String get notificationPeriodChannel => 'Adet Hatırlatması';
+
+  @override
+  String get notificationPeriodChannelDesc => 'Adet döngüsü hatırlatmaları';
+
+  @override
+  String get notificationOvulationTitle => 'Ovülasyon Hatırlatması';
+
+  @override
+  String get notificationOvulationBody => 'Bugün ovülasyon gününüz. Doğurgan dönemdesiniz!';
+
+  @override
+  String get notificationOvulationChannel => 'Ovülasyon Hatırlatması';
+
+  @override
+  String get notificationOvulationChannelDesc => 'Ovülasyon hatırlatmaları';
+
+  @override
+  String get notificationMedicationTitle => 'İlaç Hatırlatması';
+
+  @override
+  String get notificationMedicationBody => 'İlacınızı almayı unutmayın!';
+
+  @override
+  String get notificationMedicationChannel => 'İlaç Hatırlatması';
+
+  @override
+  String get notificationMedicationChannelDesc => 'İlaç hatırlatmaları';
+
+  @override
+  String get notificationDiscreetTitle => 'Hatırlatma';
+
+  @override
+  String get notificationDiscreetBody => 'Bugün için bir hatırlatman var';
+
+  @override
+  String get notificationFertileTitle => 'Verimli pencere başlıyor';
+
+  @override
+  String get notificationFertileBody => 'Bugünden itibaren gebe kalma olasılığın en yüksek günlerdesin.';
+
+  @override
+  String get notificationChainEndTitle => 'Hatırlatmalar duraklıyor';
+
+  @override
+  String get notificationChainEndBody => 'Planlanan hatırlatmalar bitti. Uygulamayı açtığında yenileri kurulur.';
+
+  @override
+  String get noPurchasesToRestore => 'Geri yüklenecek bir satın alma bulunamadı';
+
+  @override
+  String get restoringPurchases => 'Satın alımlar geri yükleniyor…';
+
+  @override
+  String get backdateHint => 'Farklı bir gün için butona uzun bas';
+
+  @override
+  String get periodStartDateHelp => 'Regl hangi gün başladı?';
+
+  @override
+  String get periodEndDateHelp => 'Regl hangi gün bitti?';
+
+  @override
+  String get headlinePeriodToday => 'Reglin bugün başlayabilir';
+
+  @override
+  String get headlinePeriodTomorrow => 'Reglin yarın başlayabilir';
+
+  @override
+  String get headlineNoData => 'Son regl tarihini ekle';
+
+  @override
+  String headlinePeriodInDays(int days) {
+    return 'Reglin $days gün sonra';
+  }
+
+  @override
+  String headlinePeriodDay(int day) {
+    return 'Reglinin $day. günü';
+  }
+
+  @override
+  String get headlineDelaySubtitle => 'Sapma olağan olabilir. Başladıysa kaydet.';
+
+  @override
+  String get notificationDelayTitle => 'Tahmini tarih geçti';
+
+  @override
+  String get notificationDelayBody => 'Reglin başladıysa kaydetmeyi unutma. Sapma olağan olabilir.';
+
+  @override
+  String get notificationDelayBodyAlt1 => 'Henüz bir kayıt yok. Başladıysa eklemek tek dokunuş.';
+
+  @override
+  String get notificationDelayBodyAlt2 => 'Birkaç günlük kayma sık görülür. Kaydın güncel mi?';
+
+  @override
+  String get notificationDelayChannel => 'Gecikme Hatırlatması';
+
+  @override
+  String get notificationDelayChannelDesc => 'Tahmini tarih geçtiğinde hatırlatma';
+
+  @override
+  String headlineDelay(int days) {
+    return 'Reglin $days gün gecikti';
+  }
+
+  @override
+  String delayDays(int days) {
+    return '$days gün gecikme';
+  }
+
+  @override
+  String get yourDataStays => 'Deneme bitse de kayıtların cihazında kalır.';
+
+  @override
+  String get periodStartedOnThisDay => 'Reglim bu gün başladı';
+
+  @override
+  String nCyclesRecorded(int count) {
+    return '$count döngü kaydı';
+  }
+
+  @override
+  String nLogsRecorded(int count) {
+    return '$count günlük kayıt';
+  }
+
+  @override
+  String get notifPermissionTitle => 'Hatırlatmaları açalım mı?';
+
+  @override
+  String get notifPermissionBody => 'Reglin yaklaştığında, ovülasyon gününde ve tahmini tarih geçtiğinde haber veririz. Bildirimler cihazından çıkmaz. İstersen sonra ayarlardan da açabilirsin.';
+
+  @override
+  String get enableNotifications => 'Bildirimleri aç';
+
+  @override
+  String get notNow => 'Şimdi değil';
+
+  @override
+  String get optionalField => 'İsteğe bağlı';
+
+  @override
+  String get privacyAssurance => 'Verilerin yalnızca bu cihazda, şifreli saklanır';
+
+  @override
+  String get dontRememberExactly => 'Tam hatırlamıyorum';
+
+  @override
+  String get approxTitle => 'Yaklaşık ne zamandı?';
+
+  @override
+  String get approxSubtitle => 'Yaklaşık bir tarih yeter. Tahminler sen kayıt girdikçe kendini düzeltir.';
+
+  @override
+  String get approxThisWeek => 'Bu hafta';
+
+  @override
+  String get approxLastWeek => 'Geçen hafta';
+
+  @override
+  String get approxTwoWeeks => 'Yaklaşık 2 hafta önce';
+
+  @override
+  String get approxThreeWeeks => 'Yaklaşık 3 hafta önce';
+
+  @override
+  String get approxMonthOrMore => 'Bir ay veya daha önce';
+
+  @override
+  String get cycleReminderTime => 'Döngü hatırlatma saati';
+
+  @override
+  String get medicationReminderTime => 'İlaç hatırlatma saati';
+
+  @override
+  String get periodReminderLead => 'Regl hatırlatması';
+
+  @override
+  String get notificationQuietChannelSuffix => 'sessiz';
+
+  @override
+  String get quietNotifications => 'Sessiz bildirimler';
+
+  @override
+  String get quietNotificationsDesc => 'Ses ve açılır baloncuk olmadan, yalnız bildirim gölgeliğinde';
+
+  @override
+  String get leadSameDay => 'Aynı gün';
+
+  @override
+  String leadNDaysBefore(int days) {
+    return '$days gün önce';
+  }
+
+  @override
+  String get regularityInfoIrregular => 'En kısa ve en uzun döngün arasında 9 gün veya daha fazla fark var. Döngü uzunluğunun değişmesi çok yaygındır; stres, uyku, hastalık ve yaşam değişiklikleri etkiler. Bu bir tanı değildir.';
+
+  @override
+  String get regularityInfoRegular => 'En kısa ve en uzun döngün arasındaki fark 9 günden az. Tahminler bu tutarlılıkta daha isabetli olur.';
+
+  @override
+  String get regularityInfoSeeDoctor => 'Döngün sürekli 21 günden kısa ya da 35 günden uzunsa, üç aydan fazla hiç regl görmediysen ya da kanaman olağandışı yoğunsa bir sağlık uzmanına danışman iyi olur.';
+
+  @override
+  String typicalRangeNote(int min, int max, int pmax) {
+    return 'Yaygın kabul edilen aralık: döngü $min–$max gün, regl $pmax güne kadar. Tanı ölçütü değildir.';
+  }
+
+  @override
+  String lowConfidenceNote(int count) {
+    return 'Bu ortalamalar yalnız $count döngüden hesaplandı; kayıt geldikçe netleşecek.';
+  }
+
+  @override
+  String regularityInfoInsufficient(int count) {
+    return 'Düzenlilikten söz edebilmek için en az $count döngü aralığı gerekiyor. Daha az kayıtla yapılan yorum yanıltıcı olur.';
+  }
+
+  @override
+  String get backupWarningTitle => 'Yedek dosyası şifresiz';
+
+  @override
+  String get backupWarningBody => 'Yedek, döngü ve sağlık kayıtlarının tamamını okunabilir biçimde içerir. Cihazdaki veriler şifreli tutulur ama bu dosya değildir. Nereye kaydettiğine ve kiminle paylaştığına dikkat et.';
+
+  @override
+  String get backupNever => 'Henüz hiç yedek almadın.';
+
+  @override
+  String get backupStaleHint => 'Telefonunu kaybedersen kayıtlar geri gelmez.';
+
+  @override
+  String backupLastAt(String date) {
+    return 'Son yedek: $date';
+  }
+
+  @override
+  String get durationsStepTitle => 'Döngü bilgilerin';
+
+  @override
+  String get durationsStepHelp => 'Emin değilsen olduğu gibi bırak — ayarlardan sonra değiştirebilirsin.';
+
+  @override
+  String get lockTimeoutTitle => 'Kilit gecikmesi';
+
+  @override
+  String get lockTimeoutDesc => 'Uygulamadan kısa süre ayrılınca PIN tekrar sorulmasın';
+
+  @override
+  String get lockImmediately => 'Hemen';
+
+  @override
+  String get previousDay => 'Önceki gün';
+
+  @override
+  String get nextDay => 'Sonraki gün';
+
+  @override
+  String get showLegend => 'Renk anlamları';
+
+  @override
+  String get hideLegend => 'Renk anlamlarını gizle';
+
+  @override
+  String get backToToday => 'Bugüne dön';
+
+  @override
+  String get monthNoRecords => 'Bu ayda kayıt yok';
+
+  @override
+  String get doctorSummary => 'Doktoruma özet çıkar';
+
+  @override
+  String get healthImport => 'Health Connect’ten içe aktar';
+
+  @override
+  String get healthImportAction => 'İçe aktar';
+
+  @override
+  String get allTime => 'Tümü';
+
+  @override
+  String get actionPeriodStarted => 'Reglim başladı';
+
+  @override
+  String get actionMedicationTaken => 'Aldım';
+
+  @override
+  String get pregnancyTestReady => 'Gebelik testi artık anlamlı olabilir';
+
+  @override
+  String notLoggedToday(String what) {
+    return 'Bugün $what girilmemiş';
+  }
+
+  @override
+  String pregnancyTestFrom(String date) {
+    return 'Gebelik testi için en erken: $date';
+  }
+
+  @override
+  String pillBreakIn(int days) {
+    return 'Ara dönem $days gün sonra';
+  }
+
+  @override
+  String pillNewPackIn(int days) {
+    return 'Yeni paket $days gün sonra';
+  }
+
+  @override
+  String get healthImportNothingNew => 'İçe aktarılacak yeni kayıt bulunamadı';
+
+  @override
+  String healthImportConfirm(int count) {
+    return 'Health Connect’te uygulamada olmayan $count adet dönemi bulundu. Kayıtlarına eklensin mi? Mevcut kayıtların değişmez.';
+  }
+
+  @override
+  String healthImportDone(int count) {
+    return '$count dönem içe aktarıldı';
+  }
+
+  @override
+  String monthPeriodDays(int count) {
+    return '$count regl günü';
+  }
+
+  @override
+  String monthLoggedDays(int count) {
+    return '$count günde kayıt';
+  }
+
+  @override
+  String get pinNoRecoveryWarning => 'PIN’ini unutursan kurtarma yolu yok; tek çıkış tüm verini silmek olur. Hatırlayacağın bir sayı seç.';
+
+  @override
+  String lockAfterMinutes(int minutes) {
+    return '$minutes dk sonra';
+  }
+
+  @override
   String get reportTitle => 'Döngü Sağlık Raporu';
 
   @override

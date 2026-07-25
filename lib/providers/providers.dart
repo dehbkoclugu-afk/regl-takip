@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import '../services/backup_service.dart';
 import '../services/hive_service.dart';
 import '../services/notification_service.dart';
 import '../services/premium_service.dart';
@@ -52,6 +53,18 @@ final themeModeProvider = StateProvider<ThemeMode>((ref) {
 /// Kalıcılığı SharedPreferences 'phase_pattern' — main.dart açılışta
 /// override eder, ayarlar değiştirince yazar.
 final phasePatternProvider = StateProvider<bool>((ref) => false);
+
+/// "Farklı bir gün için uzun bas" ipucu hâlâ gösterilmeli mi?
+/// Kullanıcı hareketi bir kez kullanınca kalıcı olarak kapanır — keşfi
+/// olmayan bir hareket, olmayan bir özelliktir.
+/// Kalıcılığı SharedPreferences 'backdate_hint_needed'.
+final backdateHintProvider = StateProvider<bool>((ref) => true);
+
+/// Son başarılı yedeğin zamanı; hiç yedek alınmadıysa null.
+/// Yedekleme tamamen kullanıcıya bırakılmıştı ve hatırlatan hiçbir şey
+/// yoktu: telefon kaybında yılların verisi gidiyordu.
+final lastBackupProvider =
+    FutureProvider<DateTime?>((ref) => BackupService.lastBackupAt());
 
 // ─── Erişim (deneme / premium / ücretsiz) ─────────────────────────────
 
@@ -170,6 +183,12 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     DateTime? pregnancyStartDate,
     DateTime? pillPackStartDate,
     String? themePreference,
+    int? medicationReminderHour,
+    int? medicationReminderMinute,
+    int? cycleReminderHour,
+    int? cycleReminderMinute,
+    int? periodReminderLeadDays,
+    bool? quietNotifications,
   }) async {
     final current = state ?? UserProfile();
     final updated = current.copyWith(
@@ -197,6 +216,12 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
       pregnancyStartDate: pregnancyStartDate,
       pillPackStartDate: pillPackStartDate,
       themePreference: themePreference,
+      medicationReminderHour: medicationReminderHour,
+      medicationReminderMinute: medicationReminderMinute,
+      cycleReminderHour: cycleReminderHour,
+      cycleReminderMinute: cycleReminderMinute,
+      periodReminderLeadDays: periodReminderLeadDays,
+      quietNotifications: quietNotifications,
     );
 
     await _hiveService.saveUserProfile(updated);
@@ -214,7 +239,14 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         // Döngü/regl süresi tahmin tarihlerini kaydırır — bildirimler
         // yeniden planlanmazsa eski tarihlerde kalır
         averageCycleLength != null ||
-        averagePeriodLength != null) {
+        averagePeriodLength != null ||
+        // Saat ve pencere değişince planlar eski değerlerde kalırdı
+        medicationReminderHour != null ||
+        cycleReminderHour != null ||
+        periodReminderLeadDays != null ||
+        // Sessizlik tercihi kanal kimliğini değiştiriyor: kurulu
+        // bildirimler yeniden planlanmazsa eski kanalda kalır
+        quietNotifications != null) {
       try {
         await NotificationService().rescheduleAll(
           updated,
@@ -672,6 +704,18 @@ final daysUntilNextPeriodProvider = Provider<int>((ref) {
   final profile = ref.watch(userProfileProvider);
   if (profile == null || profile.lastPeriodStart == null) return 0;
   return CycleUtils.daysUntilNextPeriod(
+    profile.lastPeriodStart!,
+    ref.watch(effectiveCycleLengthProvider),
+  );
+});
+
+/// Tahmini tarihin kaç gün geçtiği; gecikme yoksa 0.
+/// Devam eden bir regl varken gecikmeden söz edilemez.
+final periodDelayProvider = Provider<int>((ref) {
+  final profile = ref.watch(userProfileProvider);
+  if (profile == null || profile.lastPeriodStart == null) return 0;
+  if (ref.watch(ongoingPeriodProvider) != null) return 0;
+  return CycleUtils.periodDelayDays(
     profile.lastPeriodStart!,
     ref.watch(effectiveCycleLengthProvider),
   );

@@ -12,14 +12,30 @@ import '../theme/app_colors.dart';
 
 /// Faz rengine göre şerit/çubuk yüzeyleri için desen açısı.
 /// null = düz (menstrüel ve nötr zemin).
+///
+/// Takvim hücreleri kendi pastel paletini kullanıyor (ring tonlarını değil),
+/// bu yüzden desen modu açıkken bile düz kalıyorlardı: ovülasyon moru ile
+/// regl pembesi deuteranopiada birbirine yakın iki soluk tona düşüyor ve
+/// hücrede ayırt edici başka bir şey yok. Aynı fazın takvim karşılığı
+/// ring'dekiyle aynı açıyı alır — iki ekranda aynı doku, aynı anlam.
 double? patternAngleFor(Color color) {
-  if (color.toARGB32() == AppColors.ringFollicular.toARGB32()) {
+  final argb = color.toARGB32();
+  if (argb == AppColors.ringFollicular.toARGB32()) {
     return math.pi / 4;
   }
-  if (color.toARGB32() == AppColors.ringFertile.toARGB32()) {
+  if (argb == AppColors.ringFertile.toARGB32() ||
+      argb == AppColors.fertileWindow.toARGB32() ||
+      argb == AppColors.fertileWindowLight.toARGB32()) {
     return math.pi / 2;
   }
-  if (color.toARGB32() == AppColors.ringLuteal.toARGB32()) return 0;
+  if (argb == AppColors.ringLuteal.toARGB32()) return 0;
+  // Ovülasyonun ring'de kendi yayı yok (fertil segmentin içinde) ama
+  // takvimde kendi hücresi var: fertil pencerenin dikey dokusundan
+  // ayrışsın diye ters çapraz
+  if (argb == AppColors.ringOvulation.toARGB32() ||
+      argb == AppColors.ovulationDay.toARGB32()) {
+    return -math.pi / 4;
+  }
   return null;
 }
 

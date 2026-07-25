@@ -425,6 +425,221 @@
   "coachPersonalInsight": "По вашим записям, чаще всего в этой фазе: {symptom} ({percent}%)",
   "notificationInsightTitle": "Подсказка по фазе",
   "notificationInsightBody": "Начинается лютеиновая фаза. По вашим записям, самый частый симптом в этой фазе: {symptom}.",
+  "notificationPeriodTitle": "Напоминание о месячных",
+  "notificationPeriodTimingToday": "Месячные могут начаться сегодня.",
+  "notificationPeriodTimingTomorrow": "Месячные могут начаться завтра.",
+  "notificationPeriodTimingInDays": "Месячные могут начаться через {days} дн.",
+  "@notificationPeriodTimingInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "notificationPeriodTip1": "Не забудьте взять с собой прокладку или тампон.",
+  "notificationPeriodTip2": "Небольшая подготовка всё упрощает.",
+  "notificationPeriodTip3": "Отметка начала улучшает прогнозы.",
+  "notificationPeriodChannel": "Напоминание о месячных",
+  "notificationPeriodChannelDesc": "Напоминания о менструальном цикле",
+  "notificationOvulationTitle": "Напоминание об овуляции",
+  "notificationOvulationBody": "Сегодня день овуляции. Вы в фертильном окне!",
+  "notificationOvulationChannel": "Напоминание об овуляции",
+  "notificationOvulationChannelDesc": "Напоминания об овуляции",
+  "notificationMedicationTitle": "Напоминание о лекарстве",
+  "notificationMedicationBody": "Не забудьте принять лекарство!",
+  "notificationMedicationChannel": "Напоминание о лекарстве",
+  "notificationMedicationChannelDesc": "Напоминания о лекарствах",
+  "notificationDiscreetTitle": "Напоминание",
+  "notificationDiscreetBody": "У вас есть напоминание на сегодня",
+  "notificationFertileTitle": "Начинается фертильное окно",
+  "notificationFertileBody": "С сегодняшнего дня — самые благоприятные для зачатия дни.",
+  "notificationChainEndTitle": "Напоминания приостанавливаются",
+  "notificationChainEndBody": "Запланированные напоминания закончились. Откройте приложение, чтобы создать новые.",
+  "noPurchasesToRestore": "Покупки для восстановления не найдены",
+  "restoringPurchases": "Восстановление покупок…",
+  "backdateHint": "Долгое нажатие — выбрать другой день",
+  "periodStartDateHelp": "Когда начались месячные?",
+  "periodEndDateHelp": "Когда закончились месячные?",
+  "headlinePeriodToday": "Месячные могут начаться сегодня",
+  "headlinePeriodTomorrow": "Месячные могут начаться завтра",
+  "headlineNoData": "Добавьте дату последних месячных",
+  "headlinePeriodInDays": "Месячные через {days} дн.",
+  "@headlinePeriodInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "headlinePeriodDay": "{day}-й день месячных",
+  "@headlinePeriodDay": {
+    "placeholders": {
+      "day": {"type": "int"}
+    }
+  },
+  "headlineDelaySubtitle": "Небольшие отклонения — это нормально. Отметьте, если начались.",
+  "notificationDelayTitle": "Предполагаемая дата прошла",
+  "notificationDelayBody": "Если месячные начались, не забудьте отметить. Отклонения — это нормально.",
+  "notificationDelayBodyAlt1": "Записи пока нет. Если началось, отметить можно одним касанием.",
+  "notificationDelayBodyAlt2": "Сдвиг на несколько дней — обычное дело. Ваши записи актуальны?",
+  "notificationDelayChannel": "Напоминание о задержке",
+  "notificationDelayChannelDesc": "Напоминание, когда предполагаемая дата прошла",
+  "headlineDelay": "Задержка {days} дн.",
+  "@headlineDelay": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "delayDays": "задержка {days} дн.",
+  "@delayDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "yourDataStays": "Ваши записи останутся на устройстве после окончания пробного периода.",
+  "periodStartedOnThisDay": "Месячные начались в этот день",
+  "nCyclesRecorded": "записано циклов: {count}",
+  "@nCyclesRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "nLogsRecorded": "дневных записей: {count}",
+  "@nLogsRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notifPermissionTitle": "Включить напоминания?",
+  "notifPermissionBody": "Сообщим, когда месячные близко, в день овуляции и когда предполагаемая дата прошла. Уведомления не покидают устройство. Включить можно и позже в настройках.",
+  "enableNotifications": "Включить",
+  "notNow": "Не сейчас",
+  "optionalField": "Необязательно",
+  "privacyAssurance": "Ваши данные хранятся в зашифрованном виде только на этом устройстве",
+  "dontRememberExactly": "Точно не помню",
+  "approxTitle": "Примерно когда это было?",
+  "approxSubtitle": "Достаточно примерной даты. Прогнозы уточняются по мере записей.",
+  "approxThisWeek": "На этой неделе",
+  "approxLastWeek": "На прошлой неделе",
+  "approxTwoWeeks": "Около 2 недель назад",
+  "approxThreeWeeks": "Около 3 недель назад",
+  "approxMonthOrMore": "Месяц назад или раньше",
+  "cycleReminderTime": "Время напоминаний о цикле",
+  "medicationReminderTime": "Время напоминаний о лекарствах",
+  "periodReminderLead": "Напоминание о месячных",
+  "notificationQuietChannelSuffix": "тихо",
+  "quietNotifications": "Тихие уведомления",
+  "quietNotificationsDesc": "Без звука и всплывающего окна — только в шторке уведомлений",
+  "leadSameDay": "В тот же день",
+  "leadNDaysBefore": "за {days} дн.",
+  "@leadNDaysBefore": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "regularityInfoIrregular": "Между самым коротким и самым длинным циклом 9 дней или больше. Колебания длины цикла очень распространены: влияют стресс, сон, болезни и перемены в жизни. Это не диагноз.",
+  "regularityInfoRegular": "Разница между самым коротким и самым длинным циклом меньше 9 дней. При такой стабильности прогнозы точнее.",
+  "regularityInfoSeeDoctor": "Если цикл постоянно короче 21 дня или длиннее 35, если месячных нет более трёх месяцев или кровотечение необычно обильное, стоит обратиться к врачу.",
+  "typicalRangeNote": "Обычный диапазон: цикл {min}–{max} дней, месячные до {pmax} дней. Это не диагностический критерий.",
+  "@typicalRangeNote": {
+    "placeholders": {
+      "min": {"type": "int"},
+      "max": {"type": "int"},
+      "pmax": {"type": "int"}
+    }
+  },
+  "lowConfidenceNote": "Эти средние рассчитаны всего по {count} циклам и уточнятся с новыми записями.",
+  "@lowConfidenceNote": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "regularityInfoInsufficient": "Чтобы говорить о регулярности, нужно минимум {count} интервалов цикла. Меньше — вывод будет вводить в заблуждение.",
+  "@regularityInfoInsufficient": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "backupWarningTitle": "Файл резервной копии не зашифрован",
+  "backupWarningBody": "Резервная копия содержит все записи о цикле и здоровье в читаемом виде. Данные на устройстве зашифрованы, а этот файл — нет. Будьте внимательны, где вы его сохраняете и с кем делитесь.",
+  "backupNever": "Вы ещё ни разу не делали резервную копию.",
+  "backupStaleHint": "Если вы потеряете телефон, записи восстановить не удастся.",
+  "backupLastAt": "Последняя копия: {date}",
+  "@backupLastAt": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "durationsStepTitle": "Данные вашего цикла",
+  "durationsStepHelp": "Не уверены? Оставьте как есть — это можно изменить в настройках.",
+  "lockTimeoutTitle": "Задержка блокировки",
+  "lockTimeoutDesc": "Не спрашивать PIN, если вы вернулись быстро",
+  "lockImmediately": "Сразу",
+  "previousDay": "Предыдущий день",
+  "nextDay": "Следующий день",
+  "showLegend": "Обозначения цветов",
+  "hideLegend": "Скрыть обозначения",
+  "backToToday": "К сегодня",
+  "monthNoRecords": "В этом месяце записей нет",
+  "doctorSummary": "Выгрузить сводку для врача",
+  "healthImport": "Импорт из Health Connect",
+  "healthImportAction": "Импортировать",
+  "allTime": "Всё время",
+  "actionPeriodStarted": "Месячные начались",
+  "actionMedicationTaken": "Принято",
+  "pregnancyTestReady": "Тест на беременность уже может быть информативным",
+  "notLoggedToday": "Сегодня не отмечено: {what}",
+  "@notLoggedToday": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
+  "pregnancyTestFrom": "Тест имеет смысл с {date}",
+  "@pregnancyTestFrom": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "pillBreakIn": "Перерыв через {days} дн.",
+  "@pillBreakIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "pillNewPackIn": "Новая упаковка через {days} дн.",
+  "@pillNewPackIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "healthImportNothingNew": "Новых записей для импорта не найдено",
+  "healthImportConfirm": "В Health Connect найдено периодов, которых нет в приложении: {count}. Добавить их к вашим записям? Существующие записи не изменятся.",
+  "@healthImportConfirm": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "healthImportDone": "Импортировано периодов: {count}",
+  "@healthImportDone": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthPeriodDays": "дней месячных: {count}",
+  "@monthPeriodDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthLoggedDays": "дней с записями: {count}",
+  "@monthLoggedDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "pinNoRecoveryWarning": "Если вы забудете PIN, восстановить его нельзя — останется только удалить все данные. Выберите то, что запомните.",
+  "lockAfterMinutes": "Через {minutes} мин",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
   "reportTitle": "Отчёт о здоровье цикла",
   "reportGenerated": "Создан",
   "profileSummary": "Сводка профиля",

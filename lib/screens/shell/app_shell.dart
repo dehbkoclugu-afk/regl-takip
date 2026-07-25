@@ -114,9 +114,8 @@ class AppShell extends StatelessWidget {
               labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
               // Sekme geçişi durum bildirir, gösteri değil: 250 ms.
               // Sistem animasyonları kapalıysa anında.
-              animationDuration: context.motionEnabled
-                  ? const Duration(milliseconds: 250)
-                  : Duration.zero,
+              animationDuration:
+                  context.motionDuration(const Duration(milliseconds: 250)),
               destinations: [
                 for (final d in destinations)
                   NavigationDestination(

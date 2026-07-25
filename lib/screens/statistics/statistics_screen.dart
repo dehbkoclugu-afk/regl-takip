@@ -1,5 +1,5 @@
 import 'dart:math' as math;
-import 'dart:ui' as ui show TextDirection;
+import 'dart:ui' as ui show TextDirection, ImageFilter;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,8 +8,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/art/art_slot.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_insights.dart';
@@ -21,6 +21,8 @@ import '../../models/period_record.dart';
 import '../../models/daily_log.dart';
 import '../../models/user_profile.dart';
 import '../../providers/providers.dart';
+import '../../services/export_service.dart';
+import '../period_history/period_record_editor.dart';
 import '../../core/utils/motion.dart';
 
 class StatisticsScreen extends ConsumerStatefulWidget {
@@ -38,56 +40,19 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     // İstatistik premium kapsamı. Sekme görünür kalır (kullanıcı neyi
-    // kaçırdığını bilsin) ama içerik kilit ekranına döner.
-    if (ref.watch(accessProvider) == AccessLevel.free) {
-      return Scaffold(
-        backgroundColor: AppColors.bg(context),
-        appBar: AppBar(
-          title: Text(l10n.statistics,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, color: AppColors.tp(context))),
-          backgroundColor: AppColors.bg(context),
-          elevation: 0,
-        ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.lock_outline_rounded,
-                    size: 56, color: AppColors.ts(context)),
-                const SizedBox(height: 16),
-                Text(l10n.premiumLockedTitle,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.tp(context))),
-                const SizedBox(height: 8),
-                Text(l10n.premiumLockedBody,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 14,
-                        height: 1.45,
-                        color: AppColors.ts(context))),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () => context.push('/paywall'),
-                  child: Text(l10n.seePlans),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
+    // kaçırdığını bilsin); içerik kilidin ardında bulanık duruyor.
+    final locked = ref.watch(accessProvider) == AccessLevel.free;
 
     final records = ref.watch(periodRecordsProvider);
     final dailyLogs = ref.watch(dailyLogProvider);
     final profile = ref.watch(userProfileProvider);
 
-    final cutoff = DateTime.now().subtract(Duration(days: _filterMonths * 30));
+    // 0 = tüm zamanlar. Aylık pencereler kısa geçmişi olan kullanıcıyı
+    // kendi verisinden mahrum bırakıyordu: 12 aydan eski kaydı olan da
+    // tamamını görebilmeli.
+    final cutoff = _filterMonths == 0
+        ? DateTime.fromMillisecondsSinceEpoch(0)
+        : DateTime.now().subtract(Duration(days: _filterMonths * 30));
     final filteredRecords =
         records.where((r) => r.startDate.isAfter(cutoff)).toList();
     final filteredLogs =
@@ -102,29 +67,16 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final avgPeriod = CycleUtils.averagePeriodDuration(
         filteredRecords, profile?.averagePeriodLength ?? 5);
 
-    return Scaffold(
-      backgroundColor: AppColors.bg(context),
-      appBar: AppBar(
-        title: Text(l10n.statistics,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
-        backgroundColor: AppColors.bg(context),
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
+    final content = SingleChildScrollView(
+        // Kilitliyken kaydırma kapalı: bulanık içerik gezilecek bir şey değil
+        physics: locked ? const NeverScrollableScrollPhysics() : null,
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 112),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Hiç kayıt yoksa: tek seferlik boş-durum görseli + yönlendirme
+            // Hiç kayıt yoksa: tek seferlik yönlendirme metni
             // (kart içi boşlukların üstünde, tekrarı önler)
             if (records.isEmpty) ...[
-              ArtSlot(
-                id: 'R12-empty-statistics',
-                height: 180,
-                fit: BoxFit.contain,
-              ).animateSafe(context).fadeIn(duration: 400.ms),
-              const SizedBox(height: 12),
               Center(
                 child: Text(
                   l10n.noDataYet,
@@ -137,6 +89,12 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               ),
               const SizedBox(height: 20),
             ],
+            // Doktora götürülecek özet uygulamanın en somut faydası ama
+            // ayarların derinliğinde duruyordu — istatistiğin başında olmalı
+            _buildDoctorExportButton(l10n, records, dailyLogs, profile)
+                .animateSafe(context)
+                .fadeIn(duration: 400.ms),
+            const SizedBox(height: 20),
             // Tek parça segmentli filtre: üç ayrı baloncuk yerine
             // birleşik seçici — daha derli toplu, daha "ürün" his
             _buildFilterBar(l10n).animateSafe(context).fadeIn(duration: 400.ms),
@@ -196,6 +154,129 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             const SizedBox(height: 24),
           ],
         ),
+      );
+
+    return Scaffold(
+      backgroundColor: AppColors.bg(context),
+      appBar: AppBar(
+        title: Text(l10n.statistics,
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
+        backgroundColor: AppColors.bg(context),
+        elevation: 0,
+      ),
+      body: locked
+          ? Stack(
+              children: [
+                // Kilit ekranı ikon + metinden ibaretti: kullanıcı neyi
+                // kaçırdığını görmüyordu. Arkada kendi verisi duruyor —
+                // uydurma bir örnek değil, bulanıklaştırılmış gerçek.
+                Positioned.fill(
+                  child: ImageFiltered(
+                    imageFilter:
+                        ui.ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                    child: IgnorePointer(child: content),
+                  ),
+                ),
+                Positioned.fill(
+                  child: Container(
+                    color: AppColors.bg(context).withValues(alpha: 0.55),
+                  ),
+                ),
+                Center(child: _buildLockCard(l10n)),
+              ],
+            )
+          : content,
+    );
+  }
+
+  /// "Doktoruma özet çıkar": PDF raporu paylaşım sayfasına verir.
+  /// Ayarlar > Veri altındaki aynı akış; oradaki giriş de duruyor.
+  Widget _buildDoctorExportButton(
+    AppLocalizations l10n,
+    List<PeriodRecord> records,
+    Map<String, DailyLog> dailyLogs,
+    UserProfile? profile,
+  ) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        // Profil yoksa rapor üretilemez (exportPdf profil istiyor)
+        onPressed: profile == null
+            ? null
+            : () async {
+                final messenger = ScaffoldMessenger.of(context);
+                try {
+                  final service = ExportService();
+                  final path = await service.exportPdf(
+                      profile, records, dailyLogs, l10n);
+                  await service.shareFile(path);
+                } catch (e) {
+                  messenger.showSnackBar(SnackBar(
+                    content: Text(l10n.errorOccurred(e.toString())),
+                    backgroundColor: AppColors.error,
+                  ));
+                }
+              },
+        icon: const Icon(Icons.picture_as_pdf_rounded, size: 18),
+        label: Text(l10n.doctorSummary),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.primaryDeep,
+          side: BorderSide(color: AppColors.dv(context)),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLockCard(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: AppColors.sf(context),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.dv(context)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.12),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.lock_outline_rounded,
+                size: 40, color: AppColors.primaryStrong),
+            const SizedBox(height: 12),
+            Text(l10n.premiumLockedTitle,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.tp(context))),
+            const SizedBox(height: 8),
+            Text(l10n.premiumLockedBody,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 14,
+                    height: 1.45,
+                    color: AppColors.ts(context))),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => context.push('/paywall'),
+                child: Text(l10n.seePlans),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -206,6 +287,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       (l10n.last3Months, 3),
       (l10n.last6Months, 6),
       (l10n.last12Months, 12),
+      (l10n.allTime, 0),
     ];
     return Container(
       padding: const EdgeInsets.all(4),
@@ -225,7 +307,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   borderRadius: BorderRadius.circular(12),
                   onTap: () => setState(() => _filterMonths = months),
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
+                    duration: context.motionDuration(
+                        const Duration(milliseconds: 200)),
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
                       gradient: _filterMonths == months
@@ -479,6 +562,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     // null = veri yetersiz; aksi halde en uzun/en kısa döngü farkı >= 9 gün
     // düzensiz sayılır (CycleUtils.isIrregular)
     final irregular = CycleUtils.isIrregular(records);
+    final gapCount = CycleUtils.validCycleGaps(records).length;
     return GlassCard(
       borderRadius: 20,
       blur: 0,
@@ -506,26 +590,110 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     Icons.water_drop_rounded, AppColors.menstrual),
               ),
               Expanded(
-                child: _statItem(
-                    l10n.regularity,
-                    irregular == null
-                        ? l10n.insufficientData
-                        : (irregular ? l10n.irregular : l10n.regular),
-                    null,
-                    irregular == true
-                        ? Icons.warning_amber_rounded
-                        : Icons.check_circle_rounded,
-                    irregular == null
-                        ? AppColors.warningText
-                        : (irregular
-                            ? AppColors.error
-                            : AppColors.fertileWindowText)),
+                // Dokunulabilir: "Düzensiz" tıbbi ağırlığı olan bir yargı,
+                // ne anlama geldiği ve ne zaman hekime danışılacağı
+                // söylenmeden bırakılamaz
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () => _showRegularityInfo(l10n, irregular, gapCount),
+                  child: _statItem(
+                      l10n.regularity,
+                      irregular == null
+                          ? l10n.insufficientData
+                          : (irregular ? l10n.irregular : l10n.regular),
+                      null,
+                      irregular == true
+                          ? Icons.info_outline_rounded
+                          : Icons.check_circle_rounded,
+                      // Kırmızı "sende bir sorun var" diye okunuyordu:
+                      // değişkenlik bir bulgu, hata değil
+                      irregular == null
+                          ? AppColors.warningText
+                          : (irregular
+                              ? AppColors.warningText
+                              : AppColors.fertileWindowText)),
+                ),
               ),
             ],
           ),
+          const SizedBox(height: 14),
+          // Sayının tek başına anlamı yok: "29,3 gün" iyi mi kötü mü?
+          Text(
+            l10n.typicalRangeNote(AppConstants.typicalCycleMin,
+                AppConstants.typicalCycleMax, AppConstants.typicalPeriodMax),
+            style: TextStyle(
+                fontSize: 11, height: 1.4, color: AppColors.ts(context)),
+          ),
+          // Az veriyle hesaplanan ortalama yanıltıcı: kaç döngüden
+          // çıktığı söylenmeli
+          if (gapCount < AppConstants.minGapsForRegularity) ...[
+            const SizedBox(height: 6),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.info_outline_rounded,
+                    size: 13, color: AppColors.warningText),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    l10n.lowConfidenceNote(gapCount),
+                    style: TextStyle(
+                        fontSize: 11,
+                        height: 1.4,
+                        color: AppColors.warningText),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     ).animateSafe(context).fadeIn(delay: 60.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+  }
+
+  /// Düzenlilik yargısının ne demek olduğunu açıklar. Ölçütü saklamak
+  /// kullanıcıyı yargının karşısında çaresiz bırakıyor.
+  void _showRegularityInfo(
+      AppLocalizations l10n, bool? irregular, int gapCount) {
+    final body = irregular == null
+        ? l10n.regularityInfoInsufficient(AppConstants.minGapsForRegularity)
+        : (irregular
+            ? l10n.regularityInfoIrregular
+            : l10n.regularityInfoRegular);
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: AppColors.sf(ctx),
+        title: Text(l10n.regularity,
+            style: const TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold)),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(body,
+                  style: const TextStyle(fontSize: 14, height: 1.5)),
+              const SizedBox(height: 12),
+              Text(l10n.regularityInfoSeeDoctor,
+                  style: TextStyle(
+                      fontSize: 13,
+                      height: 1.5,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.tp(ctx))),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.done),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Genel bakış metriği: kahraman sayı + küçük birim (metrik ölçek
@@ -840,7 +1008,13 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  Text(_moodName(e.key, l10n),
+                  // Yüzde lejantta da yazar: dilimi lejanta bağlayan tek
+                  // kanal renkti ve ruh hâli paleti pastel — deuteranopiada
+                  // sarı/turuncu/yeşil noktalar birbirine karışıyor.
+                  // Dilimin içindeki "%38" ile lejanttaki "%38" eşleşiyor.
+                  Text(
+                      '${_moodName(e.key, l10n)} '
+                      '%${(e.value / total * 100).toStringAsFixed(0)}',
                       style: TextStyle(
                           fontSize: 11, color: AppColors.ts(context))),
                 ],
@@ -850,19 +1024,6 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         ],
       ),
     ).animateSafe(context).fadeIn(delay: 180.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
-  }
-
-  String _phaseNameFor(CyclePhase phase, AppLocalizations l10n) {
-    switch (phase) {
-      case CyclePhase.menstrual:
-        return l10n.menstrualPhase;
-      case CyclePhase.follicular:
-        return l10n.follicularPhase;
-      case CyclePhase.ovulation:
-        return l10n.ovulationPhase;
-      case CyclePhase.luteal:
-        return l10n.lutealPhase;
-    }
   }
 
   /// Semptom kayıtlarını döngü fazlarına eşler; her semptomun en sık
@@ -917,7 +1078,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     child: Text(
                       l10n.insightLine(
                         _symptomName(insight.symptom, l10n),
-                        _phaseNameFor(insight.phase, l10n),
+                        EnumLabels.phase(insight.phase, l10n),
                         insight.percent,
                       ),
                       style: TextStyle(
@@ -1031,224 +1192,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     ).animateSafe(context).fadeIn(delay: 260.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
-  /// Düzenleme/silme sonrası profil tarihi kayıtların türevi olarak
-  /// eşitlenir: en yeni kaydın başlangıcı = lastPeriodStart. Elle çift
-  /// tutmanın ürettiği ayrışma (B-8) böylece tek yönlü akara bağlanır.
-  Future<void> _syncProfileToNewestRecord() async {
-    final records = ref.read(periodRecordsProvider);
-    if (records.isEmpty) return;
-    final newest = records.first; // provider startDate'e göre azalan sıralı
-    final profile = ref.read(userProfileProvider);
-    final current = profile?.lastPeriodStart;
-    final same = current != null &&
-        current.year == newest.startDate.year &&
-        current.month == newest.startDate.month &&
-        current.day == newest.startDate.day;
-    if (!same) {
-      await ref
-          .read(userProfileProvider.notifier)
-          .saveProfile(lastPeriodStart: newest.startDate);
-    }
-  }
-
-  Future<void> _showRecordEditor(PeriodRecord record) async {
-    final l10n = AppLocalizations.of(context)!;
-    final localeStr = Localizations.localeOf(context).toString();
-    final dateFormat = DateFormat('d MMM yyyy', localeStr);
-    final messenger = ScaffoldMessenger.of(context);
-
-    var start = DateTime(
-        record.startDate.year, record.startDate.month, record.startDate.day);
-    var end = record.endDate != null
-        ? DateTime(record.endDate!.year, record.endDate!.month,
-            record.endDate!.day)
-        : null;
-
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheetContext) => StatefulBuilder(
-        builder: (sheetContext, setSheetState) {
-          Future<void> pickStart() async {
-            final picked = await showDatePicker(
-              context: sheetContext,
-              initialDate: start,
-              firstDate: DateTime(2020),
-              lastDate: DateTime.now(),
-            );
-            if (picked != null) {
-              setSheetState(() {
-                start = DateTime(picked.year, picked.month, picked.day);
-                if (end != null && end!.isBefore(start)) end = start;
-              });
-            }
-          }
-
-          Future<void> pickEnd() async {
-            final picked = await showDatePicker(
-              context: sheetContext,
-              initialDate: end ?? start,
-              firstDate: start,
-              lastDate: DateTime.now(),
-            );
-            if (picked != null) {
-              setSheetState(
-                  () => end = DateTime(picked.year, picked.month, picked.day));
-            }
-          }
-
-          Widget dateTile({
-            required String label,
-            required String value,
-            required VoidCallback onTap,
-            Widget? trailing,
-          }) {
-            return Semantics(
-              button: true,
-              label: label,
-              value: value,
-              child: Material(
-                color: AppColors.bg(sheetContext),
-                borderRadius: BorderRadius.circular(16),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
-                  onTap: onTap,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 14),
-                    child: Row(
-                      children: [
-                        Text(label,
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.ts(sheetContext))),
-                        const Spacer(),
-                        Text(value,
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.tp(sheetContext))),
-                        if (trailing != null) trailing,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }
-
-          return Container(
-            decoration: BoxDecoration(
-              color: AppColors.sf(sheetContext),
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(28)),
-            ),
-            padding: EdgeInsets.fromLTRB(
-                24, 16, 24, 24 + MediaQuery.viewInsetsOf(sheetContext).bottom),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: AppColors.dv(sheetContext),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(l10n.editPeriodRecord,
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.tp(sheetContext))),
-                const SizedBox(height: 16),
-                dateTile(
-                  label: l10n.startDateLabel,
-                  value: dateFormat.format(start),
-                  onTap: pickStart,
-                ),
-                const SizedBox(height: 8),
-                dateTile(
-                  label: l10n.endDateLabel,
-                  value: end != null ? dateFormat.format(end!) : l10n.ongoing,
-                  onTap: pickEnd,
-                  trailing: end != null
-                      ? IconButton(
-                          tooltip: l10n.ongoing,
-                          icon: Icon(Icons.close_rounded,
-                              size: 18, color: AppColors.ts(sheetContext)),
-                          onPressed: () => setSheetState(() => end = null),
-                        )
-                      : null,
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    Navigator.of(sheetContext).pop();
-                    await ref
-                        .read(periodRecordsProvider.notifier)
-                        .updateRecordDates(record.id, start, end);
-                    await _syncProfileToNewestRecord();
-                    messenger.showSnackBar(SnackBar(
-                        content: Text(l10n.recordUpdated),
-                        backgroundColor: AppColors.success));
-                  },
-                  child: Text(l10n.save),
-                ),
-                TextButton(
-                  style:
-                      TextButton.styleFrom(foregroundColor: AppColors.error),
-                  onPressed: () async {
-                    final confirmed = await showDialog<bool>(
-                      context: sheetContext,
-                      builder: (ctx) => AlertDialog(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24)),
-                        title: Text(l10n.deleteRecord),
-                        content: Text(end != null
-                            ? '${dateFormat.format(start)} - ${dateFormat.format(end!)}'
-                            : '${dateFormat.format(start)} (${l10n.ongoing})'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx, false),
-                            child: Text(l10n.cancel),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx, true),
-                            style: TextButton.styleFrom(
-                                foregroundColor: AppColors.error),
-                            child: Text(l10n.delete),
-                          ),
-                        ],
-                      ),
-                    );
-                    if (confirmed != true) return;
-                    if (sheetContext.mounted) {
-                      Navigator.of(sheetContext).pop();
-                    }
-                    await ref
-                        .read(periodRecordsProvider.notifier)
-                        .deleteRecord(record.id);
-                    await _syncProfileToNewestRecord();
-                    messenger.showSnackBar(SnackBar(
-                        content: Text(l10n.recordDeleted),
-                        backgroundColor: AppColors.success));
-                  },
-                  child: Text(l10n.deleteRecord),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
+  /// Kayıt düzenleyici artık ortak: aynı sayfa ücretsiz katmandaki
+  /// regl geçmişi ekranından da açılıyor.
+  Future<void> _showRecordEditor(PeriodRecord record) =>
+      showPeriodRecordEditor(context, ref, record);
 
   Widget _buildTrendChart(
     String title,

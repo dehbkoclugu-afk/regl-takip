@@ -78,7 +78,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
     return Center(
       child: TweenAnimationBuilder<double>(
         tween: Tween(begin: 0, end: progress.clamp(0.0, 1.0)),
-        duration: const Duration(milliseconds: 600),
+        duration: context.motionDuration(const Duration(milliseconds: 600)),
         curve: Curves.easeOutCubic,
         builder: (context, value, _) {
           return SizedBox(
@@ -108,7 +108,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                         style: Theme.of(context)
                             .textTheme
                             .displayMedium!
-                            .copyWith(color: AppColors.water)),
+                            .copyWith(color: AppColors.categoryText(context, AppColors.water))),
                     Text(l10n.glasses,
                         style: TextStyle(
                             fontSize: 14, color: AppColors.ts(context))),
@@ -161,10 +161,10 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                     const SizedBox(width: 6),
                     Text(
                       '${l10n.dailyGoal}: $goal',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.water,
+                        color: AppColors.categoryText(context, AppColors.water),
                       ),
                     ),
                   ],
@@ -204,7 +204,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                           ? () => setDialogState(() => tempGoal--)
                           : null,
                       icon: const Icon(Icons.remove_circle_outline_rounded),
-                      color: AppColors.water,
+                      color: AppColors.categoryText(context, AppColors.water),
                     ),
                     const SizedBox(width: 16),
                     Text(
@@ -212,7 +212,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                       style: Theme.of(context)
                           .textTheme
                           .displayMedium!
-                          .copyWith(color: AppColors.water),
+                          .copyWith(color: AppColors.categoryText(context, AppColors.water)),
                     ),
                     const SizedBox(width: 16),
                     IconButton(
@@ -220,7 +220,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                           ? () => setDialogState(() => tempGoal++)
                           : null,
                       icon: const Icon(Icons.add_circle_outline_rounded),
-                      color: AppColors.water,
+                      color: AppColors.categoryText(context, AppColors.water),
                     ),
                   ],
                 ),
@@ -303,7 +303,8 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
             itemBuilder: (context, index) {
               final isFilled = index < _glasses;
               return AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
+                duration:
+                    context.motionDuration(const Duration(milliseconds: 300)),
                 decoration: BoxDecoration(
                   color: isFilled
                       ? AppColors.water.withValues(alpha: 0.15)

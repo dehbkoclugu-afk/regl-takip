@@ -3,14 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
 import '../../core/theme/app_colors.dart';
-import '../../core/art/art_slot.dart';
 import '../../providers/providers.dart';
 import '../../services/premium_service.dart';
 
 /// Premium teklif ekranı. Deneme sürerken üst bilgi kalan günü söyler;
-/// deneme bittiyse ücretsiz katmanın kapsamını açıklar. Fiyatlar mağazadan
-/// gelir; mağaza cevap vermediyse tanıtım fiyatları gösterilir (satın alma
-/// yine mağaza üzerinden doğrulanır).
+/// deneme bittiyse ücretsiz katmanın kapsamını açıklar. Fiyatlar yalnız
+/// mağazadan gelir ve geldiklerinde ekran kendini tazeler; gelene kadar
+/// plan kartlarında fiyat yerine bekleme göstergesi durur.
 class PaywallScreen extends ConsumerStatefulWidget {
   const PaywallScreen({super.key});
 
@@ -40,6 +39,26 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     }
   }
 
+  /// Geri yükleme sonucu kullanıcıya söylenmeli: hak dönerse ekran zaten
+  /// kendiliğinden kapanıyor, dönmezse sessiz kalmak butonu bozuk gösteriyordu.
+  Future<void> _restore() async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.showSnackBar(SnackBar(content: Text(l10n.restoringPurchases)));
+    try {
+      final restored = await PremiumService().restore();
+      if (!mounted) return;
+      if (!restored) {
+        messenger.showSnackBar(
+            SnackBar(content: Text(l10n.noPurchasesToRestore)));
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -53,9 +72,6 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         Navigator.of(context).pop();
       }
     });
-
-    final monthlyPrice = service.monthlyProduct?.price ?? '₺29';
-    final yearlyPrice = service.yearlyProduct?.price ?? '₺199';
 
     final features = [
       (Icons.edit_calendar_rounded, l10n.paywallFeatureTrackers),
@@ -80,8 +96,6 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ArtSlot(id: 'R17-paywall-hero', height: 200, radius: 24),
-              const SizedBox(height: 16),
               Text(
                 l10n.paywallTitle,
                 textAlign: TextAlign.center,
@@ -103,6 +117,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   color: AppColors.ts(context),
                 ),
               ),
+              // Kullanıcının biriktirdiği veri, özellik listesinden daha
+              // somut bir argüman: soyut vaat yerine kendi emeği. Verinin
+              // silinmediğini söylemek de deneme bitişinin en büyük
+              // korkusunu doğrudan karşılıyor.
+              _buildYourDataCard(context, l10n, ref),
               const SizedBox(height: 24),
               // Özellikler
               ...features.map((f) => Padding(
@@ -121,28 +140,58 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                     ),
                   )),
               const SizedBox(height: 24),
-              // Yıllık plan — vurgulu
-              _PlanCard(
-                title: l10n.planYearly,
-                price: yearlyPrice,
-                suffix: l10n.perYear,
-                badge: l10n.bestValue,
-                highlighted: true,
-                busy: _busy,
-                onTap: () => _buy(service.buyYearly),
-              ),
-              const SizedBox(height: 12),
-              _PlanCard(
-                title: l10n.planMonthly,
-                price: monthlyPrice,
-                suffix: l10n.perMonth,
-                highlighted: false,
-                busy: _busy,
-                onTap: () => _buy(service.buyMonthly),
+              // Fiyatlar mağazadan asenkron gelir; sabit bir tanıtım fiyatı
+              // göstermek kullanıcının mağaza ekranında başka rakam görmesi
+              // demekti (ülkeye/kura/indirime göre değişir). Gelene kadar
+              // fiyat yerine bekleme göstergesi var.
+              ValueListenableBuilder<int>(
+                valueListenable: service.productsRevision,
+                builder: (context, revision, _) {
+                  final resolved = revision > 0;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Yıllık plan — vurgulu
+                      _PlanCard(
+                        title: l10n.planYearly,
+                        price: service.yearlyProduct?.price,
+                        suffix: l10n.perYear,
+                        badge: l10n.bestValue,
+                        highlighted: true,
+                        busy: _busy,
+                        onTap: () => _buy(service.buyYearly),
+                      ),
+                      const SizedBox(height: 12),
+                      _PlanCard(
+                        title: l10n.planMonthly,
+                        price: service.monthlyProduct?.price,
+                        suffix: l10n.perMonth,
+                        highlighted: false,
+                        busy: _busy,
+                        onTap: () => _buy(service.buyMonthly),
+                      ),
+                      // Mağaza cevap verdi ama ürünleri döndürmediyse sebebi
+                      // söylenmeli — boş kartlara bakıp beklemesin
+                      if (resolved &&
+                          service.yearlyProduct == null &&
+                          service.monthlyProduct == null) ...[
+                        const SizedBox(height: 12),
+                        Text(
+                          l10n.storeUnavailable,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.ts(context),
+                          ),
+                        ),
+                      ],
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 16),
               TextButton(
-                onPressed: _busy ? null : () => service.restore(),
+                onPressed: _busy ? null : _restore,
                 child: Text(l10n.restorePurchases),
               ),
               TextButton(
@@ -163,9 +212,69 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   }
 }
 
+/// "Bunlar sende kalır" kartı: kayıt sayıları + verinin silinmeyeceği sözü.
+/// Hiç veri yoksa çizilmez — boş bir "0 kayıt" kartı argümanın tersini
+/// söylerdi.
+Widget _buildYourDataCard(
+    BuildContext context, AppLocalizations l10n, WidgetRef ref) {
+  final cycles = ref.watch(periodRecordsProvider).length;
+  final logs = ref.watch(dailyLogProvider).length;
+  if (cycles == 0 && logs == 0) return const SizedBox.shrink();
+
+  final parts = <String>[
+    if (cycles > 0) l10n.nCyclesRecorded(cycles),
+    if (logs > 0) l10n.nLogsRecorded(logs),
+  ];
+
+  return Container(
+    margin: const EdgeInsets.only(top: 20),
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    decoration: BoxDecoration(
+      color: AppColors.sf(context),
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: AppColors.dv(context)),
+    ),
+    child: Row(
+      children: [
+        Icon(Icons.inventory_2_rounded,
+            size: 20, color: AppColors.primaryStrong),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                parts.join(' · '),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.tp(context),
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                l10n.yourDataStays,
+                style: TextStyle(
+                  fontSize: 12,
+                  height: 1.35,
+                  color: AppColors.ts(context),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 class _PlanCard extends StatelessWidget {
   final String title;
-  final String price;
+
+  /// Mağazadan gelen yerelleştirilmiş fiyat. Henüz gelmediyse null: kart
+  /// bekleme göstergesi gösterir ve dokunmaya kapalıdır — uydurma bir fiyat
+  /// göstermektense beklemek dürüst olan.
+  final String? price;
   final String suffix;
   final String? badge;
   final bool highlighted;
@@ -184,9 +293,13 @@ class _PlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ready = price != null;
+    final foreground = highlighted ? Colors.white : AppColors.tp(context);
+
     return Semantics(
       button: true,
-      label: '$title, $price$suffix',
+      enabled: ready && !busy,
+      label: ready ? '$title, $price$suffix' : title,
       child: Material(
         color: highlighted
             ? AppColors.primaryStrong
@@ -194,7 +307,7 @@ class _PlanCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          onTap: busy ? null : onTap,
+          onTap: (busy || !ready) ? null : onTap,
           child: Container(
             padding:
                 const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
@@ -216,9 +329,7 @@ class _PlanCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
-                                color: highlighted
-                                    ? Colors.white
-                                    : AppColors.tp(context),
+                                color: foreground,
                               )),
                           if (badge != null) ...[
                             const SizedBox(width: 8),
@@ -242,14 +353,22 @@ class _PlanCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Text('$price$suffix',
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w800,
-                      color: highlighted
-                          ? Colors.white
-                          : AppColors.tp(context),
-                    )),
+                if (ready)
+                  Text('$price$suffix',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: foreground,
+                      ))
+                else
+                  SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: foreground,
+                    ),
+                  ),
               ],
             ),
           ),

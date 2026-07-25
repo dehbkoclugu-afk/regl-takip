@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/access.dart';
 import '../../core/widgets/glass_card.dart';
-import '../../core/art/art_slot.dart';
 import '../../models/user_profile.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
@@ -23,6 +23,7 @@ import '../../services/health_sync_service.dart';
 import '../../services/hive_service.dart';
 import '../../services/notification_service.dart';
 import '../../services/premium_service.dart';
+import '../../services/privacy_screen_service.dart';
 import '../../services/widget_service.dart';
 import '../lock/pin_setup_dialog.dart';
 import '../../core/utils/motion.dart';
@@ -47,9 +48,6 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 112),
         children: [
-          // Profil başlığı görseli
-          ArtSlot(id: 'R16-profile-header', height: 120, radius: 20),
-          const SizedBox(height: 16),
           // Profile section
           _sectionHeader(context, l10n.profileSection),
           _settingsCard(context, [
@@ -66,6 +64,11 @@ class SettingsScreen extends ConsumerWidget {
             _divider(context),
             _actionTile(context, Icons.edit_rounded, l10n.editProfile,
                 AppColors.primary, () => context.push('/profile-edit')),
+            _divider(context),
+            // Ücretsiz katmanda da açık: yanlış girilen regl kaydını
+            // düzeltmek takibin kendisi kadar temel
+            _actionTile(context, Icons.history_rounded, l10n.cycleHistory,
+                AppColors.menstrual, () => context.push('/period-history')),
           ]),
           const SizedBox(height: 16),
 
@@ -241,7 +244,8 @@ class SettingsScreen extends ConsumerWidget {
                         .saveProfile(themePreference: value);
                   },
                   style: ButtonStyle(
-                    visualDensity: VisualDensity.compact,
+                    // compact yoğunluk dokunma hedefini 48 px'in altına
+                    // indiriyordu (Material asgarisi)
                     textStyle:
                         WidgetStateProperty.all(TextStyle(fontSize: 12)),
                   ),
@@ -306,7 +310,50 @@ class SettingsScreen extends ConsumerWidget {
                   .saveProfile(medicationReminderEnabled: val),
             ),
             _divider(context),
-            _reminderTimeTile(context, ref, profile, l10n.reminderTime),
+            // Tek saat üç türü birden yönetiyordu: ilacını sabah alan ama
+            // regl uyarısını akşam isteyen kullanıcı birinden vazgeçiyordu
+            _reminderTimeTile(
+              context,
+              ref,
+              title: l10n.cycleReminderTime,
+              hour: profile?.effectiveCycleHour ?? 9,
+              minute: profile?.effectiveCycleMinute ?? 0,
+              onPicked: (t) => ref
+                  .read(userProfileProvider.notifier)
+                  .saveProfile(
+                    cycleReminderHour: t.hour,
+                    cycleReminderMinute: t.minute,
+                  ),
+            ),
+            _divider(context),
+            _reminderTimeTile(
+              context,
+              ref,
+              title: l10n.medicationReminderTime,
+              hour: profile?.effectiveMedicationHour ?? 9,
+              minute: profile?.effectiveMedicationMinute ?? 0,
+              onPicked: (t) => ref
+                  .read(userProfileProvider.notifier)
+                  .saveProfile(
+                    medicationReminderHour: t.hour,
+                    medicationReminderMinute: t.minute,
+                  ),
+            ),
+            _divider(context),
+            _leadDaysTile(context, ref, profile, l10n),
+            _divider(context),
+            // Ayarlarda yalnız tür başına aç/kapa vardı: "bildirim istiyorum
+            // ama telefonum çalmasın" diyen kullanıcının tek seçeneği hepsini
+            // kapatmaktı
+            _switchTile(context,
+              Icons.notifications_off_rounded,
+              l10n.quietNotifications,
+              profile?.quietNotifications ?? false,
+              (val) => ref
+                  .read(userProfileProvider.notifier)
+                  .saveProfile(quietNotifications: val),
+              subtitle: l10n.quietNotificationsDesc,
+            ),
           ]),
           const SizedBox(height: 16),
 
@@ -387,6 +434,12 @@ class SettingsScreen extends ConsumerWidget {
                     .saveProfile(biometricEnabled: val);
               },
             ),
+            // Kilit varken anlamlı: gecikme yoksa her dönüşte PIN
+            if ((profile?.pinEnabled ?? false) ||
+                (profile?.biometricEnabled ?? false)) ...[
+              _divider(context),
+              const _LockTimeoutTile(),
+            ],
             if (DisguiseService.isSupported) ...[
               _divider(context),
               const _DisguiseTile(),
@@ -429,7 +482,16 @@ class SettingsScreen extends ConsumerWidget {
               _divider(context),
               _actionTile(context, Icons.restore_page_rounded,
                   l10n.restorePurchases, AppColors.primary, () async {
-                await PremiumService().restore();
+                // Sonuç söylenmeli: sessiz kalınca buton bozuk görünüyordu
+                final messenger = ScaffoldMessenger.of(context);
+                messenger.showSnackBar(
+                    SnackBar(content: Text(l10n.restoringPurchases)));
+                final restored = await PremiumService().restore();
+                messenger.showSnackBar(SnackBar(
+                  content: Text(restored
+                      ? l10n.premiumActive
+                      : l10n.noPurchasesToRestore),
+                ));
               }),
             ]);
           }),
@@ -438,12 +500,46 @@ class SettingsScreen extends ConsumerWidget {
           // Data
           _sectionHeader(context, l10n.dataSection),
           _settingsCard(context, [
+            // Yedek bayatladıysa (ya da hiç alınmadıysa) uyarı satırı:
+            // yedekleme tamamen kullanıcıya bırakılmıştı ve telefon
+            // kaybında yılların verisi gidiyordu
+            _backupStatusTile(context, ref, l10n),
+            _divider(context),
             _actionTile(context, Icons.backup_rounded, l10n.backupData,
                 AppColors.primary, () async {
+              // Dosya şifresiz düz JSON: uygulamanın içindeki en hassas
+              // veri en korumasız hâlde cihazdan çıkıyor. Kullanıcı bunu
+              // nereye gönderdiğine karar vermeden önce bilmeli.
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24)),
+                  icon: const Icon(Icons.lock_open_rounded,
+                      color: AppColors.warningText, size: 32),
+                  title: Text(l10n.backupWarningTitle),
+                  content: Text(l10n.backupWarningBody,
+                      style: const TextStyle(fontSize: 14, height: 1.5)),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: Text(l10n.cancel),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(ctx, true),
+                      child: Text(l10n.continueBtn),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmed != true) return;
               try {
                 final backupService = BackupService(HiveService());
                 final path = await backupService.exportBackup();
                 await ExportService().shareFile(path);
+                // Dosyayı yazmak yeterli değil; paylaşım da tamamlandı
+                await BackupService.markBackedUp();
+                ref.invalidate(lastBackupProvider);
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -486,6 +582,15 @@ class SettingsScreen extends ConsumerWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(message), backgroundColor: color),
               );
+            }),
+            _divider(context),
+            // Entegrasyon tek yönlüydü: uygulama yazıyordu ama okumuyordu.
+            // Başka uygulamadan geçen kullanıcının geçmişi Health
+            // Connect'te duruyor olabilir.
+            _actionTile(context, Icons.download_rounded, l10n.healthImport,
+                AppColors.primaryDeep, () async {
+              if (!ensurePremiumAccess(context, ref)) return;
+              await _importFromHealth(context, ref, l10n);
             }),
             _divider(context),
             _actionTile(context, Icons.picture_as_pdf_rounded, l10n.exportPdfReport,
@@ -655,6 +760,84 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// Health Connect'ten adet geçmişini içe aktarır.
+  ///
+  /// Okuma öneri üretir, yazma kullanıcı onayından sonra: kimsenin
+  /// geçmişi sorulmadan değiştirilmemeli. Mevcut kayıtlarla kesişen
+  /// aralıklar serviste zaten eleniyor — kullanıcının kendi kaydı esas.
+  Future<void> _importFromHealth(
+      BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final result =
+        await HealthSyncService().readPeriods(ref.read(periodRecordsProvider));
+    if (!context.mounted) return;
+
+    if (result.status != HealthSyncResult.success) {
+      final (message, color) = switch (result.status) {
+        HealthSyncResult.permissionDenied => (
+            l10n.healthSyncDenied,
+            AppColors.warning
+          ),
+        HealthSyncResult.unavailable => (
+            l10n.healthSyncUnavailable,
+            AppColors.warning
+          ),
+        _ => (l10n.healthSyncFailed, AppColors.error),
+      };
+      messenger.showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: color),
+      );
+      return;
+    }
+
+    if (result.ranges.isEmpty) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.healthImportNothingNew)),
+      );
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(l10n.healthImport),
+        content: Text(l10n.healthImportConfirm(result.ranges.length),
+            style: const TextStyle(fontSize: 14, height: 1.5)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.healthImportAction),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    final notifier = ref.read(periodRecordsProvider.notifier);
+    for (final (start, end) in result.ranges) {
+      final record = await notifier.startPeriod(start);
+      await notifier.endPeriod(record.id, end);
+    }
+    // Profil tarihi kayıtların türevi: en yeni kayda eşitlenmeli
+    final records = ref.read(periodRecordsProvider);
+    if (records.isNotEmpty) {
+      await ref
+          .read(userProfileProvider.notifier)
+          .saveProfile(lastPeriodStart: records.first.startDate);
+    }
+    if (!context.mounted) return;
+    messenger.showSnackBar(SnackBar(
+      content: Text(l10n.healthImportDone(result.ranges.length)),
+      backgroundColor: AppColors.success,
+    ));
   }
 
   Future<void> _onModeChanged(
@@ -863,7 +1046,7 @@ class SettingsScreen extends ConsumerWidget {
         onTap: () => _onModeChanged(context, ref, mode),
         child: ExcludeSemantics(
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: context.motionDuration(const Duration(milliseconds: 200)),
             padding: const EdgeInsets.symmetric(vertical: 14),
             decoration: BoxDecoration(
               gradient: selected
@@ -918,7 +1101,7 @@ class SettingsScreen extends ConsumerWidget {
     final iconColor = value ? AppColors.primary : AppColors.ts(context);
     return ListTile(
       leading: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: context.motionDuration(const Duration(milliseconds: 200)),
         width: 40,
         height: 40,
         decoration: BoxDecoration(
@@ -971,10 +1154,101 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  /// Son yedeğin durumu. Bayat ya da hiç alınmamışsa uyarı tonunda;
+  /// güncelse sessiz bir bilgi satırı.
+  Widget _backupStatusTile(
+      BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+    final async = ref.watch(lastBackupProvider);
+    return async.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (last) {
+        final stale = BackupService.isStale(last);
+        final locale = Localizations.localeOf(context).toString();
+        final text = last == null
+            ? l10n.backupNever
+            : l10n.backupLastAt(
+                DateFormat('d MMM yyyy', locale).format(last));
+        final color =
+            stale ? AppColors.warningText : AppColors.ts(context);
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                stale
+                    ? Icons.cloud_off_rounded
+                    : Icons.cloud_done_rounded,
+                size: 16,
+                color: color,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  stale ? '$text ${l10n.backupStaleHint}' : text,
+                  style: TextStyle(
+                      fontSize: 12, height: 1.4, color: color),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// Regl hatırlatmasının kaç gün önce gönderileceği. Sabit 1 gündü;
+  /// kimi kullanıcı hazırlanmak için daha erken haber almak istiyor.
+  Widget _leadDaysTile(BuildContext context, WidgetRef ref,
+      UserProfile? profile, AppLocalizations l10n) {
+    final lead = profile?.periodReminderLeadDays ?? 1;
+    return ListTile(
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.primary.withValues(alpha: 0.25),
+              AppColors.primary.withValues(alpha: 0.1)
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Icon(Icons.event_available_rounded,
+            color: AppColors.primary, size: 22),
+      ),
+      title: Text(l10n.periodReminderLead,
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+      trailing: DropdownButton<int>(
+        value: lead.clamp(0, 7),
+        underline: const SizedBox.shrink(),
+        borderRadius: BorderRadius.circular(14),
+        items: [
+          DropdownMenuItem(value: 0, child: Text(l10n.leadSameDay)),
+          for (final d in const [1, 2, 3, 5, 7])
+            DropdownMenuItem(value: d, child: Text(l10n.leadNDaysBefore(d))),
+        ],
+        onChanged: (value) {
+          if (value == null) return;
+          ref
+              .read(userProfileProvider.notifier)
+              .saveProfile(periodReminderLeadDays: value);
+        },
+      ),
+    );
+  }
+
   Widget _reminderTimeTile(
-      BuildContext context, WidgetRef ref, UserProfile? profile, String title) {
-    final hour = profile?.reminderHour ?? 9;
-    final minute = profile?.reminderMinute ?? 0;
+    BuildContext context,
+    WidgetRef ref, {
+    required String title,
+    required int hour,
+    required int minute,
+    required void Function(TimeOfDay) onPicked,
+  }) {
     final timeStr =
         '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
 
@@ -984,12 +1258,7 @@ class SettingsScreen extends ConsumerWidget {
           context: context,
           initialTime: TimeOfDay(hour: hour, minute: minute),
         );
-        if (picked != null) {
-          ref.read(userProfileProvider.notifier).saveProfile(
-                reminderHour: picked.hour,
-                reminderMinute: picked.minute,
-              );
-        }
+        if (picked != null) onPicked(picked);
       },
       leading: Container(
         width: 40,
@@ -1107,6 +1376,76 @@ class _DisguiseTileState extends ConsumerState<_DisguiseTile> {
                 if (mounted) setState(() => _enabled = value);
               },
       ),
+    );
+  }
+}
+
+/// Kilit gecikmesi seçici. Cihaza özel tercih olduğu için profilde değil
+/// SharedPreferences'ta (PIN/biyometri durumu da yedeğe girmiyor).
+class _LockTimeoutTile extends StatefulWidget {
+  const _LockTimeoutTile();
+
+  @override
+  State<_LockTimeoutTile> createState() => _LockTimeoutTileState();
+}
+
+class _LockTimeoutTileState extends State<_LockTimeoutTile> {
+  int? _seconds;
+
+  @override
+  void initState() {
+    super.initState();
+    LockTimeout.read().then((value) {
+      if (mounted) setState(() => _seconds = value);
+    });
+  }
+
+  String _label(AppLocalizations l10n, int seconds) => switch (seconds) {
+        0 => l10n.lockImmediately,
+        60 => l10n.lockAfterMinutes(1),
+        300 => l10n.lockAfterMinutes(5),
+        _ => l10n.lockAfterMinutes(15),
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return ListTile(
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.primary.withValues(alpha: 0.25),
+              AppColors.primary.withValues(alpha: 0.1),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Icon(Icons.lock_clock_rounded,
+            color: AppColors.primary, size: 22),
+      ),
+      title: Text(l10n.lockTimeoutTitle,
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+      subtitle: Text(l10n.lockTimeoutDesc,
+          style: const TextStyle(fontSize: 11)),
+      trailing: _seconds == null
+          ? const SizedBox.shrink()
+          : DropdownButton<int>(
+              value: _seconds,
+              underline: const SizedBox.shrink(),
+              borderRadius: BorderRadius.circular(14),
+              items: [
+                for (final s in LockTimeout.options)
+                  DropdownMenuItem(value: s, child: Text(_label(l10n, s))),
+              ],
+              onChanged: (value) async {
+                if (value == null) return;
+                setState(() => _seconds = value);
+                await LockTimeout.write(value);
+              },
+            ),
     );
   }
 }

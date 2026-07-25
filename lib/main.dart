@@ -53,6 +53,7 @@ Future<void> _run() async {
   final prefs = await SharedPreferences.getInstance();
   final cachedPremium = prefs.getBool('premium_active') ?? false;
   final phasePattern = prefs.getBool('phase_pattern') ?? false;
+  final backdateHint = prefs.getBool('backdate_hint_needed') ?? true;
 
   // Premium durumu ve widget güncellemesi arka planda
   unawaited(PremiumService().init());
@@ -64,8 +65,15 @@ Future<void> _run() async {
   unawaited(() async {
     try {
       await notificationService.init();
-      await notificationService.requestPermission();
+      // İzin artık soğuk açılışta istenmiyor: sistem diyaloğu kurulum
+      // ekranının üstünde, hiçbir gerekçe görülmeden çıkıyordu ve
+      // reddedildiğinde Android bir daha sormuyor — yani tüm hatırlatma
+      // altyapısı tek bir bağlamsız dokunuşla ölüyordu. Yeni kurulumda izin
+      // kurulum bittikten sonra, ne işe yaradığı anlatılarak isteniyor
+      // (onboarding_screen). Profili olan kurulumlar eski akıştan geçmiş:
+      // izin verilmişse çağrı zaten sessiz, reddedilmişse sistem sormuyor.
       if (profile != null) {
+        await notificationService.requestPermission();
         // İlaç hatırlatmaları ilaçların kendi saatlerinde kurulur: soğuk
         // açılışta liste verilmezse yalnız genel hatırlatma planlanıyordu
         final logsWithMeds = HiveService()
@@ -93,6 +101,7 @@ Future<void> _run() async {
         trialStartProvider.overrideWith((ref) => trialStart),
         isPremiumProvider.overrideWith((ref) => cachedPremium),
         phasePatternProvider.overrideWith((ref) => phasePattern),
+        backdateHintProvider.overrideWith((ref) => backdateHint),
         if (profile != null) ...[
           themeModeProvider.overrideWith((ref) => themeModeFromProfile(profile)),
           // 'system' = override yok, MaterialApp cihaz dilini izler

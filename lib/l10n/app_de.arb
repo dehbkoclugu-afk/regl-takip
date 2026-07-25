@@ -425,6 +425,221 @@
   "coachPersonalInsight": "Laut deinen Einträgen in dieser Phase am häufigsten: {symptom} ({percent}%)",
   "notificationInsightTitle": "Phasen-Tipp",
   "notificationInsightBody": "Die Lutealphase beginnt. Laut deinen Einträgen ist dein häufigstes Symptom in dieser Phase: {symptom}.",
+  "notificationPeriodTitle": "Perioden-Erinnerung",
+  "notificationPeriodTimingToday": "Deine Periode könnte heute beginnen.",
+  "notificationPeriodTimingTomorrow": "Deine Periode könnte morgen beginnen.",
+  "notificationPeriodTimingInDays": "Deine Periode könnte in {days} Tagen beginnen.",
+  "@notificationPeriodTimingInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "notificationPeriodTip1": "Denk daran, eine Binde oder einen Tampon einzupacken.",
+  "notificationPeriodTip2": "Ein wenig Vorbereitung macht es leichter.",
+  "notificationPeriodTip3": "Den Beginn einzutragen verbessert die Vorhersagen.",
+  "notificationPeriodChannel": "Perioden-Erinnerung",
+  "notificationPeriodChannelDesc": "Erinnerungen zum Menstruationszyklus",
+  "notificationOvulationTitle": "Eisprung-Erinnerung",
+  "notificationOvulationBody": "Heute ist dein Eisprung. Du bist in deiner fruchtbaren Phase!",
+  "notificationOvulationChannel": "Eisprung-Erinnerung",
+  "notificationOvulationChannelDesc": "Erinnerungen zum Eisprung",
+  "notificationMedicationTitle": "Medikamenten-Erinnerung",
+  "notificationMedicationBody": "Vergiss nicht, dein Medikament einzunehmen!",
+  "notificationMedicationChannel": "Medikamenten-Erinnerung",
+  "notificationMedicationChannelDesc": "Erinnerungen an Medikamente",
+  "notificationDiscreetTitle": "Erinnerung",
+  "notificationDiscreetBody": "Du hast heute eine Erinnerung",
+  "notificationFertileTitle": "Dein fruchtbares Fenster beginnt",
+  "notificationFertileBody": "Ab heute sind die Tage mit der höchsten Empfängniswahrscheinlichkeit.",
+  "notificationChainEndTitle": "Erinnerungen pausieren",
+  "notificationChainEndBody": "Die geplanten Erinnerungen sind aufgebraucht. Öffne die App, um neue einzurichten.",
+  "noPurchasesToRestore": "Keine Käufe zum Wiederherstellen gefunden",
+  "restoringPurchases": "Käufe werden wiederhergestellt…",
+  "backdateHint": "Für einen anderen Tag lange drücken",
+  "periodStartDateHelp": "Wann hat deine Periode begonnen?",
+  "periodEndDateHelp": "Wann hat deine Periode geendet?",
+  "headlinePeriodToday": "Deine Periode könnte heute beginnen",
+  "headlinePeriodTomorrow": "Deine Periode könnte morgen beginnen",
+  "headlineNoData": "Datum deiner letzten Periode eintragen",
+  "headlinePeriodInDays": "Deine Periode in {days} Tagen",
+  "@headlinePeriodInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "headlinePeriodDay": "Tag {day} deiner Periode",
+  "@headlinePeriodDay": {
+    "placeholders": {
+      "day": {"type": "int"}
+    }
+  },
+  "headlineDelaySubtitle": "Schwankungen sind normal. Trag sie ein, wenn sie begonnen hat.",
+  "notificationDelayTitle": "Voraussichtliches Datum ist vorbei",
+  "notificationDelayBody": "Wenn deine Periode begonnen hat, trag sie ein. Schwankungen sind normal.",
+  "notificationDelayBodyAlt1": "Noch kein Eintrag. Wenn sie begonnen hat, genügt ein Tippen.",
+  "notificationDelayBodyAlt2": "Eine Verschiebung von ein paar Tagen ist normal. Ist dein Eintrag aktuell?",
+  "notificationDelayChannel": "Verspätungs-Erinnerung",
+  "notificationDelayChannelDesc": "Erinnerung, wenn das voraussichtliche Datum vorbei ist",
+  "headlineDelay": "Deine Periode ist {days} Tage überfällig",
+  "@headlineDelay": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "delayDays": "{days} Tage überfällig",
+  "@delayDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "yourDataStays": "Deine Einträge bleiben auf dem Gerät, auch wenn die Testphase endet.",
+  "periodStartedOnThisDay": "Meine Periode begann an diesem Tag",
+  "nCyclesRecorded": "{count} Zyklen erfasst",
+  "@nCyclesRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "nLogsRecorded": "{count} Tageseinträge",
+  "@nLogsRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notifPermissionTitle": "Erinnerungen aktivieren?",
+  "notifPermissionBody": "Wir sagen Bescheid, wenn deine Periode näher rückt, an deinem Eisprungtag und wenn das voraussichtliche Datum vorbei ist. Benachrichtigungen verlassen dein Gerät nie. Du kannst sie auch später in den Einstellungen aktivieren.",
+  "enableNotifications": "Aktivieren",
+  "notNow": "Jetzt nicht",
+  "optionalField": "Optional",
+  "privacyAssurance": "Deine Daten bleiben verschlüsselt nur auf diesem Gerät",
+  "dontRememberExactly": "Ich weiß es nicht genau",
+  "approxTitle": "Ungefähr wann war es?",
+  "approxSubtitle": "Ein ungefähres Datum reicht. Die Vorhersagen korrigieren sich mit jedem Eintrag.",
+  "approxThisWeek": "Diese Woche",
+  "approxLastWeek": "Letzte Woche",
+  "approxTwoWeeks": "Vor etwa 2 Wochen",
+  "approxThreeWeeks": "Vor etwa 3 Wochen",
+  "approxMonthOrMore": "Vor einem Monat oder länger",
+  "cycleReminderTime": "Uhrzeit für Zyklus-Erinnerungen",
+  "medicationReminderTime": "Uhrzeit für Medikamenten-Erinnerungen",
+  "periodReminderLead": "Perioden-Erinnerung",
+  "notificationQuietChannelSuffix": "leise",
+  "quietNotifications": "Leise Benachrichtigungen",
+  "quietNotificationsDesc": "Ohne Ton und Pop-up — nur in der Benachrichtigungsleiste",
+  "leadSameDay": "Am selben Tag",
+  "leadNDaysBefore": "{days} Tage vorher",
+  "@leadNDaysBefore": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "regularityInfoIrregular": "Zwischen deinem kürzesten und längsten Zyklus liegen 9 Tage oder mehr. Schwankende Zykluslängen sind sehr häufig; Stress, Schlaf, Krankheit und Veränderungen im Alltag wirken sich aus. Das ist keine Diagnose.",
+  "regularityInfoRegular": "Der Unterschied zwischen deinem kürzesten und längsten Zyklus liegt unter 9 Tagen. Mit dieser Beständigkeit sind die Vorhersagen genauer.",
+  "regularityInfoSeeDoctor": "Wenn dein Zyklus dauerhaft kürzer als 21 oder länger als 35 Tage ist, du länger als drei Monate keine Periode hattest oder die Blutung ungewöhnlich stark ist, sprich am besten mit einer Ärztin oder einem Arzt.",
+  "typicalRangeNote": "Üblicher Bereich: Zyklus {min}–{max} Tage, Periode bis zu {pmax} Tage. Kein diagnostischer Grenzwert.",
+  "@typicalRangeNote": {
+    "placeholders": {
+      "min": {"type": "int"},
+      "max": {"type": "int"},
+      "pmax": {"type": "int"}
+    }
+  },
+  "lowConfidenceNote": "Diese Durchschnitte stammen aus nur {count} Zyklen; sie werden mit weiteren Einträgen genauer.",
+  "@lowConfidenceNote": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "regularityInfoInsufficient": "Für eine Aussage zur Regelmäßigkeit braucht es mindestens {count} Zyklusabstände. Weniger wäre irreführend.",
+  "@regularityInfoInsufficient": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "backupWarningTitle": "Die Sicherungsdatei ist unverschlüsselt",
+  "backupWarningBody": "Die Sicherung enthält alle Zyklus- und Gesundheitseinträge in lesbarer Form. Die Daten auf dem Gerät sind verschlüsselt, diese Datei jedoch nicht. Achte darauf, wo du sie speicherst und mit wem du sie teilst.",
+  "backupNever": "Du hast noch nie eine Sicherung erstellt.",
+  "backupStaleHint": "Wenn du dein Telefon verlierst, sind die Einträge nicht wiederherstellbar.",
+  "backupLastAt": "Letzte Sicherung: {date}",
+  "@backupLastAt": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "durationsStepTitle": "Deine Zyklusdaten",
+  "durationsStepHelp": "Nicht sicher? Lass sie so — du kannst das später in den Einstellungen ändern.",
+  "lockTimeoutTitle": "Sperrverzögerung",
+  "lockTimeoutDesc": "Keine PIN, wenn du nach kurzer Zeit zurückkommst",
+  "lockImmediately": "Sofort",
+  "previousDay": "Vorheriger Tag",
+  "nextDay": "Nächster Tag",
+  "showLegend": "Farblegende",
+  "hideLegend": "Farblegende ausblenden",
+  "backToToday": "Zu heute",
+  "monthNoRecords": "Keine Einträge in diesem Monat",
+  "doctorSummary": "Zusammenfassung für meine Ärztin",
+  "healthImport": "Aus Health Connect importieren",
+  "healthImportAction": "Importieren",
+  "allTime": "Gesamt",
+  "actionPeriodStarted": "Periode hat begonnen",
+  "actionMedicationTaken": "Eingenommen",
+  "pregnancyTestReady": "Ein Schwangerschaftstest kann jetzt aussagekräftig sein",
+  "notLoggedToday": "Heute noch kein Eintrag: {what}",
+  "@notLoggedToday": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
+  "pregnancyTestFrom": "Frühester sinnvoller Test: {date}",
+  "@pregnancyTestFrom": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "pillBreakIn": "Pause beginnt in {days} Tagen",
+  "@pillBreakIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "pillNewPackIn": "Neue Packung in {days} Tagen",
+  "@pillNewPackIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "healthImportNothingNew": "Keine neuen Einträge zum Importieren gefunden",
+  "healthImportConfirm": "{count} Perioden in Health Connect gefunden, die nicht in der App sind. Zu deinen Einträgen hinzufügen? Deine vorhandenen Einträge bleiben unverändert.",
+  "@healthImportConfirm": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "healthImportDone": "{count} Perioden importiert",
+  "@healthImportDone": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthPeriodDays": "{count} Periodentage",
+  "@monthPeriodDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthLoggedDays": "{count} Tage erfasst",
+  "@monthLoggedDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "pinNoRecoveryWarning": "Wenn du deine PIN vergisst, gibt es keine Wiederherstellung; der einzige Weg zurück ist das Löschen aller Daten. Wähle etwas, das du dir merkst.",
+  "lockAfterMinutes": "Nach {minutes} Min.",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
   "reportTitle": "Zyklus-Gesundheitsbericht",
   "reportGenerated": "Erstellt",
   "profileSummary": "Profilübersicht",

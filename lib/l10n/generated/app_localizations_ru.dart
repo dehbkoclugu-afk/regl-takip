@@ -1346,6 +1346,372 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get notificationPeriodTitle => 'Напоминание о месячных';
+
+  @override
+  String get notificationPeriodTimingToday => 'Месячные могут начаться сегодня.';
+
+  @override
+  String get notificationPeriodTimingTomorrow => 'Месячные могут начаться завтра.';
+
+  @override
+  String notificationPeriodTimingInDays(int days) {
+    return 'Месячные могут начаться через $days дн.';
+  }
+
+  @override
+  String get notificationPeriodTip1 => 'Не забудьте взять с собой прокладку или тампон.';
+
+  @override
+  String get notificationPeriodTip2 => 'Небольшая подготовка всё упрощает.';
+
+  @override
+  String get notificationPeriodTip3 => 'Отметка начала улучшает прогнозы.';
+
+  @override
+  String get notificationPeriodChannel => 'Напоминание о месячных';
+
+  @override
+  String get notificationPeriodChannelDesc => 'Напоминания о менструальном цикле';
+
+  @override
+  String get notificationOvulationTitle => 'Напоминание об овуляции';
+
+  @override
+  String get notificationOvulationBody => 'Сегодня день овуляции. Вы в фертильном окне!';
+
+  @override
+  String get notificationOvulationChannel => 'Напоминание об овуляции';
+
+  @override
+  String get notificationOvulationChannelDesc => 'Напоминания об овуляции';
+
+  @override
+  String get notificationMedicationTitle => 'Напоминание о лекарстве';
+
+  @override
+  String get notificationMedicationBody => 'Не забудьте принять лекарство!';
+
+  @override
+  String get notificationMedicationChannel => 'Напоминание о лекарстве';
+
+  @override
+  String get notificationMedicationChannelDesc => 'Напоминания о лекарствах';
+
+  @override
+  String get notificationDiscreetTitle => 'Напоминание';
+
+  @override
+  String get notificationDiscreetBody => 'У вас есть напоминание на сегодня';
+
+  @override
+  String get notificationFertileTitle => 'Начинается фертильное окно';
+
+  @override
+  String get notificationFertileBody => 'С сегодняшнего дня — самые благоприятные для зачатия дни.';
+
+  @override
+  String get notificationChainEndTitle => 'Напоминания приостанавливаются';
+
+  @override
+  String get notificationChainEndBody => 'Запланированные напоминания закончились. Откройте приложение, чтобы создать новые.';
+
+  @override
+  String get noPurchasesToRestore => 'Покупки для восстановления не найдены';
+
+  @override
+  String get restoringPurchases => 'Восстановление покупок…';
+
+  @override
+  String get backdateHint => 'Долгое нажатие — выбрать другой день';
+
+  @override
+  String get periodStartDateHelp => 'Когда начались месячные?';
+
+  @override
+  String get periodEndDateHelp => 'Когда закончились месячные?';
+
+  @override
+  String get headlinePeriodToday => 'Месячные могут начаться сегодня';
+
+  @override
+  String get headlinePeriodTomorrow => 'Месячные могут начаться завтра';
+
+  @override
+  String get headlineNoData => 'Добавьте дату последних месячных';
+
+  @override
+  String headlinePeriodInDays(int days) {
+    return 'Месячные через $days дн.';
+  }
+
+  @override
+  String headlinePeriodDay(int day) {
+    return '$day-й день месячных';
+  }
+
+  @override
+  String get headlineDelaySubtitle => 'Небольшие отклонения — это нормально. Отметьте, если начались.';
+
+  @override
+  String get notificationDelayTitle => 'Предполагаемая дата прошла';
+
+  @override
+  String get notificationDelayBody => 'Если месячные начались, не забудьте отметить. Отклонения — это нормально.';
+
+  @override
+  String get notificationDelayBodyAlt1 => 'Записи пока нет. Если началось, отметить можно одним касанием.';
+
+  @override
+  String get notificationDelayBodyAlt2 => 'Сдвиг на несколько дней — обычное дело. Ваши записи актуальны?';
+
+  @override
+  String get notificationDelayChannel => 'Напоминание о задержке';
+
+  @override
+  String get notificationDelayChannelDesc => 'Напоминание, когда предполагаемая дата прошла';
+
+  @override
+  String headlineDelay(int days) {
+    return 'Задержка $days дн.';
+  }
+
+  @override
+  String delayDays(int days) {
+    return 'задержка $days дн.';
+  }
+
+  @override
+  String get yourDataStays => 'Ваши записи останутся на устройстве после окончания пробного периода.';
+
+  @override
+  String get periodStartedOnThisDay => 'Месячные начались в этот день';
+
+  @override
+  String nCyclesRecorded(int count) {
+    return 'записано циклов: $count';
+  }
+
+  @override
+  String nLogsRecorded(int count) {
+    return 'дневных записей: $count';
+  }
+
+  @override
+  String get notifPermissionTitle => 'Включить напоминания?';
+
+  @override
+  String get notifPermissionBody => 'Сообщим, когда месячные близко, в день овуляции и когда предполагаемая дата прошла. Уведомления не покидают устройство. Включить можно и позже в настройках.';
+
+  @override
+  String get enableNotifications => 'Включить';
+
+  @override
+  String get notNow => 'Не сейчас';
+
+  @override
+  String get optionalField => 'Необязательно';
+
+  @override
+  String get privacyAssurance => 'Ваши данные хранятся в зашифрованном виде только на этом устройстве';
+
+  @override
+  String get dontRememberExactly => 'Точно не помню';
+
+  @override
+  String get approxTitle => 'Примерно когда это было?';
+
+  @override
+  String get approxSubtitle => 'Достаточно примерной даты. Прогнозы уточняются по мере записей.';
+
+  @override
+  String get approxThisWeek => 'На этой неделе';
+
+  @override
+  String get approxLastWeek => 'На прошлой неделе';
+
+  @override
+  String get approxTwoWeeks => 'Около 2 недель назад';
+
+  @override
+  String get approxThreeWeeks => 'Около 3 недель назад';
+
+  @override
+  String get approxMonthOrMore => 'Месяц назад или раньше';
+
+  @override
+  String get cycleReminderTime => 'Время напоминаний о цикле';
+
+  @override
+  String get medicationReminderTime => 'Время напоминаний о лекарствах';
+
+  @override
+  String get periodReminderLead => 'Напоминание о месячных';
+
+  @override
+  String get notificationQuietChannelSuffix => 'тихо';
+
+  @override
+  String get quietNotifications => 'Тихие уведомления';
+
+  @override
+  String get quietNotificationsDesc => 'Без звука и всплывающего окна — только в шторке уведомлений';
+
+  @override
+  String get leadSameDay => 'В тот же день';
+
+  @override
+  String leadNDaysBefore(int days) {
+    return 'за $days дн.';
+  }
+
+  @override
+  String get regularityInfoIrregular => 'Между самым коротким и самым длинным циклом 9 дней или больше. Колебания длины цикла очень распространены: влияют стресс, сон, болезни и перемены в жизни. Это не диагноз.';
+
+  @override
+  String get regularityInfoRegular => 'Разница между самым коротким и самым длинным циклом меньше 9 дней. При такой стабильности прогнозы точнее.';
+
+  @override
+  String get regularityInfoSeeDoctor => 'Если цикл постоянно короче 21 дня или длиннее 35, если месячных нет более трёх месяцев или кровотечение необычно обильное, стоит обратиться к врачу.';
+
+  @override
+  String typicalRangeNote(int min, int max, int pmax) {
+    return 'Обычный диапазон: цикл $min–$max дней, месячные до $pmax дней. Это не диагностический критерий.';
+  }
+
+  @override
+  String lowConfidenceNote(int count) {
+    return 'Эти средние рассчитаны всего по $count циклам и уточнятся с новыми записями.';
+  }
+
+  @override
+  String regularityInfoInsufficient(int count) {
+    return 'Чтобы говорить о регулярности, нужно минимум $count интервалов цикла. Меньше — вывод будет вводить в заблуждение.';
+  }
+
+  @override
+  String get backupWarningTitle => 'Файл резервной копии не зашифрован';
+
+  @override
+  String get backupWarningBody => 'Резервная копия содержит все записи о цикле и здоровье в читаемом виде. Данные на устройстве зашифрованы, а этот файл — нет. Будьте внимательны, где вы его сохраняете и с кем делитесь.';
+
+  @override
+  String get backupNever => 'Вы ещё ни разу не делали резервную копию.';
+
+  @override
+  String get backupStaleHint => 'Если вы потеряете телефон, записи восстановить не удастся.';
+
+  @override
+  String backupLastAt(String date) {
+    return 'Последняя копия: $date';
+  }
+
+  @override
+  String get durationsStepTitle => 'Данные вашего цикла';
+
+  @override
+  String get durationsStepHelp => 'Не уверены? Оставьте как есть — это можно изменить в настройках.';
+
+  @override
+  String get lockTimeoutTitle => 'Задержка блокировки';
+
+  @override
+  String get lockTimeoutDesc => 'Не спрашивать PIN, если вы вернулись быстро';
+
+  @override
+  String get lockImmediately => 'Сразу';
+
+  @override
+  String get previousDay => 'Предыдущий день';
+
+  @override
+  String get nextDay => 'Следующий день';
+
+  @override
+  String get showLegend => 'Обозначения цветов';
+
+  @override
+  String get hideLegend => 'Скрыть обозначения';
+
+  @override
+  String get backToToday => 'К сегодня';
+
+  @override
+  String get monthNoRecords => 'В этом месяце записей нет';
+
+  @override
+  String get doctorSummary => 'Выгрузить сводку для врача';
+
+  @override
+  String get healthImport => 'Импорт из Health Connect';
+
+  @override
+  String get healthImportAction => 'Импортировать';
+
+  @override
+  String get allTime => 'Всё время';
+
+  @override
+  String get actionPeriodStarted => 'Месячные начались';
+
+  @override
+  String get actionMedicationTaken => 'Принято';
+
+  @override
+  String get pregnancyTestReady => 'Тест на беременность уже может быть информативным';
+
+  @override
+  String notLoggedToday(String what) {
+    return 'Сегодня не отмечено: $what';
+  }
+
+  @override
+  String pregnancyTestFrom(String date) {
+    return 'Тест имеет смысл с $date';
+  }
+
+  @override
+  String pillBreakIn(int days) {
+    return 'Перерыв через $days дн.';
+  }
+
+  @override
+  String pillNewPackIn(int days) {
+    return 'Новая упаковка через $days дн.';
+  }
+
+  @override
+  String get healthImportNothingNew => 'Новых записей для импорта не найдено';
+
+  @override
+  String healthImportConfirm(int count) {
+    return 'В Health Connect найдено периодов, которых нет в приложении: $count. Добавить их к вашим записям? Существующие записи не изменятся.';
+  }
+
+  @override
+  String healthImportDone(int count) {
+    return 'Импортировано периодов: $count';
+  }
+
+  @override
+  String monthPeriodDays(int count) {
+    return 'дней месячных: $count';
+  }
+
+  @override
+  String monthLoggedDays(int count) {
+    return 'дней с записями: $count';
+  }
+
+  @override
+  String get pinNoRecoveryWarning => 'Если вы забудете PIN, восстановить его нельзя — останется только удалить все данные. Выберите то, что запомните.';
+
+  @override
+  String lockAfterMinutes(int minutes) {
+    return 'Через $minutes мин';
+  }
+
+  @override
   String get reportTitle => 'Отчёт о здоровье цикла';
 
   @override

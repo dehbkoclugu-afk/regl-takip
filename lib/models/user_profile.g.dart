@@ -39,13 +39,19 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       pregnancyStartDate: fields[18] as DateTime?,
       pillPackStartDate: fields[19] as DateTime?,
       themePreference: fields[20] == null ? '' : fields[20] as String,
+      medicationReminderHour: fields[21] as int?,
+      medicationReminderMinute: fields[22] as int?,
+      cycleReminderHour: fields[23] as int?,
+      cycleReminderMinute: fields[24] as int?,
+      periodReminderLeadDays: fields[25] == null ? 1 : fields[25] as int,
+      quietNotifications: fields[26] == null ? false : fields[26] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(27)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -87,7 +93,19 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(19)
       ..write(obj.pillPackStartDate)
       ..writeByte(20)
-      ..write(obj.themePreference);
+      ..write(obj.themePreference)
+      ..writeByte(21)
+      ..write(obj.medicationReminderHour)
+      ..writeByte(22)
+      ..write(obj.medicationReminderMinute)
+      ..writeByte(23)
+      ..write(obj.cycleReminderHour)
+      ..writeByte(24)
+      ..write(obj.cycleReminderMinute)
+      ..writeByte(25)
+      ..write(obj.periodReminderLeadDays)
+      ..writeByte(26)
+      ..write(obj.quietNotifications);
   }
 
   @override

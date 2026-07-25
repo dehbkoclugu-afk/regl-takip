@@ -21,7 +21,8 @@ class CycleUtils {
   static DateTime fertileWindowStart(
       DateTime lastPeriodStart, int cycleLength) {
     final ovulation = predictOvulation(lastPeriodStart, cycleLength);
-    return ovulation.subtract(const Duration(days: 5));
+    return ovulation.subtract(const Duration(
+        days: AppConstants.fertileWindowStartBeforeOvulation));
   }
 
   /// Verimli pencere bitişini hesaplar (ovülasyondan 1 gün sonra)
@@ -170,7 +171,7 @@ class CycleUtils {
   /// (tıbbi literatürdeki yaygın eşik). Veri yetersizse null.
   static bool? isIrregular(List<PeriodRecord> records) {
     final gaps = validCycleGaps(records);
-    if (gaps.length < 3) return null;
+    if (gaps.length < AppConstants.minGapsForRegularity) return null;
     final minGap = gaps.reduce((a, b) => a < b ? a : b);
     final maxGap = gaps.reduce((a, b) => a > b ? a : b);
     return (maxGap - minGap) >= 9;
@@ -260,6 +261,32 @@ class CycleUtils {
 
   /// 21+7 hap döngüsünde paket günü (1..28).
   /// 1-21 aktif hap, 22-28 ara hafta.
+  /// Hap paketinde ara (plasebo) döneminde miyiz?
+  static bool pillIsBreak(int dayInPack) =>
+      dayInPack > AppConstants.pillActiveDays;
+
+  /// Ara dönemin başlamasına kaç gün kaldığı. Ara dönemdeyse 0.
+  /// Hap modu ana ekranda tek bir çipti: kaçıncı gün olduğu yazıyordu ama
+  /// bu modun asıl sorusu "ara ne zaman başlıyor" cevapsızdı.
+  static int pillDaysUntilBreak(int dayInPack) {
+    if (pillIsBreak(dayInPack)) return 0;
+    return AppConstants.pillActiveDays + 1 - dayInPack;
+  }
+
+  /// Yeni paketin başlamasına kaç gün kaldığı. Etkin dönemdeyse 0.
+  static int pillDaysUntilNewPack(int dayInPack) {
+    if (!pillIsBreak(dayInPack)) return 0;
+    return AppConstants.pillPackDays + 1 - dayInPack;
+  }
+
+  /// Gebelik testinin anlamlı olduğu en erken gün.
+  /// TTC kullanıcısının en beklediği tarih buydu ve hiçbir yerde yoktu.
+  static DateTime earliestPregnancyTestDay(DateTime ovulation) => DateTime(
+        ovulation.year,
+        ovulation.month,
+        ovulation.day + AppConstants.pregnancyTestAfterOvulation,
+      );
+
   static int pillDayInPack(DateTime packStart) {
     final now = DateTime.now();
     final normalizedNow = DateTime(now.year, now.month, now.day);
@@ -332,6 +359,29 @@ class CycleUtils {
     final diff =
         nextPeriod.difference(DateTime(now.year, now.month, now.day)).inDays;
     return diff > 0 ? diff : 0;
+  }
+
+  /// Tahmini regl tarihinin üzerinden kaç gün geçtiği; gecikme yoksa 0.
+  ///
+  /// Gecikme uygulamada hiçbir yerde görünmüyordu: [daysUntilNextPeriod]
+  /// sonucu sıfıra kırpıyor, [nextFuturePeriod] geçmişte kalan tahmini bir
+  /// sonraki döngüye ileri sarıyor. İkisi birlikte gecikmeyi tamamen
+  /// görünmez kılıyordu — oysa kullanıcının uygulamaya en çok ihtiyaç
+  /// duyduğu an tam orası.
+  ///
+  /// Üst sınır bir döngü boyu: gecikme döngü uzunluğuna ulaştıysa bir
+  /// sonraki tahmini tarih de geçmiş demektir ve uygulama "çok geç kaldı"
+  /// ile "kullanıcı uzun süredir kayıt girmiyor"u birbirinden ayıramaz.
+  /// O noktada 0 dönüp normal tahmin diline geri dönmek dürüst olan.
+  static int periodDelayDays(DateTime lastPeriodStart, int cycleLength) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final predicted = predictNextPeriod(lastPeriodStart, cycleLength);
+    final delay = today
+        .difference(DateTime(predicted.year, predicted.month, predicted.day))
+        .inDays;
+    if (delay <= 0 || delay >= cycleLength) return 0;
+    return delay;
   }
 }
 

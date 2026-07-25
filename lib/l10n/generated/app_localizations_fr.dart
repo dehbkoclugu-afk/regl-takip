@@ -1346,6 +1346,372 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get notificationPeriodTitle => 'Rappel de règles';
+
+  @override
+  String get notificationPeriodTimingToday => 'Vos règles pourraient commencer aujourd\'hui.';
+
+  @override
+  String get notificationPeriodTimingTomorrow => 'Vos règles pourraient commencer demain.';
+
+  @override
+  String notificationPeriodTimingInDays(int days) {
+    return 'Vos règles pourraient commencer dans $days jours.';
+  }
+
+  @override
+  String get notificationPeriodTip1 => 'Pensez à emporter une serviette ou un tampon.';
+
+  @override
+  String get notificationPeriodTip2 => 'Un peu de préparation facilite les choses.';
+
+  @override
+  String get notificationPeriodTip3 => 'Enregistrer le début améliore vos prédictions.';
+
+  @override
+  String get notificationPeriodChannel => 'Rappel de règles';
+
+  @override
+  String get notificationPeriodChannelDesc => 'Rappels du cycle menstruel';
+
+  @override
+  String get notificationOvulationTitle => 'Rappel d\'ovulation';
+
+  @override
+  String get notificationOvulationBody => 'C\'est votre jour d\'ovulation. Vous êtes dans votre fenêtre fertile !';
+
+  @override
+  String get notificationOvulationChannel => 'Rappel d\'ovulation';
+
+  @override
+  String get notificationOvulationChannelDesc => 'Rappels d\'ovulation';
+
+  @override
+  String get notificationMedicationTitle => 'Rappel de médicament';
+
+  @override
+  String get notificationMedicationBody => 'N\'oubliez pas de prendre votre médicament !';
+
+  @override
+  String get notificationMedicationChannel => 'Rappel de médicament';
+
+  @override
+  String get notificationMedicationChannelDesc => 'Rappels de médicaments';
+
+  @override
+  String get notificationDiscreetTitle => 'Rappel';
+
+  @override
+  String get notificationDiscreetBody => 'Vous avez un rappel pour aujourd\'hui';
+
+  @override
+  String get notificationFertileTitle => 'Votre fenêtre de fertilité commence';
+
+  @override
+  String get notificationFertileBody => 'À partir d\'aujourd\'hui, ce sont les jours les plus propices à la conception.';
+
+  @override
+  String get notificationChainEndTitle => 'Les rappels sont en pause';
+
+  @override
+  String get notificationChainEndBody => 'Les rappels programmés sont épuisés. Ouvrez l\'application pour en planifier de nouveaux.';
+
+  @override
+  String get noPurchasesToRestore => 'Aucun achat à restaurer';
+
+  @override
+  String get restoringPurchases => 'Restauration des achats…';
+
+  @override
+  String get backdateHint => 'Appui long pour choisir un autre jour';
+
+  @override
+  String get periodStartDateHelp => 'Quand vos règles ont-elles commencé ?';
+
+  @override
+  String get periodEndDateHelp => 'Quand vos règles se sont-elles terminées ?';
+
+  @override
+  String get headlinePeriodToday => 'Vos règles peuvent commencer aujourd’hui';
+
+  @override
+  String get headlinePeriodTomorrow => 'Vos règles peuvent commencer demain';
+
+  @override
+  String get headlineNoData => 'Ajoutez la date de vos dernières règles';
+
+  @override
+  String headlinePeriodInDays(int days) {
+    return 'Vos règles dans $days jours';
+  }
+
+  @override
+  String headlinePeriodDay(int day) {
+    return 'Jour $day de vos règles';
+  }
+
+  @override
+  String get headlineDelaySubtitle => 'Une variation est normale. Enregistrez-les si elles ont commencé.';
+
+  @override
+  String get notificationDelayTitle => 'La date prévue est passée';
+
+  @override
+  String get notificationDelayBody => 'Si vos règles ont commencé, pensez à les enregistrer. Une variation est normale.';
+
+  @override
+  String get notificationDelayBodyAlt1 => 'Aucune entrée pour l\'instant. Si elles ont commencé, un appui suffit.';
+
+  @override
+  String get notificationDelayBodyAlt2 => 'Un décalage de quelques jours est courant. Votre suivi est-il à jour ?';
+
+  @override
+  String get notificationDelayChannel => 'Rappel de retard';
+
+  @override
+  String get notificationDelayChannelDesc => 'Rappel lorsque la date prévue est passée';
+
+  @override
+  String headlineDelay(int days) {
+    return 'Vos règles ont $days jours de retard';
+  }
+
+  @override
+  String delayDays(int days) {
+    return '$days jours de retard';
+  }
+
+  @override
+  String get yourDataStays => 'Vos données restent sur votre appareil à la fin de l’essai.';
+
+  @override
+  String get periodStartedOnThisDay => 'Mes règles ont commencé ce jour';
+
+  @override
+  String nCyclesRecorded(int count) {
+    return '$count cycles enregistrés';
+  }
+
+  @override
+  String nLogsRecorded(int count) {
+    return '$count journaux quotidiens';
+  }
+
+  @override
+  String get notifPermissionTitle => 'Activer les rappels ?';
+
+  @override
+  String get notifPermissionBody => 'Nous vous prévenons à l’approche de vos règles, le jour de l’ovulation et quand la date prévue est passée. Les notifications ne quittent jamais votre appareil. Vous pouvez aussi les activer plus tard dans les réglages.';
+
+  @override
+  String get enableNotifications => 'Activer';
+
+  @override
+  String get notNow => 'Plus tard';
+
+  @override
+  String get optionalField => 'Facultatif';
+
+  @override
+  String get privacyAssurance => 'Vos données restent chiffrées sur cet appareil uniquement';
+
+  @override
+  String get dontRememberExactly => 'Je ne sais plus exactement';
+
+  @override
+  String get approxTitle => 'C’était à peu près quand ?';
+
+  @override
+  String get approxSubtitle => 'Une date approximative suffit. Les prévisions s’ajustent au fil de vos saisies.';
+
+  @override
+  String get approxThisWeek => 'Cette semaine';
+
+  @override
+  String get approxLastWeek => 'La semaine dernière';
+
+  @override
+  String get approxTwoWeeks => 'Il y a environ 2 semaines';
+
+  @override
+  String get approxThreeWeeks => 'Il y a environ 3 semaines';
+
+  @override
+  String get approxMonthOrMore => 'Il y a un mois ou plus';
+
+  @override
+  String get cycleReminderTime => 'Heure des rappels de cycle';
+
+  @override
+  String get medicationReminderTime => 'Heure des rappels de médicament';
+
+  @override
+  String get periodReminderLead => 'Rappel de règles';
+
+  @override
+  String get notificationQuietChannelSuffix => 'silencieux';
+
+  @override
+  String get quietNotifications => 'Notifications silencieuses';
+
+  @override
+  String get quietNotificationsDesc => 'Sans son ni fenêtre contextuelle, uniquement dans le volet des notifications';
+
+  @override
+  String get leadSameDay => 'Le jour même';
+
+  @override
+  String leadNDaysBefore(int days) {
+    return '$days jours avant';
+  }
+
+  @override
+  String get regularityInfoIrregular => 'Il y a 9 jours ou plus entre votre cycle le plus court et le plus long. Une durée de cycle variable est très courante ; le stress, le sommeil, la maladie et les changements de vie y contribuent. Ceci n’est pas un diagnostic.';
+
+  @override
+  String get regularityInfoRegular => 'L’écart entre votre cycle le plus court et le plus long est inférieur à 9 jours. Les prévisions sont plus fiables avec cette régularité.';
+
+  @override
+  String get regularityInfoSeeDoctor => 'Si votre cycle est constamment plus court que 21 jours ou plus long que 35, si vous n’avez pas eu de règles depuis plus de trois mois, ou si les saignements sont inhabituellement abondants, il vaut mieux consulter un professionnel de santé.';
+
+  @override
+  String typicalRangeNote(int min, int max, int pmax) {
+    return 'Plage courante : cycle $min–$max jours, règles jusqu’à $pmax jours. Ce n’est pas un seuil diagnostique.';
+  }
+
+  @override
+  String lowConfidenceNote(int count) {
+    return 'Ces moyennes proviennent de seulement $count cycles ; elles s’affineront avec vos saisies.';
+  }
+
+  @override
+  String regularityInfoInsufficient(int count) {
+    return 'Il faut au moins $count intervalles de cycle pour parler de régularité. En dessous, le jugement serait trompeur.';
+  }
+
+  @override
+  String get backupWarningTitle => 'Le fichier de sauvegarde n’est pas chiffré';
+
+  @override
+  String get backupWarningBody => 'La sauvegarde contient toutes vos données de cycle et de santé en clair. Les données sur l’appareil sont chiffrées, mais pas ce fichier. Faites attention à l’endroit où vous l’enregistrez et à qui vous le partagez.';
+
+  @override
+  String get backupNever => 'Vous n’avez encore jamais fait de sauvegarde.';
+
+  @override
+  String get backupStaleHint => 'Si vous perdez votre téléphone, les données seront irrécupérables.';
+
+  @override
+  String backupLastAt(String date) {
+    return 'Dernière sauvegarde : $date';
+  }
+
+  @override
+  String get durationsStepTitle => 'Vos données de cycle';
+
+  @override
+  String get durationsStepHelp => 'Pas sûre ? Laissez tel quel — vous pourrez les modifier dans les réglages.';
+
+  @override
+  String get lockTimeoutTitle => 'Délai de verrouillage';
+
+  @override
+  String get lockTimeoutDesc => 'Pas de code si vous revenez après un court instant';
+
+  @override
+  String get lockImmediately => 'Immédiatement';
+
+  @override
+  String get previousDay => 'Jour précédent';
+
+  @override
+  String get nextDay => 'Jour suivant';
+
+  @override
+  String get showLegend => 'Légende des couleurs';
+
+  @override
+  String get hideLegend => 'Masquer la légende';
+
+  @override
+  String get backToToday => 'Revenir à aujourd’hui';
+
+  @override
+  String get monthNoRecords => 'Aucune donnée ce mois-ci';
+
+  @override
+  String get doctorSummary => 'Exporter un résumé pour mon médecin';
+
+  @override
+  String get healthImport => 'Importer depuis Health Connect';
+
+  @override
+  String get healthImportAction => 'Importer';
+
+  @override
+  String get allTime => 'Tout';
+
+  @override
+  String get actionPeriodStarted => 'Mes règles ont commencé';
+
+  @override
+  String get actionMedicationTaken => 'Pris';
+
+  @override
+  String get pregnancyTestReady => 'Un test de grossesse peut désormais être fiable';
+
+  @override
+  String notLoggedToday(String what) {
+    return 'Aucune saisie aujourd’hui : $what';
+  }
+
+  @override
+  String pregnancyTestFrom(String date) {
+    return 'Test fiable à partir du $date';
+  }
+
+  @override
+  String pillBreakIn(int days) {
+    return 'La pause commence dans $days jours';
+  }
+
+  @override
+  String pillNewPackIn(int days) {
+    return 'Nouvelle plaquette dans $days jours';
+  }
+
+  @override
+  String get healthImportNothingNew => 'Aucune nouvelle donnée à importer';
+
+  @override
+  String healthImportConfirm(int count) {
+    return '$count périodes trouvées dans Health Connect et absentes de l’app. Les ajouter à vos données ? Vos données existantes ne changent pas.';
+  }
+
+  @override
+  String healthImportDone(int count) {
+    return '$count périodes importées';
+  }
+
+  @override
+  String monthPeriodDays(int count) {
+    return '$count jours de règles';
+  }
+
+  @override
+  String monthLoggedDays(int count) {
+    return '$count jours renseignés';
+  }
+
+  @override
+  String get pinNoRecoveryWarning => 'Si vous oubliez votre code, il n’y a aucun moyen de le récupérer ; la seule issue est de supprimer toutes vos données. Choisissez un code dont vous vous souviendrez.';
+
+  @override
+  String lockAfterMinutes(int minutes) {
+    return 'Après $minutes min';
+  }
+
+  @override
   String get reportTitle => 'Rapport de santé du cycle';
 
   @override

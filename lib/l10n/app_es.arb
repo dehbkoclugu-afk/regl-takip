@@ -425,6 +425,221 @@
   "coachPersonalInsight": "Según tus registros, lo más frecuente en esta fase: {symptom} ({percent}%)",
   "notificationInsightTitle": "Consejo de fase",
   "notificationInsightBody": "Empieza la fase lútea. Según tus registros, tu síntoma más frecuente en esta fase: {symptom}.",
+  "notificationPeriodTitle": "Recordatorio de regla",
+  "notificationPeriodTimingToday": "Tu regla podría empezar hoy.",
+  "notificationPeriodTimingTomorrow": "Tu regla podría empezar mañana.",
+  "notificationPeriodTimingInDays": "Tu regla podría empezar en {days} días.",
+  "@notificationPeriodTimingInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "notificationPeriodTip1": "Recuerda llevar una compresa o un tampón.",
+  "notificationPeriodTip2": "Un poco de preparación lo hace todo más fácil.",
+  "notificationPeriodTip3": "Registrar el inicio mejora tus predicciones.",
+  "notificationPeriodChannel": "Recordatorio de regla",
+  "notificationPeriodChannelDesc": "Recordatorios del ciclo menstrual",
+  "notificationOvulationTitle": "Recordatorio de ovulación",
+  "notificationOvulationBody": "Hoy es tu día de ovulación. ¡Estás en tu ventana fértil!",
+  "notificationOvulationChannel": "Recordatorio de ovulación",
+  "notificationOvulationChannelDesc": "Recordatorios de ovulación",
+  "notificationMedicationTitle": "Recordatorio de medicación",
+  "notificationMedicationBody": "¡No olvides tomar tu medicación!",
+  "notificationMedicationChannel": "Recordatorio de medicación",
+  "notificationMedicationChannelDesc": "Recordatorios de medicación",
+  "notificationDiscreetTitle": "Recordatorio",
+  "notificationDiscreetBody": "Tienes un recordatorio para hoy",
+  "notificationFertileTitle": "Empieza tu ventana fértil",
+  "notificationFertileBody": "Desde hoy estás en los días con mayor probabilidad de concebir.",
+  "notificationChainEndTitle": "Los recordatorios se pausan",
+  "notificationChainEndBody": "Los recordatorios programados se han agotado. Abre la app para crear nuevos.",
+  "noPurchasesToRestore": "No se encontraron compras para restaurar",
+  "restoringPurchases": "Restaurando compras…",
+  "backdateHint": "Mantén pulsado para elegir otro día",
+  "periodStartDateHelp": "¿Cuándo empezó tu regla?",
+  "periodEndDateHelp": "¿Cuándo terminó tu regla?",
+  "headlinePeriodToday": "Tu regla puede empezar hoy",
+  "headlinePeriodTomorrow": "Tu regla puede empezar mañana",
+  "headlineNoData": "Añade la fecha de tu última regla",
+  "headlinePeriodInDays": "Tu regla en {days} días",
+  "@headlinePeriodInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "headlinePeriodDay": "Día {day} de tu regla",
+  "@headlinePeriodDay": {
+    "placeholders": {
+      "day": {"type": "int"}
+    }
+  },
+  "headlineDelaySubtitle": "Cierta variación es normal. Regístrala si ya empezó.",
+  "notificationDelayTitle": "La fecha prevista ya pasó",
+  "notificationDelayBody": "Si tu regla ya empezó, recuerda registrarla. Cierta variación es normal.",
+  "notificationDelayBodyAlt1": "Aún no hay ningún registro. Si ya empezó, basta un toque.",
+  "notificationDelayBodyAlt2": "Un desfase de unos días es habitual. ¿Tu registro está al día?",
+  "notificationDelayChannel": "Recordatorio de retraso",
+  "notificationDelayChannelDesc": "Recordatorio cuando la fecha prevista ha pasado",
+  "headlineDelay": "Tu regla lleva {days} días de retraso",
+  "@headlineDelay": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "delayDays": "{days} días de retraso",
+  "@delayDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "yourDataStays": "Tus registros permanecen en tu dispositivo al terminar la prueba.",
+  "periodStartedOnThisDay": "Mi regla empezó este día",
+  "nCyclesRecorded": "{count} ciclos registrados",
+  "@nCyclesRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "nLogsRecorded": "{count} registros diarios",
+  "@nLogsRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notifPermissionTitle": "¿Activar recordatorios?",
+  "notifPermissionBody": "Te avisamos cuando se acerca tu regla, el día de ovulación y cuando la fecha prevista ha pasado. Las notificaciones nunca salen de tu dispositivo. También puedes activarlas luego en ajustes.",
+  "enableNotifications": "Activar",
+  "notNow": "Ahora no",
+  "optionalField": "Opcional",
+  "privacyAssurance": "Tus datos quedan cifrados solo en este dispositivo",
+  "dontRememberExactly": "No lo recuerdo exactamente",
+  "approxTitle": "¿Aproximadamente cuándo fue?",
+  "approxSubtitle": "Basta una fecha aproximada. Las predicciones se corrigen a medida que registras.",
+  "approxThisWeek": "Esta semana",
+  "approxLastWeek": "La semana pasada",
+  "approxTwoWeeks": "Hace unas 2 semanas",
+  "approxThreeWeeks": "Hace unas 3 semanas",
+  "approxMonthOrMore": "Hace un mes o más",
+  "cycleReminderTime": "Hora de recordatorios del ciclo",
+  "medicationReminderTime": "Hora de recordatorios de medicación",
+  "periodReminderLead": "Recordatorio de regla",
+  "notificationQuietChannelSuffix": "silencioso",
+  "quietNotifications": "Notificaciones silenciosas",
+  "quietNotificationsDesc": "Sin sonido ni ventana emergente, solo en la barra de notificaciones",
+  "leadSameDay": "El mismo día",
+  "leadNDaysBefore": "{days} días antes",
+  "@leadNDaysBefore": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "regularityInfoIrregular": "Hay 9 días o más entre tu ciclo más corto y el más largo. Que la duración del ciclo varíe es muy común; el estrés, el sueño, las enfermedades y los cambios de vida influyen. Esto no es un diagnóstico.",
+  "regularityInfoRegular": "La diferencia entre tu ciclo más corto y el más largo es menor de 9 días. Las predicciones son más precisas con esta consistencia.",
+  "regularityInfoSeeDoctor": "Si tu ciclo es siempre más corto de 21 días o más largo de 35, si llevas más de tres meses sin regla o si el sangrado es inusualmente abundante, conviene consultar a un profesional sanitario.",
+  "typicalRangeNote": "Rango habitual: ciclo {min}–{max} días, regla hasta {pmax} días. No es un criterio diagnóstico.",
+  "@typicalRangeNote": {
+    "placeholders": {
+      "min": {"type": "int"},
+      "max": {"type": "int"},
+      "pmax": {"type": "int"}
+    }
+  },
+  "lowConfidenceNote": "Estas medias salen de solo {count} ciclos; se afinarán a medida que registres más.",
+  "@lowConfidenceNote": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "regularityInfoInsufficient": "Hacen falta al menos {count} intervalos de ciclo para hablar de regularidad. Con menos, el juicio induciría a error.",
+  "@regularityInfoInsufficient": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "backupWarningTitle": "El archivo de copia no está cifrado",
+  "backupWarningBody": "La copia contiene todos tus registros de ciclo y salud en formato legible. Los datos del dispositivo están cifrados, pero este archivo no. Ten cuidado con dónde lo guardas y con quién lo compartes.",
+  "backupNever": "Aún no has hecho ninguna copia.",
+  "backupStaleHint": "Si pierdes el teléfono, los registros no se podrán recuperar.",
+  "backupLastAt": "Última copia: {date}",
+  "@backupLastAt": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "durationsStepTitle": "Los datos de tu ciclo",
+  "durationsStepHelp": "¿No estás segura? Déjalos así: puedes cambiarlos luego en ajustes.",
+  "lockTimeoutTitle": "Retardo de bloqueo",
+  "lockTimeoutDesc": "Sin PIN si vuelves tras un momento breve",
+  "lockImmediately": "Inmediatamente",
+  "previousDay": "Día anterior",
+  "nextDay": "Día siguiente",
+  "showLegend": "Leyenda de colores",
+  "hideLegend": "Ocultar leyenda",
+  "backToToday": "Volver a hoy",
+  "monthNoRecords": "Sin registros este mes",
+  "doctorSummary": "Exportar resumen para mi médico",
+  "healthImport": "Importar desde Health Connect",
+  "healthImportAction": "Importar",
+  "allTime": "Todo",
+  "actionPeriodStarted": "Mi regla empezó",
+  "actionMedicationTaken": "Tomado",
+  "pregnancyTestReady": "Una prueba de embarazo ya puede ser fiable",
+  "notLoggedToday": "Hoy sin registro de {what}",
+  "@notLoggedToday": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
+  "pregnancyTestFrom": "Prueba fiable a partir del {date}",
+  "@pregnancyTestFrom": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "pillBreakIn": "El descanso empieza en {days} días",
+  "@pillBreakIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "pillNewPackIn": "Nueva caja en {days} días",
+  "@pillNewPackIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "healthImportNothingNew": "No se encontraron registros nuevos para importar",
+  "healthImportConfirm": "Se encontraron {count} periodos en Health Connect que no están en la app. ¿Añadirlos a tus registros? Tus registros actuales no cambian.",
+  "@healthImportConfirm": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "healthImportDone": "{count} periodos importados",
+  "@healthImportDone": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthPeriodDays": "{count} días de regla",
+  "@monthPeriodDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthLoggedDays": "{count} días registrados",
+  "@monthLoggedDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "pinNoRecoveryWarning": "Si olvidas tu PIN no hay forma de recuperarlo; la única salida es borrar todos tus datos. Elige algo que recuerdes.",
+  "lockAfterMinutes": "Tras {minutes} min",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
   "reportTitle": "Informe de salud del ciclo",
   "reportGenerated": "Generado",
   "profileSummary": "Resumen del perfil",

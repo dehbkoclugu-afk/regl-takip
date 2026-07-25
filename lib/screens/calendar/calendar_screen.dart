@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -17,6 +18,7 @@ import '../../core/utils/ring_segments.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
 import '../log/quick_log_sheet.dart';
+import '../period_history/period_record_editor.dart';
 import '../../models/daily_log.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
@@ -38,6 +40,26 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   // Uzun-bas önizleme baloncuğu: sheet törenine girmeden hızlı bakış
   OverlayEntry? _peekEntry;
   Timer? _peekTimer;
+
+  /// Renk anlamları her açılışta yer kaplıyordu. İlk birkaç kullanımdan
+  /// sonra kullanıcı renkleri biliyor; kapatılabilir ve tercih kalıcı.
+  static const String _legendHiddenKey = 'calendar_legend_hidden';
+  bool _legendHidden = false;
+
+  @override
+  void initState() {
+    super.initState();
+    SharedPreferences.getInstance().then((prefs) {
+      final hidden = prefs.getBool(_legendHiddenKey) ?? false;
+      if (mounted && hidden) setState(() => _legendHidden = true);
+    });
+  }
+
+  Future<void> _setLegendHidden(bool hidden) async {
+    setState(() => _legendHidden = hidden);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_legendHiddenKey, hidden);
+  }
 
   @override
   void dispose() {
@@ -101,7 +123,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         child: IgnorePointer(
           child: TweenAnimationBuilder<double>(
             tween: Tween(begin: 0, end: 1),
-            duration: const Duration(milliseconds: 160),
+            duration: context.motionDuration(const Duration(milliseconds: 160)),
             curve: Curves.easeOut,
             builder: (context, t, child) => Opacity(
               opacity: t,
@@ -186,12 +208,16 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         Timer(const Duration(milliseconds: 2500), _removePeek);
   }
 
-  bool _isPeriodDay(DateTime day, List<PeriodRecord> records) {
+  /// Günün düştüğü regl kaydı; yoksa null.
+  PeriodRecord? _recordForDay(DateTime day, List<PeriodRecord> records) {
     for (final record in records) {
-      if (record.containsDate(day)) return true;
+      if (record.containsDate(day)) return record;
     }
-    return false;
+    return null;
   }
+
+  bool _isPeriodDay(DateTime day, List<PeriodRecord> records) =>
+      _recordForDay(day, records) != null;
 
   // Faz-adaptif vurgu (kontrollü): "bugün" işareti güncel fazın rengini
   // giyer — uygulama yaşayan bir döngüyü izlediğini hissettirir.
@@ -248,7 +274,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               focusedDay: _focusedDay,
               calendarFormat: _calendarFormat,
               locale: Localizations.localeOf(context).toString(),
-              startingDayOfWeek: StartingDayOfWeek.monday,
+              // Haftanın ilk günü sabit pazartesiydi: İngilizce seçen
+              // kullanıcı ay adlarını ve gün kısaltmalarını kendi dilinde
+              // görürken takvim yine pazartesiyle başlıyordu. Artık seçilen
+              // dilin kendi kuralı geçerli — İngilizcede pazar, Türkçe /
+              // Almanca / Fransızca / Rusçada pazartesi.
+              startingDayOfWeek: _startingDayOfWeek(context),
               selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
               onDaySelected: (selectedDay, focusedDay) {
                 setState(() {
@@ -309,8 +340,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                         AppColors.isDark(context))),
                 selectedDecoration: const BoxDecoration(
                     color: AppColors.primary, shape: BoxShape.circle),
+                // Seçili gün de aynı tuzaktaydı: pastel pembe zeminde beyaz
+                // rakam 2,06:1. Koyu metinle 6,60:1
                 selectedTextStyle: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.white),
+                    fontWeight: FontWeight.bold, color: AppColors.textPrimary),
               ),
               calendarBuilders: CalendarBuilders(
                 defaultBuilder: (ctx, day, focused) =>
@@ -328,17 +361,53 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               .animateSafe(context)
               .fadeIn(delay: 150.ms, duration: 400.ms),
           const SizedBox(height: 16),
+          // Görünen ayın tek satırlık özeti: ay geçişinde bağlam
+          // kayboluyordu ("bu ayda ne oldu?" sorusu cevapsızdı)
+          _buildMonthSummary(l10n, records, dailyLogs)
+              .animateSafe(context)
+              .fadeIn(delay: 200.ms, duration: 400.ms),
+          const SizedBox(height: 12),
+          // Efsane kapatılabilir: renk anlamları ilk birkaç kullanımdan
+          // sonra biliniyor ama her açılışta yer kaplıyordu
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _legendItem(AppColors.periodDay, l10n.periodDayLabel),
-                _legendItem(AppColors.predictedPeriod, l10n.predicted),
-                _legendItem(AppColors.ovulationDay, l10n.ovulation),
-                _legendItem(AppColors.fertileWindow, l10n.fertile),
-              ],
-            ),
+            child: _legendHidden
+                ? Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton.icon(
+                      onPressed: () => _setLegendHidden(false),
+                      icon: const Icon(Icons.help_outline_rounded, size: 16),
+                      label: Text(l10n.showLegend),
+                      style: TextButton.styleFrom(
+                          foregroundColor: AppColors.ts(context),
+                          textStyle: const TextStyle(fontSize: 12)),
+                    ),
+                  )
+                : Row(
+                    children: [
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _legendItem(
+                                AppColors.periodDay, l10n.periodDayLabel),
+                            _legendItem(
+                                AppColors.predictedPeriod, l10n.predicted),
+                            _legendItem(
+                                AppColors.ovulationDay, l10n.ovulation),
+                            _legendItem(
+                                AppColors.fertileWindow, l10n.fertile),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => _setLegendHidden(true),
+                        icon: const Icon(Icons.close_rounded, size: 16),
+                        tooltip: l10n.hideLegend,
+                        color: AppColors.ts(context),
+                      ),
+                    ],
+                  ),
           ).animateSafe(context).fadeIn(delay: 300.ms, duration: 500.ms),
           // Spacer uyarıyı en dibe itip üstte ölü boşluk bırakıyordu —
           // içerik doğal akışında, uyarı hemen lejantın altında
@@ -368,6 +437,15 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       ),
     );
   }
+
+  /// Haftanın ilk günü, seçilen dilin kendi kuralından.
+  ///
+  /// `MaterialLocalizations.firstDayOfWeekIndex` uygulamanın etkin
+  /// yerelinden gelir (cihazınkinden değil), yani dil seçimi takvimi de
+  /// yönetir.
+  StartingDayOfWeek _startingDayOfWeek(BuildContext context) =>
+      startingDayOfWeekFromIndex(
+          MaterialLocalizations.of(context).firstDayOfWeekIndex);
 
   Widget _buildDayCell(DateTime day, UserProfile? profile,
       List<PeriodRecord> records, Map<String, DailyLog> dailyLogs, bool isToday) {
@@ -400,16 +478,22 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     // renk körlüğünde ikisi aynı görünür, kesikli olmayan bir çerçeve ekle
     Border? border;
 
+    // Pastel zeminde beyaz gün numarası okunmuyordu: regl hücresinde
+    // 2,06:1, ovülasyonda 2,66:1 (AA sınırı 4,5:1) — kod tabanının kendi
+    // kuralı ("pastel primary beyazla 2.06:1, zemin olarak kullanılamaz")
+    // burada atlanmıştı. Tahmin hücresi de pembe metinle 2,50:1'deydi.
+    // Koyu metin üçünü de kurtarıyor (6,60 / 5,10 / 11,27:1) ve hücreler
+    // zaten zemin + çerçeve + desenle ayrışıyor.
     if (isPeriod) {
       bgColor = AppColors.periodDay;
-      textColor = Colors.white;
+      textColor = AppColors.textPrimary;
     } else if (isPredicted) {
       bgColor = AppColors.periodDayLight;
-      textColor = AppColors.primaryDark;
+      textColor = AppColors.textPrimary;
       border = Border.all(color: AppColors.periodDay, width: 1.5);
     } else if (isOvulation) {
       bgColor = AppColors.ovulationDay;
-      textColor = Colors.white;
+      textColor = AppColors.textPrimary;
     } else if (isFertile) {
       bgColor = AppColors.fertileWindowLight;
       textColor = AppColors.fertileWindowText;
@@ -447,15 +531,40 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   shape: BoxShape.circle,
                   border: border,
                 ),
-                child: Center(
-                  child: Text(
-                    '${day.day}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: isToday ? FontWeight.bold : FontWeight.w600,
-                      color: textColor,
+                // Desen modu hücrelere hiç uygulanmıyordu: ring ve şeritler
+                // dokuluyken takvimin kendisi düz kalıyordu ve ovülasyon
+                // moru ile regl pembesi renk körlüğünde birbirine yakın iki
+                // soluk tona düşüyor.
+                //
+                // Şeritlerdeki gibi foregroundDecoration OLAMAZ: orada çocuk
+                // yok, burada gün numarası var ve desen onun da üstüne
+                // binerdi (yarı saydam beyaz çizgiler rakamı soldururdu).
+                // Desen metnin ALTINA ayrı bir katman olarak konur;
+                // StackFit.expand ikisini de hücreyi dolduracak şekilde
+                // ölçer (gevşek yığın deseni yalnız rakam kadar boyardı).
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    if (bgColor != null && ref.watch(phasePatternProvider))
+                      DecoratedBox(
+                        decoration: patternOverlayFor(
+                              bgColor,
+                              radius: BorderRadius.circular(20),
+                            ) ??
+                            const BoxDecoration(),
+                      ),
+                    Center(
+                      child: Text(
+                        '${day.day}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight:
+                              isToday ? FontWeight.bold : FontWeight.w600,
+                          color: textColor,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
               if (hasLog)
@@ -582,6 +691,61 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     return segmentColorForDay(segments, day);
   }
 
+  /// Görünen ayın tek satırlık özeti + bugüne dönüş.
+  ///
+  /// Önceki aya gidince "bu ayda ne oldu" sorusu cevapsız kalıyordu ve
+  /// birkaç ay geriye kaydıran kullanıcı bugüne elle dönmek zorundaydı.
+  Widget _buildMonthSummary(AppLocalizations l10n,
+      List<PeriodRecord> records, Map<String, DailyLog> dailyLogs) {
+    final now = DateTime.now();
+    final isCurrentMonth =
+        _focusedDay.year == now.year && _focusedDay.month == now.month;
+
+    // Görünen ayın gün sayısı: bir sonraki ayın 0. günü
+    final daysInMonth =
+        DateTime(_focusedDay.year, _focusedDay.month + 1, 0).day;
+    var periodDays = 0;
+    var loggedDays = 0;
+    for (var d = 1; d <= daysInMonth; d++) {
+      final day = DateTime(_focusedDay.year, _focusedDay.month, d);
+      if (_isPeriodDay(day, records)) periodDays++;
+      final key = '${day.year}-${day.month.toString().padLeft(2, '0')}-'
+          '${day.day.toString().padLeft(2, '0')}';
+      if (dailyLogs.containsKey(key)) loggedDays++;
+    }
+
+    final parts = <String>[
+      if (periodDays > 0) l10n.monthPeriodDays(periodDays),
+      if (loggedDays > 0) l10n.monthLoggedDays(loggedDays),
+    ];
+    final summary = parts.isEmpty ? l10n.monthNoRecords : parts.join(' · ');
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              summary,
+              style: TextStyle(fontSize: 12, color: AppColors.ts(context)),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (!isCurrentMonth)
+            TextButton(
+              onPressed: () => setState(() => _focusedDay = now),
+              style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primaryStrong,
+                  textStyle: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w700)),
+              child: Text(l10n.backToToday),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _legendItem(Color color, String label) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -599,12 +763,64 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
   }
 
+  /// Seçilen günde regl başlatır. Ana ekrandaki butonla aynı sözleşme:
+  /// onay diyaloğu yerine 6 saniyelik geri al.
+  ///
+  /// Ana ekrandan farklı olarak burada devam eden bir kayıt varken de
+  /// çağrılabiliyor ve `startPeriod` o durumda ya devam eden kaydı kapatıyor
+  /// ya da (gün kaydın başlangıcında/öncesindeyse) mevcut kaydı geri
+  /// döndürüyor. Geri al bunları bilmezse kullanıcının eski kaydını siler
+  /// ya da kapanmış bir kaydı açık sanır — bu yüzden önceki durum önce
+  /// yakalanır.
+  Future<void> _startPeriodOn(DateTime day) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final recordsNotifier = ref.read(periodRecordsProvider.notifier);
+    final profileNotifier = ref.read(userProfileProvider.notifier);
+    final prevProfile = ref.read(userProfileProvider);
+
+    final before = ref.read(periodRecordsProvider);
+    final idsBefore = before.map((r) => r.id).toSet();
+    final ongoingBefore =
+        before.where((r) => r.isOngoing).map((r) => r.id).toList();
+
+    HapticFeedback.mediumImpact();
+    final record = await recordsNotifier.startPeriod(day);
+    // Mevcut bir kayıt döndürüldüyse yeni kayıt oluşmamıştır
+    final created = !idsBefore.contains(record.id);
+    await profileNotifier.saveProfile(lastPeriodStart: record.startDate);
+
+    messenger.showSnackBar(SnackBar(
+      content: Text(l10n.periodMarkedStarted),
+      duration: const Duration(seconds: 6),
+      action: SnackBarAction(
+        label: l10n.undo,
+        onPressed: () async {
+          if (created) {
+            await recordsNotifier.deleteRecord(record.id);
+          }
+          // Kapatılmış olabilecek kayıtlar yeniden açılır
+          for (final id in ongoingBefore) {
+            if (id != record.id) await recordsNotifier.reopenRecord(id);
+          }
+          if (prevProfile != null) {
+            await profileNotifier.updateProfile(prevProfile);
+          } else {
+            profileNotifier.refresh();
+          }
+        },
+      ),
+    ));
+  }
+
   void _showDayDetailSheet(BuildContext context, DateTime day,
       List<PeriodRecord> records, Map<String, DailyLog> dailyLogs) {
     final dateKey =
         '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
     final log = dailyLogs[dateKey];
     final isPeriod = _isPeriodDay(day, records);
+    // Gün bir kayda düşüyorsa eylem "düzenle", düşmüyorsa "burada başladı"
+    final recordForDay = _recordForDay(day, records);
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).toString();
     final dateStr = DateFormat('d MMMM yyyy, EEEE', locale).format(day);
@@ -675,8 +891,36 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           style: TextStyle(
                               fontSize: 14, color: AppColors.ts(context))),
                     const SizedBox(height: 16),
-                    // Geçmiş güne hızlı kayıt: sheet kapatılıp quick log açılır
-                    if (!day.isAfter(DateTime.now()))
+                    // Regl eylemi bilerek premium kapısının dışında: takvim
+                    // ücretsiz katmanın vaadinin parçası ve o katmanda
+                    // buradan hiçbir şey işaretlenemiyordu — gün sayfası
+                    // salt okunur bir kartondu
+                    if (!day.isAfter(DateTime.now())) ...[
+                      SizedBox(
+                        width: double.infinity,
+                        child: recordForDay != null
+                            ? OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.of(sheetContext).pop();
+                                  showPeriodRecordEditor(
+                                      context, ref, recordForDay);
+                                },
+                                icon: const Icon(Icons.edit_calendar_rounded,
+                                    size: 18),
+                                label: Text(l10n.editPeriodRecord),
+                              )
+                            : OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.of(sheetContext).pop();
+                                  _startPeriodOn(day);
+                                },
+                                icon: const Icon(Icons.water_drop_rounded,
+                                    size: 18),
+                                label: Text(l10n.periodStartedOnThisDay),
+                              ),
+                      ),
+                      const SizedBox(height: 8),
+                      // Günlük kayıt (akış, ruh hâli, semptom) premium kapsamı
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
@@ -689,6 +933,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           label: Text(l10n.quickLog),
                         ),
                       ),
+                    ],
                   ],
                 ),
               ),
@@ -730,3 +975,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
   }
 }
+
+/// Flutter'ın hafta başlangıcı indeksini table_calendar'ın enum'una çevirir.
+///
+/// İki sayım farklı yerden başlıyor: `firstDayOfWeekIndex` 0 = pazar,
+/// `StartingDayOfWeek.values` ise 0 = pazartesi. Kaydırma bu yüzden.
+StartingDayOfWeek startingDayOfWeekFromIndex(int firstDayOfWeekIndex) =>
+    StartingDayOfWeek.values[(firstDayOfWeekIndex + 6) % 7];

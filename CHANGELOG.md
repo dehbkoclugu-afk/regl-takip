@@ -1,5 +1,289 @@
 # Changelog
 
+## Yayınlanmamış — Haftanın ilk günü seçilen dilden geliyor (2026-07-25)
+
+Tasarım incelemesinin yirmi dördüncü grubu (`docs/tasarim-onerileri.md` madde 82, 84).
+
+- **Madde 84'ün iki iddiası da yanlıştı.** "Tarih biçimi sistem yerelinden geliyor" demiştim: gelmiyormuş — her `DateFormat` uygulamanın etkin yerelini alıyor, o da profildeki dil seçimini izliyor (`localeProvider` → `MaterialApp.locale`). Zaten doğruymuş
+- **"Haftanın ilk günü sistem yerelinden geliyor" da yanlıştı**, üstelik verdiğim örneğin tersi yönde: `startingDayOfWeek` sabit `monday` yazılıydı, yani hafta hiçbir zaman pazar başlamıyordu
+- **Gerçek eksik buydu ve düzeltildi**: İngilizce seçen kullanıcı ay adlarını ve gün kısaltmalarını kendi dilinde görürken takvim yine pazartesiyle başlıyordu. Artık seçilen dilin kendi kuralı geçerli (`MaterialLocalizations.firstDayOfWeekIndex`) — İngilizcede pazar, Türkçe / Almanca / İspanyolca / Fransızca / Rusçada pazartesi
+- **İki sayım farklı yerden başlıyor**: Flutter'ın indeksi 0 = pazar, `table_calendar`'ın enum'u 0 = pazartesi. Kaydırmayı gözle doğrulamak zor olduğu için eşleme ayrı bir fonksiyona alındı ve yedi indeksin hepsi test edildi (`week_start_test.dart`)
+- **Madde 82 (klavye gezinmesi) açık bırakıldı**: cihaz olmadan doğrulanamaz, o yüzden tahmine dayalı bir "düzeltme" yazılmadı. Yapısal engel de bulunamadı — kod tabanında yalnız iki `GestureDetector` var ve ikisi de bilinçli (gizli moddan çıkış kapısı klavyeyle erişilebilir *olmamalı*; ring'in segment seçiminin bilgisi merkez içerikte ve takvimde zaten var), geri kalan her etkileşim odaklanabilir `InkWell` ya da Material butonu
+
+## Yayınlanmamış — Renk körlüğü: takvim hücreleri ve pasta lejantı (2026-07-25)
+
+Tasarım incelemesinin yirmi üçüncü grubu (`docs/tasarim-onerileri.md` madde 79, 80).
+
+- **Madde 79'da saydığım üç yer yanlış seçilmişti**: akış yoğunluğunda damla sayısı (1–4) + etiket, ruh hâlinde emoji + etiket, semptomda ikon + etiket var. Renk hiçbirinde tek kanal değil — oralara desen eklemek gürültü olurdu
+- **Renk gerçekten tek kanal olan iki yer bulundu.** Birincisi **takvim hücreleri**: desen modu açıkken ring ve şeritler dokuluyken hücrelerin kendisi düz kalıyordu, çünkü hücreler ring tonlarını değil kendi pastel paletini kullanıyor ve eşleme tablosunda yoklardı. Ovülasyon moru ile regl pembesi deuteranopiada birbirine yakın iki soluk tona düşüyordu
+- **Aynı fazın takvim karşılığı ring'dekiyle aynı dokuyu alıyor**: fertil dikey, ovülasyon ters çapraz (fertilden ayrışsın diye), foliküler çapraz, luteal yatay, regl düz. İki ekranda aynı doku, aynı anlam
+- İkincisi **ruh hâli pastası**: dilimi lejanttaki adına bağlayan tek şey renkti ve palet pastel — deuteranopiada sarı/turuncu/yeşil noktalar birbirine karışıyor. Lejant artık yüzdeyi de yazıyor, dilimin içindeki "%38" ile eşleşiyor
+- **Desen metnin altına konuldu, üstüne değil**: şeritlerde `foregroundDecoration` doğru çünkü orada çocuk yok; hücrede gün numarası var ve yarı saydam beyaz çizgiler rakamı soldururdu. Ayrı bir katman + `StackFit.expand` (gevşek yığın deseni yalnız rakam kadar boyardı)
+- **Yolda ayrı bir kontrast hatası çıktı**: takvim hücrelerinde gün numarası pastel zeminde **beyaz** yazılıyordu — regl hücresinde 2,06:1, ovülasyonda 2,66:1, seçili günde 2,06:1, tahmin hücresinde pembe metinle 2,50:1. Kod tabanının kendi kuralı zaten yazılıydı ("pastel primary beyazla 2.06:1, zemin olarak kullanılamaz"), takvimde atlanmıştı. Dördü de koyu metne çevrildi (5,10–11,27:1)
+- **Madde 80 geri çekildi**: "fl_chart görselleri için metin alternatifi yok" demiştim; üç grafiğin üçü de `Semantics` + `ExcludeSemantics` çiftiyle sarılıymış ve veriyi metin olarak duyuruyormuş (çubukta "semptom: sayı", pastada "ruh hâli: %", çizgide "son / min / maks"). Benim incelememden önce eklenmiş
+
+## Yayınlanmamış — Hareket azaltma ve ring'in ekran okuyucu etiketi (2026-07-25)
+
+Tasarım incelemesinin yirmi ikinci grubu (`docs/tasarim-onerileri.md` madde 81, 83).
+
+- **Madde 81'in gerekçesi yanlıştı**: "`animate()` doğrudan çağrılan yerler kalmış" demiştim; kod tabanındaki tek `.animate()` çağrısı `animateSafe`'in kendi içinde. flutter_animate tarafı eksiksizmiş
+- **Asıl boşluk örtük animasyonlardaydı**: `AnimatedContainer`, `AnimatedSwitcher`, `AnimatedScale`, `AnimatedSize`, `AnimatedDefaultTextStyle` ve `TweenAnimationBuilder` sistem "animasyonları azalt" ayarını kendiliğinden dinlemiyor. 26 örtük animasyonun 19'unda hiçbir şey yoktu; 6'sında elle `motionEnabled ? ... : Duration.zero` yazılmıştı
+- **Kalıp tek yere toplandı**: `context.motionDuration(...)`. Maddenin asıl sözü ("kalıp her yerde aynı olmalı") böyle yerine geldi. Süre sıfır olunca widget hedef durumuna anında geçiyor — `autoPlay: false`'un içeriği görünmez bırakma tuzağı burada yok
+- **Madde 83'ün örneği de yanlıştı**: ring'in etiketi zaten "Döngü günü: 12 / 28. 16 gün sonra" diyordu, gün numarası duyuruluyordu
+- **Ama etiketi okuyunca iki gerçek eksik çıktı**: faz adı hiç duyurulmuyordu (ortadaki glif ve renk göreni bilgilendiriyor, görmeyeni değil), ve **gecikmede "Bugün!" deniyordu** — görünen rozet "3 gün gecikme" yazarken ekran okuyucu yanlış bilgi veriyordu. Etiket artık gördüğünün aynısını söylüyor: faz + gün + durum
+- **Faz adı için üçüncü kopya yazılmadı**: ana ekran ve istatistik ekranı aynı switch'i birebir kopyalamıştı, `EnumLabels.phase` eklenip ikisi de ona bağlandı
+
+## Yayınlanmamış — Sessiz bildirimler (2026-07-25)
+
+Tasarım incelemesinin yirmi birinci grubu (`docs/tasarim-onerileri.md` madde 71).
+
+- **Tek anahtar, bütün türler** (madde 71): ayarlarda yalnız tür başına aç/kapa vardı, "bildirim istiyorum ama telefonum çalmasın" diyen kullanıcının tek seçeneği hepsini kapatmaktı. Yeni "sessiz bildirimler" anahtarı ses ve açılır baloncuğu kaldırıyor, bildirim yalnız gölgelikte duruyor
+- **Gizlilik faydası da var**: kilit ekranında öne çıkmayan bildirim yandaki kişiye görünmüyor
+- **Android'in kanal tuzağı**: kanalın önem derecesi kanal *oluşturulurken* sabitlenir, sonradan gönderilen `importance` yok sayılır. Aynı kanal kimliğiyle gönderilseydi anahtar hiçbir şey değiştirmezdi — sessiz sürüm kendi kanalını kullanıyor (`_quiet` sonekli kimlik, kanal adında da görünen bir işaret)
+- **Tercih değişince bildirimler yeniden planlanıyor**: kanal kimliği değiştiği için kurulu bildirimler eski kanalda kalırdı
+- **Yedi kopya bloğu bire indi**: her planlama metodu kendi `NotificationDetails` bloğunu kopyalıyordu; sessizlik hepsine dokunmayı gerektirdiği için tek bir `_details` yardımcısına toplandı. Sessizlik kapalıyken üretilen değerler eskisiyle birebir aynı (regl/ovülasyon/ilaç yüksek önem + ses; gecikme, faz ipucu, zincir sonu varsayılan önem + sessiz iOS)
+- **Sıklık ayarı yapılmadı**: türler zaten ayrı ayrı açılıp kapanıyor ve her tür döngüde bir kez gidiyor — "sıklık" burada somut bir karşılığı olmayan bir istek. Madde kısmi olarak işaretlendi
+- Profil alanı 26 (`quietNotifications`, varsayılan kapalı), Hive adaptörü elle güncellendi, üç yeni test + yedek gidiş-dönüşüne iki doğrulama. 3 yeni metin altı dile eklendi
+
+## Yayınlanmamış — Bildirimler: zincirin sonu, verimli pencere, metin çeşitliliği (2026-07-25)
+
+Tasarım incelemesinin yirminci grubu (`docs/tasarim-onerileri.md` madde 72, 73, 74).
+
+- **Regl bildirimi yanlış gün söylüyordu** (madde 74'ü ararken çıktı): gövde "yarın başlayabilir" diye sabitti, oysa madde 68 ile hatırlatma penceresi ayarlanabilir olmuştu. 3 gün önceye kurulan bildirim yine "yarın" diyordu. Gövde artık pencereye göre kuruluyor: bugün / yarın / N gün sonra
+- **Metin ile tarih aynı değeri kullanıyor**: pencere 0–7 gün aralığına kırpılıyordu ama gövde kırpılmamış değerle yazılsaydı tarihten farklı bir gün söylerdi — kırpma tek yerde yapılıp ikisine de veriliyor
+- **Bildirim metinleri dönüyor** (madde 74): regl bildirimi zamanlama cümlesinden sonra üç ipuçlu havuzdan birini, gecikme bildirimi üç gövdeden birini alıyor. Seçim tahmini tarihin ay numarasına bakıyor; döngü indeksi kullanılsaydı her yeniden planlamada havuz başa döner ve ardışık aylar aynı cümleyi alabilirdi
+- **TTC'de verimli pencere bildirimi** (madde 73): pencere ovülasyondan 5 gün önce açılıyor ve gebe kalma şansı asıl orada — TTC modunda pencerenin açıldığı güne ayrı bir bildirim kuruluyor, ovülasyon günü bildirimi de duruyor. Takip modunda kurulmuyor (gereksiz gürültü)
+- **Maddenin ilk yarısı yanlıştı**: "ovülasyon bildirimi hap modunda anlamsız" deniyordu ama hap ve hamilelik modunda döngü tahmini bildirimlerinin hiçbiri zaten kurulmuyor
+- **Zincirin sonu artık sessiz değil** (madde 72): hatırlatmalar üç döngü ileriye kurulabiliyor (platform sınırı), uygulama o süre açılmazsa zincir sessizce kopuyordu. Son döngünün bir döngü ardına tek bir "hatırlatmalar duraklıyor, uygulamayı aç" bildirimi kuruluyor. Düzenli kullanan onu hiç görmüyor: her açılışta zincir uzuyor, bu bildirim de ileri kayıyor
+- **Gizli modda nötrlenmiyor**: "hatırlatmalar bitti, uygulamayı aç" cümlesi bir not defteri için de aynen geçerli, döngü bilgisi taşımıyor
+- **Sabit tek kaynağa indi**: verimli pencerenin ovülasyondan kaç gün önce açıldığı `cycle_utils` içinde 5 olarak gömülüydü; `AppConstants.fertileWindowStartBeforeOvulation` oldu ve bildirim de onu kullanıyor
+- 12 yeni metin altı dile eklendi; kullanılmaz hâle gelen `notificationPeriodBody` kaldırıldı. Üç yeni test (`cycle_utils_test.dart`)
+
+## Yayınlanmamış — Gradyan kontrastı ve dokunma hedefleri (2026-07-24)
+
+Tasarım incelemesinin on dokuzuncu grubu (`docs/tasarim-onerileri.md` madde 16, 78).
+
+- **Faz gradyanının üstündeki metin okunur oldu** (madde 16): ölçüm iddiayı doğruladı ve genişletti. Açık temada ikincil metin dört fazın hepsinde 3,47–4,29:1 (en kötüsü ovülasyon), koyu temada 2,60–3,68:1
+- **İki tema iki farklı ilaç istedi**: açık temada alfayı kısmak çözmüyor — pastel tint zemini yalnız biraz açtığı için alfa %5'te bile 4,43:1'de kalıyor, yani metnin kendisi koyulaşmalıydı (`textSecondary` #6E6E7A → #5A5A64). Koyu temada ise tersi: tint zemini *açtığı* için açık renkli metnin kontrastı düşüyor, orada çözüm alfayı kısmak (%35/%20 → %15/%10)
+- **Sonuç**: açık temada 4,70–5,83:1, koyu temada 4,93–6,26:1 — her iki temada dört faz da AA sınırının üstünde. Düz zeminde ikincil metin 4,61:1'den 6,24:1'e çıktı, `textPrimary` ile hiyerarşi farkı korundu (12,42:1)
+- **Koyu temada gradyanın kısılması** "parlak öğeler dark'ta kısılır" ilkesiyle zaten uyumlu
+- **Dokunma hedefleri** (madde 78): üç yerde `VisualDensity.compact` hedefi Material'ın 48 px asgarisinin altına indiriyordu (takvim efsane kapatma, bugüne dön, tema seçici) — kaldırıldı. Bu turda eklenen "eksik olan" satırının yüksekliği de 48 px'e çıkarıldı
+
+## Yayınlanmamış — Bugün özeti eyleme dönüştü (2026-07-24)
+
+Tasarım incelemesinin on sekizinci grubu (`docs/tasarim-onerileri.md` madde 20).
+
+- **Yarı dolu gün için yönlendirme** (madde 20): hiçbir şey girilmemişken yönlendirme vardı ama ruh hâli girilip semptom girilmediğinde (ya da tersi) eksik olan hiç istenmiyordu. Artık ince bir satır eksik olanı söylüyor ve doğrudan oraya götürüyor
+- **Dolu kartlar dokunulabilir**: özet gösteriliyordu ama düzeltmek için günlük ekranından dolaşmak gerekiyordu. Ruh hâli ve semptom kartları kendi ekranlarını açıyor
+- **Kart kabuğu bozulmadı**: dokunulabilirlik `Material` + `InkWell` sarmalıyla eklendi, kartın gölgesi ve kenarlığı olduğu gibi kaldı
+
+### Düzeltme
+
+- Madde 19 (koç kartı statik) tamamen geri çekildi: genel faz ipucunun üstünde kullanıcının kendi kayıtlarından çıkan içgörü zaten duruyor ("Kayıtlarına göre bu fazda en sık: X (%Y)") ve motoru istatistikle aynı. Yanlış bir eleştiriydi
+
+## Yayınlanmamış — Hap ve TTC modları (2026-07-24)
+
+Tasarım incelemesinin on yedinci grubu (`docs/tasarim-onerileri.md` madde 22, 23).
+
+- **Hap modu kart oldu** (madde 22): tek bir çipti, kaçıncı gün olduğu yazıyordu ama bu modun asıl sorusu cevapsızdı. Artık ara dönemin ne zaman başlayacağını (ya da ara dönemdeyse yeni paketin ne zaman geleceğini) ve paketin 28 gününün neresinde olunduğunu söylüyor
+- **Gebelik testi günü** (madde 23): TTC kullanıcısının en beklediği tarih hiçbir yerde yoktu. Ovülasyondan 12 gün sonrası — daha erken test yanlış negatif verir, implantasyon ve hCG'nin ölçülebilir düzeye çıkması zaman ister. Gün geldiyse metin "artık anlamlı olabilir"e dönüyor
+- **Ovülasyon teyidi hesaba katılıyor**: sıcaklıktan teyit varsa test günü tahmin yerine ölçülen ovülasyondan sayılıyor (kart zaten teyitli tarihi kullanıyordu, artık test günü de ondan türüyor)
+- **Sabitler `AppConstants`'a taşındı**: `pillActiveDays`, `pillPackDays`, `pregnancyTestAfterOvulation` — 21/28/12 çıplak sayı olarak duruyordu
+- `pillIsBreak`, `pillDaysUntilBreak`, `pillDaysUntilNewPack` ve `earliestPregnancyTestDay` için 14 birim testi (dönem sınırları, ay ve yıl sınırını aşan test günü, saat bileşeni)
+
+## Yayınlanmamış — Bildirim aksiyonları (2026-07-24)
+
+Tasarım incelemesinin on altıncı grubu (`docs/tasarim-onerileri.md` madde 69, 34).
+
+- **"Reglim başladı" bildirimden işaretlenebiliyor** (madde 69): hatırlatma "reglin başlayabilir" diyordu ama üzerinden hiçbir şey yapılamıyordu; kullanıcı uygulamayı açıp aynı işi elle yapıyordu. Regl ve gecikme hatırlatmalarında aksiyon butonu var
+- **"Aldım" ilaç hatırlatmasında** (madde 34): hangi ilaç olduğu payload'da taşınıyor, bugünün kaydında o ad işaretleniyor
+- **Aksiyonlar uygulamayı açıyor** (`showsUserInterface: true`): yazma ana isolate'te provider üzerinden yapılıyor. Arka plan isolate'inde şifreli Hive kutularına yazmak hem kırılgan hem ekrandaki durumla ayrışma riski
+- **Soğuk açılış ele alındı**: uygulama kapalıyken aksiyona basıldıysa `getNotificationAppLaunchDetails` ile yakalanıyor
+- **Aksiyon tek seferlik**: uygulandıktan sonra temizleniyor, yoksa her açılışta tekrar çalışırdı
+- **Gizli modda aksiyon konmuyor**: buton etiketinin kendisi ("Reglim başladı") kılığı deşifre ederdi
+- **Manifest'e `ActionBroadcastReceiver` eklendi**: bu receiver olmadan aksiyon butonları çalışmıyor
+- Eklenti API'si 18.0.1 dokümanına karşı doğrulandı: `AndroidNotificationAction(id, title, {showsUserInterface})`, `initialize(settings, {onDidReceiveNotificationResponse})`, `NotificationResponse.actionId/payload`
+
+### Düzeltme
+
+- Madde 34 (ilaç alındı işaretlemesi yok) kapsamı daraltıldı: `MedicationEntry.taken` alanı da ilaç ekranındaki geçiş de zaten vardı. Eksik olan yalnız bildirimden işaretlemeydi
+
+## Yayınlanmamış — Semptom sıralaması ve tüm zamanlar (2026-07-24)
+
+Tasarım incelemesinin on beşinci grubu (`docs/tasarim-onerileri.md` madde 31, 52).
+
+- **Sık girilen semptomlar önde** (madde 31): hızlı kayıt sayfasındaki liste sabit sıradaydı, kullanıcı her seferinde kendi semptomunu arıyordu. Son 90 günün kayıtlarına göre sıralanıyor
+- **Seçenek kümesi daralmıyor**: yalnız sıra değişiyor. Listeyi kullanıcının geçmişine göre kısaltmak, hiç girmediği bir semptomu bulmasını imkânsız kılardı
+- **Sıralama kararlı**: eşit sayıda girilen iki semptom varsayılan sırasını koruyor — liste her açılışta zıplamamalı
+- **Pencere 90 gün**: daha eskisi artık geçerli olmayan bir dönemi (bırakılmış bir ilacın yan etkisi gibi) öne taşırdı
+- **İstatistikte "Tümü" filtresi** (madde 52): 3/6/12 ay sabitti; 12 aydan eski kaydı olan kullanıcı kendi verisinin tamamını göremiyordu
+- `SymptomRanking.reorder` için 6 birim testi (boş geçmiş, pencere dışı kayıt, eşitlik, listede olmayan semptom)
+
+### Düzeltme
+
+- Madde 32 (ağrı şiddeti yok) 🟡'dan 🔵'ye indirildi: "semptom var/yok olarak kaydediliyor" demiştim, doğru değil — `SymptomEntry.severity` var ve semptom ekranında beş noktalı seçici duruyor. Kalan iş şiddeti hızlı kayda ve istatistiğe taşımak
+
+## Yayınlanmamış — Health Connect artık iki yönlü (2026-07-24)
+
+Tasarım incelemesinin on dördüncü grubu (`docs/tasarim-onerileri.md` madde 93).
+
+- **Health Connect'ten içe aktarma** (madde 93): entegrasyon tek yönlüydü — uygulama yazıyordu ama okumuyordu. Başka bir uygulamadan geçen kullanıcının geçmişi Health Connect'te dururken elle yeniden girmek zorunda kalıyordu. Son 12 ayın adet günleri okunup bitişik bloklara ayrılıyor
+- **Okuma öneri üretir, yazma onaydan sonra**: kimsenin geçmişi sorulmadan değiştirilmemeli. Kaç dönem bulunduğu söyleniyor, kullanıcı onaylarsa yazılıyor
+- **Mevcut kayıtlarla kesişen aralıklar eleniyor**: kullanıcının kendi kaydı esas, içe aktarma onu ezmiyor. Devam eden kayıt bugüne kadar kapsıyor sayılıyor
+- **Yalnız tarih okunuyor**: akış şiddetinin karşılığı platformdan platforma değişiyor, tarih ise sabit
+- **Manifest'e `READ_MENSTRUATION` eklendi**
+- `groupConsecutiveDays` ve `overlapsExisting` için 15 birim testi (sırasız giriş, tekrarlı gün, ay sınırı, bitişik ama ayrı dönem, devam eden kayıt)
+
+## Yayınlanmamış — İstatistik kilidi ve doktor özeti (2026-07-24)
+
+Tasarım incelemesinin on üçüncü grubu (`docs/tasarim-onerileri.md` madde 5, 51).
+
+- **Kilit ekranı artık neyin kilitli olduğunu gösteriyor** (madde 5): ikon + metin + butondan ibaretti, kullanıcı neyi kaçırdığını görmüyordu. Arkada kendi verisi bulanık olarak duruyor — uydurma bir örnek değil, gerçeğin bulanıklaştırılmışı. Üstünde kilit kartı, altında okunmaz ama tanınabilir grafikler
+- **Bulanık katman etkileşime kapalı**: `IgnorePointer` + kaydırma kapalı; arkadaki içerik gezilecek bir şey değil, gösterilecek bir şey
+- **Doktor özeti istatistiğin başında** (madde 51): PDF raporu uygulamanın en somut faydası ama ayarların derinliğinde duruyordu. İstatistik ekranının en üstüne alındı; ayarlardaki giriş de duruyor
+- **`dart:ui` importu düzeltildi**: `show TextDirection` kısıtlıydı, `ImageFilter` eklenmeden bulanıklık çözülmezdi
+
+## Yayınlanmamış — Takvim (2026-07-24)
+
+Tasarım incelemesinin on ikinci grubu (`docs/tasarim-onerileri.md` madde 40, 41, 45).
+
+- **Efsane kapatılabilir** (madde 40): renk anlamları her açılışta yer kaplıyordu. İlk birkaç kullanımdan sonra kullanıcı renkleri biliyor; kapatılabiliyor, tercih kalıcı ve tek dokunuşla geri açılıyor
+- **Ay özeti** (madde 41): önceki aya gidince "bu ayda ne oldu" sorusu cevapsız kalıyordu. Takvimin altında görünen ayın regl günü ve kayıtlı gün sayısı yazıyor; hiç kayıt yoksa bunu söylüyor
+- **Bugüne dön** (madde 45): birkaç ay geriye kaydıran kullanıcı bugüne elle dönmek zorundaydı. Görünen ay bu ay değilken özet satırının yanında kısayol çıkıyor
+
+### Düzeltme
+
+- Madde 42 (tahmin/gerçek ayrımı) 🟡'dan 🔵'ye indirildi: "aynı doluluğa sahip" demiştim, doğru değil — tahmin günlerinin hem daha açık dolgusu hem 1,5 px çerçevesi var ve kodda gerekçesi yazılı. Kalan iş yalnız kesikli çerçeve
+
+## Yayınlanmamış — Hızlı kayıt (2026-07-24)
+
+Tasarım incelemesinin on birinci grubu (`docs/tasarim-onerileri.md` madde 26, 27).
+
+- **Hızlı kayıtta gün gezinmesi** (madde 27): sheet açıldığı güne çakılıydı. Akşam uygulamayı açıp dünü girmek tipik davranış ama kullanıcı sheet'i kapatıp takvime inmek zorundaydı. Başlıkta ileri/geri gün okları var; gelecek gün kapalı
+- **Gün değiştirirken girdi kaybolmuyor**: ekrandaki hâl önce mevcut güne yazılıyor. "Dünü girdim, şimdi bugüne geçeyim" akışı veri kaybetmemeli
+- **Not alanı hızlı kayda geldi** (madde 26): en sık girilen dördüncü alandı ama "tüm kayıt türleri"nin arkasında duruyordu
+- **Boş kayıt koruması korundu ve genişletildi**: hiçbir şey girilmemişse ve o güne ait kayıt yoksa hiçbir şey yazılmıyor (takvimde sahte "kayıt var" noktası çıkarıyordu); artık bu durumda "Kaydedildi" bildirimi de gösterilmiyor — yazılmayan şey için onay vermek yanlış bilgi
+
+## Yayınlanmamış — Kilit ve PIN (2026-07-24)
+
+Tasarım incelemesinin onuncu grubu (`docs/tasarim-onerileri.md` madde 86, 87).
+
+- **Kilit gecikmesi** (madde 86): kilit yalnız arka plana alınınca devreye giriyordu ve dönüşte her seferinde PIN istiyordu — bildirime bakıp geri gelmek, fotoğraf seçiciden dönmek, bir bağlantı açıp kapatmak hepsi yeniden PIN demekti. Bu, kilidi tamamen kapattıran türden bir sürtünme. Artık "hemen / 1 dk / 5 dk / 15 dk" seçilebiliyor
+- **Kilit kararı dönüş anına taşındı**: arka plana geçişte yalnız zaman damgası alınıyor, kilitleme kararı `resumed` olayında veriliyor. Soğuk açılışta damga yok, o yüzden her zaman kilitleniyor — gecikme yalnız uygulama açık kalmışken tanınıyor
+- **Varsayılan değişmedi**: "hemen" varsayılan, yani mevcut kullanıcılar için davranış aynı. Negatif ya da bozuk bir tercih de hemen kilitlemek sayılıyor — bozuk ayar güvenliği gevşetmemeli
+- **Tercih profilde değil SharedPreferences'ta**: cihaza özel bir ayar, PIN ve biyometri durumu da yedeğe girmiyor (`restoreBackup` ikisini de sıfırlıyor)
+- **PIN kurtarma uyarısı** (madde 87): PIN unutulursa tek çıkış tüm verinin silinmesi. Bu, PIN kurulurken söyleniyor — sonradan öğrenen kullanıcı yıllarının kaydını kaybediyor
+- `shouldLock` için 8 birim testi (soğuk açılış, sınır değeri, negatif tercih)
+
+### Düzeltme
+
+- Madde 85 (gizli mod keşfedilmiyor) 🟠'dan 🔵'ye indirildi: ayarlardaki satırın zaten açıklayıcı alt metni var ve özellik paywall listesinde de geçiyor. "Hiç anlatılmıyor" demek doğru değildi
+
+## Yayınlanmamış — Reklam sıklığı ve kurulum uzunluğu (2026-07-24)
+
+Tasarım incelemesinin dokuzuncu grubu (`docs/tasarim-onerileri.md` madde 6, 58).
+
+- **Açılış reklamı günde bir kez** (madde 6): ücretsiz katmanda uygulama her açılışta tam ekran reklam gösteriyordu. Regl takibi "gir-kaydet-çık" uygulaması; üç saniyelik işin önündeki beş saniyelik reklam uygulamayı açmayı caydırıyor — kaydedilmeyen gün, bozulan veri, işe yaramayan tahmin demek. 24 saatlik aralık ve kurulumdan sonraki ilk gün için tam sessizlik eklendi
+- **Damga gösterim anında atılıyor**: yüklenip gösterilemeyen reklam günlük hakkı harcamamalı; `onAdShowedFullScreenContent` içinde yazılıyor
+- **Karar saf fonksiyona ayrıldı**: `shouldShowOpenAd` premium kontrolü ve depolamadan bağımsız, bu yüzden test edilebilir
+- **Kurulum altı adımdan beşe indi** (madde 58): döngü uzunluğu ve regl uzunluğu aynı biçimde iki slider'dı ve ayrı sayfalardaydı — kullanıcı aynı iş için iki kez "Devam"a basıyordu. Tek adımda birleşti, ortak slider yardımcısı iki kopya kodu da eritti. İkisi de varsayılanla geçilebiliyor ve adım altyazısı bunu söylüyor
+- `shouldShowOpenAd` için 6 birim testi (bekleme süresi, aralık sınırı, yeniden kurulumda eski damganın aldatmaması)
+
+## Yayınlanmamış — Yedekleme (2026-07-24)
+
+Tasarım incelemesinin sekizinci grubu (`docs/tasarim-onerileri.md` madde 92, 89).
+
+- **Yedek hatırlatması** (madde 92): yedekleme tamamen kullanıcıya bırakılmıştı, hatırlatan hiçbir şey yoktu ve telefon kaybında yılların verisi gidiyordu. Ayarlardaki veri bölümü artık son yedeğin ne zaman alındığını gösteriyor; 30 günü geçtiyse veya hiç alınmadıysa uyarı tonuna geçip sonucunu söylüyor
+- **Zaman damgası paylaşım sonrası yazılıyor**: dosyayı yazmak yeterli değil, kullanıcı paylaşım sayfasını iptal etmiş olabilir. Damga `shareFile` döndükten sonra atılıyor
+- **Şifresiz yedek uyarısı** (madde 89, kısmi): dışa aktarmadan önce dosyanın tüm döngü ve sağlık kayıtlarını okunabilir biçimde içerdiği, cihazdaki verinin şifreli ama bu dosyanın şifresiz olduğu söyleniyor. Kullanıcı onaylamadan dosya oluşmuyor. **Parolalı yedeğin kendisi yapılmadı** — kriptografi derlenemeyen ve test edilemeyen bir ortamda yazılacak son şey; ayrı bir tur istiyor
+- **Yedek durumu Hive'da değil SharedPreferences'ta**: "tüm verileri sil" yedek geçmişini de silmemeli
+- `isStale` için 5 birim testi (hiç yedek yok, eşik değeri, eşiğin bir altı)
+
+## Yayınlanmamış — İstatistikte dürüstlük (2026-07-24)
+
+Tasarım incelemesinin yedinci grubu (`docs/tasarim-onerileri.md` madde 48, 49, 50).
+
+- **Sayılara bağlam** (madde 48): "Ort. döngü 29,3 gün" tek başına iyi mi kötü mü söylemiyordu. Genel bakış kartının altında yaygın kabul edilen aralık yazıyor (döngü 21–35 gün, regl 7 güne kadar) ve bunun tanı ölçütü olmadığı belirtiliyor
+- **"Düzensiz" etiketi açıklanıyor** (madde 49): tıbbi ağırlığı olan bir yargı, ölçütü söylenmeden ve ne yapılacağı belirtilmeden duruyordu. Etiket artık dokunulabilir: ölçütün ne olduğunu (en kısa ve en uzun döngü arasında 9+ gün fark), döngü uzunluğunun değişmesinin çok yaygın olduğunu ve bunun bir tanı olmadığını anlatıyor; ayrıca hangi durumlarda hekime danışılması gerektiğini söylüyor
+- **Kırmızı kalktı** (madde 49 devamı): "Düzensiz" hata kırmızısıyla ve uyarı üçgeniyle gösteriliyordu — "sende bir sorun var" diye okunuyor. Uyarı tonuna ve bilgi ikonuna alındı; değişkenlik bir bulgu, hata değil
+- **Az veri uyarısı** (madde 50): iki döngüden ortalama hesaplamak yanıltıcı. Üç döngü aralığından az veriyle ortalamaların kaç döngüden çıktığı ve kayıt geldikçe netleşeceği yazıyor
+- **Sabitler adlandırıldı**: `typicalCycleMin/Max`, `typicalPeriodMin/Max` ve `minGapsForRegularity` `AppConstants`'a taşındı. Mevcut `minCycleLength/maxCycleLength` giriş doğrulama sınırlarıydı (18–45) ve yaygın aralıkla karıştırılabiliyordu; ikisinin farkı yorumla açıklandı
+
+## Yayınlanmamış — Hatırlatma zamanlaması (2026-07-24)
+
+Tasarım incelemesinin altıncı grubu (`docs/tasarim-onerileri.md` madde 67, 68).
+
+- **Tür başına hatırlatma saati** (madde 67): tek bir saat regl, ovülasyon, gecikme, faz ipucu ve ilaç hatırlatmalarının hepsini yönetiyordu — ilacını sabah alan ama regl uyarısını akşam isteyen kullanıcı birinden vazgeçmek zorundaydı. Ayarlarda artık "döngü hatırlatma saati" ve "ilaç hatırlatma saati" ayrı. Özel saat girilmediyse ikisi de genel saate düşüyor, yani mevcut kullanıcılar için davranış değişmiyor
+- **Haber verme penceresi ayarlanabilir** (madde 68): regl hatırlatması sabit olarak tahmini tarihten 1 gün önce gidiyordu. Artık aynı gün / 1 / 2 / 3 / 5 / 7 gün önce seçilebiliyor (servis tarafında 0–7 aralığına kırpılıyor)
+- **Profil modeline 5 alan eklendi** (21–25): `medicationReminderHour/Minute`, `cycleReminderHour/Minute`, `periodReminderLeadDays`. Hive adaptörü elle güncellendi — bu ortamda `build_runner` çalıştırılamıyor. Eski kayıtlarda bu alanlar yok, Hive null döndürüyor ve `effective*` getter'ları genel saate düşüyor; 15–20 numaralı alanlar da aynı kalıpla eklenmişti
+- **Yedek uyumu**: `toJson`/`fromJson` yeni alanları taşıyor, alanları olmayan eski yedekler varsayılanlarla okunuyor
+- Etkin saat çözümü, pencere varsayılanı ve yedek gidiş-dönüşü için 8 birim testi eklendi (saat 0'ın geçerli değer olup null ile karışmaması dahil)
+
+## Yayınlanmamış — Kurulum akışı (2026-07-24)
+
+Tasarım incelemesinin beşinci grubu (`docs/tasarim-onerileri.md` madde 59, 60, 61, 62).
+
+- **Bildirim izni artık gerekçesiyle isteniyor** (madde 61): sistem diyaloğu soğuk açılışta, kurulum ekranının üstünde, hiçbir bağlam olmadan çıkıyordu. Android'de bildirim izni tek atış — reddedilince sistem bir daha sormuyor, yani tüm hatırlatma altyapısı tek bir bağlamsız dokunuşa bağlıydı. İzin artık kurulum bittikten sonra, ne hatırlatılacağı ve bildirimlerin cihazdan çıkmadığı anlatılarak isteniyor. "Şimdi değil" denirse sistem diyaloğu hiç gösterilmiyor, izin ileride ayarlardan istenebilir kalıyor. Profili olan kurulumlarda davranış değişmedi
+- **"Tam hatırlamıyorum" yolu** (madde 60): son regl tarihi kurulumun tek zorunlu sorusuydu ve tarihi hatırlamayan kullanıcı sıkışıp kalıyordu. Hafta cinsinden yaklaşık seçenekler eklendi ("bu hafta", "geçen hafta", "yaklaşık 2 hafta önce"…) — kullanıcı "3 Temmuz" diye değil "geçen hafta" diye hatırlıyor. Yaklaşık tarih, uydurma bir kesinlikten iyi: tahminler kayıt geldikçe kendini düzeltiyor
+- **Gizlilik vaadi ilk ekranda** (madde 62): "verilerin yalnızca bu cihazda, şifreli saklanır" bu kategorideki en güçlü argümandı ve kurulumun sonundaki onay diyaloğunda gömülüydü. Artık karşılama ekranında rozet olarak duruyor
+- **İsteğe bağlı alanlar işaretlendi** (madde 59): isim ve doğum tarihi kodda zaten atlanabiliyordu ama kullanıcıya söylenmiyordu
+
+## Yayınlanmamış — Ücretsiz katman deneyimi (2026-07-24)
+
+Tasarım incelemesinin dördüncü grubu (`docs/tasarim-onerileri.md` madde 39, 3, 4).
+
+- **Takvimden regl işaretlenebiliyor** (madde 39): gün özeti sayfası herkese açılıyordu ama içindeki tek eylem premium kapısına çarpıyordu — ücretsiz katmanda takvim salt okunur bir kartondu. Gün bir kayda düşüyorsa "Bu kaydı düzenle", düşmüyorsa "Reglim bu gün başladı" eylemi eklendi; ikisi de premium kapısının dışında. Günlük kayıt (akış, ruh hâli, semptom) premium kapsamında kalıyor
+- **Geri al artık sadık** (madde 39 devamı): `startPeriod` devam eden bir kayıt varken onu kapatıyor, gün kaydın başlangıcında/öncesindeyse mevcut kaydı geri döndürüyor. Takvimden başlatmada bu durumlar mümkün olduğu için geri al önceki durumu yakalayıp geri kuruyor — aksi hâlde kullanıcının eski kaydını silebilirdi
+- **Deneme bitişi sürpriz olmuyor** (madde 3, kısmi): son 3 günde ana ekrandaki erişim çipi uyarı diline geçiyor (ton, kenarlık, ağırlık). Salt-okunur premium katmanı yapılmadı — 11 takip ekranının her birine okuma modu eklemek ayrı bir iş
+- **Paywall kullanıcının emeğini gösteriyor** (madde 4): soyut özellik listesinin üstünde "{n} döngü kaydı · {n} günlük kayıt" ve verinin cihazda kalacağı sözü. Hiç veri yoksa kart çizilmiyor — boş bir "0 kayıt" kartı argümanın tersini söylerdi
+
+## Yayınlanmamış — Gecikme durumu (2026-07-24)
+
+Tasarım incelemesinin üçüncü grubu (`docs/tasarim-onerileri.md` madde 17, 18, 70).
+
+- **Gecikme artık görünüyor** (madde 18): uygulamada gecikmeyi gösteren hiçbir şey yoktu — `daysUntilNextPeriod` sonucu sıfıra kırpıyor, `nextFuturePeriod` geçmişte kalan tahmini bir sonraki döngüye ileri sarıyordu. İkisi birlikte gecikmeyi tamamen görünmez kılıyordu, oysa kullanıcının uygulamaya en çok ihtiyaç duyduğu an tam orası. Yeni `CycleUtils.periodDelayDays` tahmini tarihin kaç gün geçtiğini veriyor, ana ekran başlığı "Reglin 3 gün gecikti" diyor, alt satır sakinleştirici ve eyleme dönük
+- **Ring gecikmeyi ayırt ediyor** (madde 17): rozet "bugün!" derken kullanıcı üç gündür bekliyor olabiliyordu. Gecikmede rozet kendi metnini ve uyarı tonunu alıyor
+- **Gecikme bildirimi** (madde 70): tahmini tarihten 3 gün sonra hatırlatma gönderiliyor (ertesi gün sormak erken, bir hafta geç). Regl kaydedildiğinde `rescheduleAll` yeniden çalıştığı için bildirim kendiliğinden iptal oluyor. Gizli modda nötr metin, hamilelik ve hap modunda hiç kurulmuyor
+- **Sınır bilinçli**: gecikme döngü uzunluğuna ulaştığında 0'a dönüyor — o noktada bir sonraki tahmini tarih de geçmiş demektir ve uygulama "çok geç kaldı" ile "kullanıcı uzun süredir kayıt girmiyor"u ayırt edemez
+- **Metinler tanı koymuyor**: ne ekranda ne bildirimde gebelikten söz ediliyor; sapmanın yaygın olduğu söylenip kaydı güncellemeye yönlendiriliyor
+- `periodDelayDays` için 7 birim testi eklendi (sınır değerleri, döngü uzunluğuyla kayma, saat bileşeni)
+
+## Yayınlanmamış — Ana ekran soruya cevap veriyor (2026-07-24)
+
+Tasarım incelemesinin ikinci grubu (`docs/tasarim-onerileri.md` madde 11, 12, 13, 14).
+
+- **Tek cümlelik cevap** (madde 13): ring döngü gününü görsel olarak anlatıyordu ama "ne zaman?" sorusuna açık bir cümleyle cevap veren hiçbir şey yoktu — tarih yalnız tahmin kartlarının içinde, kaydırmanın altındaydı. Ekranın en büyük yazısı artık cevabın kendisi: "Reglin 6 gün sonra" + altında tarih. Durumlar ayrı ayrı ele alındı: bugün, yarın, N gün sonra, regl sürerken "Reglinin 3. günü", kayıt yokken "Son regl tarihini ekle"
+- **Tema düğmesi ana ekrandan kalktı** (madde 11): ayda bir kullanılan bir tercih her açılışta göz hizasındaki köşeyi tutuyordu. Ayarlardaki üçlü seçici (sistem/açık/koyu) zaten daha eksiksiz — hızlı geçiş düğmesi "sistem" tercihine dönemiyordu bile
+- **Selamlama küçüldü** (madde 14): 26 punto display anıydı ama bilgi taşımıyordu; artık başlığın üstünde tek satırlık ikincil metin. Display ağırlığı cevaba geçti
+- **Deneme çipi tepeden indi** (madde 12): ücretsiz/deneme durumu görünür kalıyor ama ekranın tepesinde değil, aksiyon bloğunun altında — orası cevabın yeri
+
+## Yayınlanmamış — Kayıt doğruluğu ve kontrast (2026-07-24)
+
+Tasarım incelemesinin ilk grubu (`docs/tasarim-onerileri.md` madde 1, 2, 75, 76, 77).
+
+- **Regl kaydı ücretsiz katmanda da düzeltilebiliyor** (madde 1): kayıt düzenleyici istatistik ekranının içinde yaşıyordu, o ekran da ücretsiz katmanda tamamen kilitli. Ücretsiz kullanıcının tek yazma eylemi "Reglim başladı" butonuydu ve 6 saniyelik geri al penceresi kapandıktan sonra yanlış kaydı düzeltmesinin hiçbir yolu yoktu. Düzenleyici ortak bir dosyaya taşındı, ayarlardan açılan yeni "Regl geçmişi" ekranı premium kapısının dışında
+- **Geriye dönük regl tarihi** (madde 2): buton her zaman `DateTime.now()` yazıyordu; regl iki gün sonra hatırlandığında yanlış tarih girmekten başka yol yoktu. Butona uzun basmak gün seçiciyi açıyor (90 gün geriye, gelecek seçilemez, bitiş başlangıçtan önce olamaz). Hareket keşfedilebilir olsun diye butonun altında ipucu duruyor, bir kez kullanılınca kalıcı olarak kapanıyor
+- **Kategori renkleri metin olarak okunuyor** (madde 75): su, uyku, kilo, ilaç ve sıcaklık ekranlarında pastel kategori renkleri doğrudan metin rengiydi — beyaz zeminde 1,6:1 ile 2,3:1 arası, WCAG AA sınırı 4,5:1. `app_colors.dart` bu kuralı zaten yazmıştı ama kendi ekranları uymuyordu. Faz renklerindeki kalıba uygun `*Text` varyantları eklendi (5,4:1 – 6,5:1), `categoryText()` açık/koyu temaya göre seçiyor
+- **Seçili etiketler okunur oldu** (madde 76): ruh hâli, semptom ve akış ekranlarında seçim etiketi kendi pasteline dönüyordu — en kötüsü `moodHappy` beyaz üstünde 1,26:1. Ruh hâlinde ton korunup parlaklık kısılıyor (`readable()`, en kötü durum 4,78:1), semptomda ailenin bordo ucu kullanılıyor (6,30:1), akışta ise dört ton yalnız parlaklıkla ayrıştığı için etiket okunur renge alındı — yoğunluğu damla sayısı ve çerçeve taşıyor
+- **Metin ölçeklemesinde taşma koruması** (madde 77, kısmi): ana ekranda selamlama, faz çipi, erişim çipi ve aksiyon butonu etiketleri `maxLines`/`Flexible` ile korundu. Tahmin kartlarında koruma zaten vardı; kalan ekranların taraması sürüyor
+
+## Yayınlanmamış — Bildirim ve paywall düzeltmeleri (2026-07-24)
+
+- **Zamanlanmış bildirimler artık gerçekten düşüyor**: flutter_local_notifications 18.0.1'in kendi manifest'i hiçbir receiver bildirmiyor, bunlar uygulamanın manifest'inde olmak zorunda. `ScheduledNotificationReceiver` eksikti — alarm tetiklendiğinde broadcast'i alacak bileşen olmadığı için kurulan hiçbir hatırlatma görünmüyordu. `ScheduledNotificationBootReceiver` de eklendi: telefon yeniden başlayınca planlar geri kuruluyor (`RECEIVE_BOOT_COMPLETED` izni zaten vardı, karşılığı yoktu)
+- **Bildirim saatleri düzeldi**: `tz.initializeTimeZones()` yalnız saat dilimi veritabanını yüklüyor; `setLocalLocation` çağrılmadığı için `tz.local` UTC kalıyordu ve 09:00'a kurulan hatırlatma TSİ'de 12:00'de düşüyordu. Cihazın saat dilimi `flutter_timezone` ile okunup bağlanıyor
+- **Bildirimler 6 dilde**: servisin içindeki yalnız tr/en içeren metin tablosu kalktı, tüm metinler arayüzle aynı ARB kaynağından geliyor. Almanca, İspanyolca, Fransızca ve Rusça kullanıcı artık bildirimi de kendi dilinde alıyor
+- **SCHEDULE_EXACT_ALARM izni kaldırıldı**: hatırlatmaların hepsi zaten `inexactAllowWhileIdle` ile kuruluyordu; kullanılmayan izin Play'de gerekçe formu istiyor
+- **Paywall'da fiyatlar canlı**: ürün detayları mağazadan asenkron geldiği için ekran ürünler dönmeden açıldığında sabit tanıtım fiyatlarında (₺29/₺199) donuyor ve hiç güncellenmiyordu — kullanıcı mağaza ekranında başka rakam görebiliyordu. Fiyatlar artık yalnız mağazadan geliyor, gelene kadar kartta bekleme göstergesi var, mağaza ürün döndürmezse sebebi yazıyor
+- **"Satın alımları geri yükle" sonucu söylüyor**: eskiden akış başlatılıp beklenmiyordu, geri yüklenecek bir şey yoksa ekranda hiçbir şey olmuyordu. Hem paywall'da hem ayarlarda ilerleme ve sonuç bildiriliyor
+- **Deneme bitişi anında yansıyor**: `accessProvider` zamanın geçmesiyle tazelenmiyordu, 30. gün uygulama açıkken dolduğunda erişim yeniden başlatılana dek premium kalıyordu — periyodik tik ve arka plandan dönüşte tazeleniyor
+
+## Yayınlanmamış — İllüstrasyonlar kaldırıldı (2026-07-24)
+
+- **Ekran içi illüstrasyonlar kaldırıldı**: ana sayfadaki faz görseli, ruh hali başlığı, ayarlar profil başlığı, paywall kahraman görseli ve istatistik boş-durum görseli — hiçbiri arayüze yakışmıyordu, ekranlar kendi tipografi ve renk diline döndü
+- **Art slot sistemi silindi**: `lib/core/art/` (kayıt defteri + yer tutucu widget'ı) ve `docs/asset-briefs.md` kalktı
+- **16 kullanılmayan PNG silindi**: yalnız ikon ve açılış ekranını üreten `R1-logomark.png` ile `R2-splash.png` kaldı (~33 MB depo tasarrufu)
+- **Görseller artık APK'ya paketlenmiyor**: `assets/art/` bundle listesinden çıktı — kalan iki dosya sadece derleme zamanında ikon/splash üretmek için okunuyor
+
 ## Yayınlanmamış — Telefon testi düzeltmeleri + 6 dil (2026-07-18)
 
 - **Ring dokunuşu düzeltildi**: merkez dışındaki her dokunuş artık segment seçiyor (dar bant hedefini tutturmak zordu)

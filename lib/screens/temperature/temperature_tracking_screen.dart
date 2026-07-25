@@ -133,7 +133,7 @@ class _TemperatureTrackingScreenState
           const SizedBox(height: 12),
           TweenAnimationBuilder<double>(
             tween: Tween(begin: 36.5, end: _temperature),
-            duration: const Duration(milliseconds: 300),
+            duration: context.motionDuration(const Duration(milliseconds: 300)),
             builder: (context, value, _) => Text(
               '${value.toStringAsFixed(1)}°C',
               // Tabular metrik ölçeği: sayaç akarken genişlik zıplamaz
@@ -221,7 +221,7 @@ class _TemperatureTrackingScreenState
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(Icons.access_time_rounded,
-                  color: AppColors.temperature),
+                  color: AppColors.categoryText(context, AppColors.temperature)),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -234,7 +234,7 @@ class _TemperatureTrackingScreenState
                   Text(_measureTime.format(context),
                       style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold,
-                          color: AppColors.temperature)),
+                          color: AppColors.categoryText(context, AppColors.temperature))),
                 ],
               ),
             ),

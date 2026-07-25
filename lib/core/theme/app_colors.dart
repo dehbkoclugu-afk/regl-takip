@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 class AppColors {
@@ -120,6 +122,48 @@ class AppColors {
   static const Color medication = Color(0xFFA5D6A7);
   static const Color notesColor = Color(0xFFBCAAA4);
 
+  // Kategori pastellerinin METİN karşılıkları. Yukarıdaki tonlar yüzey ve
+  // vurgu içindir: açık zeminde 1,6:1 ile 2,3:1 arasında kalıyorlar ve
+  // metin rengi olarak kullanıldıklarında okunmuyorlardı. Faz renklerindeki
+  // kalıbın aynısı — açık temada koyulaştırılmış ton (>=5:1), koyu temada
+  // pastelin kendisi (koyu zeminde zaten okunur).
+  static const Color waterText = Color(0xFF1C6C9C);
+  static const Color temperatureText = Color(0xFFA8451F);
+  static const Color weightText = Color(0xFF166A61);
+  static const Color sleepText = Color(0xFF4E57A2);
+  static const Color medicationText = Color(0xFF33763A);
+  static const Color notesText = Color(0xFF6B594F);
+
+  static const Map<Color, Color> _categoryTextTones = {
+    water: waterText,
+    temperature: temperatureText,
+    weightColor: weightText,
+    sleep: sleepText,
+    medication: medicationText,
+    notesColor: notesText,
+  };
+
+  /// Bir kategori renginin METİN olarak kullanılabilir hâli.
+  /// Eşleşme yoksa renk olduğu gibi döner (çağıran yer bozulmasın).
+  static Color categoryText(BuildContext context, Color category) =>
+      isDark(context) ? category : (_categoryTextTones[category] ?? category);
+
+  /// Herhangi bir pasteli açık temada okunur hâle getirir: tonu korur,
+  /// parlaklığı kısar. Sabit karşılığı tanımlanabilen renkler için
+  /// [categoryText] tercih edilmeli; bu, ruh hâli paleti gibi her biri için
+  /// ayrı sabit tanımlamanın pratik olmadığı yerler içindir.
+  ///
+  /// 0.28 tavanı paletin en açık tonunda (moodHappy) bile beyaz zeminde
+  /// 4,78:1 veriyor — WCAG AA sınırı 4,5:1.
+  static Color readable(BuildContext context, Color pastel) {
+    if (isDark(context)) return pastel;
+    final hsl = HSLColor.fromColor(pastel);
+    return hsl
+        .withLightness(math.min(hsl.lightness, 0.28))
+        .withSaturation(math.min(hsl.saturation * 1.1, 1.0))
+        .toColor();
+  }
+
   // Glass efekt renkleri
   static const Color glassWhite = Color(0x59FFFFFF);
   static const Color glassWhiteStrong = Color(0x99FFFFFF);
@@ -135,8 +179,15 @@ class AppColors {
   static const Color surface = Color(0xFFFFFBFE);
   static const Color surfaceElevated = Color(0xFFFFFFFF);
   static const Color textPrimary = Color(0xFF2D2D3A);
-  // 4.6:1 on background — 14px gövde metni için WCAG AA
-  static const Color textSecondary = Color(0xFF6E6E7A);
+  /// Düz zeminde 6,2:1; ana ekranın faz gradyanının en yoğun noktasında
+  /// (ovülasyon moru, %35 alfa) 4,7:1.
+  ///
+  /// Önceki ton (#6E6E7A) düz zeminde 4,6:1 ile sınırı ancak geçiyordu ama
+  /// gradyanın üstünde dört fazın hepsinde altına düşüyordu (3,5–4,3:1).
+  /// Gradyanın alfasını kısmak açık temada çare değil: pastel tint zemini
+  /// yalnız biraz açtığı için alfa 0,05'te bile 4,4:1'de kalıyordu — metnin
+  /// kendisi koyulaşmalıydı.
+  static const Color textSecondary = Color(0xFF5A5A64);
   static const Color divider = Color(0xFFF0E8EE);
   // 5.3:1 on surface — hata metni okunabilir olmalı
   static const Color error = Color(0xFFB04A4A);

@@ -1346,6 +1346,372 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get notificationPeriodTitle => 'Perioden-Erinnerung';
+
+  @override
+  String get notificationPeriodTimingToday => 'Deine Periode könnte heute beginnen.';
+
+  @override
+  String get notificationPeriodTimingTomorrow => 'Deine Periode könnte morgen beginnen.';
+
+  @override
+  String notificationPeriodTimingInDays(int days) {
+    return 'Deine Periode könnte in $days Tagen beginnen.';
+  }
+
+  @override
+  String get notificationPeriodTip1 => 'Denk daran, eine Binde oder einen Tampon einzupacken.';
+
+  @override
+  String get notificationPeriodTip2 => 'Ein wenig Vorbereitung macht es leichter.';
+
+  @override
+  String get notificationPeriodTip3 => 'Den Beginn einzutragen verbessert die Vorhersagen.';
+
+  @override
+  String get notificationPeriodChannel => 'Perioden-Erinnerung';
+
+  @override
+  String get notificationPeriodChannelDesc => 'Erinnerungen zum Menstruationszyklus';
+
+  @override
+  String get notificationOvulationTitle => 'Eisprung-Erinnerung';
+
+  @override
+  String get notificationOvulationBody => 'Heute ist dein Eisprung. Du bist in deiner fruchtbaren Phase!';
+
+  @override
+  String get notificationOvulationChannel => 'Eisprung-Erinnerung';
+
+  @override
+  String get notificationOvulationChannelDesc => 'Erinnerungen zum Eisprung';
+
+  @override
+  String get notificationMedicationTitle => 'Medikamenten-Erinnerung';
+
+  @override
+  String get notificationMedicationBody => 'Vergiss nicht, dein Medikament einzunehmen!';
+
+  @override
+  String get notificationMedicationChannel => 'Medikamenten-Erinnerung';
+
+  @override
+  String get notificationMedicationChannelDesc => 'Erinnerungen an Medikamente';
+
+  @override
+  String get notificationDiscreetTitle => 'Erinnerung';
+
+  @override
+  String get notificationDiscreetBody => 'Du hast heute eine Erinnerung';
+
+  @override
+  String get notificationFertileTitle => 'Dein fruchtbares Fenster beginnt';
+
+  @override
+  String get notificationFertileBody => 'Ab heute sind die Tage mit der höchsten Empfängniswahrscheinlichkeit.';
+
+  @override
+  String get notificationChainEndTitle => 'Erinnerungen pausieren';
+
+  @override
+  String get notificationChainEndBody => 'Die geplanten Erinnerungen sind aufgebraucht. Öffne die App, um neue einzurichten.';
+
+  @override
+  String get noPurchasesToRestore => 'Keine Käufe zum Wiederherstellen gefunden';
+
+  @override
+  String get restoringPurchases => 'Käufe werden wiederhergestellt…';
+
+  @override
+  String get backdateHint => 'Für einen anderen Tag lange drücken';
+
+  @override
+  String get periodStartDateHelp => 'Wann hat deine Periode begonnen?';
+
+  @override
+  String get periodEndDateHelp => 'Wann hat deine Periode geendet?';
+
+  @override
+  String get headlinePeriodToday => 'Deine Periode könnte heute beginnen';
+
+  @override
+  String get headlinePeriodTomorrow => 'Deine Periode könnte morgen beginnen';
+
+  @override
+  String get headlineNoData => 'Datum deiner letzten Periode eintragen';
+
+  @override
+  String headlinePeriodInDays(int days) {
+    return 'Deine Periode in $days Tagen';
+  }
+
+  @override
+  String headlinePeriodDay(int day) {
+    return 'Tag $day deiner Periode';
+  }
+
+  @override
+  String get headlineDelaySubtitle => 'Schwankungen sind normal. Trag sie ein, wenn sie begonnen hat.';
+
+  @override
+  String get notificationDelayTitle => 'Voraussichtliches Datum ist vorbei';
+
+  @override
+  String get notificationDelayBody => 'Wenn deine Periode begonnen hat, trag sie ein. Schwankungen sind normal.';
+
+  @override
+  String get notificationDelayBodyAlt1 => 'Noch kein Eintrag. Wenn sie begonnen hat, genügt ein Tippen.';
+
+  @override
+  String get notificationDelayBodyAlt2 => 'Eine Verschiebung von ein paar Tagen ist normal. Ist dein Eintrag aktuell?';
+
+  @override
+  String get notificationDelayChannel => 'Verspätungs-Erinnerung';
+
+  @override
+  String get notificationDelayChannelDesc => 'Erinnerung, wenn das voraussichtliche Datum vorbei ist';
+
+  @override
+  String headlineDelay(int days) {
+    return 'Deine Periode ist $days Tage überfällig';
+  }
+
+  @override
+  String delayDays(int days) {
+    return '$days Tage überfällig';
+  }
+
+  @override
+  String get yourDataStays => 'Deine Einträge bleiben auf dem Gerät, auch wenn die Testphase endet.';
+
+  @override
+  String get periodStartedOnThisDay => 'Meine Periode begann an diesem Tag';
+
+  @override
+  String nCyclesRecorded(int count) {
+    return '$count Zyklen erfasst';
+  }
+
+  @override
+  String nLogsRecorded(int count) {
+    return '$count Tageseinträge';
+  }
+
+  @override
+  String get notifPermissionTitle => 'Erinnerungen aktivieren?';
+
+  @override
+  String get notifPermissionBody => 'Wir sagen Bescheid, wenn deine Periode näher rückt, an deinem Eisprungtag und wenn das voraussichtliche Datum vorbei ist. Benachrichtigungen verlassen dein Gerät nie. Du kannst sie auch später in den Einstellungen aktivieren.';
+
+  @override
+  String get enableNotifications => 'Aktivieren';
+
+  @override
+  String get notNow => 'Jetzt nicht';
+
+  @override
+  String get optionalField => 'Optional';
+
+  @override
+  String get privacyAssurance => 'Deine Daten bleiben verschlüsselt nur auf diesem Gerät';
+
+  @override
+  String get dontRememberExactly => 'Ich weiß es nicht genau';
+
+  @override
+  String get approxTitle => 'Ungefähr wann war es?';
+
+  @override
+  String get approxSubtitle => 'Ein ungefähres Datum reicht. Die Vorhersagen korrigieren sich mit jedem Eintrag.';
+
+  @override
+  String get approxThisWeek => 'Diese Woche';
+
+  @override
+  String get approxLastWeek => 'Letzte Woche';
+
+  @override
+  String get approxTwoWeeks => 'Vor etwa 2 Wochen';
+
+  @override
+  String get approxThreeWeeks => 'Vor etwa 3 Wochen';
+
+  @override
+  String get approxMonthOrMore => 'Vor einem Monat oder länger';
+
+  @override
+  String get cycleReminderTime => 'Uhrzeit für Zyklus-Erinnerungen';
+
+  @override
+  String get medicationReminderTime => 'Uhrzeit für Medikamenten-Erinnerungen';
+
+  @override
+  String get periodReminderLead => 'Perioden-Erinnerung';
+
+  @override
+  String get notificationQuietChannelSuffix => 'leise';
+
+  @override
+  String get quietNotifications => 'Leise Benachrichtigungen';
+
+  @override
+  String get quietNotificationsDesc => 'Ohne Ton und Pop-up — nur in der Benachrichtigungsleiste';
+
+  @override
+  String get leadSameDay => 'Am selben Tag';
+
+  @override
+  String leadNDaysBefore(int days) {
+    return '$days Tage vorher';
+  }
+
+  @override
+  String get regularityInfoIrregular => 'Zwischen deinem kürzesten und längsten Zyklus liegen 9 Tage oder mehr. Schwankende Zykluslängen sind sehr häufig; Stress, Schlaf, Krankheit und Veränderungen im Alltag wirken sich aus. Das ist keine Diagnose.';
+
+  @override
+  String get regularityInfoRegular => 'Der Unterschied zwischen deinem kürzesten und längsten Zyklus liegt unter 9 Tagen. Mit dieser Beständigkeit sind die Vorhersagen genauer.';
+
+  @override
+  String get regularityInfoSeeDoctor => 'Wenn dein Zyklus dauerhaft kürzer als 21 oder länger als 35 Tage ist, du länger als drei Monate keine Periode hattest oder die Blutung ungewöhnlich stark ist, sprich am besten mit einer Ärztin oder einem Arzt.';
+
+  @override
+  String typicalRangeNote(int min, int max, int pmax) {
+    return 'Üblicher Bereich: Zyklus $min–$max Tage, Periode bis zu $pmax Tage. Kein diagnostischer Grenzwert.';
+  }
+
+  @override
+  String lowConfidenceNote(int count) {
+    return 'Diese Durchschnitte stammen aus nur $count Zyklen; sie werden mit weiteren Einträgen genauer.';
+  }
+
+  @override
+  String regularityInfoInsufficient(int count) {
+    return 'Für eine Aussage zur Regelmäßigkeit braucht es mindestens $count Zyklusabstände. Weniger wäre irreführend.';
+  }
+
+  @override
+  String get backupWarningTitle => 'Die Sicherungsdatei ist unverschlüsselt';
+
+  @override
+  String get backupWarningBody => 'Die Sicherung enthält alle Zyklus- und Gesundheitseinträge in lesbarer Form. Die Daten auf dem Gerät sind verschlüsselt, diese Datei jedoch nicht. Achte darauf, wo du sie speicherst und mit wem du sie teilst.';
+
+  @override
+  String get backupNever => 'Du hast noch nie eine Sicherung erstellt.';
+
+  @override
+  String get backupStaleHint => 'Wenn du dein Telefon verlierst, sind die Einträge nicht wiederherstellbar.';
+
+  @override
+  String backupLastAt(String date) {
+    return 'Letzte Sicherung: $date';
+  }
+
+  @override
+  String get durationsStepTitle => 'Deine Zyklusdaten';
+
+  @override
+  String get durationsStepHelp => 'Nicht sicher? Lass sie so — du kannst das später in den Einstellungen ändern.';
+
+  @override
+  String get lockTimeoutTitle => 'Sperrverzögerung';
+
+  @override
+  String get lockTimeoutDesc => 'Keine PIN, wenn du nach kurzer Zeit zurückkommst';
+
+  @override
+  String get lockImmediately => 'Sofort';
+
+  @override
+  String get previousDay => 'Vorheriger Tag';
+
+  @override
+  String get nextDay => 'Nächster Tag';
+
+  @override
+  String get showLegend => 'Farblegende';
+
+  @override
+  String get hideLegend => 'Farblegende ausblenden';
+
+  @override
+  String get backToToday => 'Zu heute';
+
+  @override
+  String get monthNoRecords => 'Keine Einträge in diesem Monat';
+
+  @override
+  String get doctorSummary => 'Zusammenfassung für meine Ärztin';
+
+  @override
+  String get healthImport => 'Aus Health Connect importieren';
+
+  @override
+  String get healthImportAction => 'Importieren';
+
+  @override
+  String get allTime => 'Gesamt';
+
+  @override
+  String get actionPeriodStarted => 'Periode hat begonnen';
+
+  @override
+  String get actionMedicationTaken => 'Eingenommen';
+
+  @override
+  String get pregnancyTestReady => 'Ein Schwangerschaftstest kann jetzt aussagekräftig sein';
+
+  @override
+  String notLoggedToday(String what) {
+    return 'Heute noch kein Eintrag: $what';
+  }
+
+  @override
+  String pregnancyTestFrom(String date) {
+    return 'Frühester sinnvoller Test: $date';
+  }
+
+  @override
+  String pillBreakIn(int days) {
+    return 'Pause beginnt in $days Tagen';
+  }
+
+  @override
+  String pillNewPackIn(int days) {
+    return 'Neue Packung in $days Tagen';
+  }
+
+  @override
+  String get healthImportNothingNew => 'Keine neuen Einträge zum Importieren gefunden';
+
+  @override
+  String healthImportConfirm(int count) {
+    return '$count Perioden in Health Connect gefunden, die nicht in der App sind. Zu deinen Einträgen hinzufügen? Deine vorhandenen Einträge bleiben unverändert.';
+  }
+
+  @override
+  String healthImportDone(int count) {
+    return '$count Perioden importiert';
+  }
+
+  @override
+  String monthPeriodDays(int count) {
+    return '$count Periodentage';
+  }
+
+  @override
+  String monthLoggedDays(int count) {
+    return '$count Tage erfasst';
+  }
+
+  @override
+  String get pinNoRecoveryWarning => 'Wenn du deine PIN vergisst, gibt es keine Wiederherstellung; der einzige Weg zurück ist das Löschen aller Daten. Wähle etwas, das du dir merkst.';
+
+  @override
+  String lockAfterMinutes(int minutes) {
+    return 'Nach $minutes Min.';
+  }
+
+  @override
   String get reportTitle => 'Zyklus-Gesundheitsbericht';
 
   @override

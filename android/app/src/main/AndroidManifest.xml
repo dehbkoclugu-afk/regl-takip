@@ -3,10 +3,17 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <!-- Biyometrik kilit (parmak izi / yüz) -->
     <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
+    <!-- Yeniden başlatmadan sonra planlanmış hatırlatmaları yeniden kurmak
+         için: karşılığı aşağıdaki ScheduledNotificationBootReceiver.
+         SCHEDULE_EXACT_ALARM istenmiyor — hatırlatmaların hepsi
+         inexactAllowWhileIdle ile kuruluyor (birkaç dakikalık kayma bu
+         uygulamada sorun değil) ve Play bu izin için gerekçe formu istiyor. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-    <!-- Health Connect: adet verisi yazma -->
+    <!-- Health Connect: adet verisi yazma ve okuma. Okuma, başka bir
+         uygulamadan geçen kullanıcının geçmişini elle yeniden girmeden
+         alabilmesi için — ikisi de yalnız kullanıcı tetiklediğinde. -->
     <uses-permission android:name="android.permission.health.WRITE_MENSTRUATION"/>
+    <uses-permission android:name="android.permission.health.READ_MENSTRUATION"/>
     <!-- Google Play Billing -->
     <uses-permission android:name="com.android.vending.BILLING"/>
     <!-- allowBackup=false: Hive kutuları cihaza özel Keystore anahtarıyla
@@ -102,6 +109,30 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/cycle_widget_wide_info"/>
+        </receiver>
+        <!-- flutter_local_notifications: eklentinin kendi manifest'i (18.0.1)
+             hiçbir receiver bildirmiyor, bunlar uygulamanın manifest'inde
+             olmak zorunda. ScheduledNotificationReceiver olmadan AlarmManager
+             alarmı tetiklendiğinde broadcast'i alacak bileşen yoktur ve
+             zonedSchedule ile kurulan hatırlatma sessizce hiç düşmez.
+             BootReceiver da yeniden başlatmadan sonra planları geri kurar. -->
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
+            android:exported="false"/>
+        <!-- Bildirim aksiyon butonları ("Reglim başladı", "Aldım") bu
+             receiver olmadan çalışmaz -->
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver"
+            android:exported="false"/>
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
+            </intent-filter>
         </receiver>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

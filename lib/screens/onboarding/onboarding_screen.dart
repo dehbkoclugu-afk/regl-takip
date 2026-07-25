@@ -12,6 +12,7 @@ import '../../providers/providers.dart';
 import '../../models/enums.dart';
 import '../../models/user_profile.dart';
 import '../../services/hive_service.dart';
+import '../../services/notification_service.dart';
 import 'widgets/animated_ring_intro.dart';
 import 'widgets/onboarding_page.dart';
 import '../../core/utils/motion.dart';
@@ -31,7 +32,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   int _currentMainPage = 0;
   int _currentFormStep = 0;
   static const int _totalInfoPages = 1;
-  static const int _totalFormSteps = 6;
+  static const int _totalFormSteps = 5;
 
   // Mod seçimi kurulumun ilk sorusu: hamile bir kullanıcı "döngü tahmini"
   // sorularıyla değil kendi akışıyla karşılanmalı (önceden ayarlarda
@@ -127,6 +128,45 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
+  /// Sistem izin diyaloğunun önüne uygulama içi gerekçe koyar.
+  ///
+  /// Android'de bildirim izni tek atıştır: reddedilirse sistem bir daha
+  /// sormaz. Önceden diyalog soğuk açılışta, kurulum ekranının üstünde,
+  /// hiçbir bağlam olmadan çıkıyordu — hatırlatma altyapısının tamamı o tek
+  /// bağlamsız dokunuşa bağlıydı. "Şimdi değil" diyen kullanıcıya sistem
+  /// diyaloğu hiç gösterilmez, böylece izin ileride ayarlardan istenebilir.
+  Future<void> _askNotificationPermission() async {
+    final l10n = AppLocalizations.of(context)!;
+    final wants = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24)),
+        icon: const Icon(Icons.notifications_active_rounded,
+            color: AppColors.primaryStrong, size: 32),
+        title: Text(l10n.notifPermissionTitle),
+        content: Text(l10n.notifPermissionBody,
+            style: const TextStyle(fontSize: 14, height: 1.5)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.notNow),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.enableNotifications),
+          ),
+        ],
+      ),
+    );
+    if (wants != true) return;
+    try {
+      await NotificationService().requestPermission();
+    } catch (e) {
+      debugPrint('[NOTIF] permission request failed: $e');
+    }
+  }
+
   Future<void> _completeOnboarding() async {
     if (_isSaving || _lastPeriodDate == null) return;
     final l10n = AppLocalizations.of(context)!;
@@ -203,6 +243,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
       // En son: bildirim ve widget kurulumu kayıtları da görmüş olur
       await ref.read(userProfileProvider.notifier).updateProfile(profile);
+
+      if (!mounted) return;
+      // İzin ancak burada isteniyor: kullanıcı kurulumu bitirmiş, neyin
+      // hatırlatılacağını biliyor. Sistem diyaloğu tek atış — önünde
+      // gerekçe olmadan çıkarsa reddedilmesi çok daha olası.
+      await _askNotificationPermission();
 
       if (!mounted) return;
       GoRouter.of(context).go('/dashboard');
@@ -310,6 +356,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           AppColors.primaryDark,
                         ],
                         hero: const AnimatedRingIntro(),
+                        // Gizlilik vaadi kurulumun sonundaki onay
+                        // diyaloğunda gömülüydü; bu kategoride en güçlü
+                        // argüman ve ilk ekranda görülmeli
+                        assurance: l10n.privacyAssurance,
                       ),
                       _buildSetupPage(),
                     ],
@@ -375,8 +425,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 _buildNameStep(),
                 _buildBirthDateStep(),
                 _buildLastPeriodStep(),
-                _buildCycleLengthStep(),
-                _buildPeriodLengthStep(),
+                _buildDurationsStep(),
               ],
             ),
           ),
@@ -398,7 +447,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             final isActive = index <= _currentFormStep;
             return Expanded(
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
+                duration:
+                    context.motionDuration(const Duration(milliseconds: 300)),
                 height: 4,
                 margin: const EdgeInsets.symmetric(horizontal: 3),
                 decoration: BoxDecoration(
@@ -422,7 +472,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       children: [
         // Zorunlu adımda buton neden kapalı, kullanıcı bilmeli
         AnimatedSize(
-          duration: const Duration(milliseconds: 200),
+          duration: context.motionDuration(const Duration(milliseconds: 200)),
           child: canContinue
               ? const SizedBox(width: double.infinity)
               : Padding(
@@ -596,15 +646,43 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  Widget _stepSubtitle(String text) {
+  /// [optional] verildiğinde altına "İsteğe bağlı" rozeti düşer.
+  /// İsim ve doğum tarihi kodda zaten atlanabilirdi ama kullanıcıya
+  /// söylenmiyordu: sağlık uygulamasında kişisel veri isteyen her alan
+  /// zorunlu sanılıyor.
+  Widget _stepSubtitle(String text, {bool optional = false}) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
+      child: Column(
+        children: [
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+          ),
+          if (optional) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                l10n.optionalField,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSecondary,
+                ),
+              ),
             ),
+          ],
+        ],
       ),
     );
   }
@@ -649,7 +727,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 onTap: () => setState(() => _mode = mode),
                 child: ExcludeSemantics(
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
+                    duration: context.motionDuration(
+                        const Duration(milliseconds: 200)),
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: isSelected
@@ -711,7 +790,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       children: [
         _stepIcon(Icons.person_outline_rounded),
         _stepTitle(l10n.enterName),
-        _stepSubtitle(l10n.whatShouldWeCallYou),
+        _stepSubtitle(l10n.whatShouldWeCallYou, optional: true),
         TextField(
           controller: _nameController,
           textCapitalization: TextCapitalization.words,
@@ -747,7 +826,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       children: [
         _stepIcon(Icons.cake_outlined),
         _stepTitle(l10n.yourBirthDate),
-        _stepSubtitle(l10n.birthDateHelp),
+        _stepSubtitle(l10n.birthDateHelp, optional: true),
         _dateField(
           value: _birthDate,
           semanticsLabel: l10n.yourBirthDate,
@@ -771,79 +850,148 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           hint: l10n.selectDateHint,
           onTap: _pickLastPeriodDate,
         ),
+        const SizedBox(height: 8),
+        // Kurulumun tek zorunlu sorusu buydu ve tarihi hatırlamayan
+        // kullanıcı sıkışıp kalıyordu. Yaklaşık seçim, uydurma bir kesinlik
+        // girmekten iyi: tahminler zaten kayıt geldikçe kendini düzeltiyor.
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton.icon(
+            onPressed: _pickApproximateLastPeriod,
+            icon: const Icon(Icons.help_outline_rounded, size: 18),
+            label: Text(l10n.dontRememberExactly),
+            style: TextButton.styleFrom(
+                foregroundColor: AppColors.primaryStrong),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildCycleLengthStep() {
+  /// Yaklaşık son regl tarihi. Seçenekler hafta cinsinden çünkü kullanıcı
+  /// "3 Temmuz" diye değil "geçen hafta" diye hatırlıyor.
+  Future<void> _pickApproximateLastPeriod() async {
+    final l10n = AppLocalizations.of(context)!;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    final options = <(String, int)>[
+      (l10n.approxThisWeek, 3),
+      (l10n.approxLastWeek, 10),
+      (l10n.approxTwoWeeks, 17),
+      (l10n.approxThreeWeeks, 24),
+      (l10n.approxMonthOrMore, 32),
+    ];
+
+    final daysAgo = await showModalBottomSheet<int>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 16),
+            Text(l10n.approxTitle,
+                style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary)),
+            const SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(l10n.approxSubtitle,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontSize: 13,
+                      height: 1.4,
+                      color: AppColors.textSecondary)),
+            ),
+            const SizedBox(height: 8),
+            for (final (label, days) in options)
+              ListTile(
+                title: Text(label),
+                onTap: () => Navigator.pop(sheetContext, days),
+              ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+
+    if (daysAgo == null || !mounted) return;
+    setState(() =>
+        _lastPeriodDate = today.subtract(Duration(days: daysAgo)));
+  }
+
+  /// Döngü ve regl uzunluğu tek adımda.
+  ///
+  /// İkisi ayrı sayfalardı: aynı biçimdeki iki slider için kullanıcı iki kez
+  /// "Devam"a basıyordu. Kurulum altı adımdan beşe indi; ikisi de
+  /// varsayılanla geçilebiliyor ve sonradan ayarlardan değiştirilebiliyor.
+  Widget _buildDurationsStep() {
     final l10n = AppLocalizations.of(context)!;
     return _formCard(
       children: [
         _stepIcon(Icons.loop_rounded),
-        _stepTitle(l10n.cycleLengthTitle),
-        _stepSubtitle(l10n.cycleLengthHelp),
-        const SizedBox(height: 8),
-        Text(
-          l10n.nDays(_cycleLength.round()),
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: AppColors.primaryStrong,
-              ),
+        _stepTitle(l10n.durationsStepTitle),
+        _stepSubtitle(l10n.durationsStepHelp),
+        _durationSlider(
+          label: l10n.cycleLengthTitle,
+          value: _cycleLength,
+          min: 18,
+          max: 45,
+          divisions: 27,
+          averageLabel: '28',
+          onChanged: (v) => setState(() => _cycleLength = v),
         ),
-        const SizedBox(height: 12),
-        SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            activeTrackColor: AppColors.primary,
-            inactiveTrackColor: AppColors.primaryLight.withValues(alpha: 0.3),
-            thumbColor: AppColors.primary,
-            overlayColor: AppColors.primary.withValues(alpha: 0.15),
-            trackHeight: 6,
-            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
-          ),
-          child: Slider(
-            value: _cycleLength,
-            min: 18,
-            max: 45,
-            divisions: 27,
-            label: l10n.nDays(_cycleLength.round()),
-            semanticFormatterCallback: (v) => l10n.nDays(v.round()),
-            onChanged: (v) => setState(() => _cycleLength = v),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('18', style: TextStyle(color: AppColors.textSecondary)),
-              Text('28 (${l10n.averageLabel})',
-                  style: const TextStyle(
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w500)),
-              const Text('45', style: TextStyle(color: AppColors.textSecondary)),
-            ],
-          ),
+        const SizedBox(height: 20),
+        _durationSlider(
+          label: l10n.periodLengthTitle,
+          value: _periodLength,
+          min: 2,
+          max: 10,
+          divisions: 8,
+          averageLabel: '5',
+          onChanged: (v) => setState(() => _periodLength = v),
         ),
       ],
     );
   }
 
-  Widget _buildPeriodLengthStep() {
+  Widget _durationSlider({
+    required String label,
+    required double value,
+    required double min,
+    required double max,
+    required int divisions,
+    required String averageLabel,
+    required ValueChanged<double> onChanged,
+  }) {
     final l10n = AppLocalizations.of(context)!;
-    return _formCard(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _stepIcon(Icons.timelapse_rounded),
-        _stepTitle(l10n.periodLengthTitle),
-        _stepSubtitle(l10n.periodLengthHelp),
-        const SizedBox(height: 8),
         Text(
-          l10n.nDays(_periodLength.round()),
+          label,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          l10n.nDays(value.round()),
+          textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.primaryStrong,
               ),
         ),
-        const SizedBox(height: 12),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: AppColors.primary,
@@ -854,13 +1002,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
           ),
           child: Slider(
-            value: _periodLength,
-            min: 2,
-            max: 10,
-            divisions: 8,
-            label: l10n.nDays(_periodLength.round()),
+            value: value,
+            min: min,
+            max: max,
+            divisions: divisions,
+            label: l10n.nDays(value.round()),
             semanticFormatterCallback: (v) => l10n.nDays(v.round()),
-            onChanged: (v) => setState(() => _periodLength = v),
+            onChanged: onChanged,
           ),
         ),
         Padding(
@@ -868,33 +1016,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('2', style: TextStyle(color: AppColors.textSecondary)),
-              Text('5 (${l10n.averageLabel})',
+              Text('${min.round()}',
+                  style: const TextStyle(color: AppColors.textSecondary)),
+              Text('$averageLabel (${l10n.averageLabel})',
                   style: const TextStyle(
                       color: AppColors.textSecondary,
                       fontWeight: FontWeight.w500)),
-              const Text('10', style: TextStyle(color: AppColors.textSecondary)),
+              Text('${max.round()}',
+                  style: const TextStyle(color: AppColors.textSecondary)),
             ],
           ),
         ),
       ],
     );
   }
-}
 
-/// Gradyan üstünde duran opak beyaz birincil aksiyon butonu.
-class _ActionButton extends StatelessWidget {
-  final String label;
-  final VoidCallback? onPressed;
-  final bool isLoading;
-
-  const _ActionButton({
-    required this.label,
-    required this.onPressed,
-    this.isLoading = false,
-  });
-
-  @override
   Widget build(BuildContext context) {
     final enabled = onPressed != null && !isLoading;
     return Material(

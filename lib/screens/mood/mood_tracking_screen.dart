@@ -5,7 +5,6 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/widgets/tracker_scaffold.dart';
-import '../../core/art/art_slot.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../providers/providers.dart';
@@ -79,14 +78,6 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: ArtSlot(
-                      id: 'R13-mood-spot',
-                      height: 96,
-                      fit: BoxFit.contain,
-                    ).animate().fadeIn(duration: 350.ms),
-                  ),
-                  const SizedBox(height: 12),
                   Text(l10n.howAreYouFeeling,
                       style: TextStyle(
                           fontSize: 22, fontWeight: FontWeight.bold,
@@ -119,7 +110,8 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                             _selectedMood = _selectedMood == mood ? null : mood),
                         child: ExcludeSemantics(
                         child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 250),
+                          duration: context.motionDuration(
+                              const Duration(milliseconds: 250)),
                           decoration: BoxDecoration(
                             gradient: isSelected
                                 ? LinearGradient(
@@ -148,8 +140,13 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                                     fontSize: 13,
                                     fontWeight: isSelected
                                         ? FontWeight.w700 : FontWeight.w600,
+                                    // Pastelin kendisi metin olarak okunmuyordu
+                                    // (moodHappy beyaz üstünde 1,26:1); ton
+                                    // korunur, parlaklık kısılır
                                     color: isSelected
-                                        ? emojiData.$2 : AppColors.ts(context),
+                                        ? AppColors.readable(
+                                            context, emojiData.$2)
+                                        : AppColors.ts(context),
                                   )),
                             ],
                           ),

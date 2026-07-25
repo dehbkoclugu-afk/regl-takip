@@ -35,6 +35,13 @@ class PremiumService {
 
   ProductDetails? monthlyProduct;
   ProductDetails? yearlyProduct;
+
+  /// Ürün detayları mağazadan asenkron gelir. Paywall bu bildiriciyi dinler:
+  /// aksi halde ekran ürünler dönmeden açıldığında tanıtım fiyatlarında
+  /// donup kalıyordu (rebuild tetikleyen hiçbir şey yoktu) ve kullanıcı
+  /// mağaza ekranında başka bir rakamla karşılaşıyordu.
+  final ValueNotifier<int> productsRevision = ValueNotifier(0);
+
   bool storeAvailable = false;
   StreamSubscription<List<PurchaseDetails>>? _subscription;
   bool _sawEntitlementThisSession = false;
@@ -58,7 +65,10 @@ class PremiumService {
       isPremiumNotifier.value = prefs.getBool(_prefsKey) ?? false;
 
       storeAvailable = await InAppPurchase.instance.isAvailable();
-      if (!storeAvailable) return;
+      if (!storeAvailable) {
+        productsRevision.value++;
+        return;
+      }
 
       _subscription =
           InAppPurchase.instance.purchaseStream.listen(_onPurchaseUpdates);
@@ -69,6 +79,9 @@ class PremiumService {
         if (product.id == monthlyId) monthlyProduct = product;
         if (product.id == yearlyId) yearlyProduct = product;
       }
+      // Sorgu sonuçsuz bitse de haber ver: paywall "hâlâ yükleniyor" ile
+      // "mağaza ürünü döndürmedi" durumlarını ancak böyle ayırt edebilir
+      productsRevision.value++;
 
       // Sessiz geri yükleme: cihaz değişiminde ve abonelik yenilemelerinde
       // haklar otomatik döner
@@ -135,9 +148,39 @@ class PremiumService {
   Future<bool> buyMonthly() => buy(monthlyProduct);
   Future<bool> buyYearly() => buy(yearlyProduct);
 
-  Future<void> restore() => InAppPurchase.instance.restorePurchases();
+  /// Geri yükleme akışı; hak dönerse true.
+  ///
+  /// `restorePurchases()` yalnız akışı başlatır, haklar `purchaseStream`
+  /// üzerinden asenkron gelir. Sonucu beklemeden dönülürse arayüz kullanıcıya
+  /// hiçbir şey söyleyemiyor: buton basılıyor ve geri yüklenecek bir şey
+  /// yoksa ekranda hiçbir şey olmuyordu. Verilen pencerede hak gelmezse
+  /// geri yüklenecek bir şey yok kabul edilir.
+  Future<bool> restore({
+    Duration timeout = const Duration(seconds: 6),
+  }) async {
+    if (isPremium) return true;
+
+    final completer = Completer<bool>();
+    void onEntitlement() {
+      if (isPremiumNotifier.value && !completer.isCompleted) {
+        completer.complete(true);
+      }
+    }
+
+    isPremiumNotifier.addListener(onEntitlement);
+    try {
+      await InAppPurchase.instance.restorePurchases();
+      return await completer.future.timeout(timeout, onTimeout: () => false);
+    } catch (e) {
+      debugPrint('[IAP] restore failed: $e');
+      return false;
+    } finally {
+      isPremiumNotifier.removeListener(onEntitlement);
+    }
+  }
 
   void dispose() {
     _subscription?.cancel();
+    productsRevision.dispose();
   }
 }

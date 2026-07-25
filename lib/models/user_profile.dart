@@ -81,6 +81,50 @@ class UserProfile extends HiveObject {
   @HiveField(20, defaultValue: '')
   String themePreference;
 
+  /// İlaç hatırlatmalarının kendi saati. null = [reminderHour] kullanılır.
+  ///
+  /// Tek bir saat tüm hatırlatmaları yönetiyordu: ilacını sabah alan ama
+  /// regl uyarısını akşam isteyen kullanıcı ikisinden birini feda ediyordu.
+  /// Döngü ve ilaç ayrı saatlere bölündü; üçüncü bir tür gerekirse aynı
+  /// kalıpla eklenir.
+  @HiveField(21)
+  int? medicationReminderHour;
+
+  @HiveField(22)
+  int? medicationReminderMinute;
+
+  /// Döngü hatırlatmalarının (regl, ovülasyon, gecikme, faz ipucu) saati.
+  /// null = [reminderHour] kullanılır.
+  @HiveField(23)
+  int? cycleReminderHour;
+
+  @HiveField(24)
+  int? cycleReminderMinute;
+
+  /// Regl hatırlatmasının tahmini tarihten kaç gün önce gönderileceği.
+  /// Sabit 1 gündü; kimi kullanıcı hazırlanmak için daha erken ister.
+  @HiveField(25, defaultValue: 1)
+  int periodReminderLeadDays;
+
+  /// Sessiz bildirim: ses ve öne çıkan (heads-up) baloncuk yok, bildirim
+  /// yalnız gölgelikte durur.
+  ///
+  /// Ayarlarda yalnız aç/kapa vardı; "bildirim istiyorum ama telefonum
+  /// çalmasın" diyen kullanıcının tek seçeneği hepsini kapatmaktı. Gizlilik
+  /// tarafı da var: kilit ekranında öne çıkmayan bildirim yandaki kişiye
+  /// görünmüyor.
+  @HiveField(26, defaultValue: false)
+  bool quietNotifications;
+
+  /// Döngü hatırlatmaları için etkin saat (özel saat yoksa genel saat).
+  int get effectiveCycleHour => cycleReminderHour ?? reminderHour;
+  int get effectiveCycleMinute => cycleReminderMinute ?? reminderMinute;
+
+  /// İlaç hatırlatmaları için etkin saat.
+  int get effectiveMedicationHour => medicationReminderHour ?? reminderHour;
+  int get effectiveMedicationMinute =>
+      medicationReminderMinute ?? reminderMinute;
+
   UserProfile({
     this.name = '',
     this.birthDate,
@@ -104,6 +148,12 @@ class UserProfile extends HiveObject {
     this.pregnancyStartDate,
     this.pillPackStartDate,
     this.themePreference = 'system',
+    this.medicationReminderHour,
+    this.medicationReminderMinute,
+    this.cycleReminderHour,
+    this.cycleReminderMinute,
+    this.periodReminderLeadDays = 1,
+    this.quietNotifications = false,
   });
 
   /// Yeni bir kopya döndürür; verilen alanlar güncellenir.
@@ -130,6 +180,12 @@ class UserProfile extends HiveObject {
     DateTime? pregnancyStartDate,
     DateTime? pillPackStartDate,
     String? themePreference,
+    int? medicationReminderHour,
+    int? medicationReminderMinute,
+    int? cycleReminderHour,
+    int? cycleReminderMinute,
+    int? periodReminderLeadDays,
+    bool? quietNotifications,
   }) {
     return UserProfile(
       name: name ?? this.name,
@@ -157,6 +213,15 @@ class UserProfile extends HiveObject {
       pregnancyStartDate: pregnancyStartDate ?? this.pregnancyStartDate,
       pillPackStartDate: pillPackStartDate ?? this.pillPackStartDate,
       themePreference: themePreference ?? this.themePreference,
+      medicationReminderHour:
+          medicationReminderHour ?? this.medicationReminderHour,
+      medicationReminderMinute:
+          medicationReminderMinute ?? this.medicationReminderMinute,
+      cycleReminderHour: cycleReminderHour ?? this.cycleReminderHour,
+      cycleReminderMinute: cycleReminderMinute ?? this.cycleReminderMinute,
+      periodReminderLeadDays:
+          periodReminderLeadDays ?? this.periodReminderLeadDays,
+      quietNotifications: quietNotifications ?? this.quietNotifications,
     );
   }
 
@@ -182,6 +247,12 @@ class UserProfile extends HiveObject {
         'pregnancyStartDate': pregnancyStartDate?.toIso8601String(),
         'pillPackStartDate': pillPackStartDate?.toIso8601String(),
         'themePreference': themePreference,
+        'medicationReminderHour': medicationReminderHour,
+        'medicationReminderMinute': medicationReminderMinute,
+        'cycleReminderHour': cycleReminderHour,
+        'cycleReminderMinute': cycleReminderMinute,
+        'periodReminderLeadDays': periodReminderLeadDays,
+        'quietNotifications': quietNotifications,
       };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
@@ -221,6 +292,13 @@ class UserProfile extends HiveObject {
         // Eski yedekte alan yok: kullanıcının o günkü seçimi korunur
         themePreference: json['themePreference'] as String? ??
             ((json['darkModeEnabled'] as bool? ?? false) ? 'dark' : 'light'),
+        // Eski yedekte yok: null = genel saat kullanılır
+        medicationReminderHour: json['medicationReminderHour'] as int?,
+        medicationReminderMinute: json['medicationReminderMinute'] as int?,
+        cycleReminderHour: json['cycleReminderHour'] as int?,
+        cycleReminderMinute: json['cycleReminderMinute'] as int?,
+        periodReminderLeadDays: json['periodReminderLeadDays'] as int? ?? 1,
+        quietNotifications: json['quietNotifications'] as bool? ?? false,
       );
 
   int? get age {

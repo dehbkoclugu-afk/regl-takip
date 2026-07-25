@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -9,6 +11,7 @@ import 'screens/decoy/decoy_notes_screen.dart';
 import 'screens/lock/lock_screen.dart';
 import 'services/ad_service.dart';
 import 'services/disguise_service.dart';
+import 'services/notification_service.dart';
 import 'services/premium_service.dart';
 import 'services/privacy_screen_service.dart';
 
@@ -34,6 +37,19 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   bool _decoyResolved = false;
   bool _isDisguisedCached = false;
 
+  /// Deneme süresi zamanın geçmesiyle dolar ama accessProvider'ı tazeleyen
+  /// bir olay yoktu: 30. gün uygulama açıkken dolduğunda erişim yeniden
+  /// başlatılana dek premium kalıyordu. Periyodik tik + arka plandan dönüş.
+  Timer? _accessRefreshTimer;
+
+  /// Uygulamanın arka plana alındığı an. Kilit kararı artık burada değil
+  /// dönüşte veriliyor: kullanıcının seçtiği gecikme dolmadıysa PIN
+  /// sorulmaz. null = uygulama hiç arka plana gitmedi (soğuk açılış).
+  DateTime? _backgroundedAt;
+
+  /// Kilit gecikmesi (saniye). 0 = hemen, eski davranış.
+  int _lockTimeoutSeconds = LockTimeout.defaultSeconds;
+
   @override
   void initState() {
     super.initState();
@@ -43,8 +59,64 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     // Satın alma olayları (mağazadan asenkron gelir) erişim kararlarına
     // yansımalı: ValueNotifier → Riverpod köprüsü
     PremiumService().isPremiumNotifier.addListener(_onPremiumChanged);
+    // Bildirim aksiyonu uygulamayı açtığında iş burada yapılır: yazma
+    // provider üzerinden gitmeli ki ekrandaki durum veriyle ayrışmasın
+    NotificationService().pendingAction.addListener(_onNotificationAction);
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _onNotificationAction());
+    _accessRefreshTimer = Timer.periodic(
+      const Duration(minutes: 30),
+      (_) => _refreshAccess(),
+    );
+    // İlk arka plan/dönüş çevriminde de doğru gecikme kullanılsın
+    LockTimeout.read().then((value) {
+      if (mounted) _lockTimeoutSeconds = value;
+    });
     // Kilit varsa reklam kilit açıldıktan sonra gösterilir (_onUnlocked)
     if (!_needsLock) _showOpenAd();
+  }
+
+  /// Bildirimden gelen aksiyonu uygular. Aksiyon tek seferlik: uygulandıktan
+  /// (ya da uygulanamadıktan) sonra temizlenir, yoksa her açılışta tekrar
+  /// çalışır.
+  Future<void> _onNotificationAction() async {
+    final action = NotificationService().pendingAction.value;
+    if (action == null || !mounted) return;
+    NotificationService().pendingAction.value = null;
+
+    switch (action.id) {
+      case NotificationService.actionPeriodStarted:
+        final records = ref.read(periodRecordsProvider.notifier);
+        final record = await records.startPeriod(DateTime.now());
+        await ref
+            .read(userProfileProvider.notifier)
+            .saveProfile(lastPeriodStart: record.startDate);
+        break;
+      case NotificationService.actionMedicationTaken:
+        final name = action.payload;
+        if (name == null || name.isEmpty) break;
+        final today = DateTime.now();
+        final logs = ref.read(dailyLogProvider.notifier);
+        final log = logs.getDailyLog(today);
+        final meds = log?.medications;
+        if (meds == null || meds.isEmpty) break;
+        // Aynı adlı ilaç birden fazla olabilir: hepsi işaretlenir
+        var changed = false;
+        for (final med in meds) {
+          if (med.name == name && !med.taken) {
+            med.taken = true;
+            changed = true;
+          }
+        }
+        if (changed) await logs.updateMedications(today, meds);
+        break;
+    }
+  }
+
+  void _refreshAccess() {
+    if (!mounted) return;
+    ref.invalidate(accessProvider);
+    ref.invalidate(trialDaysLeftProvider);
   }
 
   void _onPremiumChanged() {
@@ -69,6 +141,15 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     // Deneme ayında da reklamsız: "1 ay ücretsiz" vaadinin deneyimi tam
     // olmalı — reklam yalnız ücretsiz katmanda
     if (ref.read(accessProvider) != AccessLevel.free) return;
+
+    // Sıklık sınırı: reklam her açılışta çıkıyordu. Regl takibi
+    // "gir-kaydet-çık" uygulaması, üç saniyelik işin önündeki tam ekran
+    // reklam uygulamayı açmayı caydırıyor. Kurulum anı için deneme
+    // başlangıcı kullanılır — ilk açılışta sabitlenen tek tarih o.
+    final installedAt = ref.read(trialStartProvider) ?? DateTime.now();
+    if (!await AdService.canShowOpenAd(installedAt: installedAt)) return;
+    if (!mounted) return;
+
     _openAdShown = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Activity/ViewController tamamen hazır olduktan sonra
@@ -87,6 +168,8 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _accessRefreshTimer?.cancel();
+    NotificationService().pendingAction.removeListener(_onNotificationAction);
     PremiumService().isPremiumNotifier.removeListener(_onPremiumChanged);
     super.dispose();
   }
@@ -105,22 +188,40 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Arka planda geçen süre denemeyi bitirmiş olabilir
+      _refreshAccess();
+      // Kilit kararı burada: gecikme dolmadıysa PIN sorulmaz. Bildirime
+      // bakıp dönmek, fotoğraf seçiciden çıkmak, bir bağlantı açıp kapatmak
+      // her seferinde PIN istiyordu — kilidi kapattıran türden sürtünme.
+      final profile = ref.read(userProfileProvider);
+      final needs = (profile?.pinEnabled == true) ||
+          (profile?.biometricEnabled == true);
+      if (needs &&
+          !_isLocked &&
+          LockTimeout.shouldLock(
+            now: DateTime.now(),
+            backgroundedAt: _backgroundedAt,
+            timeoutSeconds: _lockTimeoutSeconds,
+          )) {
+        FocusManager.instance.primaryFocus?.unfocus();
+        setState(() => _isLocked = true);
+      }
+      _backgroundedAt = null;
+      return;
+    }
     // Yalnız paused/hidden: `inactive` bildirim çekmecesi, izin diyaloğu,
     // paylaşım sayfası gibi geçici odak kayıplarında da gelir — orada
     // kilitlemek her seferinde PIN + (eski davranışta) state kaybı demekti.
     // Recents önizleme sızıntısını FLAG_SECURE çözer (PrivacyScreenService).
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.hidden) {
-      final profile = ref.read(userProfileProvider);
-      if ((profile?.pinEnabled == true) ||
-          (profile?.biometricEnabled == true)) {
-        if (!_isLocked) {
-          // Kilit örtüsü inerken alttaki alan odağı bırakmalı (klavye açık
-          // kalmasın, tuş vuruşları alta gitmesin)
-          FocusManager.instance.primaryFocus?.unfocus();
-          setState(() => _isLocked = true);
-        }
-      }
+      // Zaman damgası: kilit kararı dönüşte bunun üzerinden veriliyor
+      _backgroundedAt ??= DateTime.now();
+      // Gecikme tercihi arka planda tazelenir; dönüşte okuma beklenmesin
+      LockTimeout.read().then((value) {
+        if (mounted) _lockTimeoutSeconds = value;
+      });
       // Kılık tutarlılığı: gizli moddayken arka plana giden uygulama
       // dönüşte yine "Notlar" olarak açılmalı
       if (_isDisguisedCached && !_decoyActive) {
