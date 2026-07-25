@@ -1,5 +1,15 @@
 # Changelog
 
+## Yayınlanmamış — Reklam sıklığı ve kurulum uzunluğu (2026-07-24)
+
+Tasarım incelemesinin dokuzuncu grubu (`docs/tasarim-onerileri.md` madde 6, 58).
+
+- **Açılış reklamı günde bir kez** (madde 6): ücretsiz katmanda uygulama her açılışta tam ekran reklam gösteriyordu. Regl takibi "gir-kaydet-çık" uygulaması; üç saniyelik işin önündeki beş saniyelik reklam uygulamayı açmayı caydırıyor — kaydedilmeyen gün, bozulan veri, işe yaramayan tahmin demek. 24 saatlik aralık ve kurulumdan sonraki ilk gün için tam sessizlik eklendi
+- **Damga gösterim anında atılıyor**: yüklenip gösterilemeyen reklam günlük hakkı harcamamalı; `onAdShowedFullScreenContent` içinde yazılıyor
+- **Karar saf fonksiyona ayrıldı**: `shouldShowOpenAd` premium kontrolü ve depolamadan bağımsız, bu yüzden test edilebilir
+- **Kurulum altı adımdan beşe indi** (madde 58): döngü uzunluğu ve regl uzunluğu aynı biçimde iki slider'dı ve ayrı sayfalardaydı — kullanıcı aynı iş için iki kez "Devam"a basıyordu. Tek adımda birleşti, ortak slider yardımcısı iki kopya kodu da eritti. İkisi de varsayılanla geçilebiliyor ve adım altyazısı bunu söylüyor
+- `shouldShowOpenAd` için 6 birim testi (bekleme süresi, aralık sınırı, yeniden kurulumda eski damganın aldatmaması)
+
 ## Yayınlanmamış — Yedekleme (2026-07-24)
 
 Tasarım incelemesinin sekizinci grubu (`docs/tasarim-onerileri.md` madde 92, 89).

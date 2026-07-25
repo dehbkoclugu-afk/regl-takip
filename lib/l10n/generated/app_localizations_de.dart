@@ -1563,6 +1563,12 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get durationsStepTitle => 'Deine Zyklusdaten';
+
+  @override
+  String get durationsStepHelp => 'Nicht sicher? Lass sie so — du kannst das später in den Einstellungen ändern.';
+
+  @override
   String get reportTitle => 'Zyklus-Gesundheitsbericht';
 
   @override

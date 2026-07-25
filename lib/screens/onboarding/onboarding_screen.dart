@@ -32,7 +32,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   int _currentMainPage = 0;
   int _currentFormStep = 0;
   static const int _totalInfoPages = 1;
-  static const int _totalFormSteps = 6;
+  static const int _totalFormSteps = 5;
 
   // Mod seçimi kurulumun ilk sorusu: hamile bir kullanıcı "döngü tahmini"
   // sorularıyla değil kendi akışıyla karşılanmalı (önceden ayarlarda
@@ -425,8 +425,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 _buildNameStep(),
                 _buildBirthDateStep(),
                 _buildLastPeriodStep(),
-                _buildCycleLengthStep(),
-                _buildPeriodLengthStep(),
+                _buildDurationsStep(),
               ],
             ),
           ),
@@ -925,75 +924,72 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         _lastPeriodDate = today.subtract(Duration(days: daysAgo)));
   }
 
-  Widget _buildCycleLengthStep() {
+  /// Döngü ve regl uzunluğu tek adımda.
+  ///
+  /// İkisi ayrı sayfalardı: aynı biçimdeki iki slider için kullanıcı iki kez
+  /// "Devam"a basıyordu. Kurulum altı adımdan beşe indi; ikisi de
+  /// varsayılanla geçilebiliyor ve sonradan ayarlardan değiştirilebiliyor.
+  Widget _buildDurationsStep() {
     final l10n = AppLocalizations.of(context)!;
     return _formCard(
       children: [
         _stepIcon(Icons.loop_rounded),
-        _stepTitle(l10n.cycleLengthTitle),
-        _stepSubtitle(l10n.cycleLengthHelp),
-        const SizedBox(height: 8),
-        Text(
-          l10n.nDays(_cycleLength.round()),
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: AppColors.primaryStrong,
-              ),
+        _stepTitle(l10n.durationsStepTitle),
+        _stepSubtitle(l10n.durationsStepHelp),
+        _durationSlider(
+          label: l10n.cycleLengthTitle,
+          value: _cycleLength,
+          min: 18,
+          max: 45,
+          divisions: 27,
+          averageLabel: '28',
+          onChanged: (v) => setState(() => _cycleLength = v),
         ),
-        const SizedBox(height: 12),
-        SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            activeTrackColor: AppColors.primary,
-            inactiveTrackColor: AppColors.primaryLight.withValues(alpha: 0.3),
-            thumbColor: AppColors.primary,
-            overlayColor: AppColors.primary.withValues(alpha: 0.15),
-            trackHeight: 6,
-            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
-          ),
-          child: Slider(
-            value: _cycleLength,
-            min: 18,
-            max: 45,
-            divisions: 27,
-            label: l10n.nDays(_cycleLength.round()),
-            semanticFormatterCallback: (v) => l10n.nDays(v.round()),
-            onChanged: (v) => setState(() => _cycleLength = v),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('18', style: TextStyle(color: AppColors.textSecondary)),
-              Text('28 (${l10n.averageLabel})',
-                  style: const TextStyle(
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w500)),
-              const Text('45', style: TextStyle(color: AppColors.textSecondary)),
-            ],
-          ),
+        const SizedBox(height: 20),
+        _durationSlider(
+          label: l10n.periodLengthTitle,
+          value: _periodLength,
+          min: 2,
+          max: 10,
+          divisions: 8,
+          averageLabel: '5',
+          onChanged: (v) => setState(() => _periodLength = v),
         ),
       ],
     );
   }
 
-  Widget _buildPeriodLengthStep() {
+  Widget _durationSlider({
+    required String label,
+    required double value,
+    required double min,
+    required double max,
+    required int divisions,
+    required String averageLabel,
+    required ValueChanged<double> onChanged,
+  }) {
     final l10n = AppLocalizations.of(context)!;
-    return _formCard(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _stepIcon(Icons.timelapse_rounded),
-        _stepTitle(l10n.periodLengthTitle),
-        _stepSubtitle(l10n.periodLengthHelp),
-        const SizedBox(height: 8),
         Text(
-          l10n.nDays(_periodLength.round()),
+          label,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          l10n.nDays(value.round()),
+          textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.primaryStrong,
               ),
         ),
-        const SizedBox(height: 12),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: AppColors.primary,
@@ -1004,13 +1000,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
           ),
           child: Slider(
-            value: _periodLength,
-            min: 2,
-            max: 10,
-            divisions: 8,
-            label: l10n.nDays(_periodLength.round()),
+            value: value,
+            min: min,
+            max: max,
+            divisions: divisions,
+            label: l10n.nDays(value.round()),
             semanticFormatterCallback: (v) => l10n.nDays(v.round()),
-            onChanged: (v) => setState(() => _periodLength = v),
+            onChanged: onChanged,
           ),
         ),
         Padding(
@@ -1018,33 +1014,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('2', style: TextStyle(color: AppColors.textSecondary)),
-              Text('5 (${l10n.averageLabel})',
+              Text('${min.round()}',
+                  style: const TextStyle(color: AppColors.textSecondary)),
+              Text('$averageLabel (${l10n.averageLabel})',
                   style: const TextStyle(
                       color: AppColors.textSecondary,
                       fontWeight: FontWeight.w500)),
-              const Text('10', style: TextStyle(color: AppColors.textSecondary)),
+              Text('${max.round()}',
+                  style: const TextStyle(color: AppColors.textSecondary)),
             ],
           ),
         ),
       ],
     );
   }
-}
 
-/// Gradyan üstünde duran opak beyaz birincil aksiyon butonu.
-class _ActionButton extends StatelessWidget {
-  final String label;
-  final VoidCallback? onPressed;
-  final bool isLoading;
-
-  const _ActionButton({
-    required this.label,
-    required this.onPressed,
-    this.isLoading = false,
-  });
-
-  @override
   Widget build(BuildContext context) {
     final enabled = onPressed != null && !isLoading;
     return Material(

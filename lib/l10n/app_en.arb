@@ -699,6 +699,8 @@
       "date": {"type": "String"}
     }
   },
+  "durationsStepTitle": "Your cycle details",
+  "durationsStepHelp": "Not sure? Leave them as they are — you can change these in settings later.",
   "reportTitle": "Cycle Health Report",
   "reportGenerated": "Generated",
   "profileSummary": "Profile Summary",

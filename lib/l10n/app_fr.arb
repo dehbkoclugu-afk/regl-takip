@@ -547,6 +547,8 @@
       "date": {"type": "String"}
     }
   },
+  "durationsStepTitle": "Vos données de cycle",
+  "durationsStepHelp": "Pas sûre ? Laissez tel quel — vous pourrez les modifier dans les réglages.",
   "reportTitle": "Rapport de santé du cycle",
   "reportGenerated": "Généré",
   "profileSummary": "Résumé du profil",

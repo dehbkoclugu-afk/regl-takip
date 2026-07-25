@@ -1563,6 +1563,12 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get durationsStepTitle => 'Döngü bilgilerin';
+
+  @override
+  String get durationsStepHelp => 'Emin değilsen olduğu gibi bırak — ayarlardan sonra değiştirebilirsin.';
+
+  @override
   String get reportTitle => 'Döngü Sağlık Raporu';
 
   @override

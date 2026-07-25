@@ -699,6 +699,8 @@
       "date": {"type": "String"}
     }
   },
+  "durationsStepTitle": "Döngü bilgilerin",
+  "durationsStepHelp": "Emin değilsen olduğu gibi bırak — ayarlardan sonra değiştirebilirsin.",
   "reportTitle": "Döngü Sağlık Raporu",
   "reportGenerated": "Oluşturma",
   "profileSummary": "Profil Özeti",

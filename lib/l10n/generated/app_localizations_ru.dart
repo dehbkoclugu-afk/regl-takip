@@ -1563,6 +1563,12 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get durationsStepTitle => 'Данные вашего цикла';
+
+  @override
+  String get durationsStepHelp => 'Не уверены? Оставьте как есть — это можно изменить в настройках.';
+
+  @override
   String get reportTitle => 'Отчёт о здоровье цикла';
 
   @override

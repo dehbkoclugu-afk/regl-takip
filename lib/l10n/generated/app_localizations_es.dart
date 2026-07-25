@@ -1563,6 +1563,12 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get durationsStepTitle => 'Los datos de tu ciclo';
+
+  @override
+  String get durationsStepHelp => '¿No estás segura? Déjalos así: puedes cambiarlos luego en ajustes.';
+
+  @override
   String get reportTitle => 'Informe de salud del ciclo';
 
   @override

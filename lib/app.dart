@@ -86,6 +86,15 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     // Deneme ayında da reklamsız: "1 ay ücretsiz" vaadinin deneyimi tam
     // olmalı — reklam yalnız ücretsiz katmanda
     if (ref.read(accessProvider) != AccessLevel.free) return;
+
+    // Sıklık sınırı: reklam her açılışta çıkıyordu. Regl takibi
+    // "gir-kaydet-çık" uygulaması, üç saniyelik işin önündeki tam ekran
+    // reklam uygulamayı açmayı caydırıyor. Kurulum anı için deneme
+    // başlangıcı kullanılır — ilk açılışta sabitlenen tek tarih o.
+    final installedAt = ref.read(trialStartProvider) ?? DateTime.now();
+    if (!await AdService.canShowOpenAd(installedAt: installedAt)) return;
+    if (!mounted) return;
+
     _openAdShown = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Activity/ViewController tamamen hazır olduktan sonra

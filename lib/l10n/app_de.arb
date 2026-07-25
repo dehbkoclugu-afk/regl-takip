@@ -547,6 +547,8 @@
       "date": {"type": "String"}
     }
   },
+  "durationsStepTitle": "Deine Zyklusdaten",
+  "durationsStepHelp": "Nicht sicher? Lass sie so — du kannst das später in den Einstellungen ändern.",
   "reportTitle": "Zyklus-Gesundheitsbericht",
   "reportGenerated": "Erstellt",
   "profileSummary": "Profilübersicht",

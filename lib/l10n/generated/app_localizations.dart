@@ -3043,6 +3043,18 @@ abstract class AppLocalizations {
   /// **'Son yedek: {date}'**
   String backupLastAt(String date);
 
+  /// No description provided for @durationsStepTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Döngü bilgilerin'**
+  String get durationsStepTitle;
+
+  /// No description provided for @durationsStepHelp.
+  ///
+  /// In tr, this message translates to:
+  /// **'Emin değilsen olduğu gibi bırak — ayarlardan sonra değiştirebilirsin.'**
+  String get durationsStepHelp;
+
   /// No description provided for @reportTitle.
   ///
   /// In tr, this message translates to:

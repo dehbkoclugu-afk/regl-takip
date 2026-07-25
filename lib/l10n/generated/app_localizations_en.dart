@@ -1563,6 +1563,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get durationsStepTitle => 'Your cycle details';
+
+  @override
+  String get durationsStepHelp => 'Not sure? Leave them as they are — you can change these in settings later.';
+
+  @override
   String get reportTitle => 'Cycle Health Report';
 
   @override

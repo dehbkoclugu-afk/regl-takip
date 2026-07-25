@@ -1,11 +1,12 @@
 # 100 kritik tasarım önerisi
 
-> **Durum:** 1, 2, 4, 11, 12, 13, 14, 17, 18, 39, 48, 49, 50, 59, 60, 61, 62,
-> 67, 68, 70, 75, 76, 77 ve 92 uygulandı. Kısmi olanlar: 3 (yalnız uyarı
-> tarafı — salt-okunur katman yapılmadı), 77 (ana ekran ve paylaşılan
+> **Durum:** 1, 2, 4, 6, 11, 12, 13, 14, 17, 18, 39, 48, 49, 50, 58, 59, 60,
+> 61, 62, 67, 68, 70, 75, 76, 77 ve 92 uygulandı. Kısmi olanlar: 3 (yalnız
+> uyarı tarafı — salt-okunur katman yapılmadı), 77 (ana ekran ve paylaşılan
 > bileşenler; diğer ekranlarda taşma taraması sürüyor) ve 89 (uyarı eklendi,
-> parolalı yedek yapılmadı). Madde 58 açık: adım sayısını azaltmak kurulum
-> akışını yeniden kurgulamak demek. Ayrıntı için CHANGELOG'a bakın.
+> parolalı yedek yapılmadı). Madde 7 (reklamın yerini kaydet sonrasına almak)
+> bilinçli olarak açık: gelir etkisi olan bir ürün kararı.
+> Ayrıntı için CHANGELOG'a bakın.
 
 Uygulamanın mevcut hâli üzerinden yapılmış eleştirel bir okuma. Öneriler
 gözlemden çıktı: her madde neyin sorun olduğunu söyler, sonra ne yapılacağını.
