@@ -17,6 +17,13 @@ import '../core/utils/language_utils.dart';
 import '../core/utils/phase_insights.dart';
 import 'disguise_service.dart';
 
+/// Bildirimden seçilen aksiyon: id + varsa taşıdığı veri.
+class NotificationAction {
+  final String id;
+  final String? payload;
+  const NotificationAction(this.id, {this.payload});
+}
+
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
@@ -47,6 +54,29 @@ class NotificationService {
 
   /// Kaç döngü ileriye hatırlatma planlanacağı
   static const int _cyclesToSchedule = 3;
+
+  // Bildirim aksiyonları. Hatırlatma "reglin başlayabilir" diyordu ama
+  // üzerinden hiçbir şey yapılamıyordu: kullanıcı uygulamayı açıp aynı işi
+  // elle yapmak zorundaydı.
+  static const String actionPeriodStarted = 'period_started';
+  static const String actionMedicationTaken = 'medication_taken';
+
+  /// Kullanıcının bildirimden seçtiği, henüz uygulanmamış aksiyon.
+  ///
+  /// Servis Hive'a kendi yazmıyor: yazma provider'lar üzerinden yapılmalı,
+  /// yoksa ekrandaki durum yazılan veriyle ayrışır. `showsUserInterface`
+  /// true olduğu için aksiyon her zaman uygulamayı açar ve iş ana
+  /// isolate'te yapılır — arka plan isolate'inde şifreli kutulara yazmak
+  /// gibi bir yola hiç girilmiyor.
+  final ValueNotifier<NotificationAction?> pendingAction =
+      ValueNotifier(null);
+
+  void _onNotificationResponse(NotificationResponse response) {
+    final actionId = response.actionId;
+    if (actionId == null) return;
+    pendingAction.value =
+        NotificationAction(actionId, payload: response.payload);
+  }
 
   /// Bildirim metinleri arayüzle aynı kaynaktan gelir (6 dil). Eskiden
   /// servisin içinde yalnız tr/en içeren ayrı bir tablo vardı: Almanca,
@@ -85,7 +115,19 @@ class NotificationService {
       iOS: iosSettings,
     );
 
-    await _plugin.initialize(initSettings);
+    await _plugin.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: _onNotificationResponse,
+    );
+
+    // Soğuk açılış: uygulama kapalıyken aksiyona basıldıysa yanıt geri
+    // çağrısı çalışmadan başlatılmış olabilir
+    final launch = await _plugin.getNotificationAppLaunchDetails();
+    final response = launch?.notificationResponse;
+    if (launch?.didNotificationLaunchApp == true && response != null) {
+      _onNotificationResponse(response);
+    }
+
     _isInitialized = true;
   }
 
@@ -110,6 +152,29 @@ class NotificationService {
 
     return true;
   }
+
+  /// "Reglim başladı" aksiyonu. `showsUserInterface: true` bilinçli:
+  /// aksiyon uygulamayı açar ve yazma ana isolate'te provider üzerinden
+  /// yapılır. Arka planda yazmak, şifreli Hive kutularını arka plan
+  /// isolate'inde açmayı gerektirirdi.
+  List<AndroidNotificationAction> _periodActions(AppLocalizations l10n) => [
+        AndroidNotificationAction(
+          actionPeriodStarted,
+          l10n.actionPeriodStarted,
+          showsUserInterface: true,
+        ),
+      ];
+
+  /// "Aldım" aksiyonu; hangi ilaç olduğu payload'da taşınır.
+  List<AndroidNotificationAction> _medicationActions(
+          AppLocalizations l10n) =>
+      [
+        AndroidNotificationAction(
+          actionMedicationTaken,
+          l10n.actionMedicationTaken,
+          showsUserInterface: true,
+        ),
+      ];
 
   /// Verilen tarih + saat için TZDateTime üretir.
   /// Geçmişte kaldıysa null döner (geçmişe bildirim planlanamaz).
@@ -160,6 +225,8 @@ class NotificationService {
           importance: Importance.high,
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',
+          // Gizli modda aksiyon konmaz: etiketin kendisi kılığı deşifre eder
+          actions: discreet ? const [] : _periodActions(l10n),
         ),
         iOS: const DarwinNotificationDetails(
           presentAlert: true,
@@ -245,6 +312,7 @@ class NotificationService {
           importance: Importance.defaultImportance,
           priority: Priority.defaultPriority,
           icon: '@mipmap/ic_launcher',
+          actions: discreet ? const [] : _periodActions(l10n),
         ),
         iOS: const DarwinNotificationDetails(
           presentAlert: true,
@@ -371,6 +439,7 @@ class NotificationService {
             importance: Importance.high,
             priority: Priority.high,
             icon: '@mipmap/ic_launcher',
+            actions: discreet ? const [] : _medicationActions(l10n),
           ),
           iOS: const DarwinNotificationDetails(
             presentAlert: true,
@@ -378,6 +447,8 @@ class NotificationService {
             presentSound: true,
           ),
         ),
+        // Hangi ilacın işaretleneceği aksiyonla birlikte taşınmalı
+        payload: med.name,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,

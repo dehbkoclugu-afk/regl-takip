@@ -3133,6 +3133,18 @@ abstract class AppLocalizations {
   /// **'Tümü'**
   String get allTime;
 
+  /// No description provided for @actionPeriodStarted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reglim başladı'**
+  String get actionPeriodStarted;
+
+  /// No description provided for @actionMedicationTaken.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aldım'**
+  String get actionMedicationTaken;
+
   /// No description provided for @healthImportNothingNew.
   ///
   /// In tr, this message translates to:

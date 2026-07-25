@@ -1608,6 +1608,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get allTime => 'Gesamt';
 
   @override
+  String get actionPeriodStarted => 'Periode hat begonnen';
+
+  @override
+  String get actionMedicationTaken => 'Eingenommen';
+
+  @override
   String get healthImportNothingNew => 'Keine neuen Einträge zum Importieren gefunden';
 
   @override

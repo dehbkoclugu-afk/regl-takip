@@ -714,6 +714,8 @@
   "healthImport": "Health Connect’ten içe aktar",
   "healthImportAction": "İçe aktar",
   "allTime": "Tümü",
+  "actionPeriodStarted": "Reglim başladı",
+  "actionMedicationTaken": "Aldım",
   "healthImportNothingNew": "İçe aktarılacak yeni kayıt bulunamadı",
   "healthImportConfirm": "Health Connect’te uygulamada olmayan {count} adet dönemi bulundu. Kayıtlarına eklensin mi? Mevcut kayıtların değişmez.",
   "@healthImportConfirm": {

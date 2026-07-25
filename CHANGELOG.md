@@ -1,5 +1,22 @@
 # Changelog
 
+## Yayınlanmamış — Bildirim aksiyonları (2026-07-24)
+
+Tasarım incelemesinin on altıncı grubu (`docs/tasarim-onerileri.md` madde 69, 34).
+
+- **"Reglim başladı" bildirimden işaretlenebiliyor** (madde 69): hatırlatma "reglin başlayabilir" diyordu ama üzerinden hiçbir şey yapılamıyordu; kullanıcı uygulamayı açıp aynı işi elle yapıyordu. Regl ve gecikme hatırlatmalarında aksiyon butonu var
+- **"Aldım" ilaç hatırlatmasında** (madde 34): hangi ilaç olduğu payload'da taşınıyor, bugünün kaydında o ad işaretleniyor
+- **Aksiyonlar uygulamayı açıyor** (`showsUserInterface: true`): yazma ana isolate'te provider üzerinden yapılıyor. Arka plan isolate'inde şifreli Hive kutularına yazmak hem kırılgan hem ekrandaki durumla ayrışma riski
+- **Soğuk açılış ele alındı**: uygulama kapalıyken aksiyona basıldıysa `getNotificationAppLaunchDetails` ile yakalanıyor
+- **Aksiyon tek seferlik**: uygulandıktan sonra temizleniyor, yoksa her açılışta tekrar çalışırdı
+- **Gizli modda aksiyon konmuyor**: buton etiketinin kendisi ("Reglim başladı") kılığı deşifre ederdi
+- **Manifest'e `ActionBroadcastReceiver` eklendi**: bu receiver olmadan aksiyon butonları çalışmıyor
+- Eklenti API'si 18.0.1 dokümanına karşı doğrulandı: `AndroidNotificationAction(id, title, {showsUserInterface})`, `initialize(settings, {onDidReceiveNotificationResponse})`, `NotificationResponse.actionId/payload`
+
+### Düzeltme
+
+- Madde 34 (ilaç alındı işaretlemesi yok) kapsamı daraltıldı: `MedicationEntry.taken` alanı da ilaç ekranındaki geçiş de zaten vardı. Eksik olan yalnız bildirimden işaretlemeydi
+
 ## Yayınlanmamış — Semptom sıralaması ve tüm zamanlar (2026-07-24)
 
 Tasarım incelemesinin on beşinci grubu (`docs/tasarim-onerileri.md` madde 31, 52).

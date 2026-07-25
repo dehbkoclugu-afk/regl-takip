@@ -1608,6 +1608,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allTime => 'All time';
 
   @override
+  String get actionPeriodStarted => 'My period started';
+
+  @override
+  String get actionMedicationTaken => 'Taken';
+
+  @override
   String get healthImportNothingNew => 'No new records found to import';
 
   @override

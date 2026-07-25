@@ -1608,6 +1608,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get allTime => 'Всё время';
 
   @override
+  String get actionPeriodStarted => 'Месячные начались';
+
+  @override
+  String get actionMedicationTaken => 'Принято';
+
+  @override
   String get healthImportNothingNew => 'Новых записей для импорта не найдено';
 
   @override

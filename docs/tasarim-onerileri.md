@@ -2,7 +2,7 @@
 
 > **Durum:** 1, 2, 4, 6, 11, 12, 13, 14, 17, 18, 39, 48, 49, 50, 58, 59, 60,
 > 61, 62, 67, 68, 70, 75, 76, 77, 86, 87 ve 92 uygulandı; 5, 26, 27 (hızlı
-> kayıt), 31, 40, 41, 45 (takvim), 51, 52 ve 93 de. Kısmi olanlar:
+> kayıt), 31, 34, 40, 41, 45 (takvim), 51, 52, 69 ve 93 de. Kısmi olanlar:
 > 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı), 77 (ana ekran ve
 > paylaşılan bileşenler; diğer ekranlarda taşma taraması sürüyor) ve 89
 > (uyarı eklendi, parolalı yedek yapılmadı). Madde 7 (reklamın yerini kaydet
@@ -177,8 +177,13 @@ tutuluyor ve hatırlatmalar en son ilaç içeren logdan okunuyor
 (`main.dart:71-78`). Tekrarlayan bir ilaç aslında profile ait; bugünkü model
 "dün girdiysem bugün de hatırlatılır" varsayımına yaslanıyor.
 
-**34. 🟡 İlaç alındı işaretlemesi yok.** Hatırlatma geliyor ama "aldım"
-kaydı tutulmuyor. Bildirim üzerinde aksiyon butonu doğal yeri.
+**34. 🟡 İlaç alındı bildirimden işaretlenemiyor.** Alındı kaydı tutuluyor
+(`MedicationEntry.taken`, ilaç ekranında dokunulabilir) ama hatırlatma
+geldiğinde uygulamayı açıp aynı işi elle yapmak gerekiyor.
+
+*(İlk yazımda "alındı kaydı tutulmuyor" demiştim, doğru değil — alan da
+ekrandaki geçiş de var. Eksik olan yalnız bildirim üzerinden işaretleme,
+yani madde 69'un kapsamı.)*
 
 **35. 🔵 Ölçümlerde birim tercihi yok.** Kilo ve sıcaklık tek birimde.
 İngilizce/Almanca kullanıcı için lb ve °F beklentisi gerçek.

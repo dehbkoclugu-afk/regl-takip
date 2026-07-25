@@ -11,6 +11,7 @@ import 'screens/decoy/decoy_notes_screen.dart';
 import 'screens/lock/lock_screen.dart';
 import 'services/ad_service.dart';
 import 'services/disguise_service.dart';
+import 'services/notification_service.dart';
 import 'services/premium_service.dart';
 import 'services/privacy_screen_service.dart';
 
@@ -58,6 +59,11 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     // Satın alma olayları (mağazadan asenkron gelir) erişim kararlarına
     // yansımalı: ValueNotifier → Riverpod köprüsü
     PremiumService().isPremiumNotifier.addListener(_onPremiumChanged);
+    // Bildirim aksiyonu uygulamayı açtığında iş burada yapılır: yazma
+    // provider üzerinden gitmeli ki ekrandaki durum veriyle ayrışmasın
+    NotificationService().pendingAction.addListener(_onNotificationAction);
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _onNotificationAction());
     _accessRefreshTimer = Timer.periodic(
       const Duration(minutes: 30),
       (_) => _refreshAccess(),
@@ -68,6 +74,43 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     });
     // Kilit varsa reklam kilit açıldıktan sonra gösterilir (_onUnlocked)
     if (!_needsLock) _showOpenAd();
+  }
+
+  /// Bildirimden gelen aksiyonu uygular. Aksiyon tek seferlik: uygulandıktan
+  /// (ya da uygulanamadıktan) sonra temizlenir, yoksa her açılışta tekrar
+  /// çalışır.
+  Future<void> _onNotificationAction() async {
+    final action = NotificationService().pendingAction.value;
+    if (action == null || !mounted) return;
+    NotificationService().pendingAction.value = null;
+
+    switch (action.id) {
+      case NotificationService.actionPeriodStarted:
+        final records = ref.read(periodRecordsProvider.notifier);
+        final record = await records.startPeriod(DateTime.now());
+        await ref
+            .read(userProfileProvider.notifier)
+            .saveProfile(lastPeriodStart: record.startDate);
+        break;
+      case NotificationService.actionMedicationTaken:
+        final name = action.payload;
+        if (name == null || name.isEmpty) break;
+        final today = DateTime.now();
+        final logs = ref.read(dailyLogProvider.notifier);
+        final log = logs.getDailyLog(today);
+        final meds = log?.medications;
+        if (meds == null || meds.isEmpty) break;
+        // Aynı adlı ilaç birden fazla olabilir: hepsi işaretlenir
+        var changed = false;
+        for (final med in meds) {
+          if (med.name == name && !med.taken) {
+            med.taken = true;
+            changed = true;
+          }
+        }
+        if (changed) await logs.updateMedications(today, meds);
+        break;
+    }
   }
 
   void _refreshAccess() {
@@ -126,6 +169,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _accessRefreshTimer?.cancel();
+    NotificationService().pendingAction.removeListener(_onNotificationAction);
     PremiumService().isPremiumNotifier.removeListener(_onPremiumChanged);
     super.dispose();
   }

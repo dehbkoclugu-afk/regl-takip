@@ -1608,6 +1608,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get allTime => 'Tümü';
 
   @override
+  String get actionPeriodStarted => 'Reglim başladı';
+
+  @override
+  String get actionMedicationTaken => 'Aldım';
+
+  @override
   String get healthImportNothingNew => 'İçe aktarılacak yeni kayıt bulunamadı';
 
   @override
