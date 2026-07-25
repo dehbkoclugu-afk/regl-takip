@@ -1,5 +1,15 @@
 # Changelog
 
+## Yayınlanmamış — Haftanın ilk günü seçilen dilden geliyor (2026-07-25)
+
+Tasarım incelemesinin yirmi dördüncü grubu (`docs/tasarim-onerileri.md` madde 82, 84).
+
+- **Madde 84'ün iki iddiası da yanlıştı.** "Tarih biçimi sistem yerelinden geliyor" demiştim: gelmiyormuş — her `DateFormat` uygulamanın etkin yerelini alıyor, o da profildeki dil seçimini izliyor (`localeProvider` → `MaterialApp.locale`). Zaten doğruymuş
+- **"Haftanın ilk günü sistem yerelinden geliyor" da yanlıştı**, üstelik verdiğim örneğin tersi yönde: `startingDayOfWeek` sabit `monday` yazılıydı, yani hafta hiçbir zaman pazar başlamıyordu
+- **Gerçek eksik buydu ve düzeltildi**: İngilizce seçen kullanıcı ay adlarını ve gün kısaltmalarını kendi dilinde görürken takvim yine pazartesiyle başlıyordu. Artık seçilen dilin kendi kuralı geçerli (`MaterialLocalizations.firstDayOfWeekIndex`) — İngilizcede pazar, Türkçe / Almanca / İspanyolca / Fransızca / Rusçada pazartesi
+- **İki sayım farklı yerden başlıyor**: Flutter'ın indeksi 0 = pazar, `table_calendar`'ın enum'u 0 = pazartesi. Kaydırmayı gözle doğrulamak zor olduğu için eşleme ayrı bir fonksiyona alındı ve yedi indeksin hepsi test edildi (`week_start_test.dart`)
+- **Madde 82 (klavye gezinmesi) açık bırakıldı**: cihaz olmadan doğrulanamaz, o yüzden tahmine dayalı bir "düzeltme" yazılmadı. Yapısal engel de bulunamadı — kod tabanında yalnız iki `GestureDetector` var ve ikisi de bilinçli (gizli moddan çıkış kapısı klavyeyle erişilebilir *olmamalı*; ring'in segment seçiminin bilgisi merkez içerikte ve takvimde zaten var), geri kalan her etkileşim odaklanabilir `InkWell` ya da Material butonu
+
 ## Yayınlanmamış — Renk körlüğü: takvim hücreleri ve pasta lejantı (2026-07-25)
 
 Tasarım incelemesinin yirmi üçüncü grubu (`docs/tasarim-onerileri.md` madde 79, 80).

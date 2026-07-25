@@ -3,7 +3,8 @@
 > **Durum:** 1, 2, 4, 6, 11, 12, 13, 14, 17, 18, 39, 48, 49, 50, 58, 59, 60,
 > 61, 62, 67, 68, 70, 75, 76, 77, 86, 87 ve 92 uygulandı; 5, 26, 27 (hızlı
 > kayıt), 16, 20, 22, 23, 31, 34, 40, 41, 45 (takvim), 51, 52, 69, 72, 73,
-> 74, 78, 79, 81, 83 ve 93 de. Madde 80 geri çekildi (zaten yapılmıştı).
+> 74, 78, 79, 81, 83, 84 ve 93 de. Madde 80 geri çekildi (zaten yapılmıştı);
+> madde 82 cihaz olmadan doğrulanamadığı için açık bırakıldı.
 > Kısmi olanlar:
 > 3 (yalnız uyarı tarafı — salt-okunur katman yapılmadı), 71 (ton yapıldı,
 > sıklık ayarının somut karşılığı yok), 77 (ana ekran ve
@@ -461,6 +462,15 @@ sözü — "kalıp her yerde aynı olmalı" — yerine getirildi, hepsi tek bir
 
 **82. 🔵 Klavye gezinmesi test edilmemiş.** Tablet + klavye senaryosunda
 odak sırası belirsiz.
+*Bakıldı, yapılmadı:* bu maddeyi cihaz olmadan doğrulamak mümkün değil,
+o yüzden tahmine dayalı bir "düzeltme" yazmadım. Yapısal bir engel de
+bulamadım: kod tabanında yalnız iki `GestureDetector` var ve ikisi de
+bilinçli — biri gizli moddan çıkış kapısı (klavyeyle erişilebilir
+**olmamalı**), diğeri ring'in segment seçimi (aynı bilgi merkez içerikte
+ve takvimde zaten var). Geri kalan her etkileşim `InkWell` ya da Material
+butonu, yani odaklanabilir ve Enter/Space ile çalışır; odak sırası da
+widget ağacı sırasını izliyor, o da görsel sırayla örtüşüyor. Gerçek
+yargı için tablet + klavye gerekiyor.
 
 **83. 🔵 Ekran okuyucu etiketleri değer taşımıyor.** Ring "döngü haritası"
 diyor ama kaçıncı gün olduğunu söylemiyor.
@@ -478,6 +488,16 @@ kopyalamıştı; üçüncü kopya yerine `EnumLabels.phase` eklendi.
 **84. 🔵 Dil ve bölge ayrımı yok.** Dil seçilebiliyor ama tarih biçimi ve
 haftanın ilk günü sistem yerelinden geliyor; Rusça seçen ama ABD yerelinde
 olan kullanıcıda hafta pazar başlıyor.
+*Düzeltme:* iki iddia da yanlıştı. **Tarih biçimi** sistem yerelinden
+gelmiyor: her `DateFormat` uygulamanın etkin yerelini alıyor, o da profildeki
+dil seçimini izliyor (`localeProvider` → `MaterialApp.locale`). Zaten
+doğruydu. **Haftanın ilk günü** de sistem yerelinden gelmiyordu — sabit
+pazartesiydi, yani verdiğim örneğin tersi oluyordu: hafta hiçbir zaman
+pazar başlamıyordu. *Uygulandı:* gerçek eksik buydu ve düzeltildi —
+İngilizce seçen kullanıcı ay adlarını kendi dilinde görürken takvim yine
+pazartesiyle başlıyordu. Artık seçilen dilin kendi kuralı geçerli
+(`MaterialLocalizations.firstDayOfWeekIndex`): İngilizcede pazar, Türkçe /
+Almanca / İspanyolca / Fransızca / Rusçada pazartesi.
 
 ---
 

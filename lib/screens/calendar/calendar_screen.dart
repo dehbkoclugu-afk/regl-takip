@@ -274,7 +274,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               focusedDay: _focusedDay,
               calendarFormat: _calendarFormat,
               locale: Localizations.localeOf(context).toString(),
-              startingDayOfWeek: StartingDayOfWeek.monday,
+              // Haftanın ilk günü sabit pazartesiydi: İngilizce seçen
+              // kullanıcı ay adlarını ve gün kısaltmalarını kendi dilinde
+              // görürken takvim yine pazartesiyle başlıyordu. Artık seçilen
+              // dilin kendi kuralı geçerli — İngilizcede pazar, Türkçe /
+              // Almanca / Fransızca / Rusçada pazartesi.
+              startingDayOfWeek: _startingDayOfWeek(context),
               selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
               onDaySelected: (selectedDay, focusedDay) {
                 setState(() {
@@ -432,6 +437,15 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       ),
     );
   }
+
+  /// Haftanın ilk günü, seçilen dilin kendi kuralından.
+  ///
+  /// `MaterialLocalizations.firstDayOfWeekIndex` uygulamanın etkin
+  /// yerelinden gelir (cihazınkinden değil), yani dil seçimi takvimi de
+  /// yönetir.
+  StartingDayOfWeek _startingDayOfWeek(BuildContext context) =>
+      startingDayOfWeekFromIndex(
+          MaterialLocalizations.of(context).firstDayOfWeekIndex);
 
   Widget _buildDayCell(DateTime day, UserProfile? profile,
       List<PeriodRecord> records, Map<String, DailyLog> dailyLogs, bool isToday) {
@@ -961,3 +975,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
   }
 }
+
+/// Flutter'ın hafta başlangıcı indeksini table_calendar'ın enum'una çevirir.
+///
+/// İki sayım farklı yerden başlıyor: `firstDayOfWeekIndex` 0 = pazar,
+/// `StartingDayOfWeek.values` ise 0 = pazartesi. Kaydırma bu yüzden.
+StartingDayOfWeek startingDayOfWeekFromIndex(int firstDayOfWeekIndex) =>
+    StartingDayOfWeek.values[(firstDayOfWeekIndex + 6) % 7];
