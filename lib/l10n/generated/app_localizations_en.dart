@@ -1578,6 +1578,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lockImmediately => 'Immediately';
 
   @override
+  String get previousDay => 'Previous day';
+
+  @override
+  String get nextDay => 'Next day';
+
+  @override
   String get pinNoRecoveryWarning => 'If you forget your PIN there is no way to recover it; the only way back in is deleting all your data. Choose something you will remember.';
 
   @override

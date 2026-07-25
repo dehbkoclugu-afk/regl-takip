@@ -3073,6 +3073,18 @@ abstract class AppLocalizations {
   /// **'Hemen'**
   String get lockImmediately;
 
+  /// No description provided for @previousDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önceki gün'**
+  String get previousDay;
+
+  /// No description provided for @nextDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonraki gün'**
+  String get nextDay;
+
   /// No description provided for @pinNoRecoveryWarning.
   ///
   /// In tr, this message translates to:

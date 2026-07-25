@@ -704,6 +704,8 @@
   "lockTimeoutTitle": "Kilit gecikmesi",
   "lockTimeoutDesc": "Uygulamadan kısa süre ayrılınca PIN tekrar sorulmasın",
   "lockImmediately": "Hemen",
+  "previousDay": "Önceki gün",
+  "nextDay": "Sonraki gün",
   "pinNoRecoveryWarning": "PIN’ini unutursan kurtarma yolu yok; tek çıkış tüm verini silmek olur. Hatırlayacağın bir sayı seç.",
   "lockAfterMinutes": "{minutes} dk sonra",
   "@lockAfterMinutes": {

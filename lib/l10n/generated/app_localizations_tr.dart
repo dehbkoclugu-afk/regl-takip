@@ -1578,6 +1578,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get lockImmediately => 'Hemen';
 
   @override
+  String get previousDay => 'Önceki gün';
+
+  @override
+  String get nextDay => 'Sonraki gün';
+
+  @override
   String get pinNoRecoveryWarning => 'PIN’ini unutursan kurtarma yolu yok; tek çıkış tüm verini silmek olur. Hatırlayacağın bir sayı seç.';
 
   @override

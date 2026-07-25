@@ -552,6 +552,8 @@
   "lockTimeoutTitle": "Délai de verrouillage",
   "lockTimeoutDesc": "Pas de code si vous revenez après un court instant",
   "lockImmediately": "Immédiatement",
+  "previousDay": "Jour précédent",
+  "nextDay": "Jour suivant",
   "pinNoRecoveryWarning": "Si vous oubliez votre code, il n’y a aucun moyen de le récupérer ; la seule issue est de supprimer toutes vos données. Choisissez un code dont vous vous souviendrez.",
   "lockAfterMinutes": "Après {minutes} min",
   "@lockAfterMinutes": {

@@ -552,6 +552,8 @@
   "lockTimeoutTitle": "Задержка блокировки",
   "lockTimeoutDesc": "Не спрашивать PIN, если вы вернулись быстро",
   "lockImmediately": "Сразу",
+  "previousDay": "Предыдущий день",
+  "nextDay": "Следующий день",
   "pinNoRecoveryWarning": "Если вы забудете PIN, восстановить его нельзя — останется только удалить все данные. Выберите то, что запомните.",
   "lockAfterMinutes": "Через {minutes} мин",
   "@lockAfterMinutes": {

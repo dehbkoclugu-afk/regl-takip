@@ -552,6 +552,8 @@
   "lockTimeoutTitle": "Sperrverzögerung",
   "lockTimeoutDesc": "Keine PIN, wenn du nach kurzer Zeit zurückkommst",
   "lockImmediately": "Sofort",
+  "previousDay": "Vorheriger Tag",
+  "nextDay": "Nächster Tag",
   "pinNoRecoveryWarning": "Wenn du deine PIN vergisst, gibt es keine Wiederherstellung; der einzige Weg zurück ist das Löschen aller Daten. Wähle etwas, das du dir merkst.",
   "lockAfterMinutes": "Nach {minutes} Min.",
   "@lockAfterMinutes": {

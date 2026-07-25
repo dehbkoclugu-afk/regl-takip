@@ -552,6 +552,8 @@
   "lockTimeoutTitle": "Retardo de bloqueo",
   "lockTimeoutDesc": "Sin PIN si vuelves tras un momento breve",
   "lockImmediately": "Inmediatamente",
+  "previousDay": "Día anterior",
+  "nextDay": "Día siguiente",
   "pinNoRecoveryWarning": "Si olvidas tu PIN no hay forma de recuperarlo; la única salida es borrar todos tus datos. Elige algo que recuerdes.",
   "lockAfterMinutes": "Tras {minutes} min",
   "@lockAfterMinutes": {

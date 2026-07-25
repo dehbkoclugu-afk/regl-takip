@@ -1,5 +1,14 @@
 # Changelog
 
+## Yayınlanmamış — Hızlı kayıt (2026-07-24)
+
+Tasarım incelemesinin on birinci grubu (`docs/tasarim-onerileri.md` madde 26, 27).
+
+- **Hızlı kayıtta gün gezinmesi** (madde 27): sheet açıldığı güne çakılıydı. Akşam uygulamayı açıp dünü girmek tipik davranış ama kullanıcı sheet'i kapatıp takvime inmek zorundaydı. Başlıkta ileri/geri gün okları var; gelecek gün kapalı
+- **Gün değiştirirken girdi kaybolmuyor**: ekrandaki hâl önce mevcut güne yazılıyor. "Dünü girdim, şimdi bugüne geçeyim" akışı veri kaybetmemeli
+- **Not alanı hızlı kayda geldi** (madde 26): en sık girilen dördüncü alandı ama "tüm kayıt türleri"nin arkasında duruyordu
+- **Boş kayıt koruması korundu ve genişletildi**: hiçbir şey girilmemişse ve o güne ait kayıt yoksa hiçbir şey yazılmıyor (takvimde sahte "kayıt var" noktası çıkarıyordu); artık bu durumda "Kaydedildi" bildirimi de gösterilmiyor — yazılmayan şey için onay vermek yanlış bilgi
+
 ## Yayınlanmamış — Kilit ve PIN (2026-07-24)
 
 Tasarım incelemesinin onuncu grubu (`docs/tasarim-onerileri.md` madde 86, 87).

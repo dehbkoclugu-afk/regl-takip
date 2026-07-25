@@ -1578,6 +1578,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get lockImmediately => 'Сразу';
 
   @override
+  String get previousDay => 'Предыдущий день';
+
+  @override
+  String get nextDay => 'Следующий день';
+
+  @override
   String get pinNoRecoveryWarning => 'Если вы забудете PIN, восстановить его нельзя — останется только удалить все данные. Выберите то, что запомните.';
 
   @override
