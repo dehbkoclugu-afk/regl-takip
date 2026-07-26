@@ -41,7 +41,6 @@ class CalendarScreen extends ConsumerStatefulWidget {
 }
 
 class _CalendarScreenState extends ConsumerState<CalendarScreen> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   final GlobalKey _calendarCaptureKey = GlobalKey();
@@ -654,7 +653,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           firstDay: DateTime(2020, 1, 1),
           lastDay: DateTime(2030, 12, 31),
           focusedDay: _focusedDay,
-          calendarFormat: _calendarFormat,
+          calendarFormat: CalendarFormat.month,
           locale: Localizations.localeOf(context).toString(),
           startingDayOfWeek: calendarWeekStart,
           // Hücreler ve gün başlıkları birbirine yapışıktı: satır ve
@@ -662,6 +661,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           // sıkışık gösteriyordu. Daha ferah bir ızgara için büyütüldü.
           rowHeight: 58,
           daysOfWeekHeight: 32,
+          // Format hiç değişmiyor (formatButtonVisible: false) ama
+          // varsayılan jest seti dikey sürüklemeyi hâlâ "2 haftaya küçült"
+          // olarak yakalıyordu — sayfayı kaydırmaya çalışan parmak takvimi
+          // ay görünümünden 2 haftalık şeride düşürüyor, geri kalan alan
+          // boş kalıyordu. Yalnız yatay (ay değiştirme) jesti bırakıldı.
+          availableGestures: AvailableGestures.horizontalSwipe,
           selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
           onDaySelected: (selectedDay, focusedDay) => _selectCalendarDay(
             selectedDay,
@@ -673,8 +678,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             _dismissPeekHint();
             _showDayPeek(day, records, dailyLogs);
           },
-          onFormatChanged: (format) =>
-              setState(() => _calendarFormat = format),
           onPageChanged: (focusedDay) =>
               setState(() => _focusedDay = focusedDay),
           headerStyle: HeaderStyle(
