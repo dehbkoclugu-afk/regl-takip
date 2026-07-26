@@ -158,19 +158,31 @@ class DashboardScreen extends ConsumerWidget {
         ),
       ),
       child: SafeArea(
-        child: SingleChildScrollView(
-          // Ana sayfada nefes payı yok: son kart doğrudan çubuğun üstünde
-          // bitiyor. Diğer sekmeler tek satırlık bir kapanışla (yasal uyarı)
-          // bittiği için orada pay iyi duruyor; burada sayfayı bir kartla
-          // kapatıyoruz ve fazlası sayfa sonunda ölü alan olarak görünüyor.
-          padding:
-              EdgeInsets.fromLTRB(20, 0, 20, bottomNavInset(context, gap: 0)),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1180),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
+        // İçerik ekranı doldurmadığında artan alan sayfanın sonunda tek
+        // parça ölü boşluk olarak kalıyordu: kaydırma yoksa dolguyu
+        // azaltmak bunu kapatmıyor, görünen şey viewport'un kendisi.
+        // Sütun en az viewport kadar uzun tutuluyor ve artan alan
+        // kısayol satırının ÜSTÜNE veriliyor (aşağıdaki Spacer), böylece
+        // satır sayfanın altına yaslanıyor ve boşluk bölümler arası
+        // ayrım hâline geliyor. İçerik uzunsa artan alan zaten sıfır,
+        // yerleşim değişmiyor.
+        child: LayoutBuilder(
+          builder: (context, viewport) {
+            final bottomInset = bottomNavInset(context, gap: 0);
+            return SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, bottomInset),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: 1180,
+                    minHeight: viewport.maxHeight - bottomInset,
+                  ),
+                  // IntrinsicHeight olmadan sütunun boyu belirsiz kalır ve
+                  // esnek çocuk (Spacer) kullanılamaz.
+                  child: IntrinsicHeight(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
               const SizedBox(height: 20),
               // Selamlama artık display anı değil: ekranın en büyük yazısı
               // kullanıcının sorusuna ("ne zaman?") ait olmalı, ismine değil.
@@ -355,14 +367,20 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(height: 28),
                 const QuickStatusCards(),
               ],
-              // Sayfayı kapatan kısayol satırı: sonunda kalan ölü alanı
-              // ekranın en sık yapılan işiyle dolduruyor.
+              // Sayfayı kapatan kısayol satırı. Öndeki Spacer artan alanı
+              // yutuyor: satır ekranın altına yaslanıyor, boşluk da özet
+              // ile kısayollar arasında bir ayrıma dönüşüyor. Sabit 28
+              // asgari payı korur, Spacer yalnız fazlalığı alır.
               const SizedBox(height: 28),
+              const Spacer(),
               const QuickAccessRow(),
-                ],
+                      ],
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

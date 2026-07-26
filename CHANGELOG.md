@@ -1,5 +1,12 @@
 # Changelog
 
+## Yayınlanmamış — Ana sayfanın sonundaki ölü alan kapatıldı (2026-07-26)
+
+- **Kısayol satırı boşluğu kapatmaya yetmedi**: altında hâlâ ekranın üçte birine yakın ölü alan kalıyordu. Sebep dolgu değildi — içerik ekranı doldurmadığı için sayfa kaydırılamıyor ve görünen boşluk viewport'un kendisi oluyordu. Dolguyu azaltmak bu durumda hiçbir şeyi değiştirmiyor
+- **Düzeltme yapısal**: sütun en az viewport kadar uzun tutuluyor (`ConstrainedBox.minHeight` + `IntrinsicHeight`) ve artan alan kısayol satırının **üstündeki** esnek boşluğa veriliyor. Satır sayfanın altına yaslanıyor, boşluk da "sayfa bitti" görüntüsünden çıkıp özet ile kısayollar arasında bir ayrıma dönüşüyor
+- **İçerik uzunsa hiçbir şey değişmiyor**: artan alan sıfır olduğu için esnek boşluk pay almıyor
+- Yerleşim testle sabitlendi (`dashboard_fill_test.dart`): kısa sayfada kapanış satırının altı gezinme payının hemen üstünde bitiyor, uzun sayfada satır doğrudan içeriğin ardından geliyor
+
 ## Yayınlanmamış — Ana sayfayı kapatan kısayol satırı (2026-07-26)
 
 - **Sayfanın sonundaki ölü alan dolduruldu**: içerik ekranı doldurmuyordu ve altta yüzen çubuğa kadar boşluk uzuyordu. Dolgu azaltmak bu boşluğu kapatmıyor — kaydırma olmadığında görünen alan viewport'un kendisi
