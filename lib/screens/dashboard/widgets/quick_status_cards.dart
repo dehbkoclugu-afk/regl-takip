@@ -100,41 +100,42 @@ class QuickStatusCards extends ConsumerWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          // Rozet başlıkla aynı satırı paylaşıyordu ve iki fakti birden
+          // taşıdığı için sıkışıp sarıyordu: "… Son 7 günde 1 / kayıt".
+          // Kendi satırında tam genişliği bulunca tek satıra sığıyor ve
+          // hiçbir bilgi kırpılmıyor.
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Text(
-                  l10n.todaySummary,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.tp(context),
-                  ),
+              Text(
+                l10n.todaySummary,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.tp(context),
                 ),
               ),
-              if (consistency.lastSevenDays > 0)
-                Flexible(
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      consistencyText,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.end,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.primaryDeep,
-                      ),
+              if (consistency.lastSevenDays > 0) ...[
+                const SizedBox(height: 6),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    consistencyText,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primaryDeep,
                     ),
                   ),
                 ),
+              ],
             ],
           ),
         ),

@@ -222,9 +222,16 @@ class _MedicationTrackingScreenState
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheetState) => Padding(
-          padding: EdgeInsets.fromLTRB(
-              20, 20, 20, MediaQuery.of(ctx).viewInsets.bottom + 20),
+        // SafeArea şart: alt dolgu yalnız viewInsets (klavye) sayıyordu,
+        // sistem gezinme çubuğunu değil. Klavye kapalıyken dolgu 20 piksele
+        // düşüyor ve "Ekle" butonu çubuğun altında kalıyordu. SafeArea
+        // klavye açıkken kendi boşluğunu sıfırlıyor, iki dolgu üst üste
+        // binmiyor.
+        builder: (ctx, setSheetState) => SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+                20, 20, 20, MediaQuery.viewInsetsOf(ctx).bottom + 20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -351,6 +358,7 @@ class _MedicationTrackingScreenState
                 ),
               ),
             ],
+            ),
           ),
         ),
       ),

@@ -1,5 +1,14 @@
 # Changelog
 
+## Yayınlanmamış — Telefon testi ikinci tur: dört görsel hata (2026-07-26)
+
+- **İlaç ekleme sayfasında "Ekle" butonu sistem çubuğunun altında kalıyordu**: sayfanın alt dolgusu yalnız `viewInsets` (klavye) sayıyor, gezinme çubuğunu saymıyordu. Klavye kapalıyken dolgu 20 piksele düşüyordu. `SafeArea` eklendi — klavye açıkken kendi boşluğunu sıfırladığı için iki dolgu üst üste binmiyor
+- **Bir ekranın bildirimi başka ekranın üstünde kalıyordu**: kaydet-ve-kapan akışlarında bildirim çubuğu kök `ScaffoldMessenger`'da yaşıyor ve onu açan ekran kapandıktan sonra ayakta kalıyor. Ruh hali ekranının "Ruh hali kaydedildi" mesajı akış ekranının **Kaydet butonunun üstünde** duruyordu. Yeni bir izleyici açılırken önceki mesaj temizleniyor (`TrackerScaffold`)
+- **"Verimli Pencere" tarihi ortasından kırılıyordu**: kart ekran genişliğinin üçte birine sığmak zorunda ve tek değer değil aralık taşıyor; "25 Tem - 31 Tem" sararken ay adı günden kopup "25 Tem - 31 / Tem" oluyordu. Aynı ay içindeki aralıkta ay bir kez yazılıyor ("25 - 31 Tem"), aylar farklıysa gün ile ay arasına bölünmez boşluk konuyor — sarma yalnız tireden oluyor (`date_range_label.dart`, 5 test)
+- **Seri rozeti sarıyordu**: "Bugünün Özeti" başlığıyla aynı satırı paylaşıp iki fakti birden taşıdığı için sıkışıyor ve "kayıt" tek başına alt satıra düşüyordu. Kendi satırına alındı, tam genişlikte tek satıra sığıyor
+
+**Hata olmayan iki gözlem:** İstatistikteki kesik yasal uyarı ve Günlük Ölçümler'deki kesik sıcaklık ipucu, kaydırma sınırının kendisiydi — aşağı kaydırınca ikisi de tam görünüyor. Ayarlar ekranı (sonuna kadar kaydırılmış hâlde) aynı dolguyla uyarının tamamını gösteriyor.
+
 ## Yayınlanmamış — Telefon testi: beş görsel hata (2026-07-26)
 
 Ekran görüntülerinden çıkan hatalar.

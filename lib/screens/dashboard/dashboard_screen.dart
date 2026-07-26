@@ -11,6 +11,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/access.dart';
 import '../../core/utils/adaptive_layout.dart';
 import '../../core/utils/cycle_utils.dart';
+import '../../core/utils/date_range_label.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_insights.dart';
 import '../../core/widgets/glass_card.dart';
@@ -131,7 +132,7 @@ class DashboardScreen extends ConsumerWidget {
       ovulationStr = dateFormat.format(ovulation);
       final fStart = ovulation.subtract(const Duration(days: 5));
       final fEnd = ovulation.add(const Duration(days: 1));
-      fertileStr = '${dateFormat.format(fStart)} - ${dateFormat.format(fEnd)}';
+      fertileStr = fertileWindowLabel(fStart, fEnd, locale);
     }
 
     final isDarkTheme = AppColors.isDark(context);
