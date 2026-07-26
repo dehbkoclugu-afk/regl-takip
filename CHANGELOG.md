@@ -1,5 +1,22 @@
 # Changelog
 
+## Yayınlanmamış — Mobil derleme zinciri (2026-07-26)
+
+- Android release manifest'ine ağ izni eklendi; AdMob, Play Billing ve isteğe
+  bağlı Sentry raporlaması artık mağaza derlemesinde ağ erişebiliyor
+- Temiz klonda Gradle wrapper'ı çalıştırmak için eksik JAR depoya alındı,
+  betik çalıştırılabilir yapıldı ve Gradle dağıtımı SHA-256 ile sabitlendi
+- iOS için eksik CocoaPods tanımı, HealthKit entitlement'ı ve Face ID izin
+  açıklaması eklendi
+- Android biyometrik kilit temaları `FlutterFragmentActivity` ile uyumlu
+  AppCompat ebeveynlerine geçirildi; Android 8 tema çökmesi önlendi
+- Gizli mod launcher alias'ı artık hazırlanmış nötr not defteri ikonunu
+  kullanıyor; markalı ana ikonun kılıkta kalması düzeltildi
+- Codemagic hareketli beta yerine Flutter 3.29.3'e sabitlendi; Android çıktısı
+  Play Console'un beklediği AAB biçimine geçirildi
+- Play yayın kılavuzuna zorunlu Health Apps beyanı, istenen iki âdet verisi
+  izni ve inceleme açıklaması eklendi
+
 ## Yayınlanmamış — Tasarım incelemesini kapatma (2026-07-26)
 
 Tasarım incelemesinin kalan 3, 7, 9 ve 71. maddeleri tamamlandı.

@@ -1,5 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <!-- Release builds need network access for AdMob, Play Billing and the
+         optional Sentry crash reporter. Debug/profile declarations do not
+         reach release builds. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <!-- Biyometrik kilit (parmak izi / yüz) -->
     <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
@@ -73,7 +77,7 @@
             android:exported="true"
             android:enabled="false"
             android:label="@string/disguised_name"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@drawable/ic_disguised"
             android:theme="@style/NeutralLaunchTheme"
             android:targetActivity=".MainActivity">
             <intent-filter>

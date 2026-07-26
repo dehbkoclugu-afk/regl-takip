@@ -12,6 +12,10 @@ web işleri. Her biri için tam değerler verildi — kopyala-yapıştır.
 - versionCode: 7 · versionName: 1.1.0
 - Her yeni yüklemede `pubspec.yaml` içindeki `version: 1.1.0+7` → `+8` yap (code artmalı).
 
+Codemagic Android iş akışı da AAB üretir; `key.properties` ve gerçek release
+anahtarı bağlanmamış CI çıktısı yalnız derleme doğrulaması içindir. Play'e
+yüklemeden önce AAB'nin aşağıdaki upload key ile imzalandığını doğrula.
+
 ## İmza anahtarı (KRİTİK — yedekle)
 
 - Keystore: `C:\Users\user\regl-release.jks`
@@ -71,6 +75,29 @@ Uygulama tüm veriyi cihazda şifreli tutar, sunucuya GÖNDERMEZ. Cevaplar:
 
 > Sağlık verisini "toplanıyor" işaretleme — çünkü hiçbir sunucuya gitmiyor.
 > Cihazda kalan veri Play'in "data collection" tanımına girmez.
+
+---
+
+## 3.1 Health Connect / Sağlık uygulamaları beyanı
+
+Play Console → **App content → Health apps** formunu ayrıca doldur:
+
+- Sağlık özelliği: **Health and fitness → Period tracking**
+- Veri kategorisi: **Reproductive and sexual health**
+- İzinler:
+  - `READ_MENSTRUATION`
+  - `WRITE_MENSTRUATION`
+- Açıklama:
+
+  > Kullanıcı, uygulamadaki adet başlangıç ve bitiş günlerini kendi isteğiyle
+  > Health Connect'e aktarabilir. Ayrıca başka bir uygulamada kayıtlı adet
+  > günlerini kendi isteğiyle içe aktarabilir. Yalnız menstruation flow verisi
+  > okunur/yazılır; veri geliştirici sunucusuna gönderilmez ve reklam amacıyla
+  > kullanılmaz.
+
+Formdaki gizlilik politikası, Store Listing'deki aynı URL olmalı. Yeni bir
+Health Connect veri türü eklenirse beyanı yeniden gönder; mevcut kod yalnız
+âdet akışı izinlerini istiyor.
 
 ---
 

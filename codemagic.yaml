@@ -3,9 +3,9 @@ workflows:
     name: Android Build
     max_build_duration: 60
     environment:
-      # Yerel geliştirme 3.29 beta ile yapılıyor; health/home_widget
-      # bağımlılıkları eski stable'da çözülmeyebilir
-      flutter: beta
+      # pubspec.lock Dart >=3.7 istiyor; hareketli beta kanalı yerine
+      # aynı araç zincirini yeniden üretilebilir biçimde sabitle.
+      flutter: 3.29.3
       java: 17
     scripts:
       - name: Install dependencies
@@ -20,12 +20,14 @@ workflows:
       - name: Tests
         script: |
           flutter test
-      - name: Build APK
+      - name: Build app bundle
         script: |
-          # key.properties CI'da yoksa gradle guard'ı debug anahtarıyla imzalar
-          flutter build apk --release
+          # Play Console APK değil AAB bekliyor. key.properties CI'da yoksa
+          # bu yalnız derleme doğrulama artefaktıdır; mağaza yüklemesi yerel
+          # release anahtarıyla imzalanmış AAB üzerinden yapılır.
+          flutter build appbundle --release
     artifacts:
-      - build/app/outputs/flutter-apk/*.apk
+      - build/app/outputs/bundle/release/*.aab
     publishing:
       email:
         recipients:
@@ -46,7 +48,7 @@ workflows:
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
-      flutter: beta
+      flutter: 3.29.3
       xcode: latest
       cocoapods: default
     scripts:
