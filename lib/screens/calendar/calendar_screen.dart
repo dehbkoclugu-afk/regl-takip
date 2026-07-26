@@ -601,31 +601,54 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             expanded: expanded,
           );
 
+          const topPadding = 24.0;
+          final bottomPadding = bottomNavInset(context);
+
           return SingleChildScrollView(
             // Takvim kartı AppBar'ın hemen altından başlıyordu; diğer
             // sekmelerin tersine üstte hiç pay yoktu.
-            padding: EdgeInsets.only(
-              top: 24,
-              bottom: bottomNavInset(context),
-            ),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1180),
-                child: FocusTraversalGroup(
-                  policy: WidgetOrderTraversalPolicy(),
-                  child: expanded
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(flex: 3, child: calendar),
-                              const SizedBox(width: 28),
-                              Expanded(flex: 2, child: support),
-                            ],
-                          ),
-                        )
-                      : Column(children: [calendar, support]),
+            padding: EdgeInsets.only(top: topPadding, bottom: bottomPadding),
+            // Yasal uyarı içeriğin hemen ardından geliyordu, ekranın
+            // geri kalanı boş kalıyordu. minHeight + IntrinsicHeight içerik
+            // kısaysa aradaki esnek boşluğu büyütüp uyarıyı sayfanın en
+            // altına iter; içerik uzunsa (genişlemiş takvim + uzun lejant)
+            // hiçbir şey değişmez, sayfa normal kaydırılır.
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: math.max(
+                  0.0,
+                  constraints.maxHeight - topPadding - bottomPadding,
+                ),
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  children: [
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 1180),
+                        child: FocusTraversalGroup(
+                          policy: WidgetOrderTraversalPolicy(),
+                          child: expanded
+                              ? Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(flex: 3, child: calendar),
+                                      const SizedBox(width: 28),
+                                      Expanded(flex: 2, child: support),
+                                    ],
+                                  ),
+                                )
+                              : Column(children: [calendar, support]),
+                        ),
+                      ),
+                    ),
+                    const Expanded(child: SizedBox()),
+                    _buildDisclaimer(l10n),
+                  ],
                 ),
               ),
             ),
@@ -875,30 +898,35 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   ],
                 ),
         ).animateSafe(context).fadeIn(delay: 300.ms, duration: 500.ms),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-          child: Row(
-            children: [
-              Icon(
-                Icons.info_outline_rounded,
-                size: 14,
-                color: AppColors.ts(context).withValues(alpha: 0.6),
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  l10n.healthDisclaimer,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: AppColors.ts(context).withValues(alpha: 0.6),
-                    height: 1.4,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ],
+    );
+  }
+
+  /// Yasal uyarı: sayfa içeriği kısaysa [build]'deki esnek boşluk bunu
+  /// ekranın en altına iter, uzunsa içeriğin doğal ardından gelir.
+  Widget _buildDisclaimer(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      child: Row(
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            size: 14,
+            color: AppColors.ts(context).withValues(alpha: 0.6),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              l10n.healthDisclaimer,
+              style: TextStyle(
+                fontSize: 11,
+                color: AppColors.ts(context).withValues(alpha: 0.6),
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
