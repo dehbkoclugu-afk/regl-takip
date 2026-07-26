@@ -85,8 +85,9 @@ void main() {
     }
 
     // Pill'in kendi yüksekliği: kenar boşluğu 16+24, iç dolgu 2x4, çubuk 80
-    // — toplam 128; üstüne varsayılan 24 piksellik nefes payı
-    expect(await insetFor(0), 152);
-    expect(await insetFor(48), 200);
+    // — toplam 128; üstüne varsayılan 56 piksellik nefes payı (cihazda
+    // gerçek pil yüksekliği nominal 80'i aştığı için büyütüldü)
+    expect(await insetFor(0), 184);
+    expect(await insetFor(48), 232);
   });
 }
