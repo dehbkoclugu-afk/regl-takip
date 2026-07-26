@@ -373,10 +373,16 @@ class DashboardScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            // Sabit alt şerit: her zaman erişilebilir, çubuğun üstünde durur
+            // Sabit alt şerit: her zaman erişilebilir, çubuğun üstünde durur.
+            //
+            // Burada bottomNavInset KULLANILMAZ. Kabuk extendBody ile birlikte
+            // gövdeye alt dolgu olarak çubuğun yüksekliğini veriyor ve bu
+            // ekran SafeArea içinde — yani çubuğun alanı zaten ayrılmış.
+            // İnset'i bir de buraya eklemek aynı boşluğu ikinci kez ayırıyor
+            // ve şeridin altında o kadar ölü alan bırakıyordu. Diğer sekmeler
+            // SafeArea kullanmadığı için orada inset doğru çalışıyor.
             Padding(
-              padding: EdgeInsets.fromLTRB(
-                  20, 8, 20, bottomNavInset(context, gap: 0)),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 1180),
