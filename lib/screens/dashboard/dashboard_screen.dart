@@ -158,9 +158,12 @@ class DashboardScreen extends ConsumerWidget {
       ),
       child: SafeArea(
         child: SingleChildScrollView(
-          // Alt boşluk yüzen gezinme çubuğunu aşacak kadar — fazlası
-          // sayfa sonunda ölü alan bırakıyordu
-          padding: EdgeInsets.fromLTRB(20, 0, 20, bottomNavInset(context)),
+          // Ana sayfada nefes payı yok: son kart doğrudan çubuğun üstünde
+          // bitiyor. Diğer sekmeler tek satırlık bir kapanışla (yasal uyarı)
+          // bittiği için orada pay iyi duruyor; burada sayfayı bir kartla
+          // kapatıyoruz ve fazlası sayfa sonunda ölü alan olarak görünüyor.
+          padding:
+              EdgeInsets.fromLTRB(20, 0, 20, bottomNavInset(context, gap: 0)),
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1180),

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/access.dart';
 import '../../../core/utils/adaptive_layout.dart';
 import '../../../core/utils/enum_labels.dart';
 import '../../../core/utils/statistics_summary.dart';
@@ -271,6 +272,12 @@ class QuickStatusCards extends ConsumerWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: () {
+            // "Kayıt Ekle" butonuyla aynı kapı: ikisi de günlük ekranına
+            // gidiyor, ikisi de aynı kontrolden geçmeli. Kart bu kontrolü
+            // atlıyordu, yani ücretsiz kullanıcı formu doldurup ancak
+            // kaydederken duvara tosluyordu — emek harcattıktan sonra
+            // reddetmek, baştan söylemekten kötü.
+            if (!ensurePremiumAccess(context, ref)) return;
             // Dashboard'dan kayıt her zaman bugüne girilir
             ref.read(selectedDateProvider.notifier).state = DateTime.now();
             context.push('/log');
