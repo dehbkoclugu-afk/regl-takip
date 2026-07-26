@@ -272,9 +272,8 @@ class QuickStatusCards extends ConsumerWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: () {
-            // "Kayıt Ekle" butonuyla aynı kapı: ikisi de günlük ekranına
-            // gidiyor, ikisi de aynı kontrolden geçmeli. Kart bu kontrolü
-            // atlıyordu, yani ücretsiz kullanıcı formu doldurup ancak
+            // Günlük ekranına giden diğer girişlerle aynı kontrol: kart
+            // bunu atlıyordu, yani ücretsiz kullanıcı formu doldurup ancak
             // kaydederken duvara tosluyordu — emek harcattıktan sonra
             // reddetmek, baştan söylemekten kötü.
             if (!ensurePremiumAccess(context, ref)) return;

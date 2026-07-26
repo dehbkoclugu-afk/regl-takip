@@ -649,6 +649,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         blur: 0,
         opacity: 0.18,
         margin: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: TableCalendar(
           firstDay: DateTime(2020, 1, 1),
           lastDay: DateTime(2030, 12, 31),
@@ -656,6 +657,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           calendarFormat: _calendarFormat,
           locale: Localizations.localeOf(context).toString(),
           startingDayOfWeek: calendarWeekStart,
+          // Hücreler ve gün başlıkları birbirine yapışıktı: satır ve
+          // başlık yüksekliği varsayılanları (52 / 16) küçük ekranda takvimi
+          // sıkışık gösteriyordu. Daha ferah bir ızgara için büyütüldü.
+          rowHeight: 58,
+          daysOfWeekHeight: 32,
           selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
           onDaySelected: (selectedDay, focusedDay) => _selectCalendarDay(
             selectedDay,
@@ -674,6 +680,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           headerStyle: HeaderStyle(
             formatButtonVisible: false,
             titleCentered: true,
+            headerPadding: const EdgeInsets.symmetric(vertical: 16),
             titleTextStyle: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -759,17 +766,17 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   }) {
     return Column(
       children: [
-        if (!expanded) const SizedBox(height: 20),
+        if (!expanded) const SizedBox(height: 24),
         _buildMonthPhaseStrip(profile, records)
             .animateSafe(context)
             .fadeIn(delay: 150.ms, duration: 400.ms),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
         _buildMonthSummary(l10n, records, dailyLogs)
             .animateSafe(context)
             .fadeIn(delay: 200.ms, duration: 400.ms),
         if (_showPeekHint)
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -792,7 +799,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               ],
             ),
           ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: _legendHidden
@@ -845,7 +852,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 ),
         ).animateSafe(context).fadeIn(delay: 300.ms, duration: 500.ms),
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
           child: Row(
             children: [
               Icon(
@@ -977,13 +984,13 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           },
           child: ExcludeSemantics(
             child: Container(
-              margin: const EdgeInsets.all(3),
+              margin: const EdgeInsets.all(4),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   Ink(
-                    width: 40,
-                    height: 40,
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
                       color: bgColor,
                       shape: BoxShape.circle,
@@ -1012,7 +1019,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           child: Text(
                             '${day.day}',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 15,
                               fontWeight: isToday
                                   ? FontWeight.bold
                                   : FontWeight.w600,

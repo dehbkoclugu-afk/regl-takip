@@ -9,7 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/access.dart';
-import '../../core/utils/adaptive_layout.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/date_range_label.dart';
 import '../../core/utils/enum_labels.dart';
@@ -23,7 +22,6 @@ import '../../models/user_profile.dart';
 import '../../providers/providers.dart';
 import 'widgets/cycle_progress_ring.dart';
 import 'widgets/prediction_card.dart';
-import 'widgets/quick_access_row.dart';
 import 'widgets/quick_status_cards.dart';
 import 'widgets/week_strip.dart';
 import '../../core/utils/motion.dart';
@@ -216,9 +214,6 @@ class DashboardScreen extends ConsumerWidget {
                     profile!.pregnancyStartDate!,
                   ),
                 ],
-                const SizedBox(height: 24),
-                _buildActionRow(context, ref, l10n, mode),
-                const SizedBox(height: 24),
               ] else ...[
                 // Phase name — faz bilgisini açan buton
                 PressableScale(
@@ -292,7 +287,7 @@ class DashboardScreen extends ConsumerWidget {
                                 .animateSafe(context)
                                 .fadeIn(delay: 150.ms, duration: 400.ms),
                             const SizedBox(height: 24),
-                            _buildActionRow(context, ref, l10n, mode),
+                            _buildActionRow(context, ref, l10n),
                           ],
                         );
 
@@ -355,12 +350,6 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(height: 28),
                 const QuickStatusCards(),
               ],
-              // Sayfayı kapatan kısayol satırı. Kaydırmanın İÇİNDE: sabit
-              // şerit olarak denendi ve iyi olmadı — gezinme çubuğunun hemen
-              // üstünde ikinci bir çubuk gibi duruyor, kalıcı yer kaplıyor ve
-              // kaydırma alanını kısaltıp hafta şeridini ortasından kesiyordu.
-              const SizedBox(height: 28),
-              const QuickAccessRow(),
                 ],
               ),
             ),
@@ -446,72 +435,33 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionRow(BuildContext context, WidgetRef ref,
-      AppLocalizations l10n, TrackingMode mode) {
+  Widget _buildActionRow(
+      BuildContext context, WidgetRef ref, AppLocalizations l10n) {
     final ongoingPeriod = ref.watch(ongoingPeriodProvider);
     // Keşfi olmayan bir hareket olmayan bir özelliktir: ipucu, kullanıcı
     // hareketi bir kez kullanana kadar durur, sonra kalıcı olarak kapanır
-    final showHint = mode != TrackingMode.pregnancy &&
-        ref.watch(backdateHintProvider);
+    final showHint = ref.watch(backdateHintProvider);
 
-    final buttons = <Widget>[
-      if (mode != TrackingMode.pregnancy)
-        _buildActionButton(
-                        context: context,
-                        icon: Icons.water_drop_rounded,
-                        label: ongoingPeriod != null
-                            ? l10n.periodEnded
-                            : l10n.periodStarted,
-                        color: AppColors.menstrual,
-                        // Regl geçmişi en değerli veri, dokunuş yanlışlıkla
-                        // olabilir: onay diyaloğu yerine 6 sn'lik Geri Al
-                        onTap: () => _togglePeriod(
-                            context, ref, l10n, ongoingPeriod, DateTime.now()),
-                        // Regl iki gün sonra hatırlanabiliyor: dokunuş hep
-                        // bugünü yazdığı için geç kalan kullanıcı yanlış tarih
-                        // girmek zorundaydı. Uzun bas = gün seç.
-                        onLongPress: () => _pickPeriodDate(
-                            context, ref, l10n, ongoingPeriod),
-                      ),
-      _buildActionButton(
-                      context: context,
-                      icon: Icons.add_reaction_rounded,
-                      label: l10n.addRecord,
-                      color: AppColors.primaryStrong,
-                      // "Kayıt Ekle" ile aşağıdaki "Bugün nasıl
-                      // hissediyorsun" kartı aynı niyeti taşıyor: bugüne
-                      // kayıt gir. İkisi ayrı yere gidiyordu — biri hızlı
-                      // kayıt sayfasına, diğeri tam günlük ekranına — yani
-                      // kullanıcı hangisine bastığına göre başka bir yere
-                      // düşüyordu. İkisi de artık günlük ekranına gidiyor.
-                      onTap: () {
-                        // Günlük kayıt premium kapsamı: ücretsiz katman
-                        // yalnız regl takibi
-                        if (!ensurePremiumAccess(context, ref)) return;
-                        // Kart da böyle yapıyor: kayıt her zaman bugüne
-                        ref.read(selectedDateProvider.notifier).state =
-                            DateTime.now();
-                        context.push('/log');
-                      },
-                    ),
-    ];
-    final row = usesLargeText(MediaQuery.textScalerOf(context)) &&
-            buttons.length > 1
-        ? Column(
-            children: [
-              SizedBox(width: double.infinity, child: buttons.first),
-              const SizedBox(height: 12),
-              SizedBox(width: double.infinity, child: buttons.last),
-            ],
-          )
-        : Row(
-            children: [
-              for (var i = 0; i < buttons.length; i++) ...[
-                Expanded(child: buttons[i]),
-                if (i < buttons.length - 1) const SizedBox(width: 12),
-              ],
-            ],
-          );
+    // "Kayıt Ekle" kaldırıldı: aşağıdaki "Bugün nasıl hissediyorsun" kartı
+    // aynı niyeti (bugüne kayıt) zaten karşılıyordu, iki ayrı giriş
+    // gereksizdi. Bu satırda yalnız regl başlangıcı/bitişi kalıyor.
+    final row = SizedBox(
+      width: double.infinity,
+      child: _buildActionButton(
+        context: context,
+        icon: Icons.water_drop_rounded,
+        label: ongoingPeriod != null ? l10n.periodEnded : l10n.periodStarted,
+        color: AppColors.menstrual,
+        // Regl geçmişi en değerli veri, dokunuş yanlışlıkla olabilir:
+        // onay diyaloğu yerine 6 sn'lik Geri Al
+        onTap: () =>
+            _togglePeriod(context, ref, l10n, ongoingPeriod, DateTime.now()),
+        // Regl iki gün sonra hatırlanabiliyor: dokunuş hep bugünü yazdığı
+        // için geç kalan kullanıcı yanlış tarih girmek zorundaydı. Uzun
+        // bas = gün seç.
+        onLongPress: () => _pickPeriodDate(context, ref, l10n, ongoingPeriod),
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
