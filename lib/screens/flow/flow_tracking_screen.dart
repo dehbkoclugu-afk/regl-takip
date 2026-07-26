@@ -252,7 +252,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
           ),
           Switch.adaptive(
             value: _hasClots,
-            activeColor: AppColors.primary,
+            activeThumbColor: AppColors.primary,
             onChanged: (v) => setState(() => _hasClots = v),
           ),
         ],

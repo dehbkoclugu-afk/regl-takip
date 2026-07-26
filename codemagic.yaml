@@ -3,9 +3,9 @@ workflows:
     name: Android Build
     max_build_duration: 60
     environment:
-      # pubspec.lock Dart >=3.7 istiyor; hareketli beta kanalı yerine
-      # aynı araç zincirini yeniden üretilebilir biçimde sabitle.
-      flutter: 3.29.3
+      # Güncel eklenti zinciri Dart >=3.9 istiyor; hareketli kanal yerine
+      # doğrulanan kararlı araç zincirini yeniden üretilebilir biçimde sabitle.
+      flutter: 3.44.8
       java: 17
     scripts:
       - name: Install dependencies
@@ -48,7 +48,7 @@ workflows:
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
-      flutter: 3.29.3
+      flutter: 3.44.8
       xcode: latest
       cocoapods: default
     scripts:

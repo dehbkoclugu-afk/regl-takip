@@ -39,7 +39,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingTitle1 => 'Track Your Cycle';
 
   @override
-  String get onboardingDesc1 => 'Easily log your period and predict your next one.';
+  String get onboardingDesc1 =>
+      'Easily log your period and predict your next one.';
 
   @override
   String get onboardingTitle2 => 'Monitor Your Health';
@@ -51,13 +52,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingTitle3 => 'View Your Analysis';
 
   @override
-  String get onboardingDesc3 => 'Understand your cycle with detailed charts and statistics.';
+  String get onboardingDesc3 =>
+      'Understand your cycle with detailed charts and statistics.';
 
   @override
   String get onboardingTitle4 => 'Get Notifications';
 
   @override
-  String get onboardingDesc4 => 'Receive reminders for your period and ovulation days.';
+  String get onboardingDesc4 =>
+      'Receive reminders for your period and ovulation days.';
 
   @override
   String get getStarted => 'Get Started';
@@ -512,7 +515,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get decrease => 'Decrease';
 
   @override
-  String get bbtHint => 'For an accurate reading, measure right after waking, before getting out of bed, at the same time every day. Ovulation confirmation relies on these readings.';
+  String get bbtHint =>
+      'For an accurate reading, measure right after waking, before getting out of bed, at the same time every day. Ovulation confirmation relies on these readings.';
 
   @override
   String get deleteMeasurement => 'Delete measurement';
@@ -536,7 +540,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discardChangesTitle => 'Unsaved changes';
 
   @override
-  String get discardChangesBody => 'Your note is not saved. Leaving now discards it.';
+  String get discardChangesBody =>
+      'Your note is not saved. Leaving now discards it.';
 
   @override
   String get discard => 'Discard';
@@ -916,7 +921,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cycleLengthTitle => 'Cycle Length';
 
   @override
-  String get cycleLengthHelp => 'How many days is your average cycle?\n(From the first day of one period to the first day of the next)';
+  String get cycleLengthHelp =>
+      'How many days is your average cycle?\n(From the first day of one period to the first day of the next)';
 
   @override
   String get periodLengthTitle => 'Period Length';
@@ -942,19 +948,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcomeInfoTitle => 'Welcome!';
 
   @override
-  String get welcomeInfoDesc => 'The easiest and most beautiful way to track your health. We\'re with you every step of your cycle.';
+  String get welcomeInfoDesc =>
+      'The easiest and most beautiful way to track your health. We\'re with you every step of your cycle.';
 
   @override
   String get trackCycleTitle => 'Track Your Cycle';
 
   @override
-  String get trackCycleDesc => 'Easily log your period dates, symptoms and mood. All your data is safe.';
+  String get trackCycleDesc =>
+      'Easily log your period dates, symptoms and mood. All your data is safe.';
 
   @override
   String get getPredictionsTitle => 'Get Predictions';
 
   @override
-  String get getPredictionsDesc => 'Learn your next cycle and fertile days with smart predictions.';
+  String get getPredictionsDesc =>
+      'Learn your next cycle and fertile days with smart predictions.';
 
   @override
   String get startBtn => 'Start';
@@ -994,46 +1003,59 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get coachMenstrual0 => 'Bleeding days mean iron loss — red meat, lentils and dark leafy greens help.';
+  String get coachMenstrual0 =>
+      'Bleeding days mean iron loss — red meat, lentils and dark leafy greens help.';
 
   @override
-  String get coachMenstrual1 => 'For cramps, heat and gentle stretching can work as well as most painkillers.';
+  String get coachMenstrual1 =>
+      'For cramps, heat and gentle stretching can work as well as most painkillers.';
 
   @override
-  String get coachMenstrual2 => 'Low energy is normal today — a walk beats an intense workout.';
+  String get coachMenstrual2 =>
+      'Low energy is normal today — a walk beats an intense workout.';
 
   @override
-  String get coachFollicular0 => 'Estrogen is rising: energy and focus usually peak in this phase. Schedule hard tasks now.';
+  String get coachFollicular0 =>
+      'Estrogen is rising: energy and focus usually peak in this phase. Schedule hard tasks now.';
 
   @override
-  String get coachFollicular1 => 'Skin is usually at its best in this phase — a good window to try new products.';
+  String get coachFollicular1 =>
+      'Skin is usually at its best in this phase — a good window to try new products.';
 
   @override
-  String get coachFollicular2 => 'Your body is most ready for high-intensity exercise right now.';
+  String get coachFollicular2 =>
+      'Your body is most ready for high-intensity exercise right now.';
 
   @override
-  String get coachOvulation0 => 'You\'re in the fertile window — act according to your plan, whether contraception or conception.';
+  String get coachOvulation0 =>
+      'You\'re in the fertile window — act according to your plan, whether contraception or conception.';
 
   @override
-  String get coachOvulation1 => 'Some women feel mild one-sided pain at ovulation (mittelschmerz) — it\'s normal.';
+  String get coachOvulation1 =>
+      'Some women feel mild one-sided pain at ovulation (mittelschmerz) — it\'s normal.';
 
   @override
-  String get coachOvulation2 => 'Social energy tends to be high these days — good timing for important conversations.';
+  String get coachOvulation2 =>
+      'Social energy tends to be high these days — good timing for important conversations.';
 
   @override
-  String get coachLuteal0 => 'PMS symptoms may start in this phase — magnesium and regular sleep can ease them.';
+  String get coachLuteal0 =>
+      'PMS symptoms may start in this phase — magnesium and regular sleep can ease them.';
 
   @override
-  String get coachLuteal1 => 'Sugar cravings can spike: try protein-heavy snacks to keep blood sugar steady.';
+  String get coachLuteal1 =>
+      'Sugar cravings can spike: try protein-heavy snacks to keep blood sugar steady.';
 
   @override
-  String get coachLuteal2 => 'Emotional sensitivity may rise — go easy on yourself, it\'s hormonal and temporary.';
+  String get coachLuteal2 =>
+      'Emotional sensitivity may rise — go easy on yourself, it\'s hormonal and temporary.';
 
   @override
   String get ovulationConfirmed => 'Ovulation ✓';
 
   @override
-  String get ovulationConfirmedInfo => 'This date is not an estimate: it was confirmed from the rise in your basal body temperature readings (3-over-6 rule).';
+  String get ovulationConfirmedInfo =>
+      'This date is not an estimate: it was confirmed from the rise in your basal body temperature readings (3-over-6 rule).';
 
   @override
   String get premiumSection => 'Premium';
@@ -1138,7 +1160,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pregnancyStartLabel => 'Last period date (pregnancy start)';
 
   @override
-  String get pregnancyModeInfo => 'Predictions and period reminders are off in pregnancy mode';
+  String get pregnancyModeInfo =>
+      'Predictions and period reminders are off in pregnancy mode';
 
   @override
   String get pillPackStartLabel => 'Pill pack start';
@@ -1157,7 +1180,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get smartPrediction => 'Smart Prediction';
 
   @override
-  String get smartPredictionDesc => 'Predictions use the average learned from your past cycles';
+  String get smartPredictionDesc =>
+      'Predictions use the average learned from your past cycles';
 
   @override
   String learnedCycleLength(int days) {
@@ -1168,7 +1192,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phaseInsights => 'Phase Insights';
 
   @override
-  String get noInsightsYet => 'Not enough data for insights yet. As you log symptoms, phase-based patterns will appear here.';
+  String get noInsightsYet =>
+      'Not enough data for insights yet. As you log symptoms, phase-based patterns will appear here.';
 
   @override
   String insightLine(String symptom, String phase, int percent) {
@@ -1176,7 +1201,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get notContraceptionWarning => 'Predictions are for informational purposes only. This app is NOT a contraceptive method and must not be used to prevent pregnancy.';
+  String get notContraceptionWarning =>
+      'Predictions are for informational purposes only. This app is NOT a contraceptive method and must not be used to prevent pregnancy.';
 
   @override
   String get privacyPolicy => 'Privacy Policy';
@@ -1188,7 +1214,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consentTitle => 'Your Data & Privacy';
 
   @override
-  String get consentBody => 'All your data is stored encrypted on this device only; nothing is sent to any server. You can read the privacy policy under Settings > About. By continuing you accept that your data is processed on your device this way.';
+  String get consentBody =>
+      'All your data is stored encrypted on this device only; nothing is sent to any server. You can read the privacy policy under Settings > About. By continuing you accept that your data is processed on your device this way.';
 
   @override
   String get consentAccept => 'I Accept';
@@ -1209,7 +1236,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get disguiseTitle => 'Disguise Mode';
 
   @override
-  String get disguiseDesc => 'The app takes on a \"Notes\" identity: name, icon, widget, notifications, and launch screen go neutral. Return: long-press the Notes title.';
+  String get disguiseDesc =>
+      'The app takes on a \"Notes\" identity: name, icon, widget, notifications, and launch screen go neutral. Return: long-press the Notes title.';
 
   @override
   String get decoyTitle => 'Notes';
@@ -1230,8 +1258,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backupPasswordConfirm => 'Enter password again';
 
   @override
-  String get backupPasswordLength =>
-      'Password must be 10–128 characters';
+  String get backupPasswordLength => 'Password must be 10–128 characters';
 
   @override
   String get backupPasswordsDoNotMatch => 'Passwords do not match';
@@ -1311,16 +1338,19 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get paywallFreeSubtitle => 'Your trial has ended. The free version keeps period tracking and the calendar; daily tracking and insights are Premium.';
+  String get paywallFreeSubtitle =>
+      'Your trial has ended. The free version keeps period tracking and the calendar; daily tracking and insights are Premium.';
 
   @override
-  String get paywallFeatureTrackers => 'All daily trackers: symptoms, mood, water, sleep, weight, temperature, medication, notes';
+  String get paywallFeatureTrackers =>
+      'All daily trackers: symptoms, mood, water, sleep, weight, temperature, medication, notes';
 
   @override
   String get paywallFeatureStats => 'Statistics, trends, and the My Year ring';
 
   @override
-  String get paywallFeatureInsights => 'Personal insights and phase-tip notifications';
+  String get paywallFeatureInsights =>
+      'Personal insights and phase-tip notifications';
 
   @override
   String get paywallFeatureExport => 'PDF / CSV export';
@@ -1361,7 +1391,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get freeBadge => 'Free version';
 
   @override
-  String get freeExplain => 'The free version keeps period tracking, the calendar, and predictions. Daily trackers, statistics, export, Health Connect, disguise mode, and modes are Premium.';
+  String get freeExplain =>
+      'The free version keeps period tracking, the calendar, and predictions. Daily trackers, statistics, export, Health Connect, disguise mode, and modes are Premium.';
 
   @override
   String get seePlans => 'See Plans';
@@ -1370,7 +1401,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get premiumLockedTitle => 'Statistics is Premium';
 
   @override
-  String get premiumLockedBody => 'Charts, trends, phase insights, and the My Year ring unlock with Premium. Everything you logged during the trial is kept safe.';
+  String get premiumLockedBody =>
+      'Charts, trends, phase insights, and the My Year ring unlock with Premium. Everything you logged during the trial is kept safe.';
 
   @override
   String get yearRingTitle => 'My Year';
@@ -1429,7 +1461,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationPeriodTimingToday => 'Your period may start today.';
 
   @override
-  String get notificationPeriodTimingTomorrow => 'Your period may start tomorrow.';
+  String get notificationPeriodTimingTomorrow =>
+      'Your period may start tomorrow.';
 
   @override
   String notificationPeriodTimingInDays(int days) {
@@ -1443,7 +1476,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationPeriodTip2 => 'A little preparation makes it easier.';
 
   @override
-  String get notificationPeriodTip3 => 'Logging the start improves your predictions.';
+  String get notificationPeriodTip3 =>
+      'Logging the start improves your predictions.';
 
   @override
   String get notificationPeriodChannel => 'Period Reminder';
@@ -1455,7 +1489,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationOvulationTitle => 'Ovulation Reminder';
 
   @override
-  String get notificationOvulationBody => 'Today is your ovulation day. You are in your fertile window!';
+  String get notificationOvulationBody =>
+      'Today is your ovulation day. You are in your fertile window!';
 
   @override
   String get notificationOvulationChannel => 'Ovulation Reminder';
@@ -1467,7 +1502,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationMedicationTitle => 'Medication Reminder';
 
   @override
-  String get notificationMedicationBody => 'Don\'t forget to take your medication!';
+  String get notificationMedicationBody =>
+      'Don\'t forget to take your medication!';
 
   @override
   String get notificationMedicationChannel => 'Medication Reminder';
@@ -1485,13 +1521,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationFertileTitle => 'Your fertile window starts';
 
   @override
-  String get notificationFertileBody => 'From today you\'re in the days with the highest chance of conceiving.';
+  String get notificationFertileBody =>
+      'From today you\'re in the days with the highest chance of conceiving.';
 
   @override
   String get notificationChainEndTitle => 'Reminders are pausing';
 
   @override
-  String get notificationChainEndBody => 'The scheduled reminders have run out. Open the app to set up new ones.';
+  String get notificationChainEndBody =>
+      'The scheduled reminders have run out. Open the app to set up new ones.';
 
   @override
   String get noPurchasesToRestore => 'No purchases found to restore';
@@ -1528,25 +1566,30 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get headlineDelaySubtitle => 'Some variation is normal. Log it if it has started.';
+  String get headlineDelaySubtitle =>
+      'Some variation is normal. Log it if it has started.';
 
   @override
   String get notificationDelayTitle => 'Predicted date has passed';
 
   @override
-  String get notificationDelayBody => 'If your period has started, remember to log it. Some variation is normal.';
+  String get notificationDelayBody =>
+      'If your period has started, remember to log it. Some variation is normal.';
 
   @override
-  String get notificationDelayBodyAlt1 => 'No entry yet. If it started, logging takes one tap.';
+  String get notificationDelayBodyAlt1 =>
+      'No entry yet. If it started, logging takes one tap.';
 
   @override
-  String get notificationDelayBodyAlt2 => 'A shift of a few days is common. Is your log up to date?';
+  String get notificationDelayBodyAlt2 =>
+      'A shift of a few days is common. Is your log up to date?';
 
   @override
   String get notificationDelayChannel => 'Delay Reminder';
 
   @override
-  String get notificationDelayChannelDesc => 'Reminder when the predicted date has passed';
+  String get notificationDelayChannelDesc =>
+      'Reminder when the predicted date has passed';
 
   @override
   String headlineDelay(int days) {
@@ -1559,7 +1602,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get yourDataStays => 'Your records stay on your device when the trial ends.';
+  String get yourDataStays =>
+      'Your records stay on your device when the trial ends.';
 
   @override
   String get periodStartedOnThisDay => 'My period started on this day';
@@ -1578,7 +1622,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifPermissionTitle => 'Turn on reminders?';
 
   @override
-  String get notifPermissionBody => 'We let you know when your period is close, on your ovulation day, and when the predicted date has passed. Notifications never leave your device. You can also turn them on later in settings.';
+  String get notifPermissionBody =>
+      'We let you know when your period is close, on your ovulation day, and when the predicted date has passed. Notifications never leave your device. You can also turn them on later in settings.';
 
   @override
   String get enableNotifications => 'Turn on';
@@ -1590,7 +1635,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get optionalField => 'Optional';
 
   @override
-  String get privacyAssurance => 'Your data stays encrypted on this device only';
+  String get privacyAssurance =>
+      'Your data stays encrypted on this device only';
 
   @override
   String get privacySummary =>
@@ -1603,7 +1649,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get approxTitle => 'Roughly when was it?';
 
   @override
-  String get approxSubtitle => 'A rough date is enough. Predictions correct themselves as you log.';
+  String get approxSubtitle =>
+      'A rough date is enough. Predictions correct themselves as you log.';
 
   @override
   String get approxThisWeek => 'This week';
@@ -1636,7 +1683,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quietNotifications => 'Quiet notifications';
 
   @override
-  String get quietNotificationsDesc => 'No sound or pop-up — they wait silently in the notification shade';
+  String get quietNotificationsDesc =>
+      'No sound or pop-up — they wait silently in the notification shade';
 
   @override
   String get leadSameDay => 'Same day';
@@ -1647,13 +1695,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get regularityInfoIrregular => 'There are 9 or more days between your shortest and longest cycle. Cycle length varying is very common; stress, sleep, illness and life changes all affect it. This is not a diagnosis.';
+  String get regularityInfoIrregular =>
+      'There are 9 or more days between your shortest and longest cycle. Cycle length varying is very common; stress, sleep, illness and life changes all affect it. This is not a diagnosis.';
 
   @override
-  String get regularityInfoRegular => 'The difference between your shortest and longest cycle is under 9 days. Predictions are more accurate with this consistency.';
+  String get regularityInfoRegular =>
+      'The difference between your shortest and longest cycle is under 9 days. Predictions are more accurate with this consistency.';
 
   @override
-  String get regularityInfoSeeDoctor => 'If your cycle is consistently shorter than 21 days or longer than 35, if you have had no period for more than three months, or if bleeding is unusually heavy, it is worth speaking to a healthcare professional.';
+  String get regularityInfoSeeDoctor =>
+      'If your cycle is consistently shorter than 21 days or longer than 35, if you have had no period for more than three months, or if bleeding is unusually heavy, it is worth speaking to a healthcare professional.';
 
   @override
   String typicalRangeNote(int min, int max, int pmax) {
@@ -1674,7 +1725,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backupNever => 'You have never made a backup.';
 
   @override
-  String get backupStaleHint => 'If you lose your phone, the records cannot be recovered.';
+  String get backupStaleHint =>
+      'If you lose your phone, the records cannot be recovered.';
 
   @override
   String backupLastAt(String date) {
@@ -1685,13 +1737,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get durationsStepTitle => 'Your cycle details';
 
   @override
-  String get durationsStepHelp => 'Not sure? Leave them as they are — you can change these in settings later.';
+  String get durationsStepHelp =>
+      'Not sure? Leave them as they are — you can change these in settings later.';
 
   @override
   String get lockTimeoutTitle => 'Lock delay';
 
   @override
-  String get lockTimeoutDesc => 'Skip the PIN when you come back after a short moment away';
+  String get lockTimeoutDesc =>
+      'Skip the PIN when you come back after a short moment away';
 
   @override
   String get lockImmediately => 'Immediately';
@@ -1779,7 +1833,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get pinNoRecoveryWarning => 'If you forget your PIN there is no way to recover it; the only way back in is deleting all your data. Choose something you will remember.';
+  String get pinNoRecoveryWarning =>
+      'If you forget your PIN there is no way to recover it; the only way back in is deleting all your data. Choose something you will remember.';
 
   @override
   String lockAfterMinutes(int minutes) {
@@ -1836,7 +1891,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get storySymptomsSame => 'Symptom intensity stayed similar across the last two periods.';
+  String get storySymptomsSame =>
+      'Symptom intensity stayed similar across the last two periods.';
 
   @override
   String storyTrendUp(String delta, String unit) {
@@ -1849,7 +1905,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get storyTrendFlat => 'No meaningful change over this period — the trend is flat.';
+  String get storyTrendFlat =>
+      'No meaningful change over this period — the trend is flat.';
 
   @override
   String averageSeverity(String value) {
@@ -1877,7 +1934,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get markPeriodRange => 'Mark period date range';
 
   @override
-  String get periodRangeOverlap => 'This range overlaps an existing period record.';
+  String get periodRangeOverlap =>
+      'This range overlaps an existing period record.';
 
   @override
   String get periodRangeSaved => 'Period date range saved';
@@ -1896,13 +1954,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportCalendarFile => 'Export calendar (.ics)';
 
   @override
-  String get ovulationMarkerHint => 'Dashed line: estimated or confirmed ovulation';
+  String get ovulationMarkerHint =>
+      'Dashed line: estimated or confirmed ovulation';
 
   @override
   String get addPastCycles => 'Add past cycles';
 
   @override
-  String get addPastCyclesHint => 'Select up to 3 period date ranges and save them together.';
+  String get addPastCyclesHint =>
+      'Select up to 3 period date ranges and save them together.';
 
   @override
   String get addPeriodRange => 'Add period range';
@@ -1911,7 +1971,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cycleOverlayTitle => 'Cycle comparison';
 
   @override
-  String get symptomLoadComparison => 'Daily symptom severity aligned by cycle day';
+  String get symptomLoadComparison =>
+      'Daily symptom severity aligned by cycle day';
 
   @override
   String get currentCycleLabel => 'This cycle';
@@ -1923,7 +1984,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get colorBlindPattern => 'Patterned phase colors';
 
   @override
-  String get colorBlindPatternDesc => 'Adds texture to phase bands — helpful when colors are hard to tell apart';
+  String get colorBlindPatternDesc =>
+      'Adds texture to phase bands — helpful when colors are hard to tell apart';
 
   @override
   String get undo => 'Undo';
@@ -1950,7 +2012,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dataResetTitle => 'Your data could not be read';
 
   @override
-  String get dataResetBody => 'App data could not be decrypted on this device. This usually happens after switching phones or restoring a system backup: data is encrypted with a device-specific key that cannot move to a new device. The app has started fresh.\n\nTo move your data between devices, export a JSON backup regularly via Settings > Back up data.';
+  String get dataResetBody =>
+      'App data could not be decrypted on this device. This usually happens after switching phones or restoring a system backup: data is encrypted with a device-specific key that cannot move to a new device. The app has started fresh.\n\nTo move your data between devices, export a JSON backup regularly via Settings > Back up data.';
 
   @override
   String get pinSet => 'PIN set successfully';
@@ -1962,7 +2025,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unlockWithBiometric => 'Unlock with fingerprint or face';
 
   @override
-  String get biometricNotAvailable => 'Biometric authentication not available on this device';
+  String get biometricNotAvailable =>
+      'Biometric authentication not available on this device';
 
   @override
   String get editProfile => 'Edit Profile';
@@ -1976,7 +2040,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get deleteAllDataConfirm => 'Are you sure you want to delete all data? This action cannot be undone.';
+  String get deleteAllDataConfirm =>
+      'Are you sure you want to delete all data? This action cannot be undone.';
 
   @override
   String get dataDeleted => 'All data deleted';
@@ -1985,25 +2050,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get doseHint => 'e.g. 500mg';
 
   @override
-  String get menstrualPhaseInfo => 'The period when menstrual bleeding occurs. Usually lasts 3-7 days. The body sheds the uterine lining.';
+  String get menstrualPhaseInfo =>
+      'The period when menstrual bleeding occurs. Usually lasts 3-7 days. The body sheds the uterine lining.';
 
   @override
-  String get follicularPhaseInfo => 'After your period, the ovaries prepare a new egg. Estrogen rises and energy levels increase.';
+  String get follicularPhaseInfo =>
+      'After your period, the ovaries prepare a new egg. Estrogen rises and energy levels increase.';
 
   @override
-  String get ovulationPhaseInfo => 'The phase when an egg is released from the ovary. Pregnancy likelihood is at its highest.';
+  String get ovulationPhaseInfo =>
+      'The phase when an egg is released from the ovary. Pregnancy likelihood is at its highest.';
 
   @override
-  String get lutealPhaseInfo => 'The phase from ovulation until the next period. Progesterone rises, PMS symptoms may occur.';
+  String get lutealPhaseInfo =>
+      'The phase from ovulation until the next period. Progesterone rises, PMS symptoms may occur.';
 
   @override
-  String get fertileWindowInfo => 'The period with the highest chance of pregnancy. Starts 5 days before ovulation and ends 1 day after.';
+  String get fertileWindowInfo =>
+      'The period with the highest chance of pregnancy. Starts 5 days before ovulation and ends 1 day after.';
 
   @override
-  String get ovulationCardInfo => 'The estimated day when an egg is released from the ovary. Occurs around the middle of the cycle.';
+  String get ovulationCardInfo =>
+      'The estimated day when an egg is released from the ovary. Occurs around the middle of the cycle.';
 
   @override
-  String get nextPeriodInfo => 'The estimated start date of your next period. Calculated based on your cycle length.';
+  String get nextPeriodInfo =>
+      'The estimated start date of your next period. Calculated based on your cycle length.';
 
   @override
   String get phaseInfoTitle => 'What is this phase?';
@@ -2012,7 +2084,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get learnMore => 'Info';
 
   @override
-  String get healthDisclaimer => 'This app is not a substitute for medical advice. Please consult a healthcare professional for health concerns.';
+  String get healthDisclaimer =>
+      'This app is not a substitute for medical advice. Please consult a healthcare professional for health concerns.';
 
   @override
   String get homePriority => 'Home screen priority';
@@ -2025,18 +2098,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get planLifetime => 'Lifetime';
+
   @override
   String get planLifetimeDetail => 'One payment, premium forever';
+
   @override
   String get cycleNotificationFrequency => 'Cycle notification level';
+
   @override
-  String get cycleNotificationFrequencyDesc => 'Medication reminders are not affected';
+  String get cycleNotificationFrequencyDesc =>
+      'Medication reminders are not affected';
+
   @override
   String get notificationFrequencyEssential => 'Essential';
+
   @override
   String get notificationFrequencyBalanced => 'Balanced';
+
   @override
   String get notificationFrequencyDetailed => 'Detailed';
+
   @override
-  String get readOnlyHistoryNotice => 'You can view your past entries; new daily entries and changes require Premium.';
+  String get readOnlyHistoryNotice =>
+      'You can view your past entries; new daily entries and changes require Premium.';
 }

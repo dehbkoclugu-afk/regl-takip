@@ -635,7 +635,7 @@ class NotificationService {
       final medHour = profile.effectiveMedicationHour;
       final medMinute = profile.effectiveMedicationMinute;
       final cycleFrequency =
-          profile.cycleNotificationFrequency.clamp(1, 3) as int;
+          profile.cycleNotificationFrequency.clamp(1, 3);
       // 'system' tercihi somut dile çözülür (bildirim metinleri için)
       final locale = resolveLanguageCode(profile.language);
 

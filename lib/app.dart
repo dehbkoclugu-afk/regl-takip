@@ -409,6 +409,10 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     }
     await prefs.setBool(_trialEndNoticeKey, true);
     _trialEndNoticeHandled = true;
+    if (!navigatorContext.mounted) {
+      _trialEndNoticePending = false;
+      return;
+    }
     final l10n = AppLocalizations.of(navigatorContext)!;
     final showPlans = await showDialog<bool>(
       context: navigatorContext,

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:regl_takip/core/theme/app_theme.dart';
+import 'package:regl_takip/core/utils/cycle_utils.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
-import 'package:regl_takip/models/enums.dart';
 import 'package:regl_takip/screens/calendar/widgets/year_overview.dart';
 import 'package:regl_takip/screens/dashboard/widgets/cycle_progress_ring.dart';
 

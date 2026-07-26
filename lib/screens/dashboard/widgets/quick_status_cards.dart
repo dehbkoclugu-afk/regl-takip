@@ -143,10 +143,10 @@ class QuickStatusCards extends ConsumerWidget {
           if (largeText && hasMood && hasSymptoms)
             Column(
               children: [
-                _buildMoodCard(context, ref, todayLog!.mood!.type, l10n),
+                _buildMoodCard(context, ref, todayLog.mood!.type, l10n),
                 const SizedBox(height: 12),
                 _buildSymptomCard(
-                    context, ref, todayLog!.symptoms.length, l10n),
+                    context, ref, todayLog.symptoms.length, l10n),
               ],
             )
           else
@@ -161,7 +161,7 @@ class QuickStatusCards extends ConsumerWidget {
                 if (hasSymptoms)
                   Expanded(
                     child: _buildSymptomCard(
-                        context, ref, todayLog!.symptoms.length, l10n),
+                        context, ref, todayLog.symptoms.length, l10n),
                   ),
               ],
             ),

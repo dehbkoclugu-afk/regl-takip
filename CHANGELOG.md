@@ -12,8 +12,17 @@
   AppCompat ebeveynlerine geçirildi; Android 8 tema çökmesi önlendi
 - Gizli mod launcher alias'ı artık hazırlanmış nötr not defteri ikonunu
   kullanıyor; markalı ana ikonun kılıkta kalması düzeltildi
-- Codemagic hareketli beta yerine Flutter 3.29.3'e sabitlendi; Android çıktısı
-  Play Console'un beklediği AAB biçimine geçirildi
+- Codemagic güncel eklenti zinciriyle uyumlu kararlı Flutter 3.44.8'e
+  sabitlendi; Android çıktısı Play Console'un beklediği AAB biçimine geçirildi
+- Flutter 3.44.8'in sabitlediği `intl 0.20.2` ile uyum için takvim paketi
+  `table_calendar 3.2.0` sürümüne yükseltildi
+- Dart 3.12'de artık çözülemeyen eski Hive generator zinciri kaldırıldı;
+  uygulamanın kullandığı üretilmiş adapter dosyaları depoda tutulmaya devam
+  ediyor
+- Yeni Flutter analiz kurallarıyla görünen null-safety, sabit ifade ve
+  kullanımdan kalkmış API sorunları giderildi; yerelleştirme çıktıları güncellendi
+- Klavyeyle döngü fazını ikinci kez etkinleştirme ve %200 Rusça yıl görünümü
+  taşması düzeltildi
 - Play yayın kılavuzuna zorunlu Health Apps beyanı, istenen iki âdet verisi
   izni ve inceleme açıklaması eklendi
 

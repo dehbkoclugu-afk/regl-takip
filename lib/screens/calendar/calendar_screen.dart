@@ -88,6 +88,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final l10n = AppLocalizations.of(context)!;
     try {
       await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
       final boundary = _calendarCaptureKey.currentContext?.findRenderObject()
           as RenderRepaintBoundary?;
       if (boundary == null) return;
@@ -240,7 +241,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 );
             if (!sheetContext.mounted) return;
             if (records == null) {
-              ScaffoldMessenger.of(context).showSnackBar(
+              ScaffoldMessenger.of(sheetContext).showSnackBar(
                 SnackBar(content: Text(l10n.periodRangeOverlap)),
               );
               return;
@@ -255,7 +256,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   .read(userProfileProvider.notifier)
                   .saveProfile(lastPeriodStart: newest);
             }
-            if (!sheetContext.mounted) return;
+            if (!mounted || !sheetContext.mounted) return;
             Navigator.of(sheetContext).pop();
             final messenger = ScaffoldMessenger.of(context);
             final snackBar = messenger.showSnackBar(

@@ -135,7 +135,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
   }
 
   Future<void> _searchNotes(List<DailyLog> logs) async {
-    final selected = await showSearch<DailyLog>(
+    final selected = await showSearch<DailyLog?>(
       context: context,
       delegate: _NoteSearchDelegate(logs),
     );
@@ -195,7 +195,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
   }
 }
 
-class _NoteSearchDelegate extends SearchDelegate<DailyLog> {
+class _NoteSearchDelegate extends SearchDelegate<DailyLog?> {
   final List<DailyLog> logs;
   DateTimeRange? _range;
 

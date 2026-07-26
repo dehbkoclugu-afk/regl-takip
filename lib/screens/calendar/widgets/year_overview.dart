@@ -259,6 +259,8 @@ class _MonthCard extends StatelessWidget {
                 children: [
                   Text(
                     monthName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
@@ -336,9 +338,11 @@ class _LegendDot extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 5),
-          Text(
-            label,
-            style: TextStyle(fontSize: 11, color: AppColors.ts(context)),
+          Flexible(
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 11, color: AppColors.ts(context)),
+            ),
           ),
         ],
       );

@@ -1778,7 +1778,7 @@ class SettingsScreen extends ConsumerWidget {
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: AppColors.primary,
+        activeThumbColor: AppColors.primary,
       ),
     );
   }
@@ -1940,7 +1940,7 @@ class SettingsScreen extends ConsumerWidget {
       ),
       subtitle: Text(l10n.cycleNotificationFrequencyDesc),
       trailing: DropdownButton<int>(
-        value: frequency.clamp(1, 3) as int,
+        value: frequency.clamp(1, 3),
         underline: const SizedBox.shrink(),
         borderRadius: BorderRadius.circular(14),
         items: [
@@ -2078,7 +2078,7 @@ class _DisguiseTileState extends ConsumerState<_DisguiseTile> {
       subtitle: Text(l10n.disguiseDesc, style: TextStyle(fontSize: 11)),
       trailing: Switch(
         value: _enabled ?? false,
-        activeColor: AppColors.primary,
+        activeThumbColor: AppColors.primary,
         onChanged: _enabled == null
             ? null
             : (value) async {
@@ -2191,7 +2191,7 @@ class _ScreenProtectionTileState extends State<_ScreenProtectionTile> {
         subtitle: Text(subtitle, style: const TextStyle(fontSize: 11)),
         trailing: Switch(
           value: enabled,
-          activeColor: AppColors.primary,
+          activeThumbColor: AppColors.primary,
           onChanged: ScreenProtection.write,
         ),
       ),

@@ -39,25 +39,29 @@ class AppLocalizationsTr extends AppLocalizations {
   String get onboardingTitle1 => 'Döngünüzü Takip Edin';
 
   @override
-  String get onboardingDesc1 => 'Adet döneminizi kolayca kaydedin ve bir sonraki döneminizi tahmin edin.';
+  String get onboardingDesc1 =>
+      'Adet döneminizi kolayca kaydedin ve bir sonraki döneminizi tahmin edin.';
 
   @override
   String get onboardingTitle2 => 'Sağlığınızı İzleyin';
 
   @override
-  String get onboardingDesc2 => 'Belirtiler, ruh hali, sıcaklık ve daha fazlasını takip edin.';
+  String get onboardingDesc2 =>
+      'Belirtiler, ruh hali, sıcaklık ve daha fazlasını takip edin.';
 
   @override
   String get onboardingTitle3 => 'Analizlerinizi Görün';
 
   @override
-  String get onboardingDesc3 => 'Detaylı grafikler ve istatistiklerle döngünüzü anlayın.';
+  String get onboardingDesc3 =>
+      'Detaylı grafikler ve istatistiklerle döngünüzü anlayın.';
 
   @override
   String get onboardingTitle4 => 'Bildirimler Alın';
 
   @override
-  String get onboardingDesc4 => 'Adet ve ovulasyon günleriniz için hatırlatmalar alın.';
+  String get onboardingDesc4 =>
+      'Adet ve ovulasyon günleriniz için hatırlatmalar alın.';
 
   @override
   String get getStarted => 'Başlayalım';
@@ -512,7 +516,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get decrease => 'Azalt';
 
   @override
-  String get bbtHint => 'En doğru sonuç için sabah uyanır uyanmaz, yataktan kalkmadan ve hep aynı saatte ölç. Ovülasyon teyidi bu ölçümlere dayanır.';
+  String get bbtHint =>
+      'En doğru sonuç için sabah uyanır uyanmaz, yataktan kalkmadan ve hep aynı saatte ölç. Ovülasyon teyidi bu ölçümlere dayanır.';
 
   @override
   String get deleteMeasurement => 'Ölçümü sil';
@@ -536,7 +541,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get discardChangesTitle => 'Kaydedilmemiş değişiklik';
 
   @override
-  String get discardChangesBody => 'Notun kaydedilmedi. Çıkarsan yazdıkların kaybolacak.';
+  String get discardChangesBody =>
+      'Notun kaydedilmedi. Çıkarsan yazdıkların kaybolacak.';
 
   @override
   String get discard => 'Vazgeç';
@@ -547,7 +553,8 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get pregnancySetStartPrompt => 'Gebelik başlangıcını girmek için dokun';
+  String get pregnancySetStartPrompt =>
+      'Gebelik başlangıcını girmek için dokun';
 
   @override
   String helloName(String name) {
@@ -915,7 +922,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get cycleLengthTitle => 'Döngü Süresi';
 
   @override
-  String get cycleLengthHelp => 'Regl döngün ortalama kaç gün sürer?\n(Bir reglin ilk gününden sonraki reglin ilk gününe kadar)';
+  String get cycleLengthHelp =>
+      'Regl döngün ortalama kaç gün sürer?\n(Bir reglin ilk gününden sonraki reglin ilk gününe kadar)';
 
   @override
   String get periodLengthTitle => 'Regl Süresi';
@@ -941,19 +949,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String get welcomeInfoTitle => 'Hoş Geldin!';
 
   @override
-  String get welcomeInfoDesc => 'Sağlığını takip etmenin en kolay ve en güzel yolu. Döngünün her anında yanındayız.';
+  String get welcomeInfoDesc =>
+      'Sağlığını takip etmenin en kolay ve en güzel yolu. Döngünün her anında yanındayız.';
 
   @override
   String get trackCycleTitle => 'Döngünü Takip Et';
 
   @override
-  String get trackCycleDesc => 'Regl tarihlerini, belirtilerini ve ruh halini kolayca kaydet. Tüm verilerin güvende.';
+  String get trackCycleDesc =>
+      'Regl tarihlerini, belirtilerini ve ruh halini kolayca kaydet. Tüm verilerin güvende.';
 
   @override
   String get getPredictionsTitle => 'Tahminler Al';
 
   @override
-  String get getPredictionsDesc => 'Bir sonraki döngünü ve verimli günlerini akıllı tahminlerle öğren.';
+  String get getPredictionsDesc =>
+      'Bir sonraki döngünü ve verimli günlerini akıllı tahminlerle öğren.';
 
   @override
   String get startBtn => 'Başla';
@@ -993,46 +1004,59 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get coachMenstrual0 => 'Kanama günlerinde demir kaybı olur — kırmızı et, mercimek ve koyu yeşil yapraklılar iyi gelir.';
+  String get coachMenstrual0 =>
+      'Kanama günlerinde demir kaybı olur — kırmızı et, mercimek ve koyu yeşil yapraklılar iyi gelir.';
 
   @override
-  String get coachMenstrual1 => 'Kramplar için sıcak uygulama ve hafif esneme, çoğu ağrı kesici kadar etkili olabilir.';
+  String get coachMenstrual1 =>
+      'Kramplar için sıcak uygulama ve hafif esneme, çoğu ağrı kesici kadar etkili olabilir.';
 
   @override
-  String get coachMenstrual2 => 'Enerjin düşükse bu normal — bugün yoğun antrenman yerine yürüyüş yeterli.';
+  String get coachMenstrual2 =>
+      'Enerjin düşükse bu normal — bugün yoğun antrenman yerine yürüyüş yeterli.';
 
   @override
-  String get coachFollicular0 => 'Östrojen yükselişte: enerji ve odak genelde bu fazda zirve yapar. Zor işleri bugünlere planla.';
+  String get coachFollicular0 =>
+      'Östrojen yükselişte: enerji ve odak genelde bu fazda zirve yapar. Zor işleri bugünlere planla.';
 
   @override
-  String get coachFollicular1 => 'Cilt bu fazda genelde en iyi halinde — yeni ürün denemek için uygun dönem.';
+  String get coachFollicular1 =>
+      'Cilt bu fazda genelde en iyi halinde — yeni ürün denemek için uygun dönem.';
 
   @override
-  String get coachFollicular2 => 'Yüksek tempolu egzersizler için vücudun en hazır olduğu dönemdesin.';
+  String get coachFollicular2 =>
+      'Yüksek tempolu egzersizler için vücudun en hazır olduğu dönemdesin.';
 
   @override
-  String get coachOvulation0 => 'Doğurgan penceredesin — korunma ya da gebelik planı ne ise ona göre davran.';
+  String get coachOvulation0 =>
+      'Doğurgan penceredesin — korunma ya da gebelik planı ne ise ona göre davran.';
 
   @override
-  String get coachOvulation1 => 'Bazı kadınlar ovülasyonda tek taraflı hafif ağrı hisseder (mittelschmerz) — normaldir.';
+  String get coachOvulation1 =>
+      'Bazı kadınlar ovülasyonda tek taraflı hafif ağrı hisseder (mittelschmerz) — normaldir.';
 
   @override
-  String get coachOvulation2 => 'Sosyal enerji bu günlerde genelde yüksek — önemli görüşmeler için iyi zamanlama.';
+  String get coachOvulation2 =>
+      'Sosyal enerji bu günlerde genelde yüksek — önemli görüşmeler için iyi zamanlama.';
 
   @override
-  String get coachLuteal0 => 'PMS belirtileri bu fazda başlayabilir — magnezyum ve düzenli uyku belirtileri hafifletebilir.';
+  String get coachLuteal0 =>
+      'PMS belirtileri bu fazda başlayabilir — magnezyum ve düzenli uyku belirtileri hafifletebilir.';
 
   @override
-  String get coachLuteal1 => 'Tatlı isteği artabilir: kan şekerini dengede tutmak için protein ağırlıklı ara öğün dene.';
+  String get coachLuteal1 =>
+      'Tatlı isteği artabilir: kan şekerini dengede tutmak için protein ağırlıklı ara öğün dene.';
 
   @override
-  String get coachLuteal2 => 'Duygusal hassasiyet artabilir — kendine yüklenme, bu hormonal ve geçici.';
+  String get coachLuteal2 =>
+      'Duygusal hassasiyet artabilir — kendine yüklenme, bu hormonal ve geçici.';
 
   @override
   String get ovulationConfirmed => 'Ovülasyon ✓';
 
   @override
-  String get ovulationConfirmedInfo => 'Bu tarih tahmini değil: bazal vücut sıcaklığı ölçümlerinizdeki yükselişten teyit edildi (3-üstü-6 kuralı).';
+  String get ovulationConfirmedInfo =>
+      'Bu tarih tahmini değil: bazal vücut sıcaklığı ölçümlerinizdeki yükselişten teyit edildi (3-üstü-6 kuralı).';
 
   @override
   String get premiumSection => 'Premium';
@@ -1137,7 +1161,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get pregnancyStartLabel => 'Son adet tarihi (gebelik başlangıcı)';
 
   @override
-  String get pregnancyModeInfo => 'Hamilelik modunda tahminler ve regl bildirimleri kapalıdır';
+  String get pregnancyModeInfo =>
+      'Hamilelik modunda tahminler ve regl bildirimleri kapalıdır';
 
   @override
   String get pillPackStartLabel => 'Hap paketi başlangıcı';
@@ -1156,7 +1181,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get smartPrediction => 'Akıllı Tahmin';
 
   @override
-  String get smartPredictionDesc => 'Tahminlerde geçmiş döngülerden öğrenilen ortalama kullanılır';
+  String get smartPredictionDesc =>
+      'Tahminlerde geçmiş döngülerden öğrenilen ortalama kullanılır';
 
   @override
   String learnedCycleLength(int days) {
@@ -1167,7 +1193,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get phaseInsights => 'Faz İçgörüleri';
 
   @override
-  String get noInsightsYet => 'İçgörü için henüz yeterli veri yok. Semptom kaydettikçe burada faz bazlı desenler görünecek.';
+  String get noInsightsYet =>
+      'İçgörü için henüz yeterli veri yok. Semptom kaydettikçe burada faz bazlı desenler görünecek.';
 
   @override
   String insightLine(String symptom, String phase, int percent) {
@@ -1175,7 +1202,8 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get notContraceptionWarning => 'Tahminler bilgilendirme amaçlıdır. Bu uygulama bir doğum kontrol yöntemi DEĞİLDİR ve gebelikten korunma amacıyla kullanılamaz.';
+  String get notContraceptionWarning =>
+      'Tahminler bilgilendirme amaçlıdır. Bu uygulama bir doğum kontrol yöntemi DEĞİLDİR ve gebelikten korunma amacıyla kullanılamaz.';
 
   @override
   String get privacyPolicy => 'Gizlilik Politikası';
@@ -1187,7 +1215,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get consentTitle => 'Verileriniz ve Gizlilik';
 
   @override
-  String get consentBody => 'Tüm verileriniz yalnızca bu cihazda, şifrelenmiş olarak saklanır; hiçbir sunucuya gönderilmez. Gizlilik politikasını Ayarlar > Hakkında bölümünden okuyabilirsiniz. Devam ederek verilerinizin cihazınızda bu şekilde işlenmesini kabul etmiş olursunuz.';
+  String get consentBody =>
+      'Tüm verileriniz yalnızca bu cihazda, şifrelenmiş olarak saklanır; hiçbir sunucuya gönderilmez. Gizlilik politikasını Ayarlar > Hakkında bölümünden okuyabilirsiniz. Devam ederek verilerinizin cihazınızda bu şekilde işlenmesini kabul etmiş olursunuz.';
 
   @override
   String get consentAccept => 'Kabul Ediyorum';
@@ -1208,7 +1237,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get disguiseTitle => 'Gizli Mod';
 
   @override
-  String get disguiseDesc => 'Uygulama \"Notlar\" kılığına girer: ad, ikon, widget, bildirimler ve açılış nötrleşir. Dönüş: Notlar başlığına uzun basın.';
+  String get disguiseDesc =>
+      'Uygulama \"Notlar\" kılığına girer: ad, ikon, widget, bildirimler ve açılış nötrleşir. Dönüş: Notlar başlığına uzun basın.';
 
   @override
   String get decoyTitle => 'Notlar';
@@ -1309,16 +1339,19 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get paywallFreeSubtitle => 'Deneme süren bitti. Ücretsiz sürümde regl takibi ve takvim açık; günlük takipler ve içgörüler Premium\'da.';
+  String get paywallFreeSubtitle =>
+      'Deneme süren bitti. Ücretsiz sürümde regl takibi ve takvim açık; günlük takipler ve içgörüler Premium\'da.';
 
   @override
-  String get paywallFeatureTrackers => 'Tüm günlük takipler: semptom, ruh hali, su, uyku, kilo, sıcaklık, ilaç, not';
+  String get paywallFeatureTrackers =>
+      'Tüm günlük takipler: semptom, ruh hali, su, uyku, kilo, sıcaklık, ilaç, not';
 
   @override
   String get paywallFeatureStats => 'İstatistikler, trendler ve Yılım halkası';
 
   @override
-  String get paywallFeatureInsights => 'Kişisel içgörüler ve faz ipucu bildirimleri';
+  String get paywallFeatureInsights =>
+      'Kişisel içgörüler ve faz ipucu bildirimleri';
 
   @override
   String get paywallFeatureExport => 'PDF / CSV dışa aktarma';
@@ -1359,7 +1392,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get freeBadge => 'Ücretsiz sürüm';
 
   @override
-  String get freeExplain => 'Ücretsiz sürümde regl takibi, takvim ve tahminler açıktır. Günlük takipler, istatistikler, dışa aktarma, Health Connect, gizli mod ve modlar Premium\'dadır.';
+  String get freeExplain =>
+      'Ücretsiz sürümde regl takibi, takvim ve tahminler açıktır. Günlük takipler, istatistikler, dışa aktarma, Health Connect, gizli mod ve modlar Premium\'dadır.';
 
   @override
   String get seePlans => 'Planları Gör';
@@ -1368,7 +1402,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get premiumLockedTitle => 'İstatistikler Premium\'da';
 
   @override
-  String get premiumLockedBody => 'Grafikler, trendler, faz içgörüleri ve Yılım halkası Premium ile açılır. Deneme süresinde girdiğin tüm veriler saklanıyor.';
+  String get premiumLockedBody =>
+      'Grafikler, trendler, faz içgörüleri ve Yılım halkası Premium ile açılır. Deneme süresinde girdiğin tüm veriler saklanıyor.';
 
   @override
   String get yearRingTitle => 'Yılım';
@@ -1435,13 +1470,15 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get notificationPeriodTip1 => 'Yanına bir ped ya da tampon almayı unutma.';
+  String get notificationPeriodTip1 =>
+      'Yanına bir ped ya da tampon almayı unutma.';
 
   @override
   String get notificationPeriodTip2 => 'Hazırlıklı olmak işleri kolaylaştırır.';
 
   @override
-  String get notificationPeriodTip3 => 'Başladığında kaydetmen tahminleri iyileştirir.';
+  String get notificationPeriodTip3 =>
+      'Başladığında kaydetmen tahminleri iyileştirir.';
 
   @override
   String get notificationPeriodChannel => 'Adet Hatırlatması';
@@ -1453,7 +1490,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get notificationOvulationTitle => 'Ovülasyon Hatırlatması';
 
   @override
-  String get notificationOvulationBody => 'Bugün ovülasyon gününüz. Doğurgan dönemdesiniz!';
+  String get notificationOvulationBody =>
+      'Bugün ovülasyon gününüz. Doğurgan dönemdesiniz!';
 
   @override
   String get notificationOvulationChannel => 'Ovülasyon Hatırlatması';
@@ -1483,16 +1521,19 @@ class AppLocalizationsTr extends AppLocalizations {
   String get notificationFertileTitle => 'Verimli pencere başlıyor';
 
   @override
-  String get notificationFertileBody => 'Bugünden itibaren gebe kalma olasılığın en yüksek günlerdesin.';
+  String get notificationFertileBody =>
+      'Bugünden itibaren gebe kalma olasılığın en yüksek günlerdesin.';
 
   @override
   String get notificationChainEndTitle => 'Hatırlatmalar duraklıyor';
 
   @override
-  String get notificationChainEndBody => 'Planlanan hatırlatmalar bitti. Uygulamayı açtığında yenileri kurulur.';
+  String get notificationChainEndBody =>
+      'Planlanan hatırlatmalar bitti. Uygulamayı açtığında yenileri kurulur.';
 
   @override
-  String get noPurchasesToRestore => 'Geri yüklenecek bir satın alma bulunamadı';
+  String get noPurchasesToRestore =>
+      'Geri yüklenecek bir satın alma bulunamadı';
 
   @override
   String get restoringPurchases => 'Satın alımlar geri yükleniyor…';
@@ -1526,25 +1567,30 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get headlineDelaySubtitle => 'Sapma olağan olabilir. Başladıysa kaydet.';
+  String get headlineDelaySubtitle =>
+      'Sapma olağan olabilir. Başladıysa kaydet.';
 
   @override
   String get notificationDelayTitle => 'Tahmini tarih geçti';
 
   @override
-  String get notificationDelayBody => 'Reglin başladıysa kaydetmeyi unutma. Sapma olağan olabilir.';
+  String get notificationDelayBody =>
+      'Reglin başladıysa kaydetmeyi unutma. Sapma olağan olabilir.';
 
   @override
-  String get notificationDelayBodyAlt1 => 'Henüz bir kayıt yok. Başladıysa eklemek tek dokunuş.';
+  String get notificationDelayBodyAlt1 =>
+      'Henüz bir kayıt yok. Başladıysa eklemek tek dokunuş.';
 
   @override
-  String get notificationDelayBodyAlt2 => 'Birkaç günlük kayma sık görülür. Kaydın güncel mi?';
+  String get notificationDelayBodyAlt2 =>
+      'Birkaç günlük kayma sık görülür. Kaydın güncel mi?';
 
   @override
   String get notificationDelayChannel => 'Gecikme Hatırlatması';
 
   @override
-  String get notificationDelayChannelDesc => 'Tahmini tarih geçtiğinde hatırlatma';
+  String get notificationDelayChannelDesc =>
+      'Tahmini tarih geçtiğinde hatırlatma';
 
   @override
   String headlineDelay(int days) {
@@ -1576,7 +1622,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get notifPermissionTitle => 'Hatırlatmaları açalım mı?';
 
   @override
-  String get notifPermissionBody => 'Reglin yaklaştığında, ovülasyon gününde ve tahmini tarih geçtiğinde haber veririz. Bildirimler cihazından çıkmaz. İstersen sonra ayarlardan da açabilirsin.';
+  String get notifPermissionBody =>
+      'Reglin yaklaştığında, ovülasyon gününde ve tahmini tarih geçtiğinde haber veririz. Bildirimler cihazından çıkmaz. İstersen sonra ayarlardan da açabilirsin.';
 
   @override
   String get enableNotifications => 'Bildirimleri aç';
@@ -1588,7 +1635,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get optionalField => 'İsteğe bağlı';
 
   @override
-  String get privacyAssurance => 'Verilerin yalnızca bu cihazda, şifreli saklanır';
+  String get privacyAssurance =>
+      'Verilerin yalnızca bu cihazda, şifreli saklanır';
 
   @override
   String get privacySummary =>
@@ -1601,7 +1649,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get approxTitle => 'Yaklaşık ne zamandı?';
 
   @override
-  String get approxSubtitle => 'Yaklaşık bir tarih yeter. Tahminler sen kayıt girdikçe kendini düzeltir.';
+  String get approxSubtitle =>
+      'Yaklaşık bir tarih yeter. Tahminler sen kayıt girdikçe kendini düzeltir.';
 
   @override
   String get approxThisWeek => 'Bu hafta';
@@ -1634,7 +1683,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get quietNotifications => 'Sessiz bildirimler';
 
   @override
-  String get quietNotificationsDesc => 'Ses ve açılır baloncuk olmadan, yalnız bildirim gölgeliğinde';
+  String get quietNotificationsDesc =>
+      'Ses ve açılır baloncuk olmadan, yalnız bildirim gölgeliğinde';
 
   @override
   String get leadSameDay => 'Aynı gün';
@@ -1645,13 +1695,16 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get regularityInfoIrregular => 'En kısa ve en uzun döngün arasında 9 gün veya daha fazla fark var. Döngü uzunluğunun değişmesi çok yaygındır; stres, uyku, hastalık ve yaşam değişiklikleri etkiler. Bu bir tanı değildir.';
+  String get regularityInfoIrregular =>
+      'En kısa ve en uzun döngün arasında 9 gün veya daha fazla fark var. Döngü uzunluğunun değişmesi çok yaygındır; stres, uyku, hastalık ve yaşam değişiklikleri etkiler. Bu bir tanı değildir.';
 
   @override
-  String get regularityInfoRegular => 'En kısa ve en uzun döngün arasındaki fark 9 günden az. Tahminler bu tutarlılıkta daha isabetli olur.';
+  String get regularityInfoRegular =>
+      'En kısa ve en uzun döngün arasındaki fark 9 günden az. Tahminler bu tutarlılıkta daha isabetli olur.';
 
   @override
-  String get regularityInfoSeeDoctor => 'Döngün sürekli 21 günden kısa ya da 35 günden uzunsa, üç aydan fazla hiç regl görmediysen ya da kanaman olağandışı yoğunsa bir sağlık uzmanına danışman iyi olur.';
+  String get regularityInfoSeeDoctor =>
+      'Döngün sürekli 21 günden kısa ya da 35 günden uzunsa, üç aydan fazla hiç regl görmediysen ya da kanaman olağandışı yoğunsa bir sağlık uzmanına danışman iyi olur.';
 
   @override
   String typicalRangeNote(int min, int max, int pmax) {
@@ -1683,13 +1736,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get durationsStepTitle => 'Döngü bilgilerin';
 
   @override
-  String get durationsStepHelp => 'Emin değilsen olduğu gibi bırak — ayarlardan sonra değiştirebilirsin.';
+  String get durationsStepHelp =>
+      'Emin değilsen olduğu gibi bırak — ayarlardan sonra değiştirebilirsin.';
 
   @override
   String get lockTimeoutTitle => 'Kilit gecikmesi';
 
   @override
-  String get lockTimeoutDesc => 'Uygulamadan kısa süre ayrılınca PIN tekrar sorulmasın';
+  String get lockTimeoutDesc =>
+      'Uygulamadan kısa süre ayrılınca PIN tekrar sorulmasın';
 
   @override
   String get lockImmediately => 'Hemen';
@@ -1777,7 +1832,8 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get pinNoRecoveryWarning => 'PIN’ini unutursan kurtarma yolu yok; tek çıkış tüm verini silmek olur. Hatırlayacağın bir sayı seç.';
+  String get pinNoRecoveryWarning =>
+      'PIN’ini unutursan kurtarma yolu yok; tek çıkış tüm verini silmek olur. Hatırlayacağın bir sayı seç.';
 
   @override
   String lockAfterMinutes(int minutes) {
@@ -1834,7 +1890,8 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get storySymptomsSame => 'Belirti yoğunluğu son iki dönemde benzer seyretti.';
+  String get storySymptomsSame =>
+      'Belirti yoğunluğu son iki dönemde benzer seyretti.';
 
   @override
   String storyTrendUp(String delta, String unit) {
@@ -1847,7 +1904,8 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get storyTrendFlat => 'Bu dönemde belirgin bir değişim yok — seyir yatay.';
+  String get storyTrendFlat =>
+      'Bu dönemde belirgin bir değişim yok — seyir yatay.';
 
   @override
   String averageSeverity(String value) {
@@ -1875,7 +1933,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get markPeriodRange => 'Regl tarih aralığını işaretle';
 
   @override
-  String get periodRangeOverlap => 'Bu aralık mevcut bir regl kaydıyla çakışıyor.';
+  String get periodRangeOverlap =>
+      'Bu aralık mevcut bir regl kaydıyla çakışıyor.';
 
   @override
   String get periodRangeSaved => 'Regl tarih aralığı kaydedildi';
@@ -1894,13 +1953,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get exportCalendarFile => 'Takvim dışa aktar (.ics)';
 
   @override
-  String get ovulationMarkerHint => 'Kesikli çizgi: tahmini veya teyitli ovülasyon';
+  String get ovulationMarkerHint =>
+      'Kesikli çizgi: tahmini veya teyitli ovülasyon';
 
   @override
   String get addPastCycles => 'Geçmiş döngüleri ekle';
 
   @override
-  String get addPastCyclesHint => 'En fazla 3 regl tarih aralığını seçip birlikte kaydet.';
+  String get addPastCyclesHint =>
+      'En fazla 3 regl tarih aralığını seçip birlikte kaydet.';
 
   @override
   String get addPeriodRange => 'Regl aralığı ekle';
@@ -1909,7 +1970,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get cycleOverlayTitle => 'Döngü karşılaştırması';
 
   @override
-  String get symptomLoadComparison => 'Günlük belirti şiddeti aynı döngü gününde karşılaştırılır';
+  String get symptomLoadComparison =>
+      'Günlük belirti şiddeti aynı döngü gününde karşılaştırılır';
 
   @override
   String get currentCycleLabel => 'Bu döngü';
@@ -1921,7 +1983,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get colorBlindPattern => 'Desenli faz renkleri';
 
   @override
-  String get colorBlindPatternDesc => 'Faz bantlarına doku ekler — renkleri ayırt etmek zorsa';
+  String get colorBlindPatternDesc =>
+      'Faz bantlarına doku ekler — renkleri ayırt etmek zorsa';
 
   @override
   String get undo => 'Geri al';
@@ -1948,7 +2011,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dataResetTitle => 'Verileriniz okunamadı';
 
   @override
-  String get dataResetBody => 'Uygulama verileri bu cihazda çözülemedi. Bu genellikle telefon değişiminde veya sistem yedeğinden geri yüklemede olur: veriler cihaza özel bir anahtarla şifrelenir ve bu anahtar yeni cihaza taşınamaz. Uygulama sıfırdan başlatıldı.\n\nVerilerinizi cihazlar arasında taşımak için Ayarlar > Verileri Yedekle ile düzenli JSON yedeği alın.';
+  String get dataResetBody =>
+      'Uygulama verileri bu cihazda çözülemedi. Bu genellikle telefon değişiminde veya sistem yedeğinden geri yüklemede olur: veriler cihaza özel bir anahtarla şifrelenir ve bu anahtar yeni cihaza taşınamaz. Uygulama sıfırdan başlatıldı.\n\nVerilerinizi cihazlar arasında taşımak için Ayarlar > Verileri Yedekle ile düzenli JSON yedeği alın.';
 
   @override
   String get pinSet => 'PIN başarıyla ayarlandı';
@@ -1960,7 +2024,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get unlockWithBiometric => 'Parmak izi veya yüz ile kilidi açın';
 
   @override
-  String get biometricNotAvailable => 'Bu cihazda biyometrik doğrulama mevcut değil';
+  String get biometricNotAvailable =>
+      'Bu cihazda biyometrik doğrulama mevcut değil';
 
   @override
   String get editProfile => 'Profili Düzenle';
@@ -1974,7 +2039,8 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get deleteAllDataConfirm => 'Tüm verileri silmek istediğinize emin misiniz? Bu işlem geri alınamaz.';
+  String get deleteAllDataConfirm =>
+      'Tüm verileri silmek istediğinize emin misiniz? Bu işlem geri alınamaz.';
 
   @override
   String get dataDeleted => 'Tüm veriler silindi';
@@ -1983,25 +2049,32 @@ class AppLocalizationsTr extends AppLocalizations {
   String get doseHint => 'ör. 500mg';
 
   @override
-  String get menstrualPhaseInfo => 'Adet kanamasının yaşandığı dönemdir. Genellikle 3-7 gün sürer. Vücut rahim iç tabakasını atar.';
+  String get menstrualPhaseInfo =>
+      'Adet kanamasının yaşandığı dönemdir. Genellikle 3-7 gün sürer. Vücut rahim iç tabakasını atar.';
 
   @override
-  String get follicularPhaseInfo => 'Adet sonrası yumurtalıkların yeni yumurta hazırladığı dönemdir. Östrojen yükselir, enerji seviyesi artar.';
+  String get follicularPhaseInfo =>
+      'Adet sonrası yumurtalıkların yeni yumurta hazırladığı dönemdir. Östrojen yükselir, enerji seviyesi artar.';
 
   @override
-  String get ovulationPhaseInfo => 'Yumurtanın yumurtalıktan serbest bırakıldığı dönemdir. Hamilelik olasılığı en yüksek seviyededir.';
+  String get ovulationPhaseInfo =>
+      'Yumurtanın yumurtalıktan serbest bırakıldığı dönemdir. Hamilelik olasılığı en yüksek seviyededir.';
 
   @override
-  String get lutealPhaseInfo => 'Ovulasyon sonrası bir sonraki adet dönemine kadar süren fazıdır. Progesteron yükselir, PMS belirtileri görülebilir.';
+  String get lutealPhaseInfo =>
+      'Ovulasyon sonrası bir sonraki adet dönemine kadar süren fazıdır. Progesteron yükselir, PMS belirtileri görülebilir.';
 
   @override
-  String get fertileWindowInfo => 'Hamilelik olasılığının en yüksek olduğu dönemdir. Ovulasyondan 5 gün önce başlar ve 1 gün sonra sona erer.';
+  String get fertileWindowInfo =>
+      'Hamilelik olasılığının en yüksek olduğu dönemdir. Ovulasyondan 5 gün önce başlar ve 1 gün sonra sona erer.';
 
   @override
-  String get ovulationCardInfo => 'Yumurtalıktan yumurtanın serbest bırakılacağı tahmini gündür. Döngünün ortasına denk gelir.';
+  String get ovulationCardInfo =>
+      'Yumurtalıktan yumurtanın serbest bırakılacağı tahmini gündür. Döngünün ortasına denk gelir.';
 
   @override
-  String get nextPeriodInfo => 'Bir sonraki adet kanamasının tahmini başlangıç tarihidir. Döngü sürenize göre hesaplanır.';
+  String get nextPeriodInfo =>
+      'Bir sonraki adet kanamasının tahmini başlangıç tarihidir. Döngü sürenize göre hesaplanır.';
 
   @override
   String get phaseInfoTitle => 'Bu faz nedir?';
@@ -2010,7 +2083,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get learnMore => 'Bilgi';
 
   @override
-  String get healthDisclaimer => 'Bu uygulama tıbbi tavsiye niteliğinde değildir. Sağlık sorunlarınız için lütfen bir sağlık uzmanına danışın.';
+  String get healthDisclaimer =>
+      'Bu uygulama tıbbi tavsiye niteliğinde değildir. Sağlık sorunlarınız için lütfen bir sağlık uzmanına danışın.';
 
   @override
   String get homePriority => 'Ana ekran önceliği';
@@ -2023,18 +2097,27 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get planLifetime => 'Ömür boyu';
+
   @override
   String get planLifetimeDetail => 'Tek ödeme, süresiz premium';
+
   @override
   String get cycleNotificationFrequency => 'Döngü bildirimi yoğunluğu';
+
   @override
-  String get cycleNotificationFrequencyDesc => 'İlaç hatırlatmaları bu ayardan etkilenmez';
+  String get cycleNotificationFrequencyDesc =>
+      'İlaç hatırlatmaları bu ayardan etkilenmez';
+
   @override
   String get notificationFrequencyEssential => 'Temel';
+
   @override
   String get notificationFrequencyBalanced => 'Dengeli';
+
   @override
   String get notificationFrequencyDetailed => 'Ayrıntılı';
+
   @override
-  String get readOnlyHistoryNotice => 'Geçmiş kayıtlarını görüntüleyebilirsin; yeni günlük kayıt ve değişiklikler Premium\'da.';
+  String get readOnlyHistoryNotice =>
+      'Geçmiş kayıtlarını görüntüleyebilirsin; yeni günlük kayıt ve değişiklikler Premium\'da.';
 }

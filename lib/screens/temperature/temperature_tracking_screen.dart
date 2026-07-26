@@ -252,7 +252,7 @@ class _TemperatureTrackingScreenState
                     color: AppColors.temperature.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.access_time_rounded,
                     color: AppColors.categoryText(
                       context,

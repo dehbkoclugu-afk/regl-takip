@@ -138,7 +138,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
                   color: AppColors.tp(context))),
           Switch.adaptive(
             value: _orgasm,
-            activeColor: AppColors.moodRomantic,
+            activeThumbColor: AppColors.moodRomantic,
             onChanged: (v) => setState(() => _orgasm = v),
           ),
         ],

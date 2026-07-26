@@ -134,7 +134,7 @@ class AppColors {
   static const Color medicationText = Color(0xFF33763A);
   static const Color notesText = Color(0xFF6B594F);
 
-  static const Map<Color, Color> _categoryTextTones = {
+  static final Map<Color, Color> _categoryTextTones = {
     water: waterText,
     temperature: temperatureText,
     weightColor: weightText,

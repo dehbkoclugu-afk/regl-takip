@@ -66,7 +66,8 @@ import 'app_localizations_tr.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale)
+      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -74,7 +75,8 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -86,7 +88,8 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
     delegate,
     GlobalMaterialLocalizations.delegate,
     GlobalCupertinoLocalizations.delegate,
@@ -2437,26 +2440,70 @@ abstract class AppLocalizations {
   /// **'Parolalı Yedek Al'**
   String get backupData;
 
+  /// No description provided for @backupPassword.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedek parolası'**
   String get backupPassword;
 
+  /// No description provided for @backupPasswordConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'Parolayı tekrar gir'**
   String get backupPasswordConfirm;
 
+  /// No description provided for @backupPasswordLength.
+  ///
+  /// In tr, this message translates to:
+  /// **'Parola 10–128 karakter olmalı'**
   String get backupPasswordLength;
 
+  /// No description provided for @backupPasswordsDoNotMatch.
+  ///
+  /// In tr, this message translates to:
+  /// **'Parolalar eşleşmiyor'**
   String get backupPasswordsDoNotMatch;
 
+  /// No description provided for @backupNoRecovery.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu parola cihazda saklanmaz ve kurtarılamaz. Unutursan yedeği açamazsın.'**
   String get backupNoRecovery;
 
+  /// No description provided for @unlockBackupTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedek parolasını gir'**
   String get unlockBackupTitle;
 
+  /// No description provided for @unlockBackupBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu yedek yalnız oluştururken kullandığın parolayla açılabilir.'**
   String get unlockBackupBody;
 
+  /// No description provided for @backupPasswordOrFileInvalid.
+  ///
+  /// In tr, this message translates to:
+  /// **'Parola yanlış veya yedek dosyası bozuk.'**
   String get backupPasswordOrFileInvalid;
 
+  /// No description provided for @legacyBackupWarning.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu eski yedek şifrelenmemiştir. Geri yüklersen yeni yedeklerin parolalı olacaktır.'**
   String get legacyBackupWarning;
 
+  /// No description provided for @showPassword.
+  ///
+  /// In tr, this message translates to:
+  /// **'Parolayı göster'**
   String get showPassword;
 
+  /// No description provided for @hidePassword.
+  ///
+  /// In tr, this message translates to:
+  /// **'Parolayı gizle'**
   String get hidePassword;
 
   /// No description provided for @restoreData.
@@ -3055,8 +3102,8 @@ abstract class AppLocalizations {
 
   /// No description provided for @privacySummary.
   ///
-  /// In en, this message translates to:
-  /// **'Your core data is encrypted on this device; it leaves only when you export it or enable Health Connect.'**
+  /// In tr, this message translates to:
+  /// **'Ana verilerin bu cihazda şifreli tutulur; yalnız dışa aktardığında veya Health Connect\'i açtığında cihazdan çıkar.'**
   String get privacySummary;
 
   /// No description provided for @dontRememberExactly.
@@ -3576,24 +3623,45 @@ abstract class AppLocalizations {
   String get ovulationMarkerHint;
 
   /// No description provided for @addPastCycles.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçmiş döngüleri ekle'**
   String get addPastCycles;
 
   /// No description provided for @addPastCyclesHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'En fazla 3 regl tarih aralığını seçip birlikte kaydet.'**
   String get addPastCyclesHint;
 
   /// No description provided for @addPeriodRange.
+  ///
+  /// In tr, this message translates to:
+  /// **'Regl aralığı ekle'**
   String get addPeriodRange;
 
   /// No description provided for @cycleOverlayTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Döngü karşılaştırması'**
   String get cycleOverlayTitle;
 
   /// No description provided for @symptomLoadComparison.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük belirti şiddeti aynı döngü gününde karşılaştırılır'**
   String get symptomLoadComparison;
 
   /// No description provided for @currentCycleLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu döngü'**
   String get currentCycleLabel;
 
   /// No description provided for @previousCycleLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önceki döngü'**
   String get previousCycleLabel;
 
   /// No description provided for @colorBlindPattern.
@@ -3783,25 +3851,74 @@ abstract class AppLocalizations {
   String get healthDisclaimer;
 
   /// No description provided for @homePriority.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ana ekran önceliği'**
   String get homePriority;
 
   /// No description provided for @cycleFirst.
+  ///
+  /// In tr, this message translates to:
+  /// **'Döngü önce'**
   String get cycleFirst;
 
   /// No description provided for @todayFirst.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün önce'**
   String get todayFirst;
 
+  /// No description provided for @planLifetime.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ömür boyu'**
   String get planLifetime;
+
+  /// No description provided for @planLifetimeDetail.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tek ödeme, süresiz premium'**
   String get planLifetimeDetail;
+
+  /// No description provided for @cycleNotificationFrequency.
+  ///
+  /// In tr, this message translates to:
+  /// **'Döngü bildirimi yoğunluğu'**
   String get cycleNotificationFrequency;
+
+  /// No description provided for @cycleNotificationFrequencyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlaç hatırlatmaları bu ayardan etkilenmez'**
   String get cycleNotificationFrequencyDesc;
+
+  /// No description provided for @notificationFrequencyEssential.
+  ///
+  /// In tr, this message translates to:
+  /// **'Temel'**
   String get notificationFrequencyEssential;
+
+  /// No description provided for @notificationFrequencyBalanced.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dengeli'**
   String get notificationFrequencyBalanced;
+
+  /// No description provided for @notificationFrequencyDetailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ayrıntılı'**
   String get notificationFrequencyDetailed;
+
+  /// No description provided for @readOnlyHistoryNotice.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçmiş kayıtlarını görüntüleyebilirsin; yeni günlük kayıt ve değişiklikler Premium\'da.'**
   String get readOnlyHistoryNotice;
 }
 
-class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -3810,29 +3927,39 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['de', 'en', 'es', 'fr', 'ru', 'tr'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+        'de',
+        'en',
+        'es',
+        'fr',
+        'ru',
+        'tr'
+      ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
-
-
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'de': return AppLocalizationsDe();
-    case 'en': return AppLocalizationsEn();
-    case 'es': return AppLocalizationsEs();
-    case 'fr': return AppLocalizationsFr();
-    case 'ru': return AppLocalizationsRu();
-    case 'tr': return AppLocalizationsTr();
+    case 'de':
+      return AppLocalizationsDe();
+    case 'en':
+      return AppLocalizationsEn();
+    case 'es':
+      return AppLocalizationsEs();
+    case 'fr':
+      return AppLocalizationsFr();
+    case 'ru':
+      return AppLocalizationsRu();
+    case 'tr':
+      return AppLocalizationsTr();
   }
 
   throw FlutterError(
-    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-    'an issue with the localizations generation tool. Please file an issue '
-    'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.'
-  );
+      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+      'an issue with the localizations generation tool. Please file an issue '
+      'on GitHub with a reproducible sample app and the gen-l10n configuration '
+      'that was used.');
 }

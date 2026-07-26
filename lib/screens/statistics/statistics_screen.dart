@@ -1753,7 +1753,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   touchCallback: (event, response) {
                     if (event is! FlTapUpEvent) return;
                     final touchedSpots = response?.lineBarSpots;
-                    if (touchedSpots == null || touchedSpots.isEmpty) return;
+                    if (touchedSpots == null || touchedSpots.isEmpty) {
+                      return;
+                    }
                     ref.read(selectedDateProvider.notifier).state =
                         dateOf(touchedSpots.first.x);
                     context.push('/log');
@@ -1819,7 +1821,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  l10n.tapChartPointHint,
+                  l10nStory.tapChartPointHint,
                   style: TextStyle(
                     fontSize: 11,
                     color: AppColors.ts(context),

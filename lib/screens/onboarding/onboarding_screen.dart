@@ -1155,7 +1155,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       ],
     );
   }
+}
 
+class _ActionButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+
+  const _ActionButton({
+    required this.label,
+    required this.onPressed,
+    this.isLoading = false,
+  });
+
+  @override
   Widget build(BuildContext context) {
     final enabled = onPressed != null && !isLoading;
     return Material(

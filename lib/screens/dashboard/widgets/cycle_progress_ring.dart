@@ -137,7 +137,8 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
   }
 
   void _toggleSelection(RingSegment segment) {
-    if (_selected == segment) {
+    if (_selected?.startDay == segment.startDay &&
+        _selected?.endDay == segment.endDay) {
       _clearSelection();
       return;
     }

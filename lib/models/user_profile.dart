@@ -127,7 +127,7 @@ class UserProfile extends HiveObject {
 
   /// Günlerden bağımsız, tekrar eden ilaç tanımları. `taken` günlük kayda
   /// aittir; bu listedeki değer her zaman false kabul edilir.
-  @HiveField(29, defaultValue: const <MedicationEntry>[])
+  @HiveField(29, defaultValue: <MedicationEntry>[])
   List<MedicationEntry> medicationPlan;
 
   /// Eski günlük ilaç listesinin profile bir kez taşındığını belirtir.
@@ -351,7 +351,7 @@ class UserProfile extends HiveObject {
     medicationPlanMigrated:
         json['medicationPlanMigrated'] as bool? ?? false,
     cycleNotificationFrequency:
-        (json['cycleNotificationFrequency'] as int? ?? 3).clamp(1, 3) as int,
+        (json['cycleNotificationFrequency'] as int? ?? 3).clamp(1, 3),
   );
 
   int? get age {
