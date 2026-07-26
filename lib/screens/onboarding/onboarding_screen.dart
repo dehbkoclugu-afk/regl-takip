@@ -32,13 +32,15 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final PageController _mainPageController = PageController();
-  final PageController _formPageController = PageController();
   final TextEditingController _nameController = TextEditingController();
+  final ScrollController _formScrollController = ScrollController();
+
+  /// Zorunlu alana kaydırıp odaklamak için: "Tamamla" kapalıyken kullanıcı
+  /// hangi alanın eksik olduğunu aramak zorunda kalmamalı.
+  final GlobalKey _lastPeriodKey = GlobalKey();
 
   int _currentMainPage = 0;
-  int _currentFormStep = 0;
   static const int _totalInfoPages = 1;
-  static const int _totalFormSteps = 5;
 
   // Mod seçimi kurulumun ilk sorusu: hamile bir kullanıcı "döngü tahmini"
   // sorularıyla değil kendi akışıyla karşılanmalı (önceden ayarlarda
@@ -174,8 +176,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   void dispose() {
     _mainPageController.dispose();
-    _formPageController.dispose();
     _nameController.dispose();
+    _formScrollController.dispose();
     super.dispose();
   }
 
@@ -189,37 +191,28 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   /// Son regl tarihi olmadan döngü matematiği çalışmaz (tahmin, faz, bildirim
-  /// hepsi lastPeriodStart'a bağlı) — bu adım zorunlu. İsim ve doğum tarihi
-  /// isteğe bağlı: kimliğini paylaşmak istemeyen kullanıcı da geçebilmeli.
-  bool get _canContinue {
-    if (_currentFormStep == 3) return _lastPeriodDate != null;
-    return true;
+  /// hepsi lastPeriodStart'a bağlı) — kurulumun tek zorunlu alanı bu. İsim ve
+  /// doğum tarihi isteğe bağlı: kimliğini paylaşmak istemeyen de geçebilmeli.
+  bool get _canComplete => _lastPeriodDate != null;
+
+  /// Eksik zorunlu alana götürür. Tek ekranda form uzadığı için "Tamamla"nın
+  /// neden kapalı olduğunu yazmak yetmiyor; alanın kendisi görünür olmalı.
+  void _revealLastPeriodField() {
+    final target = _lastPeriodKey.currentContext;
+    if (target == null) return;
+    Scrollable.ensureVisible(
+      target,
+      duration: context.motionDuration(const Duration(milliseconds: 400)),
+      curve: Curves.easeInOut,
+      alignment: 0.2,
+    );
   }
 
-  void _nextFormStep() {
-    if (!_canContinue) return;
-    if (_currentFormStep < _totalFormSteps - 1) {
-      _formPageController.nextPage(
-        duration: const Duration(milliseconds: 350),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      _completeOnboarding();
-    }
-  }
-
-  void _prevFormStep() {
-    if (_currentFormStep > 0) {
-      _formPageController.previousPage(
-        duration: const Duration(milliseconds: 350),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      _mainPageController.previousPage(
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
-      );
-    }
+  void _backToIntro() {
+    _mainPageController.previousPage(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+    );
   }
 
   /// Sistem izin diyaloğunun önüne uygulama içi gerekçe koyar.
@@ -417,7 +410,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       canPop: _currentMainPage == 0,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop || _isSaving) return;
-        _prevFormStep();
+        _backToIntro();
       },
       child: Scaffold(
         body: Container(
@@ -487,6 +480,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
+  /// Kurulumun tamamı tek kaydırmada.
+  ///
+  /// Önceden beş soru beş ayrı sayfaydı ve her biri "Devam"a basmayı
+  /// gerektiriyordu: kullanıcı daha kaç soru kaldığını göremediği için
+  /// kurulum baştan bitmek bilmez görünüyordu. Adım noktaları sayıyı
+  /// gösteriyordu ama sorunun kendisi sayı değil, cevabı verilmemiş soruların
+  /// tek tek karşına çıkması. Hepsi alt alta durunca form bir bakışta
+  /// ölçülebiliyor ve varsayılanı kabul edilen alanlar dokunulmadan geçiliyor.
+  ///
+  /// Sıra bilinçli: zorunlu ve dolduranın işine yarayan alanlar üstte,
+  /// isteğe bağlı kişisel alanlar altta — kaydırmayı yarıda bırakan da
+  /// çalışan bir kuruluma sahip oluyor.
   Widget _buildSetupPage() {
     final l10n = AppLocalizations.of(context)!;
     return Padding(
@@ -504,25 +509,26 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               .animateSafe(context)
               .fadeIn(duration: 400.ms)
               .slideY(begin: -0.2, end: 0, duration: 400.ms),
-          const SizedBox(height: 8),
-          _buildStepProgress(),
           const SizedBox(height: 16),
           Expanded(
-            child: PageView(
-              controller: _formPageController,
-              physics: const NeverScrollableScrollPhysics(),
-              onPageChanged: (index) {
-                setState(() => _currentFormStep = index);
-              },
-              children: [
-                _buildModeStep(),
-                _buildNameStep(),
-                _buildBirthDateStep(),
-                _buildLastPeriodStep(),
-                _buildDurationsStep(),
-              ],
+            child: SingleChildScrollView(
+              controller: _formScrollController,
+              child: _formCard(
+                children: [
+                  _buildModeSection(),
+                  _sectionDivider(),
+                  _buildLastPeriodSection(),
+                  _sectionDivider(),
+                  _buildDurationsSection(),
+                  _sectionDivider(),
+                  _buildNameSection(),
+                  _sectionDivider(),
+                  _buildBirthDateSection(),
+                ],
+              ),
             ),
           ),
+          const SizedBox(height: 16),
           _buildFormNavigation(),
           const SizedBox(height: 16),
         ],
@@ -530,41 +536,23 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  Widget _buildStepProgress() {
-    final l10n = AppLocalizations.of(context)!;
-    return Semantics(
-      label: l10n.stepOfSteps(_currentFormStep + 1, _totalFormSteps),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Row(
-          children: List.generate(_totalFormSteps, (index) {
-            final isActive = index <= _currentFormStep;
-            return Expanded(
-              child: AnimatedContainer(
-                duration:
-                    context.motionDuration(const Duration(milliseconds: 300)),
-                height: 4,
-                margin: const EdgeInsets.symmetric(horizontal: 3),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(2),
-                  color: isActive
-                      ? Colors.white
-                      : Colors.white.withValues(alpha: 0.25),
-                ),
-              ),
-            );
-          }),
-        ),
+  Widget _sectionDivider() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      child: Divider(
+        height: 1,
+        thickness: 1,
+        color: AppColors.textSecondary.withValues(alpha: 0.15),
       ),
     );
   }
 
   Widget _buildFormNavigation() {
     final l10n = AppLocalizations.of(context)!;
-    final canContinue = _canContinue;
+    final canComplete = _canComplete;
     final largeText = usesLargeText(MediaQuery.textScalerOf(context));
     final backButton = OutlinedButton.icon(
-      onPressed: _isSaving ? null : _prevFormStep,
+      onPressed: _isSaving ? null : _backToIntro,
       icon: const Icon(Icons.arrow_back_rounded, size: 20),
       label: Text(l10n.back),
       style: OutlinedButton.styleFrom(
@@ -578,19 +566,23 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         minimumSize: const Size(48, 52),
       ),
     );
-    final nextButton = _ActionButton(
-      label: _currentFormStep == _totalFormSteps - 1
-          ? l10n.completeBtn
-          : l10n.continueBtn,
-      onPressed: (_isSaving || !canContinue) ? null : _nextFormStep,
+    // Kapalı buton sessiz kalmıyor: dokunulunca eksik alana kaydırıyor.
+    // Ekranın altındaki butondan yukarıdaki alanı aramak, tek ekranda
+    // listenin uzamasıyla gelen tek risk.
+    final completeButton = _ActionButton(
+      label: l10n.completeBtn,
+      onPressed: _isSaving
+          ? null
+          : (canComplete ? _completeOnboarding : _revealLastPeriodField),
+      isEnabled: canComplete,
       isLoading: _isSaving,
     );
     return Column(
       children: [
-        // Zorunlu adımda buton neden kapalı, kullanıcı bilmeli
+        // Buton neden kapalı, kullanıcı bilmeli
         AnimatedSize(
           duration: context.motionDuration(const Duration(milliseconds: 200)),
-          child: canContinue
+          child: canComplete
               ? const SizedBox(width: double.infinity)
               : Padding(
                   padding: const EdgeInsets.only(bottom: 10),
@@ -607,46 +599,44 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         if (largeText) ...[
           SizedBox(width: double.infinity, child: backButton),
           const SizedBox(height: 10),
-          SizedBox(width: double.infinity, child: nextButton),
+          SizedBox(width: double.infinity, child: completeButton),
         ] else
           Row(
             children: [
               SizedBox(height: 52, child: backButton),
               const SizedBox(width: 12),
-              Expanded(child: SizedBox(height: 52, child: nextButton)),
+              Expanded(child: SizedBox(height: 52, child: completeButton)),
             ],
           ),
       ],
     );
   }
 
+  /// Formun tamamını taşıyan tek kart. Kaydırma dışarıda ([_buildSetupPage]),
+  /// burada olursa iç içe iki kaydırılabilir alan oluşur.
   Widget _formCard({required List<Widget> children}) {
-    return Center(
-      child: SingleChildScrollView(
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(28),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(28),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 30,
-                offset: const Offset(0, 10),
-              ),
-            ],
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(28),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 30,
+            offset: const Offset(0, 10),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: children,
-          ),
-        )
-            .animateSafe(context)
-            .fadeIn(duration: 350.ms)
-            .slideX(begin: 0.05, end: 0, duration: 350.ms),
+        ],
       ),
-    );
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: children,
+      ),
+    )
+        .animateSafe(context)
+        .fadeIn(duration: 350.ms)
+        .slideY(begin: 0.03, end: 0, duration: 350.ms);
   }
 
   /// Tarih seçici alan: dokunulabilir, ripple'lı, ekran okuyucuya buton
@@ -703,84 +693,86 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  Widget _stepIcon(IconData icon) {
-    return Container(
-      width: 64,
-      height: 64,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          colors: [AppColors.primaryStrong, AppColors.primaryDeep],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Icon(icon, color: Colors.white, size: 30),
-    );
-  }
-
-  Widget _stepTitle(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 20, bottom: 8),
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-      ),
-    );
-  }
-
-  /// [optional] verildiğinde altına "İsteğe bağlı" rozeti düşer.
+  /// Bölüm başlığı: ikon ve başlık aynı satırda, açıklama altında.
+  ///
+  /// Her soru ayrı sayfayken 64 piksellik yuvarlak ikon ve ortalanmış başlık
+  /// sayfayı dolduruyordu. Beş bölüm alt alta gelince aynı ağırlık kaydırmayı
+  /// gereksiz uzatıyor, o yüzden başlık sola yaslı ve tek satır.
+  ///
+  /// [optional] verildiğinde başlığın yanına "İsteğe bağlı" rozeti düşer.
   /// İsim ve doğum tarihi kodda zaten atlanabilirdi ama kullanıcıya
   /// söylenmiyordu: sağlık uygulamasında kişisel veri isteyen her alan
   /// zorunlu sanılıyor.
-  Widget _stepSubtitle(String text, {bool optional = false}) {
+  Widget _sectionHeader(
+    IconData icon,
+    String title,
+    String subtitle, {
+    bool optional = false,
+  }) {
     final l10n = AppLocalizations.of(context)!;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: const LinearGradient(
+                    colors: [AppColors.primaryStrong, AppColors.primaryDeep],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Icon(icon, color: Colors.white, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                ),
+              ),
+              if (optional)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    l10n.optionalField,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
           Text(
-            text,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            subtitle,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: AppColors.textSecondary,
+                  height: 1.4,
                 ),
           ),
-          if (optional) ...[
-            const SizedBox(height: 8),
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                l10n.optionalField,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ),
-          ],
         ],
       ),
     );
   }
 
-  Widget _buildModeStep() {
+  Widget _buildModeSection() {
     final l10n = AppLocalizations.of(context)!;
     final modes = [
       (TrackingMode.period, Icons.water_drop_rounded, l10n.modePeriod,
@@ -793,11 +785,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           l10n.modeTtcDesc),
     ];
 
-    return _formCard(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _stepIcon(Icons.route_rounded),
-        _stepTitle(l10n.modeStepTitle),
-        _stepSubtitle(l10n.modeStepSubtitle),
+        _sectionHeader(
+            Icons.route_rounded, l10n.modeStepTitle, l10n.modeStepSubtitle),
         LayoutBuilder(
           builder: (context, constraints) {
             final textScale =
@@ -885,18 +877,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  Widget _buildNameStep() {
+  Widget _buildNameSection() {
     final l10n = AppLocalizations.of(context)!;
-    return _formCard(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _stepIcon(Icons.person_outline_rounded),
-        _stepTitle(l10n.enterName),
-        _stepSubtitle(l10n.whatShouldWeCallYou, optional: true),
+        _sectionHeader(Icons.person_outline_rounded, l10n.enterName,
+            l10n.whatShouldWeCallYou,
+            optional: true),
         TextField(
           controller: _nameController,
           textCapitalization: TextCapitalization.words,
-          textInputAction: TextInputAction.next,
-          onSubmitted: (_) => _nextFormStep(),
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => FocusScope.of(context).unfocus(),
           style: const TextStyle(fontSize: 18),
           decoration: InputDecoration(
             hintText: l10n.yourName,
@@ -921,13 +914,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  Widget _buildBirthDateStep() {
+  Widget _buildBirthDateSection() {
     final l10n = AppLocalizations.of(context)!;
-    return _formCard(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _stepIcon(Icons.cake_outlined),
-        _stepTitle(l10n.yourBirthDate),
-        _stepSubtitle(l10n.birthDateHelp, optional: true),
+        _sectionHeader(
+            Icons.cake_outlined, l10n.yourBirthDate, l10n.birthDateHelp,
+            optional: true),
         _dateField(
           value: _birthDate,
           semanticsLabel: l10n.yourBirthDate,
@@ -938,13 +932,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  Widget _buildLastPeriodStep() {
+  Widget _buildLastPeriodSection() {
     final l10n = AppLocalizations.of(context)!;
-    return _formCard(
+    return Column(
+      key: _lastPeriodKey,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _stepIcon(Icons.water_drop_outlined),
-        _stepTitle(l10n.lastPeriodTitle),
-        _stepSubtitle(l10n.lastPeriodHelp),
+        _sectionHeader(Icons.water_drop_outlined, l10n.lastPeriodTitle,
+            l10n.lastPeriodHelp),
         _dateField(
           value: _lastPeriodDate,
           semanticsLabel: l10n.lastPeriodTitle,
@@ -1027,18 +1022,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         _lastPeriodDate = today.subtract(Duration(days: daysAgo)));
   }
 
-  /// Döngü ve regl uzunluğu tek adımda.
-  ///
-  /// İkisi ayrı sayfalardı: aynı biçimdeki iki slider için kullanıcı iki kez
-  /// "Devam"a basıyordu. Kurulum altı adımdan beşe indi; ikisi de
-  /// varsayılanla geçilebiliyor ve sonradan ayarlardan değiştirilebiliyor.
-  Widget _buildDurationsStep() {
+  /// Döngü ve regl uzunluğu tek bölümde: aynı biçimdeki iki slider ayrı
+  /// sayfalardı, bir düşünce için iki kez "Devam"a basılıyordu. İkisi de
+  /// varsayılanla geçilebilir, sonradan ayarlardan değiştirilebilir.
+  Widget _buildDurationsSection() {
     final l10n = AppLocalizations.of(context)!;
-    return _formCard(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _stepIcon(Icons.loop_rounded),
-        _stepTitle(l10n.durationsStepTitle),
-        _stepSubtitle(l10n.durationsStepHelp),
+        _sectionHeader(Icons.loop_rounded, l10n.durationsStepTitle,
+            l10n.durationsStepHelp),
         _durationSlider(
           label: l10n.cycleLengthTitle,
           value: _cycleLength,
@@ -1162,15 +1155,21 @@ class _ActionButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool isLoading;
 
+  /// Görünüşü tıklanabilirlikten ayırır. Kurulumun "Tamamla" butonu eksik
+  /// alan varken kapalı görünür ama dokunuşu yutmaz: eksik alana kaydırır.
+  /// Varsayılan olarak [onPressed] ne diyorsa o.
+  final bool? isEnabled;
+
   const _ActionButton({
     required this.label,
     required this.onPressed,
     this.isLoading = false,
+    this.isEnabled,
   });
 
   @override
   Widget build(BuildContext context) {
-    final enabled = onPressed != null && !isLoading;
+    final enabled = (isEnabled ?? onPressed != null) && !isLoading;
     return Material(
       color: enabled ? Colors.white : Colors.white.withValues(alpha: 0.55),
       borderRadius: BorderRadius.circular(16),

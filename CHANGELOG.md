@@ -1,5 +1,22 @@
 # Changelog
 
+## Yayınlanmamış — Kurulum tek ekrana indi (2026-07-26)
+
+Telefon testi geri bildirimi: "art arda gelen, kaç tanesi olduğu bilinmeyen sorular baştan uyuz ediyor."
+
+- **Beş soru beş ayrı sayfaydı**, her biri "Devam"a basmayı gerektiriyordu. Adım noktaları kaç adım olduğunu gösteriyordu ama sorun sayının bilinmemesi değildi: cevabı verilmemiş soruların tek tek karşına çıkması, kurulumu bitmek bilmez gösteriyordu. Hepsi artık tek kaydırmada alt alta — form bir bakışta ölçülebiliyor
+- **Sıra değişti**: mod → son regl tarihi → süreler → isim → doğum tarihi. Zorunlu ve işe yarayan alanlar üstte, isteğe bağlı kişisel alanlar altta; kaydırmayı yarıda bırakan da çalışan bir kuruluma sahip oluyor. Önceden isim ve doğum tarihi, kurulumun tek zorunlu sorusundan (son regl) önce geliyordu
+- **Bölüm başlıkları hafifledi**: 64 piksellik yuvarlak ikon ve ortalanmış başlık tek soruluk sayfada yerindeydi, beş bölüm alt alta gelince kaydırmayı gereksiz uzatıyordu. İkon 36 piksel, başlık sola yaslı tek satır, "İsteğe bağlı" rozeti başlığın yanına taşındı
+- **Kapalı "Tamamla" butonu artık sessiz değil**: dokunulunca eksik alana kaydırıyor (`Scrollable.ensureVisible`). Tek ekranda formun uzamasıyla gelen tek risk, ekranın altındaki butondan yukarıdaki eksik alanı aramaktı
+- **Geri butonu karşılama ekranına dönüyor**: form içinde gidilecek adım kalmadı. Sistem geri hareketi de aynı yere gidiyor
+- Değişen tek davranış bu: sorular, varsayılanlar ve zorunluluk kuralı aynı — son regl tarihi hâlâ tek zorunlu alan, döngü matematiğinin tamamı ona bağlı
+
+## Yayınlanmamış — Haftanın ilk günü eşlemesi genelleştirildi (2026-07-26)
+
+- **Eşleme elle yazılmış bir switch'ti**: yalnız pazar, cumartesi ve pazartesiyi tanıyor, cuma ile başlayan yereller sessizce pazartesiye düşüyordu. `StartingDayOfWeek.values[(index + 6) % 7]` yedi indeksin hepsini karşılıyor
+- Uygulamanın altı dilinde bu fark görünmüyor (yalnız 0 ve 1 çıkıyor), ama dil eklendiğinde sessizce yanlış davranan bir yol bırakmaya gerek yok
+- İki sayım farklı yerden başlıyor: Flutter'ın indeksi 0 = pazar, `table_calendar`'ın enum'u 0 = pazartesi. Kaydırmayı gözle doğrulamak zor olduğu için eşleme üst düzey bir fonksiyona alındı ve yedi indeksin hepsi test edildi (`week_start_test.dart`)
+
 ## Yayınlanmamış — Mobil derleme zinciri (2026-07-26)
 
 - Android release manifest'ine ağ izni eklendi; AdMob, Play Billing ve isteğe
