@@ -78,28 +78,34 @@ class AppShell extends StatelessWidget {
     return Scaffold(
       body: navigationShell,
       extendBody: true,
-      bottomNavigationBar: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        // Opak pill: cam bırakıldı — son BackdropFilter da kalktı,
-        // düşük donanımda kaydırma maliyeti sıfırlandı
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.cardDark : Colors.white,
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(
-            color: isDark ? AppColors.dividerDark : AppColors.divider,
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
+      // SafeArea pill'in DIŞINDA: içeride olduğunda sistem çubuğu boşluğu
+      // pill'in içine dolgu olarak giriyor ve etiketlerin altında ölü alan
+      // bırakıyordu. Dışarıda olunca pill sistem çubuğunun üstüne oturuyor.
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Container(
+          // Alt boşluk üstten fazla: pill sistem gezinme çubuğuna yapışık
+          // duruyordu. SafeArea çubuğun kendi yüksekliğini veriyor ama
+          // ikisinin arasında görünür bir pay bırakmıyor.
+          margin: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          // Opak pill: cam bırakıldı — son BackdropFilter da kalktı,
+          // düşük donanımda kaydırma maliyeti sıfırlandı
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.cardDark : Colors.white,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(
+              color: isDark ? AppColors.dividerDark : AppColors.divider,
+              width: 1,
             ),
-          ],
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: SafeArea(
-          top: false,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          clipBehavior: Clip.antiAlias,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
             child: NavigationBar(
@@ -114,9 +120,8 @@ class AppShell extends StatelessWidget {
               labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
               // Sekme geçişi durum bildirir, gösteri değil: 250 ms.
               // Sistem animasyonları kapalıysa anında.
-              animationDuration: context.motionEnabled
-                  ? const Duration(milliseconds: 250)
-                  : Duration.zero,
+              animationDuration:
+                  context.motionDuration(const Duration(milliseconds: 250)),
               destinations: [
                 for (final d in destinations)
                   NavigationDestination(

@@ -5,21 +5,25 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/access.dart';
+import '../../core/utils/adaptive_layout.dart';
 import '../../core/utils/cycle_utils.dart';
+import '../../core/utils/date_range_label.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_insights.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/phase_glyph.dart';
-import '../../core/art/art_slot.dart';
 import '../../core/widgets/pressable_scale.dart';
 import '../../models/enums.dart';
+import '../../models/period_record.dart';
+import '../../models/user_profile.dart';
 import '../../providers/providers.dart';
-import '../log/quick_log_sheet.dart';
 import 'widgets/cycle_progress_ring.dart';
 import 'widgets/prediction_card.dart';
+import 'widgets/quick_access_row.dart';
 import 'widgets/quick_status_cards.dart';
 import 'widgets/week_strip.dart';
 import '../../core/utils/motion.dart';
@@ -37,32 +41,6 @@ class DashboardScreen extends ConsumerWidget {
         return AppColors.ovulationGradient;
       case CyclePhase.luteal:
         return AppColors.lutealGradient;
-    }
-  }
-
-  String _artIdForPhase(CyclePhase phase) {
-    switch (phase) {
-      case CyclePhase.menstrual:
-        return 'R6-phase-menstrual';
-      case CyclePhase.follicular:
-        return 'R7-phase-follicular';
-      case CyclePhase.ovulation:
-        return 'R8-phase-ovulation';
-      case CyclePhase.luteal:
-        return 'R9-phase-luteal';
-    }
-  }
-
-  String _phaseName(CyclePhase phase, AppLocalizations l10n) {
-    switch (phase) {
-      case CyclePhase.menstrual:
-        return l10n.menstrualPhase;
-      case CyclePhase.follicular:
-        return l10n.follicularPhase;
-      case CyclePhase.ovulation:
-        return l10n.ovulationPhase;
-      case CyclePhase.luteal:
-        return l10n.lutealPhase;
     }
   }
 
@@ -86,7 +64,7 @@ class DashboardScreen extends ConsumerWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         backgroundColor: AppColors.sf(context),
         title: Text(
-          _phaseName(phase, l10n),
+          EnumLabels.phase(phase, l10n),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         content: Text(
@@ -117,10 +95,14 @@ class DashboardScreen extends ConsumerWidget {
     String nextPeriodStr = '-';
     String ovulationStr = '-';
     String fertileStr = '-';
+    // Tarih olarak da lazım: TTC kartındaki test günü bundan hesaplanıyor
+    DateTime? ovulationDate;
 
     final effectiveCycleLen = ref.watch(effectiveCycleLengthProvider);
     final access = ref.watch(accessProvider);
     final trialDaysLeft = ref.watch(trialDaysLeftProvider);
+    final todayFirst =
+        ref.watch(homePriorityProvider) == HomePriority.today;
     // Ücretsiz katman yalnız regl takibi: modlara özel arayüz (hamilelik
     // hero'su, hap çipi, TTC kartı) premium kapsamında — free'de veri
     // silinmez ama görünüm klasik regl takibine döner
@@ -146,26 +128,30 @@ class DashboardScreen extends ConsumerWidget {
       if (confirmedOvulation != null) {
         ovulation = confirmedOvulation;
       }
+      ovulationDate = ovulation;
       ovulationStr = dateFormat.format(ovulation);
       final fStart = ovulation.subtract(const Duration(days: 5));
       final fEnd = ovulation.add(const Duration(days: 1));
-      fertileStr = '${dateFormat.format(fStart)} - ${dateFormat.format(fEnd)}';
+      fertileStr = fertileWindowLabel(fStart, fEnd, locale);
     }
 
+    final isDarkTheme = AppColors.isDark(context);
     // Faz değişince zemin rengi atlamak yerine yumuşakça akar
     // (AnimatedContainer gradyanı kendisi lerp'ler)
     return AnimatedContainer(
-      duration: context.motionEnabled
-          ? const Duration(milliseconds: 600)
-          : Duration.zero,
+      duration: context.motionDuration(const Duration(milliseconds: 600)),
       curve: Curves.easeOutQuart,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            gradient[0].withValues(alpha: 0.35),
-            gradient[1].withValues(alpha: 0.2),
+            // Koyu temada tint zemini AÇIYOR, yani açık renkli ikincil
+            // metnin kontrastını düşürüyor: aynı alfada dört fazın hepsi
+            // 2,6–3,7:1'e iniyordu. Kısılmış alfa hem okunurluğu kurtarıyor
+            // hem "parlak öğeler dark'ta kısılır" ilkesiyle uyumlu.
+            gradient[0].withValues(alpha: isDarkTheme ? 0.15 : 0.35),
+            gradient[1].withValues(alpha: isDarkTheme ? 0.10 : 0.20),
             AppColors.bg(context),
           ],
           stops: const [0.0, 0.3, 0.8],
@@ -173,82 +159,63 @@ class DashboardScreen extends ConsumerWidget {
       ),
       child: SafeArea(
         child: SingleChildScrollView(
-          // Alt boşluk yüzen gezinme çubuğunu aşacak kadar — fazlası
-          // sayfa sonunda ölü alan bırakıyordu
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 92),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 12),
-              // Dark mode toggle - sağ üst
-              Align(
-                alignment: Alignment.centerRight,
-                child: GlassContainer(
-                  borderRadius: 12,
-                  blur: 0,
-                  padding: EdgeInsets.zero,
-                  child: Material(
-                    color: Colors.transparent,
-                    child: Semantics(
-                      button: true,
-                      label: l10n.darkTheme,
-                      toggled: AppColors.isDark(context),
-                      child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
-                      // Hızlı geçiş etkin parlaklığa göre açık/koyu yazar;
-                      // "sistem" tercihine dönüş ayarlardaki üçlü seçimde
-                      onTap: () {
-                        final target =
-                            AppColors.isDark(context) ? 'light' : 'dark';
-                        ref.read(themeModeProvider.notifier).state =
-                            target == 'dark'
-                                ? ThemeMode.dark
-                                : ThemeMode.light;
-                        ref.read(userProfileProvider.notifier)
-                            .saveProfile(themePreference: target);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Icon(
-                          AppColors.isDark(context)
-                              ? Icons.light_mode_rounded
-                              : Icons.dark_mode_rounded,
-                          color: AppColors.tp(context),
-                          size: 22,
-                        ),
-                      ),
-                    ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              // Greeting — isim isteğe bağlı, boşsa "Merhaba, !" yazmasın
+          // Alt pay küçük: kabuk extendBody ile gövdeye çubuğun yüksekliğini
+          // dolgu olarak veriyor ve bu ekran SafeArea içinde, yani çubuğun
+          // alanı zaten ayrılmış. Buraya bir de bottomNavInset koymak aynı
+          // boşluğu ikinci kez ayırıyordu ve sayfa sonunda geniş bir ölü alan
+          // bırakıyordu — şikayet edilen boşluğun kaynağı buydu.
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1180),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+              const SizedBox(height: 20),
+              // Selamlama artık display anı değil: ekranın en büyük yazısı
+              // kullanıcının sorusuna ("ne zaman?") ait olmalı, ismine değil.
+              // Tema düğmesi de buradan kalktı — ayda bir kullanılan bir
+              // tercih, her açılışta göz hizasındaki köşeyi hak etmiyor
+              // (üçlü seçici ayarlarda duruyor).
               Text(
                 (profile?.name.trim().isNotEmpty ?? false)
                     ? l10n.helloName(profile!.name.trim())
                     : l10n.helloGeneric,
                 style: TextStyle(
-                  // Display anı: gövdeden (w500) net ayrışan ağırlık
-                  fontSize: 26,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.tp(context),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.ts(context),
                 ),
+                textAlign: TextAlign.center,
               )
                   .animateSafe(context)
                   .fadeIn(duration: 350.ms)
                   .slideY(begin: -0.2, end: 0, duration: 350.ms),
-              // Deneme/ücretsiz durumu görünür olmalı: kalan gün ve
-              // kapsam bilgisi — dokununca planlar
-              if (access != AccessLevel.premium) ...[
-                const SizedBox(height: 4),
-                _buildAccessChip(context, l10n, access, trialDaysLeft),
+              if (mode != TrackingMode.pregnancy) ...[
+                const SizedBox(height: 6),
+                _buildHeadline(context, l10n, ref, profile, daysUntil, locale)
+                    .animateSafe(context)
+                    .fadeIn(delay: 60.ms, duration: 400.ms)
+                    .slideY(begin: -0.15, end: 0, duration: 400.ms),
               ],
-              const SizedBox(height: 8),
+              if (todayFirst) ...[
+                const SizedBox(height: 20),
+                const QuickStatusCards(),
+                const SizedBox(height: 14),
+              ],
+              const SizedBox(height: 14),
               if (mode == TrackingMode.pregnancy) ...[
                 // Hamilelik modu: hafta sayacı hero, tahminler gizli
                 const SizedBox(height: 20),
                 _buildPregnancyHero(context, l10n, profile?.pregnancyStartDate),
+                if (profile?.pregnancyStartDate != null) ...[
+                  const SizedBox(height: 14),
+                  _buildPregnancyInsight(
+                    context,
+                    l10n,
+                    profile!.pregnancyStartDate!,
+                  ),
+                ],
                 const SizedBox(height: 24),
                 _buildActionRow(context, ref, l10n, mode),
                 const SizedBox(height: 24),
@@ -257,7 +224,7 @@ class DashboardScreen extends ConsumerWidget {
                 PressableScale(
                     child: Semantics(
                   button: true,
-                  label: _phaseName(phase, l10n),
+                  label: EnumLabels.phase(phase, l10n),
                   child: Material(
                     color: AppColors.sf(context),
                     borderRadius: BorderRadius.circular(16),
@@ -275,12 +242,14 @@ class DashboardScreen extends ConsumerWidget {
                                 size: 15,
                                 color: AppColors.primaryDeep),
                             const SizedBox(width: 7),
-                            Text(
-                              _phaseName(phase, l10n),
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.tp(context),
+                            Flexible(
+                              child: Text(
+                                EnumLabels.phase(phase, l10n),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.tp(context),
+                                ),
                               ),
                             ),
                             const SizedBox(width: 6),
@@ -298,75 +267,196 @@ class DashboardScreen extends ConsumerWidget {
                 if (mode == TrackingMode.pill &&
                     profile?.pillPackStartDate != null) ...[
                   const SizedBox(height: 8),
-                  _buildPillChip(context, l10n, profile!.pillPackStartDate!),
+                  _buildPillCard(context, l10n, profile!.pillPackStartDate!),
                 ],
-                const SizedBox(height: 16),
-                // Faz illüstrasyonu — faz haritasının yumuşak görsel yüzeyi
-                ArtSlot(
-                  id: _artIdForPhase(phase),
-                  height: 150,
-                  radius: 22,
-                ).animateSafe(context).fadeIn(delay: 120.ms, duration: 450.ms),
                 const SizedBox(height: 28),
-                // Progress Ring
-                CycleProgressRing(
-                  cycleDay: cycleDay,
-                  cycleLength: effectiveCycleLen,
-                  periodLength: profile?.averagePeriodLength ?? 5,
-                  phase: phase,
-                  daysUntilNextPeriod: daysUntil,
-                  lastPeriodStart: profile?.lastPeriodStart,
-                  patterned: ref.watch(phasePatternProvider),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final expanded = constraints.maxWidth >= 840;
+
+                    Widget cycleColumn() => Column(
+                          children: [
+                            CycleProgressRing(
+                              cycleDay: cycleDay,
+                              cycleLength: effectiveCycleLen,
+                              periodLength:
+                                  profile?.averagePeriodLength ?? 5,
+                              phase: phase,
+                              daysUntilNextPeriod: daysUntil,
+                              delayDays: ref.watch(periodDelayProvider),
+                              lastPeriodStart: profile?.lastPeriodStart,
+                              patterned: ref.watch(phasePatternProvider),
+                            ),
+                            const SizedBox(height: 20),
+                            const WeekStrip()
+                                .animateSafe(context)
+                                .fadeIn(delay: 150.ms, duration: 400.ms),
+                            const SizedBox(height: 24),
+                            _buildActionRow(context, ref, l10n, mode),
+                          ],
+                        );
+
+                    Widget insightColumn() => Column(
+                          children: [
+                            PredictionCardsRow(
+                              nextPeriodDate: nextPeriodStr,
+                              ovulationDate: ovulationStr,
+                              fertileWindowDate: fertileStr,
+                              ovulationConfirmed:
+                                  confirmedOvulation != null,
+                            ),
+                            const SizedBox(height: 24),
+                            if (mode == TrackingMode.ttc) ...[
+                              _buildTtcCard(
+                                context,
+                                ref,
+                                l10n,
+                                cycleDay,
+                                effectiveCycleLen,
+                                ovulationDate,
+                                locale,
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+                            _buildCoachCard(context, ref, phase, l10n),
+                          ],
+                        );
+
+                    return FocusTraversalGroup(
+                      policy: WidgetOrderTraversalPolicy(),
+                      child: expanded
+                          ? Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(child: cycleColumn()),
+                                const SizedBox(width: 32),
+                                Expanded(child: insightColumn()),
+                              ],
+                            )
+                          : Column(
+                              children: [
+                                cycleColumn(),
+                                const SizedBox(height: 28),
+                                insightColumn(),
+                              ],
+                            ),
+                    );
+                  },
                 ),
-                const SizedBox(height: 20),
-                // 7 günlük mini şerit: dün/bugün/yarın bağlamı takvime
-                // inmeden — imza faz haritasının beşinci yüzeyi
-                const WeekStrip()
-                    .animateSafe(context)
-                    .fadeIn(delay: 150.ms, duration: 400.ms),
-                const SizedBox(height: 24),
-                // Aksiyonlar ringin hemen altında: göz ring'den iner inmez
-                // bir numaralı iş ("Reglim başladı") elin altında —
-                // tahminler bilgidir, aşağıda yaşayabilir
-                _buildActionRow(context, ref, l10n, mode),
-                const SizedBox(height: 28),
-                // Prediction Cards
-                PredictionCardsRow(
-                  nextPeriodDate: nextPeriodStr,
-                  ovulationDate: ovulationStr,
-                  fertileWindowDate: fertileStr,
-                  ovulationConfirmed: confirmedOvulation != null,
-                ),
-                // Tahminlerden sonrası nefes alsın: bloklar arası eşit
-                // ve cömert boşluk (sıkışıklık şikayetinin adresi)
-                const SizedBox(height: 24),
-                if (mode == TrackingMode.ttc) ...[
-                  _buildTtcCard(context, ref, l10n, cycleDay,
-                      effectiveCycleLen),
-                  const SizedBox(height: 24),
-                ],
-                // Günlük faz koçluğu — faza göre pratik ipucu
-                _buildCoachCard(context, ref, phase, l10n),
               ],
+              // Deneme/ücretsiz durumu görünür kalır ama ekranın tepesinde
+              // değil: orası "ne zaman?" cevabının yeri
+              if (access == AccessLevel.free ||
+                  (access == AccessLevel.trial && trialDaysLeft <= 7)) ...[
+                const SizedBox(height: 24),
+                _buildAccessChip(context, l10n, access, trialDaysLeft),
+              ],
+              if (!todayFirst) ...[
+                const SizedBox(height: 28),
+                const QuickStatusCards(),
+              ],
+              // Sayfayı kapatan kısayol satırı. Kaydırmanın İÇİNDE: sabit
+              // şerit olarak denendi ve iyi olmadı — gezinme çubuğunun hemen
+              // üstünde ikinci bir çubuk gibi duruyor, kalıcı yer kaplıyor ve
+              // kaydırma alanını kısaltıp hafta şeridini ortasından kesiyordu.
               const SizedBox(height: 28),
-              const QuickStatusCards(),
-              const SizedBox(height: 20),
-              _buildDisclaimer(context, l10n),
-            ],
+              const QuickAccessRow(),
+                ],
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
+  /// Ekranın tek cümlelik cevabı: "ne zaman?".
+  ///
+  /// Ring döngü gününü görsel olarak anlatıyordu ama kullanıcının %90
+  /// sorusuna açık bir cümleyle cevap veren hiçbir şey yoktu — tarih yalnız
+  /// tahmin kartlarının içinde, kaydırmanın altındaydı. Ekranın en büyük
+  /// yazısı artık bu.
+  Widget _buildHeadline(
+    BuildContext context,
+    AppLocalizations l10n,
+    WidgetRef ref,
+    UserProfile? profile,
+    int daysUntil,
+    String locale,
+  ) {
+    final ongoing = ref.watch(ongoingPeriodProvider);
+    final delay = ref.watch(periodDelayProvider);
+
+    String headline;
+    String? subtitle;
+
+    if (profile?.lastPeriodStart == null) {
+      // Kurulum yarım kalmış: cevap yerine tek yapılacak iş
+      headline = l10n.headlineNoData;
+    } else if (delay > 0) {
+      // Kullanıcının uygulamayı en çok açtığı an: cevap "gecikme" olmalı,
+      // ileri sarılmış bir sonraki tahmin değil. Alt satır sakinleştirici
+      // ve eyleme dönük — tanı koymaz.
+      headline = l10n.headlineDelay(delay);
+      subtitle = l10n.headlineDelaySubtitle;
+    } else if (ongoing != null) {
+      final now = DateTime.now();
+      final start = ongoing.startDate;
+      final dayOfPeriod = DateTime(now.year, now.month, now.day)
+              .difference(DateTime(start.year, start.month, start.day))
+              .inDays +
+          1;
+      headline = l10n.headlinePeriodDay(dayOfPeriod);
+    } else {
+      final cycleLen = ref.watch(effectiveCycleLengthProvider);
+      final next = CycleUtils.nextFuturePeriod(profile!.lastPeriodStart!, cycleLen);
+      subtitle = DateFormat('d MMMM', locale).format(next);
+      headline = switch (daysUntil) {
+        0 => l10n.headlinePeriodToday,
+        1 => l10n.headlinePeriodTomorrow,
+        _ => l10n.headlinePeriodInDays(daysUntil),
+      };
+    }
+
+    return Column(
+      children: [
+        Text(
+          headline,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.w800,
+            height: 1.2,
+            color: AppColors.tp(context),
+          ),
+        ),
+        if (subtitle != null) ...[
+          const SizedBox(height: 2),
+          Text(
+            subtitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.ts(context),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
   Widget _buildActionRow(BuildContext context, WidgetRef ref,
       AppLocalizations l10n, TrackingMode mode) {
     final ongoingPeriod = ref.watch(ongoingPeriodProvider);
-    return Row(
-                children: [
-                  if (mode != TrackingMode.pregnancy) ...[
-                    Expanded(
-                      child: _buildActionButton(
+    // Keşfi olmayan bir hareket olmayan bir özelliktir: ipucu, kullanıcı
+    // hareketi bir kez kullanana kadar durur, sonra kalıcı olarak kapanır
+    final showHint = mode != TrackingMode.pregnancy &&
+        ref.watch(backdateHintProvider);
+
+    final buttons = <Widget>[
+      if (mode != TrackingMode.pregnancy)
+        _buildActionButton(
                         context: context,
                         icon: Icons.water_drop_rounded,
                         label: ongoingPeriod != null
@@ -375,88 +465,179 @@ class DashboardScreen extends ConsumerWidget {
                         color: AppColors.menstrual,
                         // Regl geçmişi en değerli veri, dokunuş yanlışlıkla
                         // olabilir: onay diyaloğu yerine 6 sn'lik Geri Al
-                        onTap: () async {
-                          final messenger = ScaffoldMessenger.of(context);
-                          final recordsNotifier =
-                              ref.read(periodRecordsProvider.notifier);
-                          final profileNotifier =
-                              ref.read(userProfileProvider.notifier);
-                          final prevProfile = ref.read(userProfileProvider);
-
-                          // Uygulamanın en önemli veri anı: dokunuşa
-                          // fiziksel teyit eşlik eder (ring + zemin de
-                          // yeni faza yumuşakça akar)
-                          HapticFeedback.mediumImpact();
-                          if (ongoingPeriod != null) {
-                            final recordId = ongoingPeriod.id;
-                            await recordsNotifier.endPeriod(
-                                recordId, DateTime.now());
-                            profileNotifier.refresh();
-                            messenger.showSnackBar(SnackBar(
-                              content: Text(l10n.periodMarkedEnded),
-                              duration: const Duration(seconds: 6),
-                              action: SnackBarAction(
-                                label: l10n.undo,
-                                onPressed: () async {
-                                  await recordsNotifier.reopenRecord(recordId);
-                                  profileNotifier.refresh();
-                                },
-                              ),
-                            ));
-                          } else {
-                            final record = await recordsNotifier
-                                .startPeriod(DateTime.now());
-                            await profileNotifier.saveProfile(
-                                lastPeriodStart: record.startDate);
-                            messenger.showSnackBar(SnackBar(
-                              content: Text(l10n.periodMarkedStarted),
-                              duration: const Duration(seconds: 6),
-                              action: SnackBarAction(
-                                label: l10n.undo,
-                                onPressed: () async {
-                                  await recordsNotifier
-                                      .deleteRecord(record.id);
-                                  // Profil (lastPeriodStart dahil) eski haline:
-                                  // updateProfile bildirim/widget'ı da tazeler
-                                  if (prevProfile != null) {
-                                    await profileNotifier
-                                        .updateProfile(prevProfile);
-                                  } else {
-                                    profileNotifier.refresh();
-                                  }
-                                },
-                              ),
-                            ));
-                          }
-                        },
+                        onTap: () => _togglePeriod(
+                            context, ref, l10n, ongoingPeriod, DateTime.now()),
+                        // Regl iki gün sonra hatırlanabiliyor: dokunuş hep
+                        // bugünü yazdığı için geç kalan kullanıcı yanlış tarih
+                        // girmek zorundaydı. Uzun bas = gün seç.
+                        onLongPress: () => _pickPeriodDate(
+                            context, ref, l10n, ongoingPeriod),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                  ],
-                  Expanded(
-                    child: _buildActionButton(
+      _buildActionButton(
                       context: context,
                       icon: Icons.add_reaction_rounded,
                       label: l10n.addRecord,
                       color: AppColors.primaryStrong,
+                      // "Kayıt Ekle" ile aşağıdaki "Bugün nasıl
+                      // hissediyorsun" kartı aynı niyeti taşıyor: bugüne
+                      // kayıt gir. İkisi ayrı yere gidiyordu — biri hızlı
+                      // kayıt sayfasına, diğeri tam günlük ekranına — yani
+                      // kullanıcı hangisine bastığına göre başka bir yere
+                      // düşüyordu. İkisi de artık günlük ekranına gidiyor.
                       onTap: () {
                         // Günlük kayıt premium kapsamı: ücretsiz katman
                         // yalnız regl takibi
                         if (!ensurePremiumAccess(context, ref)) return;
-                        showQuickLogSheet(context, ref, DateTime.now());
+                        // Kart da böyle yapıyor: kayıt her zaman bugüne
+                        ref.read(selectedDateProvider.notifier).state =
+                            DateTime.now();
+                        context.push('/log');
                       },
                     ),
-                  ),
-                ],
-              )
+    ];
+    final row = usesLargeText(MediaQuery.textScalerOf(context)) &&
+            buttons.length > 1
+        ? Column(
+            children: [
+              SizedBox(width: double.infinity, child: buttons.first),
+              const SizedBox(height: 12),
+              SizedBox(width: double.infinity, child: buttons.last),
+            ],
+          )
+        : Row(
+            children: [
+              for (var i = 0; i < buttons.length; i++) ...[
+                Expanded(child: buttons[i]),
+                if (i < buttons.length - 1) const SizedBox(width: 12),
+              ],
+            ],
+          );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        row,
+        if (showHint) ...[
+          const SizedBox(height: 8),
+          Text(
+            l10n.backdateHint,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              height: 1.35,
+              color: AppColors.ts(context),
+            ),
+          ),
+        ],
+      ],
+    )
         .animateSafe(context)
         .fadeIn(delay: 250.ms, duration: 400.ms)
         .slideY(begin: 0.15, end: 0, delay: 250.ms, duration: 400.ms);
   }
 
+  /// Regl başlangıcı/bitişi kaydeder. [date] hem bugün (dokunuş) hem geçmiş
+  /// bir gün (uzun bas → tarih seçici) olabilir.
+  Future<void> _togglePeriod(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    PeriodRecord? ongoingPeriod,
+    DateTime date,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final recordsNotifier = ref.read(periodRecordsProvider.notifier);
+    final profileNotifier = ref.read(userProfileProvider.notifier);
+    final prevProfile = ref.read(userProfileProvider);
+
+    // Uygulamanın en önemli veri anı: dokunuşa fiziksel teyit eşlik eder
+    // (ring + zemin de yeni faza yumuşakça akar)
+    HapticFeedback.mediumImpact();
+    if (ongoingPeriod != null) {
+      final recordId = ongoingPeriod.id;
+      await recordsNotifier.endPeriod(recordId, date);
+      profileNotifier.refresh();
+      final snackBar = messenger.showSnackBar(SnackBar(
+        content: Text(l10n.periodMarkedEnded),
+        duration: const Duration(seconds: 6),
+        action: SnackBarAction(
+          label: l10n.undo,
+          onPressed: () async {
+            await recordsNotifier.reopenRecord(recordId);
+            profileNotifier.refresh();
+          },
+        ),
+      ));
+      notifyTrackingRecordAfterUndoWindow(snackBar);
+    } else {
+      final record = await recordsNotifier.startPeriod(date);
+      await profileNotifier.saveProfile(lastPeriodStart: record.startDate);
+      final snackBar = messenger.showSnackBar(SnackBar(
+        content: Text(l10n.periodMarkedStarted),
+        duration: const Duration(seconds: 6),
+        action: SnackBarAction(
+          label: l10n.undo,
+          onPressed: () async {
+            await recordsNotifier.deleteRecord(record.id);
+            // Profil (lastPeriodStart dahil) eski haline:
+            // updateProfile bildirim/widget'ı da tazeler
+            if (prevProfile != null) {
+              await profileNotifier.updateProfile(prevProfile);
+            } else {
+              profileNotifier.refresh();
+            }
+          },
+        ),
+      ));
+      notifyTrackingRecordAfterUndoWindow(snackBar);
+    }
+  }
+
+  /// Geçmiş bir gün için regl başlangıcı/bitişi. Gelecek seçilemez; geriye
+  /// 90 gün yeter (daha eskisi geçmiş düzenlemesi, kayıt değil).
+  Future<void> _pickPeriodDate(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    PeriodRecord? ongoingPeriod,
+  ) async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    // Bitiş, başlangıçtan önce olamaz
+    final earliest = ongoingPeriod != null
+        ? DateTime(ongoingPeriod.startDate.year, ongoingPeriod.startDate.month,
+            ongoingPeriod.startDate.day)
+        : today.subtract(const Duration(days: 90));
+
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: today,
+      firstDate: earliest,
+      lastDate: today,
+      helpText: ongoingPeriod != null
+          ? l10n.periodEndDateHelp
+          : l10n.periodStartDateHelp,
+    );
+    if (picked == null || !context.mounted) return;
+
+    // Hareket kullanıldı: ipucu artık yer kaplamasın
+    if (ref.read(backdateHintProvider)) {
+      ref.read(backdateHintProvider.notifier).state = false;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('backdate_hint_needed', false);
+      if (!context.mounted) return;
+    }
+
+    await _togglePeriod(context, ref, l10n, ongoingPeriod, picked);
+  }
+
   Widget _buildAccessChip(BuildContext context, AppLocalizations l10n,
       AccessLevel access, int daysLeft) {
     final isFree = access == AccessLevel.free;
+    // Deneme bitişi sessizce geliyordu: 30. gün her şey açık, 31. gün on
+    // ekran birden kapalı. Son üç gün çip uyarı diline geçer ki kapanış
+    // sürpriz olmasın.
+    final isEnding = !isFree && daysLeft <= 3;
     final label =
         isFree ? l10n.freeBadge : l10n.trialBadge(daysLeft);
     return Semantics(
@@ -473,7 +654,11 @@ class DashboardScreen extends ConsumerWidget {
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.dv(context)),
+              border: Border.all(
+                color: (isFree || isEnding)
+                    ? AppColors.warningText.withValues(alpha: 0.5)
+                    : AppColors.dv(context),
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -483,17 +668,25 @@ class DashboardScreen extends ConsumerWidget {
                       ? Icons.lock_outline_rounded
                       : Icons.hourglass_bottom_rounded,
                   size: 14,
-                  color: isFree
+                  color: (isFree || isEnding)
                       ? AppColors.warningText
                       : AppColors.ts(context),
                 ),
                 const SizedBox(width: 6),
-                Text(label,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.ts(context),
-                    )),
+                Flexible(
+                  child: Text(label,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: isEnding
+                            ? FontWeight.w700
+                            : FontWeight.w600,
+                        color: isEnding
+                            ? AppColors.warningText
+                            : AppColors.ts(context),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis),
+                ),
               ],
             ),
           ),
@@ -532,8 +725,14 @@ class DashboardScreen extends ConsumerWidget {
     return messages[dayOfYear % messages.length];
   }
 
-  Widget _buildTtcCard(BuildContext context, WidgetRef ref,
-      AppLocalizations l10n, int cycleDay, int cycleLength) {
+  Widget _buildTtcCard(
+      BuildContext context,
+      WidgetRef ref,
+      AppLocalizations l10n,
+      int cycleDay,
+      int cycleLength,
+      DateTime? ovulationDate,
+      String locale) {
     final level = CycleUtils.fertilityLevelForDay(cycleDay, cycleLength);
     final isDark = AppColors.isDark(context);
     // Rozet METNİ pastel durum rengiyle yazılamaz (açık zeminde ~2:1):
@@ -595,6 +794,48 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ],
           ),
+          // TTC kullanıcısının en beklediği tarih buydu ve hiçbir yerde
+          // yazmıyordu. Daha erken test yanlış negatif verir.
+          if (ovulationDate != null) ...[
+            const SizedBox(height: 10),
+            Builder(builder: (context) {
+              final testDay =
+                  CycleUtils.earliestPregnancyTestDay(ovulationDate);
+              final now = DateTime.now();
+              final today = DateTime(now.year, now.month, now.day);
+              final ready = !testDay.isAfter(today);
+              return Row(
+                children: [
+                  Icon(
+                    ready
+                        ? Icons.check_circle_outline_rounded
+                        : Icons.schedule_rounded,
+                    size: 15,
+                    color: ready
+                        ? AppColors.fertileWindowText
+                        : AppColors.ts(context),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      ready
+                          ? l10n.pregnancyTestReady
+                          : l10n.pregnancyTestFrom(
+                              DateFormat('d MMMM', locale).format(testDay)),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: ready
+                            ? AppColors.fertileWindowText
+                            : AppColors.ts(context),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              );
+            }),
+          ],
           const SizedBox(height: 12),
           Text(l10n.lhTestTitle,
               style: TextStyle(
@@ -788,9 +1029,11 @@ class DashboardScreen extends ConsumerWidget {
     }
 
     final week = CycleUtils.pregnancyWeek(start);
-    final trimester = week <= 13
-        ? l10n.trimester1
-        : (week <= 27 ? l10n.trimester2 : l10n.trimester3);
+    final trimester = switch (CycleUtils.pregnancyTrimester(week)) {
+      1 => l10n.trimester1,
+      2 => l10n.trimester2,
+      _ => l10n.trimester3,
+    };
 
     return Semantics(
       label:
@@ -829,82 +1072,148 @@ class DashboardScreen extends ConsumerWidget {
     ).animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms);
   }
 
-  Widget _buildPillChip(
+  Widget _buildPregnancyInsight(
+    BuildContext context,
+    AppLocalizations l10n,
+    DateTime start,
+  ) {
+    final week = CycleUtils.pregnancyWeek(start);
+    final development = switch (CycleUtils.pregnancyTrimester(week)) {
+      1 => l10n.pregnancyDevelopment1,
+      2 => l10n.pregnancyDevelopment2,
+      _ => l10n.pregnancyDevelopment3,
+    };
+    final semantics =
+        '${l10n.pregnancyDevelopmentTitle}. $development. '
+        '${l10n.pregnancyCheckupReminder}';
+
+    return Semantics(
+      label: semantics,
+      child: ExcludeSemantics(
+        child: GlassCard(
+          borderRadius: 20,
+          blur: 0,
+          opacity: 0.16,
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(
+                    Icons.auto_awesome_rounded,
+                    size: 20,
+                    color: AppColors.primaryDeep,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      l10n.pregnancyDevelopmentTitle,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.tp(context),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                development,
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 1.45,
+                  color: AppColors.tp(context),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.event_available_rounded,
+                    size: 18,
+                    color: AppColors.ts(context),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      l10n.pregnancyCheckupReminder,
+                      style: TextStyle(
+                        fontSize: 12,
+                        height: 1.4,
+                        color: AppColors.ts(context),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    ).animateSafe(context).fadeIn(delay: 180.ms, duration: 400.ms);
+  }
+
+  /// Hap paketi kartı.
+  ///
+  /// Tek bir çipti: kaçıncı gün olduğu yazıyordu ama bu modun asıl sorusu
+  /// ("ara ne zaman başlıyor", "yeni paket ne zaman") cevapsızdı.
+  Widget _buildPillCard(
       BuildContext context, AppLocalizations l10n, DateTime packStart) {
     final day = CycleUtils.pillDayInPack(packStart);
-    final isBreak = day > 21;
-    final label =
-        isBreak ? l10n.pillBreakLabel(day - 21) : l10n.pillDayLabel(day);
+    final isBreak = CycleUtils.pillIsBreak(day);
+    final accent = isBreak ? AppColors.warningText : AppColors.primaryDeep;
 
-    return GlassContainer(
-      borderRadius: 16,
+    final title = isBreak
+        ? l10n.pillBreakLabel(day - AppConstants.pillActiveDays)
+        : l10n.pillDayLabel(day);
+    final next = isBreak
+        ? l10n.pillNewPackIn(CycleUtils.pillDaysUntilNewPack(day))
+        : l10n.pillBreakIn(CycleUtils.pillDaysUntilBreak(day));
+
+    return GlassCard(
+      borderRadius: 18,
       blur: 0,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      opacity: 0.18,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.medication_rounded,
-              size: 16,
-              color: isBreak ? AppColors.warning : AppColors.primaryDeep),
-          const SizedBox(width: 6),
+          Icon(Icons.medication_rounded, size: 20, color: accent),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.tp(context),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  next,
+                  style: TextStyle(fontSize: 12, color: AppColors.ts(context)),
+                ),
+              ],
+            ),
+          ),
+          // 28 günlük paketin neresindeyiz — sayı yerine oran
           Text(
-            label,
+            '$day/${AppConstants.pillPackDays}',
             style: TextStyle(
               fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.tp(context),
+              fontWeight: FontWeight.w700,
+              color: accent,
             ),
           ),
         ],
       ),
     ).animateSafe(context).fadeIn(delay: 120.ms, duration: 400.ms);
-  }
-
-  Widget _buildDisclaimer(BuildContext context, AppLocalizations l10n) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Icon(Icons.info_outline_rounded,
-                  size: 14, color: AppColors.ts(context)),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  l10n.healthDisclaimer,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: AppColors.ts(context),
-                    height: 1.4,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          // Yasal zorunluluk düzeyinde uyarı: tahminler korunma aracı değil
-          Row(
-            children: [
-              Icon(Icons.gpp_maybe_rounded,
-                  size: 14, color: AppColors.error),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  l10n.notContraceptionWarning,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.ts(context),
-                    height: 1.4,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildActionButton({
@@ -913,6 +1222,7 @@ class DashboardScreen extends ConsumerWidget {
     required String label,
     required Color color,
     required VoidCallback onTap,
+    VoidCallback? onLongPress,
   }) {
     return PressableScale(
         child: GlassCard(
@@ -924,6 +1234,7 @@ class DashboardScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
+          onLongPress: onLongPress,
           borderRadius: BorderRadius.circular(20),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 18),
@@ -942,12 +1253,16 @@ class DashboardScreen extends ConsumerWidget {
                   child: Icon(icon, color: color, size: 20),
                 ),
                 const SizedBox(width: 10),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.tp(context),
+                // Etiket iki butona bölünmüş dar alanda yaşıyor: büyük yazı
+                // tipinde satırı taşırmak yerine sarmalı
+                Flexible(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.tp(context),
+                    ),
                   ),
                 ),
               ],

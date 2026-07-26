@@ -1,15 +1,23 @@
 
 import 'dart:async';
+import 'dart:io';
+import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/access.dart';
+import '../../core/utils/adaptive_layout.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_pattern.dart';
@@ -17,11 +25,13 @@ import '../../core/utils/ring_segments.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../providers/providers.dart';
 import '../log/quick_log_sheet.dart';
+import '../period_history/period_record_editor.dart';
 import '../../models/daily_log.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../models/user_profile.dart';
 import '../../core/utils/motion.dart';
+import 'widgets/year_overview.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
@@ -34,10 +44,329 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  final GlobalKey _calendarCaptureKey = GlobalKey();
 
   // Uzun-bas önizleme baloncuğu: sheet törenine girmeden hızlı bakış
   OverlayEntry? _peekEntry;
   Timer? _peekTimer;
+
+  /// Renk anlamları her açılışta yer kaplıyordu. İlk birkaç kullanımdan
+  /// sonra kullanıcı renkleri biliyor; kapatılabilir ve tercih kalıcı.
+  static const String _legendHiddenKey = 'calendar_legend_hidden';
+  static const String _peekHintSeenKey = 'calendar_peek_hint_seen';
+  bool _legendHidden = false;
+  bool _showPeekHint = true;
+
+  @override
+  void initState() {
+    super.initState();
+    SharedPreferences.getInstance().then((prefs) {
+      final hidden = prefs.getBool(_legendHiddenKey) ?? false;
+      final peekHintSeen = prefs.getBool(_peekHintSeenKey) ?? false;
+      if (mounted) {
+        setState(() {
+          _legendHidden = hidden;
+          _showPeekHint = !peekHintSeen;
+        });
+      }
+    });
+  }
+
+  Future<void> _setLegendHidden(bool hidden) async {
+    setState(() => _legendHidden = hidden);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_legendHiddenKey, hidden);
+  }
+
+  Future<void> _dismissPeekHint() async {
+    if (!_showPeekHint) return;
+    setState(() => _showPeekHint = false);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_peekHintSeenKey, true);
+  }
+
+  Future<void> _shareCalendarMonth() async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+      final boundary = _calendarCaptureKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
+      if (boundary == null) return;
+
+      final ratio =
+          MediaQuery.devicePixelRatioOf(context).clamp(1.5, 3.0).toDouble();
+      final image = await boundary.toImage(pixelRatio: ratio);
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (bytes == null) return;
+
+      final directory = await getTemporaryDirectory();
+      final month = DateFormat('yyyy-MM').format(_focusedDay);
+      final file = File('${directory.path}/calendar-$month.png');
+      await file.writeAsBytes(bytes.buffer.asUint8List());
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        subject: l10n.calendar,
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.errorOccurred(error.toString()))),
+      );
+    }
+  }
+
+  Future<void> _showYearOverview() async {
+    final records = ref.read(periodRecordsProvider);
+    final profile = ref.read(userProfileProvider);
+    final cycleLength = ref.read(effectiveCycleLengthProvider);
+    final firstDayOfWeek =
+        MaterialLocalizations.of(context).firstDayOfWeekIndex;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => SizedBox(
+        height: MediaQuery.sizeOf(sheetContext).height * 0.88,
+        child: YearOverviewSheet(
+          initialYear: _focusedDay.year,
+          firstDayOfWeek: firstDayOfWeek,
+          records: records,
+          profile: profile,
+          cycleLength: cycleLength,
+          onMonthSelected: (month) {
+            setState(() {
+              _focusedDay = month;
+              _selectedDay = null;
+            });
+            Navigator.of(sheetContext).pop();
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<void> _markPeriodRange(DateTime initialDay) async {
+    final l10n = AppLocalizations.of(context)!;
+    final today = DateUtils.dateOnly(DateTime.now());
+    final initial = DateUtils.dateOnly(initialDay);
+    final suggestedEnd = initial.add(const Duration(days: 4));
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: today,
+      initialDateRange: DateTimeRange(
+        start: initial,
+        end: suggestedEnd.isAfter(today) ? today : suggestedEnd,
+      ),
+    );
+    if (picked == null || !mounted) return;
+
+    final previousProfile = ref.read(userProfileProvider);
+    final record = await ref
+        .read(periodRecordsProvider.notifier)
+        .addCompletedPeriodRange(picked.start, picked.end);
+    if (!mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    if (record == null) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.periodRangeOverlap)),
+      );
+      return;
+    }
+
+    final previousStart = previousProfile?.lastPeriodStart;
+    if (previousStart == null || record.startDate.isAfter(previousStart)) {
+      await ref
+          .read(userProfileProvider.notifier)
+          .saveProfile(lastPeriodStart: record.startDate);
+    }
+    if (!mounted) return;
+    final snackBar = messenger.showSnackBar(
+      SnackBar(
+        content: Text(l10n.periodRangeSaved),
+        duration: const Duration(seconds: 6),
+        action: SnackBarAction(
+          label: l10n.undo,
+          onPressed: () async {
+            await ref
+                .read(periodRecordsProvider.notifier)
+                .deleteRecord(record.id);
+            if (previousProfile != null) {
+              await ref
+                  .read(userProfileProvider.notifier)
+                  .updateProfile(previousProfile);
+            } else {
+              ref.read(userProfileProvider.notifier).refresh();
+            }
+          },
+        ),
+      ),
+    );
+    notifyTrackingRecordAfterUndoWindow(snackBar);
+  }
+
+  Future<void> _addPastCycles() async {
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).toString();
+    final format = DateFormat('d MMM yyyy', locale);
+    final ranges = <DateTimeRange>[];
+    final previousProfile = ref.read(userProfileProvider);
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (sheetContext, setSheetState) {
+          Future<void> pickRange() async {
+            final picked = await showDateRangePicker(
+              context: sheetContext,
+              firstDate: DateTime(2020),
+              lastDate: DateUtils.dateOnly(DateTime.now()),
+            );
+            if (picked != null && sheetContext.mounted) {
+              setSheetState(() => ranges.add(picked));
+            }
+          }
+
+          Future<void> save() async {
+            final records = await ref
+                .read(periodRecordsProvider.notifier)
+                .addCompletedPeriodRanges(
+                  ranges
+                      .map((range) =>
+                          (start: range.start, end: range.end))
+                      .toList(),
+                );
+            if (!sheetContext.mounted) return;
+            if (records == null) {
+              ScaffoldMessenger.of(sheetContext).showSnackBar(
+                SnackBar(content: Text(l10n.periodRangeOverlap)),
+              );
+              return;
+            }
+
+            final newest = records
+                .map((record) => record.startDate)
+                .reduce((a, b) => a.isAfter(b) ? a : b);
+            final previousStart = previousProfile?.lastPeriodStart;
+            if (previousStart == null || newest.isAfter(previousStart)) {
+              await ref
+                  .read(userProfileProvider.notifier)
+                  .saveProfile(lastPeriodStart: newest);
+            }
+            if (!mounted || !sheetContext.mounted) return;
+            Navigator.of(sheetContext).pop();
+            final messenger = ScaffoldMessenger.of(context);
+            final snackBar = messenger.showSnackBar(
+              SnackBar(
+                content: Text(l10n.nCyclesRecorded(records.length)),
+                duration: const Duration(seconds: 6),
+                action: SnackBarAction(
+                  label: l10n.undo,
+                  onPressed: () async {
+                    for (final record in records) {
+                      await ref
+                          .read(periodRecordsProvider.notifier)
+                          .deleteRecord(record.id);
+                    }
+                    if (previousProfile != null) {
+                      await ref
+                          .read(userProfileProvider.notifier)
+                          .updateProfile(previousProfile);
+                    } else {
+                      ref.read(userProfileProvider.notifier).refresh();
+                    }
+                  },
+                ),
+              ),
+            );
+            notifyTrackingRecordAfterUndoWindow(snackBar);
+          }
+
+          return Container(
+            decoration: BoxDecoration(
+              color: AppColors.sf(sheetContext),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(28)),
+            ),
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.85,
+            ),
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppColors.dv(sheetContext),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.addPastCycles,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.tp(sheetContext),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    l10n.addPastCyclesHint,
+                    style: TextStyle(
+                      fontSize: 13,
+                      height: 1.4,
+                      color: AppColors.ts(sheetContext),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  for (var index = 0; index < ranges.length; index++)
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(
+                        Icons.water_drop_rounded,
+                        color: AppColors.primaryStrong,
+                      ),
+                      title: Text(
+                        '${format.format(ranges[index].start)} – '
+                        '${format.format(ranges[index].end)}',
+                      ),
+                      trailing: IconButton(
+                        tooltip: l10n.delete,
+                        onPressed: () =>
+                            setSheetState(() => ranges.removeAt(index)),
+                        icon: const Icon(Icons.close_rounded),
+                      ),
+                    ),
+                  if (ranges.length < 3)
+                    OutlinedButton.icon(
+                      onPressed: pickRange,
+                      icon: const Icon(Icons.add_rounded),
+                      label: Text(l10n.addPeriodRange),
+                    ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: ranges.isEmpty ? null : save,
+                    child: Text(l10n.save),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -101,7 +430,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         child: IgnorePointer(
           child: TweenAnimationBuilder<double>(
             tween: Tween(begin: 0, end: 1),
-            duration: const Duration(milliseconds: 160),
+            duration: context.motionDuration(const Duration(milliseconds: 160)),
             curve: Curves.easeOut,
             builder: (context, t, child) => Opacity(
               opacity: t,
@@ -186,12 +515,16 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         Timer(const Duration(milliseconds: 2500), _removePeek);
   }
 
-  bool _isPeriodDay(DateTime day, List<PeriodRecord> records) {
+  /// Günün düştüğü regl kaydı; yoksa null.
+  PeriodRecord? _recordForDay(DateTime day, List<PeriodRecord> records) {
     for (final record in records) {
-      if (record.containsDate(day)) return true;
+      if (record.containsDate(day)) return record;
     }
-    return false;
+    return null;
   }
+
+  bool _isPeriodDay(DateTime day, List<PeriodRecord> records) =>
+      _recordForDay(day, records) != null;
 
   // Faz-adaptif vurgu (kontrollü): "bugün" işareti güncel fazın rengini
   // giyer — uygulama yaşayan bir döngüyü izlediğini hissettirir.
@@ -218,6 +551,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final profile = ref.watch(userProfileProvider);
     final records = ref.watch(periodRecordsProvider);
     final dailyLogs = ref.watch(dailyLogProvider);
+    final firstDayOfWeek =
+        MaterialLocalizations.of(context).firstDayOfWeekIndex;
+    final calendarWeekStart = startingDayOfWeekFromIndex(firstDayOfWeek);
 
     return Scaffold(
       backgroundColor: AppColors.bg(context),
@@ -231,146 +567,332 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         ),
         backgroundColor: AppColors.bg(context),
         elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: _showYearOverview,
+            tooltip: l10n.yearRingTitle,
+            icon: const Icon(Icons.calendar_view_month_rounded),
+          ),
+          IconButton(
+            onPressed: _addPastCycles,
+            tooltip: l10n.addPastCycles,
+            icon: const Icon(Icons.playlist_add_rounded),
+          ),
+          IconButton(
+            onPressed: _shareCalendarMonth,
+            tooltip: l10n.shareCalendarMonth,
+            icon: const Icon(Icons.ios_share_rounded),
+          ),
+        ],
       ),
-      // Spacer kalktı: içerik doğal akar, küçük ekranda kaydırılabilir
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 92),
-        child: Column(
-        children: [
-          GlassCard(
-            borderRadius: 20,
-            blur: 0,
-            opacity: 0.18,
-            margin: const EdgeInsets.symmetric(horizontal: 12),
-            child: TableCalendar(
-              firstDay: DateTime(2020, 1, 1),
-              lastDay: DateTime(2030, 12, 31),
-              focusedDay: _focusedDay,
-              calendarFormat: _calendarFormat,
-              locale: Localizations.localeOf(context).toString(),
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                });
-                // Log ekranı açıldığında bu gün seçili gelsin
-                ref.read(selectedDateProvider.notifier).state = selectedDay;
-                _showDayDetailSheet(context, selectedDay, records, dailyLogs);
-              },
-              // Uzun basış: sheet açmadan hafif önizleme baloncuğu
-              onDayLongPressed: (day, _) =>
-                  _showDayPeek(day, records, dailyLogs),
-              onFormatChanged: (format) {
-                setState(() => _calendarFormat = format);
-              },
-              // setState: alttaki faz şeridi görünen aya göre çiziliyor
-              onPageChanged: (focusedDay) =>
-                  setState(() => _focusedDay = focusedDay),
-              headerStyle: HeaderStyle(
-                formatButtonVisible: false,
-                titleCentered: true,
-                titleTextStyle: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.tp(context),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final expanded = constraints.maxWidth >= 900;
+          final calendar = _buildCalendarCard(
+            profile,
+            records,
+            dailyLogs,
+            calendarWeekStart,
+          );
+          final support = _buildCalendarSupport(
+            l10n,
+            profile,
+            records,
+            dailyLogs,
+            expanded: expanded,
+          );
+
+          return SingleChildScrollView(
+            // Takvim kartı AppBar'ın hemen altından başlıyordu; diğer
+            // sekmelerin tersine üstte hiç pay yoktu.
+            padding: EdgeInsets.only(
+              top: 24,
+              bottom: bottomNavInset(context),
+            ),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1180),
+                child: FocusTraversalGroup(
+                  policy: WidgetOrderTraversalPolicy(),
+                  child: expanded
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(flex: 3, child: calendar),
+                              const SizedBox(width: 28),
+                              Expanded(flex: 2, child: support),
+                            ],
+                          ),
+                        )
+                      : Column(children: [calendar, support]),
                 ),
-                leftChevronIcon: const Icon(Icons.chevron_left_rounded,
-                    color: AppColors.primary),
-                rightChevronIcon: const Icon(Icons.chevron_right_rounded,
-                    color: AppColors.primary),
-              ),
-              daysOfWeekStyle: DaysOfWeekStyle(
-                weekdayStyle: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.ts(context)),
-                weekendStyle: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.ts(context)),
-              ),
-              calendarStyle: CalendarStyle(
-                outsideDaysVisible: false,
-                defaultTextStyle: TextStyle(
-                    fontWeight: FontWeight.w600, color: AppColors.tp(context)),
-                weekendTextStyle: TextStyle(
-                    fontWeight: FontWeight.w600, color: AppColors.tp(context)),
-                todayDecoration: BoxDecoration(
-                  color: _phaseRingColor(ref.watch(currentCyclePhaseProvider))
-                      .withValues(alpha: 0.15),
-                  shape: BoxShape.circle,
-                ),
-                todayTextStyle: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: _phaseTextColor(
-                        ref.watch(currentCyclePhaseProvider),
-                        AppColors.isDark(context))),
-                selectedDecoration: const BoxDecoration(
-                    color: AppColors.primary, shape: BoxShape.circle),
-                selectedTextStyle: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-              calendarBuilders: CalendarBuilders(
-                defaultBuilder: (ctx, day, focused) =>
-                    _buildDayCell(day, profile, records, dailyLogs, false),
-                todayBuilder: (ctx, day, focused) =>
-                    _buildDayCell(day, profile, records, dailyLogs, true),
               ),
             ),
-          ).animateSafe(context).fadeIn(duration: 500.ms),
-          // Takvim ile faz şeridi arası nefes: şerit karta yapışıktı
-          const SizedBox(height: 20),
-          // Ring'in faz haritası dili takvimde: görünen ayın günleri faz
-          // renkleriyle ince bir şerit — ay bir bakışta "nasıl akacak"
-          _buildMonthPhaseStrip(profile, records)
-              .animateSafe(context)
-              .fadeIn(delay: 150.ms, duration: 400.ms),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _legendItem(AppColors.periodDay, l10n.periodDayLabel),
-                _legendItem(AppColors.predictedPeriod, l10n.predicted),
-                _legendItem(AppColors.ovulationDay, l10n.ovulation),
-                _legendItem(AppColors.fertileWindow, l10n.fertile),
-              ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildCalendarCard(
+    UserProfile? profile,
+    List<PeriodRecord> records,
+    Map<String, DailyLog> dailyLogs,
+    StartingDayOfWeek calendarWeekStart,
+  ) {
+    return RepaintBoundary(
+      key: _calendarCaptureKey,
+      child: GlassCard(
+        borderRadius: 20,
+        blur: 0,
+        opacity: 0.18,
+        margin: const EdgeInsets.symmetric(horizontal: 12),
+        child: TableCalendar(
+          firstDay: DateTime(2020, 1, 1),
+          lastDay: DateTime(2030, 12, 31),
+          focusedDay: _focusedDay,
+          calendarFormat: _calendarFormat,
+          locale: Localizations.localeOf(context).toString(),
+          startingDayOfWeek: calendarWeekStart,
+          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+          onDaySelected: (selectedDay, focusedDay) => _selectCalendarDay(
+            selectedDay,
+            focusedDay,
+            records,
+            dailyLogs,
+          ),
+          onDayLongPressed: (day, _) {
+            _dismissPeekHint();
+            _showDayPeek(day, records, dailyLogs);
+          },
+          onFormatChanged: (format) =>
+              setState(() => _calendarFormat = format),
+          onPageChanged: (focusedDay) =>
+              setState(() => _focusedDay = focusedDay),
+          headerStyle: HeaderStyle(
+            formatButtonVisible: false,
+            titleCentered: true,
+            titleTextStyle: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.tp(context),
             ),
-          ).animateSafe(context).fadeIn(delay: 300.ms, duration: 500.ms),
-          // Spacer uyarıyı en dibe itip üstte ölü boşluk bırakıyordu —
-          // içerik doğal akışında, uyarı hemen lejantın altında
+            leftChevronIcon: const Icon(
+              Icons.chevron_left_rounded,
+              color: AppColors.primary,
+            ),
+            rightChevronIcon: const Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.primary,
+            ),
+          ),
+          daysOfWeekStyle: DaysOfWeekStyle(
+            weekdayStyle: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: AppColors.ts(context),
+            ),
+            weekendStyle: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: AppColors.ts(context),
+            ),
+          ),
+          calendarStyle: CalendarStyle(
+            outsideDaysVisible: false,
+            defaultTextStyle: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: AppColors.tp(context),
+            ),
+            weekendTextStyle: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: AppColors.tp(context),
+            ),
+            todayDecoration: BoxDecoration(
+              color: _phaseRingColor(ref.watch(currentCyclePhaseProvider))
+                  .withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            todayTextStyle: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: _phaseTextColor(
+                ref.watch(currentCyclePhaseProvider),
+                AppColors.isDark(context),
+              ),
+            ),
+            selectedDecoration: const BoxDecoration(
+              color: AppColors.primary,
+              shape: BoxShape.circle,
+            ),
+            selectedTextStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          calendarBuilders: CalendarBuilders(
+            defaultBuilder: (ctx, day, focused) =>
+                _buildDayCell(day, profile, records, dailyLogs, false),
+            todayBuilder: (ctx, day, focused) =>
+                _buildDayCell(day, profile, records, dailyLogs, true),
+            selectedBuilder: (ctx, day, focused) => _buildDayCell(
+              day,
+              profile,
+              records,
+              dailyLogs,
+              isSameDay(day, DateTime.now()),
+              isSelected: true,
+            ),
+          ),
+        ),
+      ),
+    ).animateSafe(context).fadeIn(duration: 500.ms);
+  }
+
+  Widget _buildCalendarSupport(
+    AppLocalizations l10n,
+    UserProfile? profile,
+    List<PeriodRecord> records,
+    Map<String, DailyLog> dailyLogs, {
+    required bool expanded,
+  }) {
+    return Column(
+      children: [
+        if (!expanded) const SizedBox(height: 20),
+        _buildMonthPhaseStrip(profile, records)
+            .animateSafe(context)
+            .fadeIn(delay: 150.ms, duration: 400.ms),
+        const SizedBox(height: 16),
+        _buildMonthSummary(l10n, records, dailyLogs)
+            .animateSafe(context)
+            .fadeIn(delay: 200.ms, duration: 400.ms),
+        if (_showPeekHint)
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.info_outline_rounded,
-                    size: 14,
-                    color: AppColors.ts(context).withValues(alpha: 0.6)),
+                Icon(
+                  Icons.touch_app_rounded,
+                  size: 15,
+                  color: AppColors.ts(context),
+                ),
                 const SizedBox(width: 6),
-                Expanded(
+                Flexible(
                   child: Text(
-                    l10n.healthDisclaimer,
+                    l10n.longPressDayHint,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 11,
-                      color: AppColors.ts(context).withValues(alpha: 0.6),
-                      height: 1.4,
+                      fontSize: 12,
+                      color: AppColors.ts(context),
                     ),
                   ),
                 ),
               ],
             ),
           ),
-        ],
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: _legendHidden
+              ? Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: () => _setLegendHidden(false),
+                    icon: const Icon(Icons.help_outline_rounded, size: 16),
+                    label: Text(l10n.showLegend),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.ts(context),
+                      textStyle: const TextStyle(fontSize: 12),
+                    ),
+                  ),
+                )
+              : Row(
+                  children: [
+                    Expanded(
+                      child: Wrap(
+                        alignment: WrapAlignment.spaceEvenly,
+                        spacing: 12,
+                        runSpacing: 8,
+                        children: [
+                          _legendItem(
+                            AppColors.periodDay,
+                            l10n.periodDayLabel,
+                          ),
+                          _legendItem(
+                            AppColors.predictedPeriod,
+                            l10n.predicted,
+                          ),
+                          _legendItem(
+                            AppColors.ovulationDay,
+                            l10n.ovulation,
+                          ),
+                          _legendItem(
+                            AppColors.fertileWindow,
+                            l10n.fertile,
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => _setLegendHidden(true),
+                      icon: const Icon(Icons.close_rounded, size: 16),
+                      tooltip: l10n.hideLegend,
+                      color: AppColors.ts(context),
+                    ),
+                  ],
+                ),
+        ).animateSafe(context).fadeIn(delay: 300.ms, duration: 500.ms),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+          child: Row(
+            children: [
+              Icon(
+                Icons.info_outline_rounded,
+                size: 14,
+                color: AppColors.ts(context).withValues(alpha: 0.6),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  l10n.healthDisclaimer,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: AppColors.ts(context).withValues(alpha: 0.6),
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
-  Widget _buildDayCell(DateTime day, UserProfile? profile,
-      List<PeriodRecord> records, Map<String, DailyLog> dailyLogs, bool isToday) {
+  void _selectCalendarDay(
+    DateTime selectedDay,
+    DateTime focusedDay,
+    List<PeriodRecord> records,
+    Map<String, DailyLog> dailyLogs,
+  ) {
+    setState(() {
+      _selectedDay = selectedDay;
+      _focusedDay = focusedDay;
+    });
+    ref.read(selectedDateProvider.notifier).state = selectedDay;
+    _showDayDetailSheet(context, selectedDay, records, dailyLogs);
+  }
+
+  Widget _buildDayCell(
+    DateTime day,
+    UserProfile? profile,
+    List<PeriodRecord> records,
+    Map<String, DailyLog> dailyLogs,
+    bool isToday, {
+    bool isSelected = false,
+  }) {
     final l10n = AppLocalizations.of(context)!;
     final isPeriod = _isPeriodDay(day, records);
     final dateKey =
@@ -397,19 +919,27 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     Color? bgColor;
     Color textColor = AppColors.tp(context);
     // Tahmin günü gerçek regl gününden yalnız renk tonuyla ayrılıyordu:
-    // renk körlüğünde ikisi aynı görünür, kesikli olmayan bir çerçeve ekle
-    Border? border;
+    // renk körlüğünde ikisi aynı görünebilir; kesikli çerçeve "henüz
+    // gerçekleşmedi" durumunu renkten bağımsız ikinci kanalla anlatır.
 
-    if (isPeriod) {
+    // Pastel zeminde beyaz gün numarası okunmuyordu: regl hücresinde
+    // 2,06:1, ovülasyonda 2,66:1 (AA sınırı 4,5:1) — kod tabanının kendi
+    // kuralı ("pastel primary beyazla 2.06:1, zemin olarak kullanılamaz")
+    // burada atlanmıştı. Tahmin hücresi de pembe metinle 2,50:1'deydi.
+    // Koyu metin üçünü de kurtarıyor (6,60 / 5,10 / 11,27:1) ve hücreler
+    // zaten zemin + çerçeve + desenle ayrışıyor.
+    if (isSelected) {
+      bgColor = AppColors.primary;
+      textColor = AppColors.textPrimary;
+    } else if (isPeriod) {
       bgColor = AppColors.periodDay;
-      textColor = Colors.white;
+      textColor = AppColors.textPrimary;
     } else if (isPredicted) {
       bgColor = AppColors.periodDayLight;
-      textColor = AppColors.primaryDark;
-      border = Border.all(color: AppColors.periodDay, width: 1.5);
+      textColor = AppColors.textPrimary;
     } else if (isOvulation) {
       bgColor = AppColors.ovulationDay;
-      textColor = Colors.white;
+      textColor = AppColors.textPrimary;
     } else if (isFertile) {
       bgColor = AppColors.fertileWindowLight;
       textColor = AppColors.fertileWindowText;
@@ -430,47 +960,85 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     ];
 
     return Semantics(
+      button: true,
+      selected: isSelected,
       label: states.isEmpty
           ? '${day.day}'
           : '${day.day}, ${states.join(', ')}',
-      child: ExcludeSemantics(
-        child: Container(
-          margin: const EdgeInsets.all(3),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: bgColor,
-                  shape: BoxShape.circle,
-                  border: border,
-                ),
-                child: Center(
-                  child: Text(
-                    '${day.day}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: isToday ? FontWeight.bold : FontWeight.w600,
-                      color: textColor,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: () =>
+              _selectCalendarDay(day, day, records, dailyLogs),
+          onLongPress: () {
+            _dismissPeekHint();
+            _showDayPeek(day, records, dailyLogs);
+          },
+          child: ExcludeSemantics(
+            child: Container(
+              margin: const EdgeInsets.all(3),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Ink(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: bgColor,
+                      shape: BoxShape.circle,
+                    ),
+                    // Desen modu hücrelere hiç uygulanmıyordu: ring ve
+                    // şeritler dokuluyken takvimin kendisi düz kalıyordu.
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        if (bgColor != null &&
+                            ref.watch(phasePatternProvider))
+                          DecoratedBox(
+                            decoration: patternOverlayFor(
+                                  bgColor,
+                                  radius: BorderRadius.circular(20),
+                                ) ??
+                                const BoxDecoration(),
+                          ),
+                        if (isPredicted)
+                          CustomPaint(
+                            painter: const _DashedCirclePainter(
+                              color: AppColors.primaryStrong,
+                            ),
+                          ),
+                        Center(
+                          child: Text(
+                            '${day.day}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: isToday
+                                  ? FontWeight.bold
+                                  : FontWeight.w600,
+                              color: textColor,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
+                  if (hasLog)
+                    Positioned(
+                      bottom: 2,
+                      child: Container(
+                        width: 5,
+                        height: 5,
+                        // Bordo: pembe regl zemininde de okunur (mor marka
+                        // noktalarından çekildi)
+                        decoration: const BoxDecoration(
+                            color: AppColors.primaryDeep,
+                            shape: BoxShape.circle),
+                      ),
+                    ),
+                ],
               ),
-              if (hasLog)
-                Positioned(
-                  bottom: 2,
-                  child: Container(
-                    width: 5,
-                    height: 5,
-                    // Bordo: pembe regl zemininde de okunur (mor marka
-                    // noktalarından çekildi)
-                    decoration: const BoxDecoration(
-                        color: AppColors.primaryDeep, shape: BoxShape.circle),
-                  ),
-                ),
-            ],
+            ),
           ),
         ),
       ),
@@ -582,6 +1150,61 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     return segmentColorForDay(segments, day);
   }
 
+  /// Görünen ayın tek satırlık özeti + bugüne dönüş.
+  ///
+  /// Önceki aya gidince "bu ayda ne oldu" sorusu cevapsız kalıyordu ve
+  /// birkaç ay geriye kaydıran kullanıcı bugüne elle dönmek zorundaydı.
+  Widget _buildMonthSummary(AppLocalizations l10n,
+      List<PeriodRecord> records, Map<String, DailyLog> dailyLogs) {
+    final now = DateTime.now();
+    final isCurrentMonth =
+        _focusedDay.year == now.year && _focusedDay.month == now.month;
+
+    // Görünen ayın gün sayısı: bir sonraki ayın 0. günü
+    final daysInMonth =
+        DateTime(_focusedDay.year, _focusedDay.month + 1, 0).day;
+    var periodDays = 0;
+    var loggedDays = 0;
+    for (var d = 1; d <= daysInMonth; d++) {
+      final day = DateTime(_focusedDay.year, _focusedDay.month, d);
+      if (_isPeriodDay(day, records)) periodDays++;
+      final key = '${day.year}-${day.month.toString().padLeft(2, '0')}-'
+          '${day.day.toString().padLeft(2, '0')}';
+      if (dailyLogs.containsKey(key)) loggedDays++;
+    }
+
+    final parts = <String>[
+      if (periodDays > 0) l10n.monthPeriodDays(periodDays),
+      if (loggedDays > 0) l10n.monthLoggedDays(loggedDays),
+    ];
+    final summary = parts.isEmpty ? l10n.monthNoRecords : parts.join(' · ');
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              summary,
+              style: TextStyle(fontSize: 12, color: AppColors.ts(context)),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (!isCurrentMonth)
+            TextButton(
+              onPressed: () => setState(() => _focusedDay = now),
+              style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primaryStrong,
+                  textStyle: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w700)),
+              child: Text(l10n.backToToday),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _legendItem(Color color, String label) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -599,12 +1222,65 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
   }
 
+  /// Seçilen günde regl başlatır. Ana ekrandaki butonla aynı sözleşme:
+  /// onay diyaloğu yerine 6 saniyelik geri al.
+  ///
+  /// Ana ekrandan farklı olarak burada devam eden bir kayıt varken de
+  /// çağrılabiliyor ve `startPeriod` o durumda ya devam eden kaydı kapatıyor
+  /// ya da (gün kaydın başlangıcında/öncesindeyse) mevcut kaydı geri
+  /// döndürüyor. Geri al bunları bilmezse kullanıcının eski kaydını siler
+  /// ya da kapanmış bir kaydı açık sanır — bu yüzden önceki durum önce
+  /// yakalanır.
+  Future<void> _startPeriodOn(DateTime day) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final recordsNotifier = ref.read(periodRecordsProvider.notifier);
+    final profileNotifier = ref.read(userProfileProvider.notifier);
+    final prevProfile = ref.read(userProfileProvider);
+
+    final before = ref.read(periodRecordsProvider);
+    final idsBefore = before.map((r) => r.id).toSet();
+    final ongoingBefore =
+        before.where((r) => r.isOngoing).map((r) => r.id).toList();
+
+    HapticFeedback.mediumImpact();
+    final record = await recordsNotifier.startPeriod(day);
+    // Mevcut bir kayıt döndürüldüyse yeni kayıt oluşmamıştır
+    final created = !idsBefore.contains(record.id);
+    await profileNotifier.saveProfile(lastPeriodStart: record.startDate);
+
+    final snackBar = messenger.showSnackBar(SnackBar(
+      content: Text(l10n.periodMarkedStarted),
+      duration: const Duration(seconds: 6),
+      action: SnackBarAction(
+        label: l10n.undo,
+        onPressed: () async {
+          if (created) {
+            await recordsNotifier.deleteRecord(record.id);
+          }
+          // Kapatılmış olabilecek kayıtlar yeniden açılır
+          for (final id in ongoingBefore) {
+            if (id != record.id) await recordsNotifier.reopenRecord(id);
+          }
+          if (prevProfile != null) {
+            await profileNotifier.updateProfile(prevProfile);
+          } else {
+            profileNotifier.refresh();
+          }
+        },
+      ),
+    ));
+    notifyTrackingRecordAfterUndoWindow(snackBar);
+  }
+
   void _showDayDetailSheet(BuildContext context, DateTime day,
       List<PeriodRecord> records, Map<String, DailyLog> dailyLogs) {
     final dateKey =
         '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
     final log = dailyLogs[dateKey];
     final isPeriod = _isPeriodDay(day, records);
+    // Gün bir kayda düşüyorsa eylem "düzenle", düşmüyorsa "burada başladı"
+    final recordForDay = _recordForDay(day, records);
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).toString();
     final dateStr = DateFormat('d MMMM yyyy, EEEE', locale).format(day);
@@ -675,8 +1351,51 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           style: TextStyle(
                               fontSize: 14, color: AppColors.ts(context))),
                     const SizedBox(height: 16),
-                    // Geçmiş güne hızlı kayıt: sheet kapatılıp quick log açılır
-                    if (!day.isAfter(DateTime.now()))
+                    // Regl eylemi bilerek premium kapısının dışında: takvim
+                    // ücretsiz katmanın vaadinin parçası ve o katmanda
+                    // buradan hiçbir şey işaretlenemiyordu — gün sayfası
+                    // salt okunur bir kartondu
+                    if (!day.isAfter(DateTime.now())) ...[
+                      SizedBox(
+                        width: double.infinity,
+                        child: recordForDay != null
+                            ? OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.of(sheetContext).pop();
+                                  showPeriodRecordEditor(
+                                      context, ref, recordForDay);
+                                },
+                                icon: const Icon(Icons.edit_calendar_rounded,
+                                    size: 18),
+                                label: Text(l10n.editPeriodRecord),
+                              )
+                            : OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.of(sheetContext).pop();
+                                  _startPeriodOn(day);
+                                },
+                                icon: const Icon(Icons.water_drop_rounded,
+                                    size: 18),
+                                label: Text(l10n.periodStartedOnThisDay),
+                              ),
+                      ),
+                      const SizedBox(height: 8),
+                      if (recordForDay == null) ...[
+                        SizedBox(
+                          width: double.infinity,
+                          child: TextButton.icon(
+                            onPressed: () {
+                              Navigator.of(sheetContext).pop();
+                              _markPeriodRange(day);
+                            },
+                            icon: const Icon(Icons.date_range_rounded,
+                                size: 18),
+                            label: Text(l10n.markPeriodRange),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                      // Günlük kayıt (akış, ruh hâli, semptom) premium kapsamı
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
@@ -689,6 +1408,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           label: Text(l10n.quickLog),
                         ),
                       ),
+                    ],
                   ],
                 ),
               ),
@@ -730,3 +1450,40 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
   }
 }
+
+class _DashedCirclePainter extends CustomPainter {
+  final Color color;
+
+  const _DashedCirclePainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5
+      ..strokeCap = StrokeCap.round;
+    final rect = (Offset.zero & size).deflate(1.25);
+    const dashCount = 12;
+    final step = math.pi * 2 / dashCount;
+    for (var index = 0; index < dashCount; index++) {
+      canvas.drawArc(rect, index * step, step * 0.58, false, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedCirclePainter oldDelegate) =>
+      oldDelegate.color != color;
+}
+
+/// Flutter'ın haftanın ilk günü indeksini `table_calendar`'ın enum'una çevirir.
+///
+/// İki sayım farklı yerden başlıyor: `firstDayOfWeekIndex` 0 = pazar,
+/// `StartingDayOfWeek.values` ise 0 = pazartesi. Kaydırma bu yüzden.
+///
+/// Yedi indeksin hepsi karşılanıyor: elle yazılan bir switch yalnız pazar,
+/// cumartesi ve pazartesiyi tanıyordu, cuma ile başlayan yereller sessizce
+/// pazartesiye düşüyordu. Uygulamanın altı dilinde bu fark görünmüyor ama
+/// dil eklendiğinde sessizce yanlış davranan bir yol bırakmaya gerek yok.
+StartingDayOfWeek startingDayOfWeekFromIndex(int firstDayOfWeekIndex) =>
+    StartingDayOfWeek.values[(firstDayOfWeekIndex + 6) % 7];

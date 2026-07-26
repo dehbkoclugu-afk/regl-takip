@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'premium_service.dart';
 
 class AdService {
@@ -21,6 +22,65 @@ class AdService {
       _isIOS ? _openAdUnitIdIOS : _openAdUnitIdAndroid;
 
   static InterstitialAd? _openAd;
+
+  /// Başarılı kullanıcı kaydı olayı. Reklam kararı uygulama kökünde verilir;
+  /// veri katmanı veya ekran reklam SDK'sını doğrudan çağırmaz.
+  static final ValueNotifier<int> recordSavedRevision = ValueNotifier(0);
+
+  static void notifyRecordSaved() => recordSavedRevision.value++;
+
+  /// Açılış reklamının en son ne zaman gösterildiği (SharedPreferences).
+  static const String _lastOpenAdKey = 'last_open_ad_epoch';
+
+  /// İki açılış reklamı arasındaki en az süre.
+  ///
+  /// Reklam her açılışta gösteriliyordu. Regl takibi "gir-kaydet-çık"
+  /// uygulaması: üç saniyelik işin önüne beş saniyelik tam ekran reklam
+  /// koymak, uygulamayı açmayı caydırıyor — kaydedilmeyen gün, bozulan
+  /// veri, işe yaramayan tahmin demek. Günde bir kez yeterli.
+  static const Duration openAdInterval = Duration(hours: 24);
+
+  /// Kurulumdan sonraki bu süre boyunca açılış reklamı hiç gösterilmez.
+  /// İlk izlenim reklamla açılmamalı; deneme zaten reklamsız, bu yalnız
+  /// denemesi bitmiş kullanıcının yeniden kurulumu gibi durumlar için.
+  static const Duration openAdGracePeriod = Duration(days: 1);
+
+  /// Zamana bağlı karar — saf, bu yüzden test edilebilir.
+  /// Premium kontrolü ve depolama okuması [canShowOpenAd] tarafında.
+  static bool shouldShowOpenAd({
+    required DateTime now,
+    required DateTime installedAt,
+    required DateTime? lastShownAt,
+  }) {
+    if (now.difference(installedAt) < openAdGracePeriod) return false;
+    if (lastShownAt == null) return true;
+    return now.difference(lastShownAt) >= openAdInterval;
+  }
+
+  /// Açılış reklamı gösterilebilir mi?
+  ///
+  /// Kararı çağıran yerde değil burada tutmak önemli: gösterim koşulu tek
+  /// yerde kalsın, "premium mi" kontrolüyle "ne zaman gösterildi" kontrolü
+  /// iki ayrı dosyaya dağılmasın.
+  static Future<bool> canShowOpenAd({required DateTime installedAt}) async {
+    if (PremiumService().isPremium) return false;
+
+    final prefs = await SharedPreferences.getInstance();
+    final lastEpoch = prefs.getInt(_lastOpenAdKey);
+    return shouldShowOpenAd(
+      now: DateTime.now(),
+      installedAt: installedAt,
+      lastShownAt: lastEpoch == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(lastEpoch),
+    );
+  }
+
+  static Future<void> markOpenAdShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(
+        _lastOpenAdKey, DateTime.now().millisecondsSinceEpoch);
+  }
 
   static Future<void> initialize() async {
     try {
@@ -115,6 +175,9 @@ class AdService {
       debugPrint('[AD] Showing ad...');
       _openAd!.fullScreenContentCallback = FullScreenContentCallback(
         onAdShowedFullScreenContent: (ad) {
+          // Damga yükleme anında değil gösterim anında: yüklenip
+          // gösterilemeyen reklam günlük hakkı harcamamalı
+          markOpenAdShown();
           debugPrint('[AD] Ad SHOWN successfully');
         },
         onAdDismissedFullScreenContent: (ad) {
@@ -136,5 +199,6 @@ class AdService {
 
   static void dispose() {
     _openAd?.dispose();
+    recordSavedRevision.dispose();
   }
 }

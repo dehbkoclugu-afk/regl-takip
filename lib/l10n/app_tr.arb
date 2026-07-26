@@ -179,6 +179,7 @@
   "deleteRecord": "Kaydı sil",
   "recordDeleted": "Kayıt silindi",
   "invalidWeight": "Geçerli bir kilo gir (20-300 kg)",
+  "invalidTemperature": "Geçerli bir sıcaklık gir (35-40 °C)",
   "discardChangesTitle": "Kaydedilmemiş değişiklik",
   "discardChangesBody": "Notun kaydedilmedi. Çıkarsan yazdıkların kaybolacak.",
   "discard": "Vazgeç",
@@ -225,6 +226,7 @@
   },
   "noRecordForDay": "Bu gün için kayıt bulunmuyor.",
   "dailyLog": "Günlük Kayıt",
+  "dailyMeasurements": "Günlük Ölçümler",
   "flow": "Akış",
   "recorded": "Kaydedildi",
   "nMedications": "{count} ilaç",
@@ -302,6 +304,8 @@
   "medicationTracking": "İlaç Takibi",
   "addMedication": "İlaç Ekle",
   "noMedicationsYet": "Henüz ilaç eklenmedi",
+  "medicationPlanHint": "Bu plan her gün geçerlidir. Onay kutusu yalnız seçili günü kaydeder.",
+  "medicationAlreadyInPlan": "Bu ilaç zaten planda",
   "tapToAdd": "+ butonuna dokunarak ekleyin",
   "add": "Ekle",
   "dailyNote": "Günlük Not",
@@ -444,6 +448,11 @@
   "trimester1": "1. Trimester",
   "trimester2": "2. Trimester",
   "trimester3": "3. Trimester",
+  "pregnancyDevelopmentTitle": "Bu haftanın gelişimi",
+  "pregnancyDevelopment1": "Bebeğin temel organ ve vücut sistemleri oluşurken hızlı bir gelişim dönemi sürüyor.",
+  "pregnancyDevelopment2": "Bebeğin hareketleri daha düzenli hale geliyor; hareketleri hissetme zamanı kişiden kişiye değişebilir.",
+  "pregnancyDevelopment3": "Bebeğin büyümesi sürerken doğuma hazırlık giderek öne çıkıyor.",
+  "pregnancyCheckupReminder": "Kontrol planını sağlık uzmanının önerdiği takvime göre takip et.",
   "pregnancyStartLabel": "Son adet tarihi (gebelik başlangıcı)",
   "pregnancyModeInfo": "Hamilelik modunda tahminler ve regl bildirimleri kapalıdır",
   "pillPackStartLabel": "Hap paketi başlangıcı",
@@ -497,6 +506,8 @@
   "consentBody": "Tüm verileriniz yalnızca bu cihazda, şifrelenmiş olarak saklanır; hiçbir sunucuya gönderilmez. Gizlilik politikasını Ayarlar > Hakkında bölümünden okuyabilirsiniz. Devam ederek verilerinizin cihazınızda bu şekilde işlenmesini kabul etmiş olursunuz.",
   "consentAccept": "Kabul Ediyorum",
   "quickLog": "Hızlı Kayıt",
+  "shortcutQuickLog": "Hızlı Kayıt",
+  "shortcutToday": "Bugünü Gör",
   "allTrackers": "Tüm kayıt türleri",
   "savedGeneric": "Kaydedildi",
   "disguiseTitle": "Gizli Mod",
@@ -504,7 +515,18 @@
   "decoyTitle": "Notlar",
   "decoyEmpty": "Henüz not yok",
   "decoyHint": "Bir şeyler yaz…",
-  "backupData": "Yedek Al (JSON)",
+  "backupData": "Parolalı Yedek Al",
+  "backupPassword": "Yedek parolası",
+  "backupPasswordConfirm": "Parolayı tekrar gir",
+  "backupPasswordLength": "Parola 10–128 karakter olmalı",
+  "backupPasswordsDoNotMatch": "Parolalar eşleşmiyor",
+  "backupNoRecovery": "Bu parola cihazda saklanmaz ve kurtarılamaz. Unutursan yedeği açamazsın.",
+  "unlockBackupTitle": "Yedek parolasını gir",
+  "unlockBackupBody": "Bu yedek yalnız oluştururken kullandığın parolayla açılabilir.",
+  "backupPasswordOrFileInvalid": "Parola yanlış veya yedek dosyası bozuk.",
+  "legacyBackupWarning": "Bu eski yedek şifrelenmemiştir. Geri yüklersen yeni yedeklerin parolalı olacaktır.",
+  "showPassword": "Parolayı göster",
+  "hidePassword": "Parolayı gizle",
   "restoreData": "Yedekten Geri Yükle",
   "restoreConfirmTitle": "Yedeği geri yükle?",
   "restoreConfirmBody": "Mevcut tüm veriler silinecek ve yedekteki {count} kayıt geri yüklenecek. Bu işlem geri alınamaz.",
@@ -577,6 +599,220 @@
       "symptom": {"type": "String"}
     }
   },
+  "notificationPeriodTitle": "Adet Hatırlatması",
+  "notificationPeriodTimingToday": "Adetin bugün başlayabilir.",
+  "notificationPeriodTimingTomorrow": "Adetin yarın başlayabilir.",
+  "notificationPeriodTimingInDays": "Adetin {days} gün sonra başlayabilir.",
+  "@notificationPeriodTimingInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "notificationPeriodTip1": "Yanına bir ped ya da tampon almayı unutma.",
+  "notificationPeriodTip2": "Hazırlıklı olmak işleri kolaylaştırır.",
+  "notificationPeriodTip3": "Başladığında kaydetmen tahminleri iyileştirir.",
+  "notificationPeriodChannel": "Adet Hatırlatması",
+  "notificationPeriodChannelDesc": "Adet döngüsü hatırlatmaları",
+  "notificationOvulationTitle": "Ovülasyon Hatırlatması",
+  "notificationOvulationBody": "Bugün ovülasyon gününüz. Doğurgan dönemdesiniz!",
+  "notificationOvulationChannel": "Ovülasyon Hatırlatması",
+  "notificationOvulationChannelDesc": "Ovülasyon hatırlatmaları",
+  "notificationMedicationTitle": "İlaç Hatırlatması",
+  "notificationMedicationBody": "İlacınızı almayı unutmayın!",
+  "notificationMedicationChannel": "İlaç Hatırlatması",
+  "notificationMedicationChannelDesc": "İlaç hatırlatmaları",
+  "notificationDiscreetTitle": "Hatırlatma",
+  "notificationDiscreetBody": "Bugün için bir hatırlatman var",
+  "notificationFertileTitle": "Verimli pencere başlıyor",
+  "notificationFertileBody": "Bugünden itibaren gebe kalma olasılığın en yüksek günlerdesin.",
+  "notificationChainEndTitle": "Hatırlatmalar duraklıyor",
+  "notificationChainEndBody": "Planlanan hatırlatmalar bitti. Uygulamayı açtığında yenileri kurulur.",
+  "noPurchasesToRestore": "Geri yüklenecek bir satın alma bulunamadı",
+  "restoringPurchases": "Satın alımlar geri yükleniyor…",
+  "backdateHint": "Farklı bir gün için butona uzun bas",
+  "periodStartDateHelp": "Regl hangi gün başladı?",
+  "periodEndDateHelp": "Regl hangi gün bitti?",
+  "headlinePeriodToday": "Reglin bugün başlayabilir",
+  "headlinePeriodTomorrow": "Reglin yarın başlayabilir",
+  "headlineNoData": "Son regl tarihini ekle",
+  "headlinePeriodInDays": "Reglin {days} gün sonra",
+  "@headlinePeriodInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "headlinePeriodDay": "Reglinin {day}. günü",
+  "@headlinePeriodDay": {
+    "placeholders": {
+      "day": {"type": "int"}
+    }
+  },
+  "headlineDelaySubtitle": "Sapma olağan olabilir. Başladıysa kaydet.",
+  "notificationDelayTitle": "Tahmini tarih geçti",
+  "notificationDelayBody": "Reglin başladıysa kaydetmeyi unutma. Sapma olağan olabilir.",
+  "notificationDelayBodyAlt1": "Henüz bir kayıt yok. Başladıysa eklemek tek dokunuş.",
+  "notificationDelayBodyAlt2": "Birkaç günlük kayma sık görülür. Kaydın güncel mi?",
+  "notificationDelayChannel": "Gecikme Hatırlatması",
+  "notificationDelayChannelDesc": "Tahmini tarih geçtiğinde hatırlatma",
+  "headlineDelay": "Reglin {days} gün gecikti",
+  "@headlineDelay": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "delayDays": "{days} gün gecikme",
+  "@delayDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "yourDataStays": "Deneme bitse de kayıtların cihazında kalır.",
+  "periodStartedOnThisDay": "Reglim bu gün başladı",
+  "nCyclesRecorded": "{count} döngü kaydı",
+  "@nCyclesRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "nLogsRecorded": "{count} günlük kayıt",
+  "@nLogsRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notifPermissionTitle": "Hatırlatmaları açalım mı?",
+  "notifPermissionBody": "Reglin yaklaştığında, ovülasyon gününde ve tahmini tarih geçtiğinde haber veririz. Bildirimler cihazından çıkmaz. İstersen sonra ayarlardan da açabilirsin.",
+  "enableNotifications": "Bildirimleri aç",
+  "notNow": "Şimdi değil",
+  "optionalField": "İsteğe bağlı",
+  "privacyAssurance": "Verilerin yalnızca bu cihazda, şifreli saklanır",
+  "privacySummary": "Ana verilerin bu cihazda şifreli tutulur; yalnız dışa aktardığında veya Health Connect'i açtığında cihazdan çıkar.",
+  "dontRememberExactly": "Tam hatırlamıyorum",
+  "approxTitle": "Yaklaşık ne zamandı?",
+  "approxSubtitle": "Yaklaşık bir tarih yeter. Tahminler sen kayıt girdikçe kendini düzeltir.",
+  "approxThisWeek": "Bu hafta",
+  "approxLastWeek": "Geçen hafta",
+  "approxTwoWeeks": "Yaklaşık 2 hafta önce",
+  "approxThreeWeeks": "Yaklaşık 3 hafta önce",
+  "approxMonthOrMore": "Bir ay veya daha önce",
+  "cycleReminderTime": "Döngü hatırlatma saati",
+  "medicationReminderTime": "İlaç hatırlatma saati",
+  "periodReminderLead": "Regl hatırlatması",
+  "notificationQuietChannelSuffix": "sessiz",
+  "quietNotifications": "Sessiz bildirimler",
+  "quietNotificationsDesc": "Ses ve açılır baloncuk olmadan, yalnız bildirim gölgeliğinde",
+  "leadSameDay": "Aynı gün",
+  "leadNDaysBefore": "{days} gün önce",
+  "@leadNDaysBefore": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "regularityInfoIrregular": "En kısa ve en uzun döngün arasında 9 gün veya daha fazla fark var. Döngü uzunluğunun değişmesi çok yaygındır; stres, uyku, hastalık ve yaşam değişiklikleri etkiler. Bu bir tanı değildir.",
+  "regularityInfoRegular": "En kısa ve en uzun döngün arasındaki fark 9 günden az. Tahminler bu tutarlılıkta daha isabetli olur.",
+  "regularityInfoSeeDoctor": "Döngün sürekli 21 günden kısa ya da 35 günden uzunsa, üç aydan fazla hiç regl görmediysen ya da kanaman olağandışı yoğunsa bir sağlık uzmanına danışman iyi olur.",
+  "typicalRangeNote": "Yaygın kabul edilen aralık: döngü {min}–{max} gün, regl {pmax} güne kadar. Tanı ölçütü değildir.",
+  "@typicalRangeNote": {
+    "placeholders": {
+      "min": {"type": "int"},
+      "max": {"type": "int"},
+      "pmax": {"type": "int"}
+    }
+  },
+  "lowConfidenceNote": "Bu ortalamalar yalnız {count} döngüden hesaplandı; kayıt geldikçe netleşecek.",
+  "@lowConfidenceNote": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "regularityInfoInsufficient": "Düzenlilikten söz edebilmek için en az {count} döngü aralığı gerekiyor. Daha az kayıtla yapılan yorum yanıltıcı olur.",
+  "@regularityInfoInsufficient": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "backupNever": "Henüz hiç yedek almadın.",
+  "backupStaleHint": "Telefonunu kaybedersen kayıtlar geri gelmez.",
+  "backupLastAt": "Son yedek: {date}",
+  "@backupLastAt": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "durationsStepTitle": "Döngü bilgilerin",
+  "durationsStepHelp": "Emin değilsen olduğu gibi bırak — ayarlardan sonra değiştirebilirsin.",
+  "lockTimeoutTitle": "Kilit gecikmesi",
+  "lockTimeoutDesc": "Uygulamadan kısa süre ayrılınca PIN tekrar sorulmasın",
+  "lockImmediately": "Hemen",
+  "previousDay": "Önceki gün",
+  "nextDay": "Sonraki gün",
+  "showLegend": "Renk anlamları",
+  "hideLegend": "Renk anlamlarını gizle",
+  "backToToday": "Bugüne dön",
+  "monthNoRecords": "Bu ayda kayıt yok",
+  "doctorSummary": "Doktoruma özet çıkar",
+  "healthImport": "Health Connect’ten içe aktar",
+  "healthImportAction": "İçe aktar",
+  "allTime": "Tümü",
+  "actionPeriodStarted": "Reglim başladı",
+  "actionMedicationTaken": "Aldım",
+  "pregnancyTestReady": "Gebelik testi artık anlamlı olabilir",
+  "notLoggedToday": "Bugün {what} girilmemiş",
+  "@notLoggedToday": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
+  "pregnancyTestFrom": "Gebelik testi için en erken: {date}",
+  "@pregnancyTestFrom": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "pillBreakIn": "Ara dönem {days} gün sonra",
+  "@pillBreakIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "pillNewPackIn": "Yeni paket {days} gün sonra",
+  "@pillNewPackIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "healthImportNothingNew": "İçe aktarılacak yeni kayıt bulunamadı",
+  "healthImportConfirm": "Health Connect’te uygulamada olmayan {count} adet dönemi bulundu. Kayıtlarına eklensin mi? Mevcut kayıtların değişmez.",
+  "@healthImportConfirm": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "healthImportDone": "{count} dönem içe aktarıldı",
+  "@healthImportDone": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthPeriodDays": "{count} regl günü",
+  "@monthPeriodDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthLoggedDays": "{count} günde kayıt",
+  "@monthLoggedDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "pinNoRecoveryWarning": "PIN’ini unutursan kurtarma yolu yok; tek çıkış tüm verini silmek olur. Hatırlayacağın bir sayı seç.",
+  "lockAfterMinutes": "{minutes} dk sonra",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
   "reportTitle": "Döngü Sağlık Raporu",
   "reportGenerated": "Oluşturma",
   "profileSummary": "Profil Özeti",
@@ -600,6 +836,30 @@
   "storyTrendDown": "Bu dönemde toplam {delta} {unit} azalma var.",
   "@storyTrendDown": {"placeholders": {"delta": {"type": "String"}, "unit": {"type": "String"}}},
   "storyTrendFlat": "Bu dönemde belirgin bir değişim yok — seyir yatay.",
+  "averageSeverity": "Ort. {value}/5",
+  "@averageSeverity": {"placeholders": {"value": {"type": "String"}}},
+  "dataCoverage": "Kayıt yoğunluğu",
+  "dataCoverageValue": "{total} günün {logged} gününde kayıt var (%{percent})",
+  "@dataCoverageValue": {"placeholders": {"logged": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "tapChartPointHint": "O günü açmak için bir noktaya dokun.",
+  "shareCalendarMonth": "Takvim ayını paylaş",
+  "longPressDayHint": "Hızlı önizleme için bir güne basılı tut.",
+  "markPeriodRange": "Regl tarih aralığını işaretle",
+  "periodRangeOverlap": "Bu aralık mevcut bir regl kaydıyla çakışıyor.",
+  "periodRangeSaved": "Regl tarih aralığı kaydedildi",
+  "trackingStreak": "{count} günlük seri",
+  "@trackingStreak": {"placeholders": {"count": {"type": "int"}}},
+  "weeklyTracking": "Son 7 günde {count} kayıt",
+  "@weeklyTracking": {"placeholders": {"count": {"type": "int"}}},
+  "exportCalendarFile": "Takvim dışa aktar (.ics)",
+  "ovulationMarkerHint": "Kesikli çizgi: tahmini veya teyitli ovülasyon",
+  "addPastCycles": "Geçmiş döngüleri ekle",
+  "addPastCyclesHint": "En fazla 3 regl tarih aralığını seçip birlikte kaydet.",
+  "addPeriodRange": "Regl aralığı ekle",
+  "cycleOverlayTitle": "Döngü karşılaştırması",
+  "symptomLoadComparison": "Günlük belirti şiddeti aynı döngü gününde karşılaştırılır",
+  "currentCycleLabel": "Bu döngü",
+  "previousCycleLabel": "Önceki döngü",
   "colorBlindPattern": "Desenli faz renkleri",
   "colorBlindPatternDesc": "Faz bantlarına doku ekler — renkleri ayırt etmek zorsa",
   "undo": "Geri al",
@@ -636,5 +896,16 @@
   "nextPeriodInfo": "Bir sonraki adet kanamasının tahmini başlangıç tarihidir. Döngü sürenize göre hesaplanır.",
   "phaseInfoTitle": "Bu faz nedir?",
   "learnMore": "Bilgi",
-  "healthDisclaimer": "Bu uygulama tıbbi tavsiye niteliğinde değildir. Sağlık sorunlarınız için lütfen bir sağlık uzmanına danışın."
+  "healthDisclaimer": "Bu uygulama tıbbi tavsiye niteliğinde değildir. Sağlık sorunlarınız için lütfen bir sağlık uzmanına danışın.",
+  "homePriority": "Ana ekran önceliği",
+  "cycleFirst": "Döngü önce",
+  "todayFirst": "Bugün önce",
+  "planLifetime": "Ömür boyu",
+  "planLifetimeDetail": "Tek ödeme, süresiz premium",
+  "cycleNotificationFrequency": "Döngü bildirimi yoğunluğu",
+  "cycleNotificationFrequencyDesc": "İlaç hatırlatmaları bu ayardan etkilenmez",
+  "notificationFrequencyEssential": "Temel",
+  "notificationFrequencyBalanced": "Dengeli",
+  "notificationFrequencyDetailed": "Ayrıntılı",
+  "readOnlyHistoryNotice": "Geçmiş kayıtlarını görüntüleyebilirsin; yeni günlük kayıt ve değişiklikler Premium'da."
 }

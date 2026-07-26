@@ -273,6 +273,22 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
                     ),
                   ),
                 ),
+              // PIN unutulursa kurtarma yolu yok: tek çıkış verinin
+              // silinmesi. Bunu kurulum anında söylemek zorunlu — sonradan
+              // öğrenen kullanıcı yıllarının kaydını kaybediyor.
+              if (!_isConfirming)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12, left: 24, right: 24),
+                  child: Text(
+                    l10n.pinNoRecoveryWarning,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12,
+                      height: 1.4,
+                      color: Colors.white.withValues(alpha: 0.85),
+                    ),
+                  ),
+                ),
               const SizedBox(height: 32),
               PinDots(filled: _pin.length, isError: _isError),
               const Spacer(),

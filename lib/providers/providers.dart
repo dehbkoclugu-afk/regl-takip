@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import '../services/backup_service.dart';
 import '../services/hive_service.dart';
 import '../services/notification_service.dart';
 import '../services/premium_service.dart';
@@ -10,6 +11,7 @@ import '../models/daily_log.dart';
 import '../models/enums.dart';
 import '../core/utils/cycle_utils.dart';
 import '../core/utils/phase_insights.dart';
+import '../core/utils/statistics_summary.dart';
 import 'package:uuid/uuid.dart';
 
 // ─── Service Providers ────────────────────────────────────────────────
@@ -52,6 +54,32 @@ final themeModeProvider = StateProvider<ThemeMode>((ref) {
 /// Kalıcılığı SharedPreferences 'phase_pattern' — main.dart açılışta
 /// override eder, ayarlar değiştirince yazar.
 final phasePatternProvider = StateProvider<bool>((ref) => false);
+
+enum HomePriority {
+  cycle,
+  today;
+
+  static HomePriority fromStorage(String? value) =>
+      value == today.name ? today : cycle;
+}
+
+const String homePriorityKey = 'home_priority';
+
+final homePriorityProvider =
+    StateProvider<HomePriority>((ref) => HomePriority.cycle);
+
+/// "Farklı bir gün için uzun bas" ipucu hâlâ gösterilmeli mi?
+/// Kullanıcı hareketi bir kez kullanınca kalıcı olarak kapanır — keşfi
+/// olmayan bir hareket, olmayan bir özelliktir.
+/// Kalıcılığı SharedPreferences 'backdate_hint_needed'.
+final backdateHintProvider = StateProvider<bool>((ref) => true);
+
+/// Son başarılı yedeğin zamanı; hiç yedek alınmadıysa null.
+/// Yedekleme tamamen kullanıcıya bırakılmıştı ve hatırlatan hiçbir şey
+/// yoktu: telefon kaybında yılların verisi gidiyordu.
+final lastBackupProvider = FutureProvider<DateTime?>(
+  (ref) => BackupService.lastBackupAt(),
+);
 
 // ─── Erişim (deneme / premium / ücretsiz) ─────────────────────────────
 
@@ -98,20 +126,9 @@ final trialDaysLeftProvider = Provider<int>((ref) {
 
 final userProfileProvider =
     StateNotifierProvider<UserProfileNotifier, UserProfile?>((ref) {
-  final hiveService = ref.watch(hiveServiceProvider);
-  return UserProfileNotifier(hiveService);
-});
-
-/// Bildirimler için "güncel ilaç listesi": en son ilaç girilen günün kaydı.
-/// İlaçlar güne yazılıyor ama hatırlatma tekrar eden bir kurulum — en yeni
-/// liste esas alınır.
-List<MedicationEntry> _latestMedications(HiveService hive) {
-  final logs = hive.getAllDailyLogs()
-      .where((l) => l.medications.isNotEmpty)
-      .toList()
-    ..sort((a, b) => b.date.compareTo(a.date));
-  return logs.isEmpty ? const [] : logs.first.medications;
-}
+      final hiveService = ref.watch(hiveServiceProvider);
+      return UserProfileNotifier(hiveService);
+    });
 
 class UserProfileNotifier extends StateNotifier<UserProfile?> {
   final HiveService _hiveService;
@@ -139,7 +156,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
       await NotificationService().rescheduleAll(
         profile,
         records: _hiveService.getAllPeriodRecords(),
-        medications: _latestMedications(_hiveService),
+        medications: profile.medicationPlan,
         logs: _hiveService.getAllDailyLogs(),
       );
     } catch (e) {
@@ -170,6 +187,17 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     DateTime? pregnancyStartDate,
     DateTime? pillPackStartDate,
     String? themePreference,
+    int? medicationReminderHour,
+    int? medicationReminderMinute,
+    int? cycleReminderHour,
+    int? cycleReminderMinute,
+    int? periodReminderLeadDays,
+    bool? quietNotifications,
+    bool? usePounds,
+    bool? useFahrenheit,
+    List<MedicationEntry>? medicationPlan,
+    bool? medicationPlanMigrated,
+    int? cycleNotificationFrequency,
   }) async {
     final current = state ?? UserProfile();
     final updated = current.copyWith(
@@ -189,7 +217,8 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
       reminderMinute: reminderMinute,
       // Tema tercihi değişince eski bool da senkron tutulur: eski sürüme
       // taşınan yedek kullanıcının açık/koyu seçimini kaybetmesin
-      darkModeEnabled: darkModeEnabled ??
+      darkModeEnabled:
+          darkModeEnabled ??
           (themePreference == null ? null : themePreference == 'dark'),
       waterGoal: waterGoal,
       smartPredictionEnabled: smartPredictionEnabled,
@@ -197,6 +226,17 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
       pregnancyStartDate: pregnancyStartDate,
       pillPackStartDate: pillPackStartDate,
       themePreference: themePreference,
+      medicationReminderHour: medicationReminderHour,
+      medicationReminderMinute: medicationReminderMinute,
+      cycleReminderHour: cycleReminderHour,
+      cycleReminderMinute: cycleReminderMinute,
+      periodReminderLeadDays: periodReminderLeadDays,
+      quietNotifications: quietNotifications,
+      usePounds: usePounds,
+      useFahrenheit: useFahrenheit,
+      medicationPlan: medicationPlan,
+      medicationPlanMigrated: medicationPlanMigrated,
+      cycleNotificationFrequency: cycleNotificationFrequency,
     );
 
     await _hiveService.saveUserProfile(updated);
@@ -214,20 +254,28 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         // Döngü/regl süresi tahmin tarihlerini kaydırır — bildirimler
         // yeniden planlanmazsa eski tarihlerde kalır
         averageCycleLength != null ||
-        averagePeriodLength != null) {
+        averagePeriodLength != null ||
+        // Saat ve pencere değişince planlar eski değerlerde kalırdı
+        medicationReminderHour != null ||
+        cycleReminderHour != null ||
+        periodReminderLeadDays != null ||
+        // Sessizlik tercihi kanal kimliğini değiştiriyor: kurulu
+        // bildirimler yeniden planlanmazsa eski kanalda kalır
+        quietNotifications != null ||
+        cycleNotificationFrequency != null ||
+        medicationPlan != null) {
       try {
         await NotificationService().rescheduleAll(
           updated,
           records: _hiveService.getAllPeriodRecords(),
-          medications: _latestMedications(_hiveService),
+          medications: updated.medicationPlan,
         );
       } catch (e) {
         debugPrint('[NOTIF] rescheduleAll failed: $e');
       }
     }
 
-    await WidgetService.update(
-        updated, _hiveService.getAllPeriodRecords());
+    await WidgetService.update(updated, _hiveService.getAllPeriodRecords());
   }
 
   void refresh() {
@@ -239,9 +287,9 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
 
 final periodRecordsProvider =
     StateNotifierProvider<PeriodRecordsNotifier, List<PeriodRecord>>((ref) {
-  final hiveService = ref.watch(hiveServiceProvider);
-  return PeriodRecordsNotifier(hiveService);
-});
+      final hiveService = ref.watch(hiveServiceProvider);
+      return PeriodRecordsNotifier(hiveService);
+    });
 
 class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
   final HiveService _hiveService;
@@ -265,6 +313,67 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
     _load();
   }
 
+  /// Takvimde seçilen kapsayıcı aralığı tek kapalı regl kaydı olarak ekler.
+  /// Mevcut bir kayıtla kesişirse veri çiftlenmesin diye null döner.
+  Future<PeriodRecord?> addCompletedPeriodRange(
+    DateTime start,
+    DateTime end,
+  ) async {
+    final records =
+        await addCompletedPeriodRanges([(start: start, end: end)]);
+    return records?.single;
+  }
+
+  /// En fazla birkaç geçmiş döngüyü doğrulayıp tek işlem olarak ekler.
+  /// Mevcut kayıtlarla veya kendi içinde çakışan paket hiç yazılmaz.
+  Future<List<PeriodRecord>?> addCompletedPeriodRanges(
+    List<({DateTime start, DateTime end})> ranges,
+  ) async {
+    final normalized = ranges.map((range) {
+      final start =
+          DateTime(range.start.year, range.start.month, range.start.day);
+      final rawEnd = DateTime(range.end.year, range.end.month, range.end.day);
+      return (start: start, end: rawEnd.isBefore(start) ? start : rawEnd);
+    }).toList();
+
+    final occupied = state.map((record) {
+      final start = DateTime(
+          record.startDate.year, record.startDate.month, record.startDate.day);
+      final rawEnd = record.endDate ?? DateTime.now();
+      return (
+        start: start,
+        end: DateTime(rawEnd.year, rawEnd.month, rawEnd.day),
+      );
+    }).toList();
+    bool overlaps(
+      ({DateTime start, DateTime end}) a,
+      ({DateTime start, DateTime end}) b,
+    ) =>
+        !a.end.isBefore(b.start) && !a.start.isAfter(b.end);
+
+    for (var index = 0; index < normalized.length; index++) {
+      if (occupied.any((range) => overlaps(normalized[index], range))) {
+        return null;
+      }
+      for (var other = index + 1; other < normalized.length; other++) {
+        if (overlaps(normalized[index], normalized[other])) return null;
+      }
+    }
+
+    final records = normalized
+        .map((range) => PeriodRecord(
+              id: _uuid.v4(),
+              startDate: range.start,
+              endDate: range.end,
+            ))
+        .toList();
+    for (final record in records) {
+      await _hiveService.savePeriodRecord(record);
+    }
+    _load();
+    return records;
+  }
+
   Future<void> updateRecord(PeriodRecord record) async {
     await _hiveService.savePeriodRecord(record);
     _load();
@@ -281,8 +390,11 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
     // End any ongoing period first
     final ongoing = state.where((r) => r.isOngoing).toList();
     for (final record in ongoing) {
-      final start = DateTime(record.startDate.year, record.startDate.month,
-          record.startDate.day);
+      final start = DateTime(
+        record.startDate.year,
+        record.startDate.month,
+        record.startDate.day,
+      );
       // Aynı gün (veya öncesi) tekrar başlatılırsa mevcut kayıt aktif kalır;
       // yoksa endDate < startDate olur ve süre hesapları bozulur.
       if (!normalizedDate.isAfter(start)) {
@@ -292,10 +404,7 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
       await _hiveService.savePeriodRecord(record);
     }
 
-    final record = PeriodRecord(
-      id: _uuid.v4(),
-      startDate: date,
-    );
+    final record = PeriodRecord(id: _uuid.v4(), startDate: date);
     await _hiveService.savePeriodRecord(record);
     _load();
     // Widget güncellemesi burada değil: çağıran akış hemen ardından
@@ -307,7 +416,10 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
   /// Tarihler güne indirgenir; bitiş başlangıçtan önce olamaz.
   /// [end] null = kayıt devam ediyor.
   Future<void> updateRecordDates(
-      String recordId, DateTime start, DateTime? end) async {
+    String recordId,
+    DateTime start,
+    DateTime? end,
+  ) async {
     PeriodRecord? record;
     for (final r in state) {
       if (r.id == recordId) {
@@ -366,7 +478,10 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
     if (state.any((r) => sameDay(r.startDate, normalizedNew))) return;
 
     final end = CycleUtils.completedPeriodEnd(
-        normalizedNew, periodLength, DateTime.now());
+      normalizedNew,
+      periodLength,
+      DateTime.now(),
+    );
 
     PeriodRecord? target;
     if (previousStart != null) {
@@ -385,11 +500,9 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
       await _hiveService.savePeriodRecord(target);
       _load();
     } else {
-      await addRecord(PeriodRecord(
-        id: _uuid.v4(),
-        startDate: normalizedNew,
-        endDate: end,
-      ));
+      await addRecord(
+        PeriodRecord(id: _uuid.v4(), startDate: normalizedNew, endDate: end),
+      );
     }
   }
 
@@ -397,12 +510,12 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
     try {
       final record = state.firstWhere((r) => r.id == recordId);
       // Bitiş tarihi başlangıçtan önce olamaz
-      record.endDate =
-          date.isBefore(record.startDate) ? record.startDate : date;
+      record.endDate = date.isBefore(record.startDate)
+          ? record.startDate
+          : date;
       await _hiveService.savePeriodRecord(record);
       _load();
-      await WidgetService.update(
-          _hiveService.getUserProfile(), state);
+      await WidgetService.update(_hiveService.getUserProfile(), state);
     } catch (_) {
       // Record not found
     }
@@ -417,9 +530,9 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
 
 final dailyLogProvider =
     StateNotifierProvider<DailyLogNotifier, Map<String, DailyLog>>((ref) {
-  final hiveService = ref.watch(hiveServiceProvider);
-  return DailyLogNotifier(hiveService);
-});
+      final hiveService = ref.watch(hiveServiceProvider);
+      return DailyLogNotifier(hiveService);
+    });
 
 class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
   final HiveService _hiveService;
@@ -456,15 +569,13 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
   DailyLog _getOrCreateLog(DateTime date) {
     final dateKey =
         '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-    return state[dateKey] ??
-        DailyLog(
-          id: _uuid.v4(),
-          date: date,
-        );
+    return state[dateKey] ?? DailyLog(id: _uuid.v4(), date: date);
   }
 
   Future<void> updateSymptoms(
-      DateTime date, List<SymptomEntry> symptoms) async {
+    DateTime date,
+    List<SymptomEntry> symptoms,
+  ) async {
     final log = _getOrCreateLog(date);
     log.symptoms = symptoms;
     await saveDailyLog(log);
@@ -482,7 +593,11 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     await saveDailyLog(log);
   }
 
-  Future<void> updateTemperature(DateTime date, double? temperature, {String? temperatureTime}) async {
+  Future<void> updateTemperature(
+    DateTime date,
+    double? temperature, {
+    String? temperatureTime,
+  }) async {
     final log = _getOrCreateLog(date);
     log.temperature = temperature;
     if (temperatureTime != null) log.temperatureTime = temperatureTime;
@@ -508,32 +623,52 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     await saveDailyLog(log);
   }
 
+  /// Birleşik günlük ölçümler ekranını tek Hive yazımıyla kaydeder.
+  ///
+  /// Nullable alanlar bilerek doğrudan atanır: kullanıcı birleşik ekrandan
+  /// bir ölçümü temizlediğinde eski değer geride kalmamalı.
+  Future<void> updateMeasurements(
+    DateTime date, {
+    required int waterIntake,
+    required double? temperature,
+    required String? temperatureTime,
+    required double? weight,
+    required String? sleepStart,
+    required String? sleepEnd,
+    required int? sleepQuality,
+  }) async {
+    final log = _getOrCreateLog(date);
+    log
+      ..waterIntake = waterIntake
+      ..temperature = temperature
+      ..temperatureTime = temperature == null ? null : temperatureTime
+      ..weight = weight
+      ..sleepStart = sleepStart
+      ..sleepEnd = sleepEnd
+      ..sleepQuality = sleepQuality;
+    if (!hasMeaningfulDailyData(log)) {
+      await deleteDailyLog(log.dateKey);
+      return;
+    }
+    await saveDailyLog(log);
+  }
+
   Future<void> updateSexualActivity(
-      DateTime date, SexualActivityEntry? entry) async {
+    DateTime date,
+    SexualActivityEntry? entry,
+  ) async {
     final log = _getOrCreateLog(date);
     log.sexualActivity = entry;
     await saveDailyLog(log);
   }
 
   Future<void> updateMedications(
-      DateTime date, List<MedicationEntry> medications) async {
+    DateTime date,
+    List<MedicationEntry> medications,
+  ) async {
     final log = _getOrCreateLog(date);
     log.medications = medications;
     await saveDailyLog(log);
-
-    // İlaç saatleri hatırlatmaları belirliyor: liste değişince yeniden kur
-    final profile = _hiveService.getUserProfile();
-    if (profile != null && profile.medicationReminderEnabled) {
-      try {
-        await NotificationService().rescheduleAll(
-          profile,
-          records: _hiveService.getAllPeriodRecords(),
-          medications: _latestMedications(_hiveService),
-        );
-      } catch (e) {
-        debugPrint('[NOTIF] medication reschedule failed: $e');
-      }
-    }
   }
 
   Future<void> updateOvulationTest(DateTime date, bool? positive) async {
@@ -640,10 +775,13 @@ final currentCyclePhaseProvider = Provider<CyclePhase>((ref) {
   final records = ref.watch(periodRecordsProvider);
   final lps = profile.lastPeriodStart!;
   final lastCompleted = records
-      .where((r) => !r.isOngoing &&
-          r.startDate.year == lps.year &&
-          r.startDate.month == lps.month &&
-          r.startDate.day == lps.day)
+      .where(
+        (r) =>
+            !r.isOngoing &&
+            r.startDate.year == lps.year &&
+            r.startDate.month == lps.month &&
+            r.startDate.day == lps.day,
+      )
       .toList();
   if (lastCompleted.isNotEmpty && lastCompleted.first.endDate != null) {
     // Period has ended - check if we're past the end date
@@ -677,6 +815,18 @@ final daysUntilNextPeriodProvider = Provider<int>((ref) {
   );
 });
 
+/// Tahmini tarihin kaç gün geçtiği; gecikme yoksa 0.
+/// Devam eden bir regl varken gecikmeden söz edilemez.
+final periodDelayProvider = Provider<int>((ref) {
+  final profile = ref.watch(userProfileProvider);
+  if (profile == null || profile.lastPeriodStart == null) return 0;
+  if (ref.watch(ongoingPeriodProvider) != null) return 0;
+  return CycleUtils.periodDelayDays(
+    profile.lastPeriodStart!,
+    ref.watch(effectiveCycleLengthProvider),
+  );
+});
+
 /// Mevcut döngüde ölçümle teyit edilmiş ovülasyon günü.
 /// Öncelik: BBT yükselişi (kesin teyit) > pozitif LH testi + 1 gün
 /// (LH piki ovülasyondan 24-36 saat önce gelir). İkisi de yoksa null.
@@ -686,8 +836,7 @@ final confirmedOvulationProvider = Provider<DateTime?>((ref) {
   if (lastStart == null) return null;
 
   final logs = ref.watch(dailyLogProvider);
-  final cycleStart =
-      DateTime(lastStart.year, lastStart.month, lastStart.day);
+  final cycleStart = DateTime(lastStart.year, lastStart.month, lastStart.day);
 
   final temps = <MapEntry<DateTime, double>>[];
   DateTime? latestPositiveLh;

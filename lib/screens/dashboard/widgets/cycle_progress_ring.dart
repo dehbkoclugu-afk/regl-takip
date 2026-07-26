@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/cycle_utils.dart';
+import '../../../core/utils/enum_labels.dart';
 import '../../../core/utils/motion.dart';
 import '../../../core/utils/phase_pattern.dart';
 import '../../../core/utils/ring_segments.dart';
@@ -21,6 +23,11 @@ class CycleProgressRing extends StatefulWidget {
   final int periodLength;
   final CyclePhase phase;
   final int daysUntilNextPeriod;
+
+  /// Tahmini tarihin kaç gün geçtiği; gecikme yoksa 0. Gecikme kendi
+  /// diline sahip olmalı: rozet "bugün!" derken kullanıcı üç gündür
+  /// bekliyor olabiliyordu.
+  final int delayDays;
 
   /// Segment dokunuşunda tarih aralığı gösterebilmek için: döngü günü 1'in
   /// takvim karşılığı. null ise gün numarası aralığı gösterilir.
@@ -37,6 +44,7 @@ class CycleProgressRing extends StatefulWidget {
     this.periodLength = 5,
     required this.phase,
     required this.daysUntilNextPeriod,
+    this.delayDays = 0,
     this.lastPeriodStart,
     this.patterned = false,
   });
@@ -50,6 +58,7 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
 
   /// Dokunuşla seçilen segment; null = normal merkez içerik
   RingSegment? _selected;
+  bool _focused = false;
   Timer? _revertTimer;
 
   @override
@@ -124,14 +133,28 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
     final hit = segments.where(
         (s) => day >= s.startDay && day <= s.endDay);
     if (hit.isEmpty) return;
-    final segment = hit.first;
-    if (_selected == segment) {
+    _toggleSelection(hit.first);
+  }
+
+  void _toggleSelection(RingSegment segment) {
+    if (_selected?.startDay == segment.startDay &&
+        _selected?.endDay == segment.endDay) {
       _clearSelection();
       return;
     }
     setState(() => _selected = segment);
     _revertTimer?.cancel();
     _revertTimer = Timer(const Duration(seconds: 5), _clearSelection);
+  }
+
+  void _toggleCurrentSelection(List<RingSegment> segments) {
+    final current = segments.firstWhere(
+      (segment) =>
+          widget.cycleDay >= segment.startDay &&
+          widget.cycleDay <= segment.endDay,
+      orElse: () => segments.last,
+    );
+    _toggleSelection(current);
   }
 
   void _clearSelection() {
@@ -149,9 +172,8 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
 
     // Faz değişiminde (ör. "Reglim başladı") ışıma ve merkez renkleri
     // atlamaz, yeni faza yumuşakça akar — motion bütçesi asıl bu ana
-    final phaseShift = motion
-        ? const Duration(milliseconds: 600)
-        : Duration.zero;
+    final phaseShift =
+        context.motionDuration(const Duration(milliseconds: 600));
 
     final ring = AnimatedContainer(
       duration: phaseShift,
@@ -164,10 +186,12 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
             ? Colors.black.withValues(alpha: 0.35)
             : Colors.white.withValues(alpha: 0.65),
         border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.12)
-              : Colors.white.withValues(alpha: 0.8),
-          width: 1.5,
+          color: _focused
+              ? (isDark ? AppColors.primaryLight : AppColors.primaryDeep)
+              : isDark
+                  ? Colors.white.withValues(alpha: 0.12)
+                  : Colors.white.withValues(alpha: 0.8),
+          width: _focused ? 3 : 1.5,
         ),
         // Hero ışıması: yalnız ring'de — yumuşak, faz renginde hale.
         // Gece sahnesinde kısık: karanlık odada parlama rahatsız eder.
@@ -193,9 +217,8 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
         ),
         child: Center(
           child: AnimatedSwitcher(
-            duration: motion
-                ? const Duration(milliseconds: 200)
-                : Duration.zero,
+            duration:
+                context.motionDuration(const Duration(milliseconds: 200)),
             child: _selected == null
                 ? _buildCenterContent(l10n, context)
                 : _buildSegmentDetail(l10n, context, _selected!, isDark),
@@ -205,17 +228,46 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
     );
 
     // Ring artık dokunulabilir harita: segmente dokun -> faz + tarih aralığı
-    final tappable = GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTapUp: (details) => _handleTap(details, segments),
-      child: ring,
+    final tappable = FocusableActionDetector(
+      shortcuts: const <ShortcutActivator, Intent>{
+        SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+        SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+      },
+      actions: <Type, Action<Intent>>{
+        ActivateIntent: CallbackAction<ActivateIntent>(
+          onInvoke: (_) {
+            _toggleCurrentSelection(segments);
+            return null;
+          },
+        ),
+      },
+      onShowFocusHighlight: (focused) {
+        if (_focused != focused) setState(() => _focused = focused);
+      },
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapUp: (details) => _handleTap(details, segments),
+        child: ring,
+      ),
     );
 
-    // Ekran okuyucu için ring tek bir özet olarak duyurulur
+    // Ekran okuyucu için ring tek bir özet olarak duyurulur.
+    //
+    // Etiket gördüğünün aynısını söylemeli: faz adı hiç duyurulmuyordu
+    // (ring'in ortasındaki glif ve renk görene faz bilgisi veriyor) ve
+    // gecikmede "bugün!" deniyordu — rozet metni gecikmeyi gösterirken
+    // ekran okuyucu üç gündür bekleyen kullanıcıya yanlış bilgi veriyordu.
+    final status = widget.delayDays > 0
+        ? l10n.delayDays(widget.delayDays)
+        : (widget.daysUntilNextPeriod > 0
+            ? l10n.daysLater(widget.daysUntilNextPeriod)
+            : l10n.todayExclamation);
     final labeled = Semantics(
-      label:
+      button: true,
+      onTap: () => _toggleCurrentSelection(segments),
+      label: '${EnumLabels.phase(widget.phase, l10n)}. '
           '${l10n.cycleDay}: ${widget.cycleDay} / ${widget.cycleLength}. '
-          '${widget.daysUntilNextPeriod > 0 ? l10n.daysLater(widget.daysUntilNextPeriod) : l10n.todayExclamation}',
+          '$status',
       child: ExcludeSemantics(child: tappable),
     );
 
@@ -295,10 +347,16 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
   }
 
   Widget _buildCenterContent(AppLocalizations l10n, BuildContext context) {
-    final textColor = _textColor(AppColors.isDark(context));
-    final phaseShift = context.motionEnabled
-        ? const Duration(milliseconds: 600)
-        : Duration.zero;
+    final isDark = AppColors.isDark(context);
+    final textColor = _textColor(isDark);
+    final phaseShift =
+        context.motionDuration(const Duration(milliseconds: 600));
+    // Gecikmede rozet kendi rengini ve metnini alır: aynı kabuk içinde
+    // "bugün!" demek, üç gündür bekleyen kullanıcıya yanlış bilgiydi
+    final delayed = widget.delayDays > 0;
+    final badgeColor = delayed
+        ? (isDark ? AppColors.warning : AppColors.warningText)
+        : _ringColor;
     return Column(
       key: const ValueKey('center'),
       mainAxisAlignment: MainAxisAlignment.center,
@@ -332,7 +390,7 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
           curve: Curves.easeOutQuart,
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
           decoration: BoxDecoration(
-            color: _ringColor.withValues(alpha: 0.15),
+            color: badgeColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(16),
           ),
           child: AnimatedDefaultTextStyle(
@@ -341,12 +399,14 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
-              color: textColor,
+              color: delayed ? badgeColor : textColor,
             ),
             child: Text(
-              widget.daysUntilNextPeriod > 0
-                  ? l10n.daysLater(widget.daysUntilNextPeriod)
-                  : l10n.todayExclamation,
+              delayed
+                  ? l10n.delayDays(widget.delayDays)
+                  : (widget.daysUntilNextPeriod > 0
+                      ? l10n.daysLater(widget.daysUntilNextPeriod)
+                      : l10n.todayExclamation),
             ),
           ),
         ),

@@ -33,25 +33,29 @@ class AppLocalizationsRu extends AppLocalizations {
   String get onboardingWelcome => 'Добро пожаловать!';
 
   @override
-  String get onboardingWelcomeDesc => 'Самый простой способ следить за здоровьем';
+  String get onboardingWelcomeDesc =>
+      'Самый простой способ следить за здоровьем';
 
   @override
   String get onboardingTitle1 => 'Отслеживайте цикл';
 
   @override
-  String get onboardingDesc1 => 'Легко отмечайте месячные и получайте прогноз следующих.';
+  String get onboardingDesc1 =>
+      'Легко отмечайте месячные и получайте прогноз следующих.';
 
   @override
   String get onboardingTitle2 => 'Следите за здоровьем';
 
   @override
-  String get onboardingDesc2 => 'Отмечайте симптомы, настроение, температуру и не только.';
+  String get onboardingDesc2 =>
+      'Отмечайте симптомы, настроение, температуру и не только.';
 
   @override
   String get onboardingTitle3 => 'Смотрите аналитику';
 
   @override
-  String get onboardingDesc3 => 'Понимайте свой цикл с подробными графиками и статистикой.';
+  String get onboardingDesc3 =>
+      'Понимайте свой цикл с подробными графиками и статистикой.';
 
   @override
   String get onboardingTitle4 => 'Получайте уведомления';
@@ -512,7 +516,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get decrease => 'Уменьшить';
 
   @override
-  String get bbtHint => 'Для точного результата измеряйте сразу после пробуждения, не вставая с кровати, каждый день в одно время. Подтверждение овуляции опирается на эти измерения.';
+  String get bbtHint =>
+      'Для точного результата измеряйте сразу после пробуждения, не вставая с кровати, каждый день в одно время. Подтверждение овуляции опирается на эти измерения.';
 
   @override
   String get deleteMeasurement => 'Удалить измерение';
@@ -530,10 +535,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get invalidWeight => 'Введите корректный вес (20-300 кг)';
 
   @override
+  String get invalidTemperature => 'Введите корректную температуру (35-40 °C)';
+
+  @override
   String get discardChangesTitle => 'Несохранённые изменения';
 
   @override
-  String get discardChangesBody => 'Заметка не сохранена. Если выйти сейчас, она будет потеряна.';
+  String get discardChangesBody =>
+      'Заметка не сохранена. Если выйти сейчас, она будет потеряна.';
 
   @override
   String get discard => 'Не сохранять';
@@ -544,7 +553,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get pregnancySetStartPrompt => 'Нажмите, чтобы указать начало беременности';
+  String get pregnancySetStartPrompt =>
+      'Нажмите, чтобы указать начало беременности';
 
   @override
   String helloName(String name) {
@@ -601,6 +611,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get dailyLog => 'Дневник';
+
+  @override
+  String get dailyMeasurements => 'Ежедневные измерения';
 
   @override
   String get flow => 'Выделения';
@@ -782,6 +795,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get noMedicationsYet => 'Лекарств пока нет';
 
   @override
+  String get medicationPlanHint =>
+      'Этот план действует каждый день. Флажок отмечает приём только за выбранный день.';
+
+  @override
+  String get medicationAlreadyInPlan => 'Это лекарство уже есть в плане';
+
+  @override
   String get tapToAdd => 'Нажмите +, чтобы добавить';
 
   @override
@@ -902,7 +922,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get cycleLengthTitle => 'Длина цикла';
 
   @override
-  String get cycleLengthHelp => 'Сколько дней длится ваш цикл в среднем?\n(От первого дня одних месячных до первого дня следующих)';
+  String get cycleLengthHelp =>
+      'Сколько дней длится ваш цикл в среднем?\n(От первого дня одних месячных до первого дня следующих)';
 
   @override
   String get periodLengthTitle => 'Длительность месячных';
@@ -928,19 +949,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get welcomeInfoTitle => 'Добро пожаловать!';
 
   @override
-  String get welcomeInfoDesc => 'Самый простой и приятный способ следить за здоровьем. Мы рядом на каждом шаге вашего цикла.';
+  String get welcomeInfoDesc =>
+      'Самый простой и приятный способ следить за здоровьем. Мы рядом на каждом шаге вашего цикла.';
 
   @override
   String get trackCycleTitle => 'Отслеживайте цикл';
 
   @override
-  String get trackCycleDesc => 'Легко отмечайте даты месячных, симптомы и настроение. Все данные в безопасности.';
+  String get trackCycleDesc =>
+      'Легко отмечайте даты месячных, симптомы и настроение. Все данные в безопасности.';
 
   @override
   String get getPredictionsTitle => 'Получайте прогнозы';
 
   @override
-  String get getPredictionsDesc => 'Узнавайте следующий цикл и фертильные дни с умными прогнозами.';
+  String get getPredictionsDesc =>
+      'Узнавайте следующий цикл и фертильные дни с умными прогнозами.';
 
   @override
   String get startBtn => 'Начать';
@@ -980,46 +1004,59 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get coachMenstrual0 => 'В дни кровотечения теряется железо — помогут красное мясо, чечевица и тёмная листовая зелень.';
+  String get coachMenstrual0 =>
+      'В дни кровотечения теряется железо — помогут красное мясо, чечевица и тёмная листовая зелень.';
 
   @override
-  String get coachMenstrual1 => 'От спазмов тепло и мягкая растяжка часто работают не хуже обезболивающих.';
+  String get coachMenstrual1 =>
+      'От спазмов тепло и мягкая растяжка часто работают не хуже обезболивающих.';
 
   @override
-  String get coachMenstrual2 => 'Низкая энергия сегодня — это нормально. Прогулка лучше интенсивной тренировки.';
+  String get coachMenstrual2 =>
+      'Низкая энергия сегодня — это нормально. Прогулка лучше интенсивной тренировки.';
 
   @override
-  String get coachFollicular0 => 'Эстроген растёт: энергия и концентрация в этой фазе обычно на пике. Планируйте сложные задачи сейчас.';
+  String get coachFollicular0 =>
+      'Эстроген растёт: энергия и концентрация в этой фазе обычно на пике. Планируйте сложные задачи сейчас.';
 
   @override
-  String get coachFollicular1 => 'Кожа в этой фазе обычно в лучшем состоянии — хорошее время пробовать новые средства.';
+  String get coachFollicular1 =>
+      'Кожа в этой фазе обычно в лучшем состоянии — хорошее время пробовать новые средства.';
 
   @override
-  String get coachFollicular2 => 'Сейчас организм лучше всего готов к интенсивным тренировкам.';
+  String get coachFollicular2 =>
+      'Сейчас организм лучше всего готов к интенсивным тренировкам.';
 
   @override
-  String get coachOvulation0 => 'Вы в фертильном окне — действуйте по своему плану, будь то контрацепция или зачатие.';
+  String get coachOvulation0 =>
+      'Вы в фертильном окне — действуйте по своему плану, будь то контрацепция или зачатие.';
 
   @override
-  String get coachOvulation1 => 'Некоторые женщины чувствуют лёгкую боль с одной стороны при овуляции — это нормально.';
+  String get coachOvulation1 =>
+      'Некоторые женщины чувствуют лёгкую боль с одной стороны при овуляции — это нормально.';
 
   @override
-  String get coachOvulation2 => 'Социальная энергия в эти дни обычно высока — хорошее время для важных разговоров.';
+  String get coachOvulation2 =>
+      'Социальная энергия в эти дни обычно высока — хорошее время для важных разговоров.';
 
   @override
-  String get coachLuteal0 => 'В этой фазе могут начаться симптомы ПМС — магний и регулярный сон облегчают их.';
+  String get coachLuteal0 =>
+      'В этой фазе могут начаться симптомы ПМС — магний и регулярный сон облегчают их.';
 
   @override
-  String get coachLuteal1 => 'Тяга к сладкому может усилиться: белковые перекусы помогут держать сахар в норме.';
+  String get coachLuteal1 =>
+      'Тяга к сладкому может усилиться: белковые перекусы помогут держать сахар в норме.';
 
   @override
-  String get coachLuteal2 => 'Эмоциональная чувствительность может вырасти — будьте к себе мягче, это гормонально и временно.';
+  String get coachLuteal2 =>
+      'Эмоциональная чувствительность может вырасти — будьте к себе мягче, это гормонально и временно.';
 
   @override
   String get ovulationConfirmed => 'Овуляция ✓';
 
   @override
-  String get ovulationConfirmedInfo => 'Эта дата не оценка: она подтверждена ростом базальной температуры (правило 3 над 6).';
+  String get ovulationConfirmedInfo =>
+      'Эта дата не оценка: она подтверждена ростом базальной температуры (правило 3 над 6).';
 
   @override
   String get premiumSection => 'Премиум';
@@ -1102,10 +1139,30 @@ class AppLocalizationsRu extends AppLocalizations {
   String get trimester3 => '3-й триместр';
 
   @override
+  String get pregnancyDevelopmentTitle => 'Развитие на этой неделе';
+
+  @override
+  String get pregnancyDevelopment1 =>
+      'Продолжается период быстрого развития: формируются основные органы и системы организма ребёнка.';
+
+  @override
+  String get pregnancyDevelopment2 =>
+      'Движения ребёнка становятся более скоординированными; время, когда вы их почувствуете, у всех разное.';
+
+  @override
+  String get pregnancyDevelopment3 =>
+      'Ребёнок продолжает расти, а подготовка к родам выходит на первый план.';
+
+  @override
+  String get pregnancyCheckupReminder =>
+      'Следуйте графику осмотров, рекомендованному вашим медицинским специалистом.';
+
+  @override
   String get pregnancyStartLabel => 'Последние месячные (начало беременности)';
 
   @override
-  String get pregnancyModeInfo => 'В режиме беременности прогнозы и напоминания о месячных отключены';
+  String get pregnancyModeInfo =>
+      'В режиме беременности прогнозы и напоминания о месячных отключены';
 
   @override
   String get pillPackStartLabel => 'Начало упаковки';
@@ -1124,7 +1181,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get smartPrediction => 'Умный прогноз';
 
   @override
-  String get smartPredictionDesc => 'Прогнозы используют среднее, вычисленное по вашим прошлым циклам';
+  String get smartPredictionDesc =>
+      'Прогнозы используют среднее, вычисленное по вашим прошлым циклам';
 
   @override
   String learnedCycleLength(int days) {
@@ -1135,7 +1193,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get phaseInsights => 'Закономерности по фазам';
 
   @override
-  String get noInsightsYet => 'Пока недостаточно данных. По мере записи симптомов здесь появятся закономерности по фазам.';
+  String get noInsightsYet =>
+      'Пока недостаточно данных. По мере записи симптомов здесь появятся закономерности по фазам.';
 
   @override
   String insightLine(String symptom, String phase, int percent) {
@@ -1143,7 +1202,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get notContraceptionWarning => 'Прогнозы носят информационный характер. Это приложение НЕ является средством контрацепции и не должно использоваться для предотвращения беременности.';
+  String get notContraceptionWarning =>
+      'Прогнозы носят информационный характер. Это приложение НЕ является средством контрацепции и не должно использоваться для предотвращения беременности.';
 
   @override
   String get privacyPolicy => 'Политика конфиденциальности';
@@ -1155,7 +1215,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get consentTitle => 'Ваши данные и конфиденциальность';
 
   @override
-  String get consentBody => 'Все данные хранятся в зашифрованном виде только на этом устройстве; ничего не отправляется на серверы. Политику конфиденциальности можно прочитать в Настройки > О приложении. Продолжая, вы соглашаетесь с такой обработкой данных на устройстве.';
+  String get consentBody =>
+      'Все данные хранятся в зашифрованном виде только на этом устройстве; ничего не отправляется на серверы. Политику конфиденциальности можно прочитать в Настройки > О приложении. Продолжая, вы соглашаетесь с такой обработкой данных на устройстве.';
 
   @override
   String get consentAccept => 'Принимаю';
@@ -1164,13 +1225,20 @@ class AppLocalizationsRu extends AppLocalizations {
   String get quickLog => 'Быстрая запись';
 
   @override
+  String get shortcutQuickLog => 'Быстрая запись';
+
+  @override
+  String get shortcutToday => 'Сегодня';
+
+  @override
   String get allTrackers => 'Все трекеры';
 
   @override
   String get disguiseTitle => 'Режим маскировки';
 
   @override
-  String get disguiseDesc => 'Приложение принимает облик «Заметок»: название, значок, виджет, уведомления и экран запуска становятся нейтральными. Возврат: долгое нажатие на заголовок Заметок.';
+  String get disguiseDesc =>
+      'Приложение принимает облик «Заметок»: название, значок, виджет, уведомления и экран запуска становятся нейтральными. Возврат: долгое нажатие на заголовок Заметок.';
 
   @override
   String get decoyTitle => 'Заметки';
@@ -1182,7 +1250,45 @@ class AppLocalizationsRu extends AppLocalizations {
   String get decoyHint => 'Напишите что-нибудь…';
 
   @override
-  String get backupData => 'Резервная копия (JSON)';
+  String get backupData => 'Создать копию с паролем';
+
+  @override
+  String get backupPassword => 'Пароль резервной копии';
+
+  @override
+  String get backupPasswordConfirm => 'Введите пароль ещё раз';
+
+  @override
+  String get backupPasswordLength =>
+      'Пароль должен содержать от 10 до 128 символов';
+
+  @override
+  String get backupPasswordsDoNotMatch => 'Пароли не совпадают';
+
+  @override
+  String get backupNoRecovery =>
+      'Пароль не хранится на устройстве и не может быть восстановлен. Если вы его забудете, открыть копию будет невозможно.';
+
+  @override
+  String get unlockBackupTitle => 'Введите пароль резервной копии';
+
+  @override
+  String get unlockBackupBody =>
+      'Эту копию можно открыть только паролем, заданным при её создании.';
+
+  @override
+  String get backupPasswordOrFileInvalid =>
+      'Неверный пароль или повреждённый файл резервной копии.';
+
+  @override
+  String get legacyBackupWarning =>
+      'Эта старая копия не зашифрована. После восстановления новые копии будут защищены паролем.';
+
+  @override
+  String get showPassword => 'Показать пароль';
+
+  @override
+  String get hidePassword => 'Скрыть пароль';
 
   @override
   String get restoreData => 'Восстановить из копии';
@@ -1234,16 +1340,19 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get paywallFreeSubtitle => 'Пробный период закончился. В бесплатной версии остаются отслеживание месячных и календарь; дневник и аналитика — в Премиуме.';
+  String get paywallFreeSubtitle =>
+      'Пробный период закончился. В бесплатной версии остаются отслеживание месячных и календарь; дневник и аналитика — в Премиуме.';
 
   @override
-  String get paywallFeatureTrackers => 'Все ежедневные трекеры: симптомы, настроение, вода, сон, вес, температура, лекарства, заметки';
+  String get paywallFeatureTrackers =>
+      'Все ежедневные трекеры: симптомы, настроение, вода, сон, вес, температура, лекарства, заметки';
 
   @override
   String get paywallFeatureStats => 'Статистика, тренды и кольцо «Мой год»';
 
   @override
-  String get paywallFeatureInsights => 'Личные закономерности и подсказки по фазам';
+  String get paywallFeatureInsights =>
+      'Личные закономерности и подсказки по фазам';
 
   @override
   String get paywallFeatureExport => 'Экспорт PDF / CSV';
@@ -1252,7 +1361,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get paywallFeatureHealth => 'Синхронизация с Health Connect';
 
   @override
-  String get paywallFeatureDisguise => 'Режим маскировки с приложением «Заметки»';
+  String get paywallFeatureDisguise =>
+      'Режим маскировки с приложением «Заметки»';
 
   @override
   String get paywallFeatureNoAds => 'Без рекламы';
@@ -1284,7 +1394,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get freeBadge => 'Бесплатная версия';
 
   @override
-  String get freeExplain => 'В бесплатной версии остаются отслеживание месячных, календарь и прогнозы. Дневник, статистика, экспорт, Health Connect, маскировка и режимы — в Премиуме.';
+  String get freeExplain =>
+      'В бесплатной версии остаются отслеживание месячных, календарь и прогнозы. Дневник, статистика, экспорт, Health Connect, маскировка и режимы — в Премиуме.';
 
   @override
   String get seePlans => 'Смотреть планы';
@@ -1293,7 +1404,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get premiumLockedTitle => 'Статистика — в Премиуме';
 
   @override
-  String get premiumLockedBody => 'Графики, тренды, закономерности по фазам и кольцо «Мой год» открываются с Премиумом. Всё записанное в пробный период сохранено.';
+  String get premiumLockedBody =>
+      'Графики, тренды, закономерности по фазам и кольцо «Мой год» открываются с Премиумом. Всё записанное в пробный период сохранено.';
 
   @override
   String get yearRingTitle => 'Мой год';
@@ -1346,6 +1458,394 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get notificationPeriodTitle => 'Напоминание о месячных';
+
+  @override
+  String get notificationPeriodTimingToday =>
+      'Месячные могут начаться сегодня.';
+
+  @override
+  String get notificationPeriodTimingTomorrow =>
+      'Месячные могут начаться завтра.';
+
+  @override
+  String notificationPeriodTimingInDays(int days) {
+    return 'Месячные могут начаться через $days дн.';
+  }
+
+  @override
+  String get notificationPeriodTip1 =>
+      'Не забудьте взять с собой прокладку или тампон.';
+
+  @override
+  String get notificationPeriodTip2 => 'Небольшая подготовка всё упрощает.';
+
+  @override
+  String get notificationPeriodTip3 => 'Отметка начала улучшает прогнозы.';
+
+  @override
+  String get notificationPeriodChannel => 'Напоминание о месячных';
+
+  @override
+  String get notificationPeriodChannelDesc =>
+      'Напоминания о менструальном цикле';
+
+  @override
+  String get notificationOvulationTitle => 'Напоминание об овуляции';
+
+  @override
+  String get notificationOvulationBody =>
+      'Сегодня день овуляции. Вы в фертильном окне!';
+
+  @override
+  String get notificationOvulationChannel => 'Напоминание об овуляции';
+
+  @override
+  String get notificationOvulationChannelDesc => 'Напоминания об овуляции';
+
+  @override
+  String get notificationMedicationTitle => 'Напоминание о лекарстве';
+
+  @override
+  String get notificationMedicationBody => 'Не забудьте принять лекарство!';
+
+  @override
+  String get notificationMedicationChannel => 'Напоминание о лекарстве';
+
+  @override
+  String get notificationMedicationChannelDesc => 'Напоминания о лекарствах';
+
+  @override
+  String get notificationDiscreetTitle => 'Напоминание';
+
+  @override
+  String get notificationDiscreetBody => 'У вас есть напоминание на сегодня';
+
+  @override
+  String get notificationFertileTitle => 'Начинается фертильное окно';
+
+  @override
+  String get notificationFertileBody =>
+      'С сегодняшнего дня — самые благоприятные для зачатия дни.';
+
+  @override
+  String get notificationChainEndTitle => 'Напоминания приостанавливаются';
+
+  @override
+  String get notificationChainEndBody =>
+      'Запланированные напоминания закончились. Откройте приложение, чтобы создать новые.';
+
+  @override
+  String get noPurchasesToRestore => 'Покупки для восстановления не найдены';
+
+  @override
+  String get restoringPurchases => 'Восстановление покупок…';
+
+  @override
+  String get backdateHint => 'Долгое нажатие — выбрать другой день';
+
+  @override
+  String get periodStartDateHelp => 'Когда начались месячные?';
+
+  @override
+  String get periodEndDateHelp => 'Когда закончились месячные?';
+
+  @override
+  String get headlinePeriodToday => 'Месячные могут начаться сегодня';
+
+  @override
+  String get headlinePeriodTomorrow => 'Месячные могут начаться завтра';
+
+  @override
+  String get headlineNoData => 'Добавьте дату последних месячных';
+
+  @override
+  String headlinePeriodInDays(int days) {
+    return 'Месячные через $days дн.';
+  }
+
+  @override
+  String headlinePeriodDay(int day) {
+    return '$day-й день месячных';
+  }
+
+  @override
+  String get headlineDelaySubtitle =>
+      'Небольшие отклонения — это нормально. Отметьте, если начались.';
+
+  @override
+  String get notificationDelayTitle => 'Предполагаемая дата прошла';
+
+  @override
+  String get notificationDelayBody =>
+      'Если месячные начались, не забудьте отметить. Отклонения — это нормально.';
+
+  @override
+  String get notificationDelayBodyAlt1 =>
+      'Записи пока нет. Если началось, отметить можно одним касанием.';
+
+  @override
+  String get notificationDelayBodyAlt2 =>
+      'Сдвиг на несколько дней — обычное дело. Ваши записи актуальны?';
+
+  @override
+  String get notificationDelayChannel => 'Напоминание о задержке';
+
+  @override
+  String get notificationDelayChannelDesc =>
+      'Напоминание, когда предполагаемая дата прошла';
+
+  @override
+  String headlineDelay(int days) {
+    return 'Задержка $days дн.';
+  }
+
+  @override
+  String delayDays(int days) {
+    return 'задержка $days дн.';
+  }
+
+  @override
+  String get yourDataStays =>
+      'Ваши записи останутся на устройстве после окончания пробного периода.';
+
+  @override
+  String get periodStartedOnThisDay => 'Месячные начались в этот день';
+
+  @override
+  String nCyclesRecorded(int count) {
+    return 'записано циклов: $count';
+  }
+
+  @override
+  String nLogsRecorded(int count) {
+    return 'дневных записей: $count';
+  }
+
+  @override
+  String get notifPermissionTitle => 'Включить напоминания?';
+
+  @override
+  String get notifPermissionBody =>
+      'Сообщим, когда месячные близко, в день овуляции и когда предполагаемая дата прошла. Уведомления не покидают устройство. Включить можно и позже в настройках.';
+
+  @override
+  String get enableNotifications => 'Включить';
+
+  @override
+  String get notNow => 'Не сейчас';
+
+  @override
+  String get optionalField => 'Необязательно';
+
+  @override
+  String get privacyAssurance =>
+      'Ваши данные хранятся в зашифрованном виде только на этом устройстве';
+
+  @override
+  String get privacySummary =>
+      'Основные данные зашифрованы на этом устройстве; они покидают его только при экспорте или включении Health Connect.';
+
+  @override
+  String get dontRememberExactly => 'Точно не помню';
+
+  @override
+  String get approxTitle => 'Примерно когда это было?';
+
+  @override
+  String get approxSubtitle =>
+      'Достаточно примерной даты. Прогнозы уточняются по мере записей.';
+
+  @override
+  String get approxThisWeek => 'На этой неделе';
+
+  @override
+  String get approxLastWeek => 'На прошлой неделе';
+
+  @override
+  String get approxTwoWeeks => 'Около 2 недель назад';
+
+  @override
+  String get approxThreeWeeks => 'Около 3 недель назад';
+
+  @override
+  String get approxMonthOrMore => 'Месяц назад или раньше';
+
+  @override
+  String get cycleReminderTime => 'Время напоминаний о цикле';
+
+  @override
+  String get medicationReminderTime => 'Время напоминаний о лекарствах';
+
+  @override
+  String get periodReminderLead => 'Напоминание о месячных';
+
+  @override
+  String get notificationQuietChannelSuffix => 'тихо';
+
+  @override
+  String get quietNotifications => 'Тихие уведомления';
+
+  @override
+  String get quietNotificationsDesc =>
+      'Без звука и всплывающего окна — только в шторке уведомлений';
+
+  @override
+  String get leadSameDay => 'В тот же день';
+
+  @override
+  String leadNDaysBefore(int days) {
+    return 'за $days дн.';
+  }
+
+  @override
+  String get regularityInfoIrregular =>
+      'Между самым коротким и самым длинным циклом 9 дней или больше. Колебания длины цикла очень распространены: влияют стресс, сон, болезни и перемены в жизни. Это не диагноз.';
+
+  @override
+  String get regularityInfoRegular =>
+      'Разница между самым коротким и самым длинным циклом меньше 9 дней. При такой стабильности прогнозы точнее.';
+
+  @override
+  String get regularityInfoSeeDoctor =>
+      'Если цикл постоянно короче 21 дня или длиннее 35, если месячных нет более трёх месяцев или кровотечение необычно обильное, стоит обратиться к врачу.';
+
+  @override
+  String typicalRangeNote(int min, int max, int pmax) {
+    return 'Обычный диапазон: цикл $min–$max дней, месячные до $pmax дней. Это не диагностический критерий.';
+  }
+
+  @override
+  String lowConfidenceNote(int count) {
+    return 'Эти средние рассчитаны всего по $count циклам и уточнятся с новыми записями.';
+  }
+
+  @override
+  String regularityInfoInsufficient(int count) {
+    return 'Чтобы говорить о регулярности, нужно минимум $count интервалов цикла. Меньше — вывод будет вводить в заблуждение.';
+  }
+
+  @override
+  String get backupNever => 'Вы ещё ни разу не делали резервную копию.';
+
+  @override
+  String get backupStaleHint =>
+      'Если вы потеряете телефон, записи восстановить не удастся.';
+
+  @override
+  String backupLastAt(String date) {
+    return 'Последняя копия: $date';
+  }
+
+  @override
+  String get durationsStepTitle => 'Данные вашего цикла';
+
+  @override
+  String get durationsStepHelp =>
+      'Не уверены? Оставьте как есть — это можно изменить в настройках.';
+
+  @override
+  String get lockTimeoutTitle => 'Задержка блокировки';
+
+  @override
+  String get lockTimeoutDesc => 'Не спрашивать PIN, если вы вернулись быстро';
+
+  @override
+  String get lockImmediately => 'Сразу';
+
+  @override
+  String get previousDay => 'Предыдущий день';
+
+  @override
+  String get nextDay => 'Следующий день';
+
+  @override
+  String get showLegend => 'Обозначения цветов';
+
+  @override
+  String get hideLegend => 'Скрыть обозначения';
+
+  @override
+  String get backToToday => 'К сегодня';
+
+  @override
+  String get monthNoRecords => 'В этом месяце записей нет';
+
+  @override
+  String get doctorSummary => 'Выгрузить сводку для врача';
+
+  @override
+  String get healthImport => 'Импорт из Health Connect';
+
+  @override
+  String get healthImportAction => 'Импортировать';
+
+  @override
+  String get allTime => 'Всё время';
+
+  @override
+  String get actionPeriodStarted => 'Месячные начались';
+
+  @override
+  String get actionMedicationTaken => 'Принято';
+
+  @override
+  String get pregnancyTestReady =>
+      'Тест на беременность уже может быть информативным';
+
+  @override
+  String notLoggedToday(String what) {
+    return 'Сегодня не отмечено: $what';
+  }
+
+  @override
+  String pregnancyTestFrom(String date) {
+    return 'Тест имеет смысл с $date';
+  }
+
+  @override
+  String pillBreakIn(int days) {
+    return 'Перерыв через $days дн.';
+  }
+
+  @override
+  String pillNewPackIn(int days) {
+    return 'Новая упаковка через $days дн.';
+  }
+
+  @override
+  String get healthImportNothingNew => 'Новых записей для импорта не найдено';
+
+  @override
+  String healthImportConfirm(int count) {
+    return 'В Health Connect найдено периодов, которых нет в приложении: $count. Добавить их к вашим записям? Существующие записи не изменятся.';
+  }
+
+  @override
+  String healthImportDone(int count) {
+    return 'Импортировано периодов: $count';
+  }
+
+  @override
+  String monthPeriodDays(int count) {
+    return 'дней месячных: $count';
+  }
+
+  @override
+  String monthLoggedDays(int count) {
+    return 'дней с записями: $count';
+  }
+
+  @override
+  String get pinNoRecoveryWarning =>
+      'Если вы забудете PIN, восстановить его нельзя — останется только удалить все данные. Выберите то, что запомните.';
+
+  @override
+  String lockAfterMinutes(int minutes) {
+    return 'Через $minutes мин';
+  }
+
+  @override
   String get reportTitle => 'Отчёт о здоровье цикла';
 
   @override
@@ -1395,7 +1895,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get storySymptomsSame => 'Интенсивность симптомов за последние два периода почти не изменилась.';
+  String get storySymptomsSame =>
+      'Интенсивность симптомов за последние два периода почти не изменилась.';
 
   @override
   String storyTrendUp(String delta, String unit) {
@@ -1408,13 +1909,88 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get storyTrendFlat => 'Заметных изменений за этот период нет — тренд ровный.';
+  String get storyTrendFlat =>
+      'Заметных изменений за этот период нет — тренд ровный.';
+
+  @override
+  String averageSeverity(String value) {
+    return 'Сред. $value/5';
+  }
+
+  @override
+  String get dataCoverage => 'Плотность данных';
+
+  @override
+  String dataCoverageValue(int logged, int total, int percent) {
+    return 'Записи за $logged из $total дней ($percent %)';
+  }
+
+  @override
+  String get tapChartPointHint => 'Нажмите на точку, чтобы открыть этот день.';
+
+  @override
+  String get shareCalendarMonth => 'Поделиться месяцем календаря';
+
+  @override
+  String get longPressDayHint =>
+      'Нажмите и удерживайте день для быстрого просмотра.';
+
+  @override
+  String get markPeriodRange => 'Отметить диапазон менструации';
+
+  @override
+  String get periodRangeOverlap =>
+      'Этот диапазон пересекается с существующей записью.';
+
+  @override
+  String get periodRangeSaved => 'Диапазон менструации сохранён';
+
+  @override
+  String trackingStreak(int count) {
+    return 'Серия: $count дн.';
+  }
+
+  @override
+  String weeklyTracking(int count) {
+    return 'Записи за $count из 7 дней';
+  }
+
+  @override
+  String get exportCalendarFile => 'Экспорт календаря (.ics)';
+
+  @override
+  String get ovulationMarkerHint =>
+      'Пунктир: предполагаемая или подтверждённая овуляция';
+
+  @override
+  String get addPastCycles => 'Добавить прошлые циклы';
+
+  @override
+  String get addPastCyclesHint =>
+      'Выберите до 3 диапазонов менструации и сохраните их вместе.';
+
+  @override
+  String get addPeriodRange => 'Добавить диапазон менструации';
+
+  @override
+  String get cycleOverlayTitle => 'Сравнение циклов';
+
+  @override
+  String get symptomLoadComparison =>
+      'Дневная выраженность симптомов по дням цикла';
+
+  @override
+  String get currentCycleLabel => 'Этот цикл';
+
+  @override
+  String get previousCycleLabel => 'Предыдущий цикл';
 
   @override
   String get colorBlindPattern => 'Узорные цвета фаз';
 
   @override
-  String get colorBlindPatternDesc => 'Добавляет текстуру полосам фаз — полезно, если цвета трудно различать';
+  String get colorBlindPatternDesc =>
+      'Добавляет текстуру полосам фаз — полезно, если цвета трудно различать';
 
   @override
   String get undo => 'Отменить';
@@ -1441,7 +2017,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get dataResetTitle => 'Не удалось прочитать данные';
 
   @override
-  String get dataResetBody => 'Данные приложения не удалось расшифровать на этом устройстве. Обычно так бывает после смены телефона или восстановления системной копии: данные зашифрованы ключом, привязанным к устройству, и он не переносится. Приложение начало работу заново.\n\nЧтобы переносить данные между устройствами, регулярно экспортируйте JSON-копию в Настройки > Резервная копия.';
+  String get dataResetBody =>
+      'Данные приложения не удалось расшифровать на этом устройстве. Обычно так бывает после смены телефона или восстановления системной копии: данные зашифрованы ключом, привязанным к устройству, и он не переносится. Приложение начало работу заново.\n\nЧтобы переносить данные между устройствами, регулярно экспортируйте JSON-копию в Настройки > Резервная копия.';
 
   @override
   String get pinSet => 'PIN-код установлен';
@@ -1467,7 +2044,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get deleteAllDataConfirm => 'Точно удалить все данные? Это действие нельзя отменить.';
+  String get deleteAllDataConfirm =>
+      'Точно удалить все данные? Это действие нельзя отменить.';
 
   @override
   String get dataDeleted => 'Все данные удалены';
@@ -1476,25 +2054,32 @@ class AppLocalizationsRu extends AppLocalizations {
   String get doseHint => 'напр. 500 мг';
 
   @override
-  String get menstrualPhaseInfo => 'Период менструального кровотечения. Обычно длится 3-7 дней. Организм отторгает слизистую матки.';
+  String get menstrualPhaseInfo =>
+      'Период менструального кровотечения. Обычно длится 3-7 дней. Организм отторгает слизистую матки.';
 
   @override
-  String get follicularPhaseInfo => 'После месячных яичники готовят новую яйцеклетку. Эстроген растёт, энергии становится больше.';
+  String get follicularPhaseInfo =>
+      'После месячных яичники готовят новую яйцеклетку. Эстроген растёт, энергии становится больше.';
 
   @override
-  String get ovulationPhaseInfo => 'Фаза, когда яйцеклетка выходит из яичника. Вероятность беременности максимальна.';
+  String get ovulationPhaseInfo =>
+      'Фаза, когда яйцеклетка выходит из яичника. Вероятность беременности максимальна.';
 
   @override
-  String get lutealPhaseInfo => 'Фаза от овуляции до следующих месячных. Прогестерон растёт, возможны симптомы ПМС.';
+  String get lutealPhaseInfo =>
+      'Фаза от овуляции до следующих месячных. Прогестерон растёт, возможны симптомы ПМС.';
 
   @override
-  String get fertileWindowInfo => 'Период с наибольшей вероятностью беременности. Начинается за 5 дней до овуляции и заканчивается через 1 день после.';
+  String get fertileWindowInfo =>
+      'Период с наибольшей вероятностью беременности. Начинается за 5 дней до овуляции и заканчивается через 1 день после.';
 
   @override
-  String get ovulationCardInfo => 'Примерный день выхода яйцеклетки из яичника. Приходится примерно на середину цикла.';
+  String get ovulationCardInfo =>
+      'Примерный день выхода яйцеклетки из яичника. Приходится примерно на середину цикла.';
 
   @override
-  String get nextPeriodInfo => 'Примерная дата начала следующих месячных. Рассчитывается по длине вашего цикла.';
+  String get nextPeriodInfo =>
+      'Примерная дата начала следующих месячных. Рассчитывается по длине вашего цикла.';
 
   @override
   String get phaseInfoTitle => 'Что это за фаза?';
@@ -1503,5 +2088,41 @@ class AppLocalizationsRu extends AppLocalizations {
   String get learnMore => 'Инфо';
 
   @override
-  String get healthDisclaimer => 'Это приложение не заменяет консультацию врача. По вопросам здоровья обращайтесь к специалисту.';
+  String get healthDisclaimer =>
+      'Это приложение не заменяет консультацию врача. По вопросам здоровья обращайтесь к специалисту.';
+
+  @override
+  String get homePriority => 'Приоритет главного экрана';
+
+  @override
+  String get cycleFirst => 'Сначала цикл';
+
+  @override
+  String get todayFirst => 'Сначала сегодня';
+
+  @override
+  String get planLifetime => 'Навсегда';
+
+  @override
+  String get planLifetimeDetail => 'Один платёж, премиум навсегда';
+
+  @override
+  String get cycleNotificationFrequency => 'Уровень уведомлений о цикле';
+
+  @override
+  String get cycleNotificationFrequencyDesc =>
+      'Не влияет на напоминания о лекарствах';
+
+  @override
+  String get notificationFrequencyEssential => 'Основные';
+
+  @override
+  String get notificationFrequencyBalanced => 'Сбалансированные';
+
+  @override
+  String get notificationFrequencyDetailed => 'Подробные';
+
+  @override
+  String get readOnlyHistoryNotice =>
+      'Прошлые записи доступны для просмотра; новые записи и изменения требуют Premium.';
 }

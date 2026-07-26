@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/daily_log.dart';
 import '../models/period_record.dart';
 import '../models/user_profile.dart';
+import 'encrypted_backup_codec.dart';
 import 'hive_service.dart';
 
 /// Yedek dosyası içeriği — parse ve restore arasındaki taşıyıcı.
@@ -34,9 +37,39 @@ class BackupException implements Exception {
 class BackupService {
   static const int backupVersion = 1;
 
+  /// Son başarılı yedeğin zamanı (SharedPreferences).
+  /// Hive'da değil: "tüm verileri sil" yedek geçmişini de silmemeli,
+  /// aksi halde kullanıcı sıfırdan başlarken "hiç yedek almadın" uyarısı
+  /// doğru olur ama ona söylenmesi gereken şey bu değildir.
+  static const String lastBackupKey = 'last_backup_epoch';
+
+  /// Kaç gün sonra "yedek alman iyi olur" denecek.
+  static const int backupStaleDays = 30;
+
   final HiveService _hiveService;
 
   BackupService(this._hiveService);
+
+  static Future<DateTime?> lastBackupAt() async {
+    final prefs = await SharedPreferences.getInstance();
+    final epoch = prefs.getInt(lastBackupKey);
+    return epoch == null ? null : DateTime.fromMillisecondsSinceEpoch(epoch);
+  }
+
+  /// Yedek gerçekten paylaşıldıktan sonra çağrılır. Dosyayı yazmak yeterli
+  /// değil: kullanıcı paylaşım sayfasını iptal etmiş olabilir.
+  static Future<void> markBackedUp() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(
+        lastBackupKey, DateTime.now().millisecondsSinceEpoch);
+  }
+
+  /// Yedek bayatladı mı? Hiç alınmadıysa da true — telefon kaybında
+  /// yılların verisi gidiyor ve uygulama bunu hiç hatırlatmıyordu.
+  static bool isStale(DateTime? last) {
+    if (last == null) return true;
+    return DateTime.now().difference(last).inDays >= backupStaleDays;
+  }
 
   /// Mevcut tüm veriyi JSON string'e serileştirir.
   String buildBackupJson() {
@@ -55,14 +88,33 @@ class BackupService {
     return const JsonEncoder.withIndent('  ').convert(payload);
   }
 
-  /// Yedeği geçici dizine dosya olarak yazar; paylaşım için yolu döndürür.
-  Future<String> exportBackup() async {
+  /// Yedeği parolayla şifreleyip geçici dizine yazar.
+  Future<String> exportBackup(String password) async {
     final json = buildBackupJson();
+    final encrypted = await Isolate.run(
+      () => EncryptedBackupCodec().encrypt(json, password),
+    );
     final dir = await getTemporaryDirectory();
     final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-    final file = File('${dir.path}/regl_takip_backup_$timestamp.json');
-    await file.writeAsString(json);
+    final file = File('${dir.path}/regl_takip_backup_$timestamp.rtbackup');
+    await file.writeAsString(encrypted, flush: true);
     return file.path;
+  }
+
+  bool isEncryptedBackup(String source) =>
+      EncryptedBackupCodec().isEncryptedEnvelope(source);
+
+  Future<String> decryptBackup(String source, String password) =>
+      Isolate.run(
+        () => EncryptedBackupCodec().decrypt(source, password),
+      );
+
+  Future<String> readBackupFile(String path) async {
+    final file = File(path);
+    if (await file.length() > EncryptedBackupCodec.maxFileBytes) {
+      throw BackupException('Yedek dosyası çok büyük');
+    }
+    return file.readAsString();
   }
 
   /// JSON string'i doğrular ve BackupData'ya çözer.
@@ -126,5 +178,6 @@ class BackupService {
     for (final log in data.dailyLogs) {
       await _hiveService.saveDailyLog(log);
     }
+    await _hiveService.ensureMedicationPlanMigrated();
   }
 }

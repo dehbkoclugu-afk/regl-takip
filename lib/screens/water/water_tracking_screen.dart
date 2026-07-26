@@ -4,6 +4,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/adaptive_layout.dart';
+import '../../core/utils/access.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/tracker_scaffold.dart';
 import '../../providers/providers.dart';
@@ -78,7 +80,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
     return Center(
       child: TweenAnimationBuilder<double>(
         tween: Tween(begin: 0, end: progress.clamp(0.0, 1.0)),
-        duration: const Duration(milliseconds: 600),
+        duration: context.motionDuration(const Duration(milliseconds: 600)),
         curve: Curves.easeOutCubic,
         builder: (context, value, _) {
           return SizedBox(
@@ -108,7 +110,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                         style: Theme.of(context)
                             .textTheme
                             .displayMedium!
-                            .copyWith(color: AppColors.water)),
+                            .copyWith(color: AppColors.categoryText(context, AppColors.water))),
                     Text(l10n.glasses,
                         style: TextStyle(
                             fontSize: 14, color: AppColors.ts(context))),
@@ -128,13 +130,15 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
 
   Widget _buildControls(int goal) {
     final l10n = AppLocalizations.of(context)!;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: usesLargeText(MediaQuery.textScalerOf(context)) ? 12 : 32,
+      runSpacing: 12,
       children: [
         _counterBtn(Icons.remove, l10n.decrease, () {
           if (_glasses > 0) setState(() => _glasses--);
         }),
-        const SizedBox(width: 32),
         Semantics(
           button: true,
           label: '${l10n.dailyGoal}: $goal',
@@ -161,10 +165,10 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                     const SizedBox(width: 6),
                     Text(
                       '${l10n.dailyGoal}: $goal',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.water,
+                        color: AppColors.categoryText(context, AppColors.water),
                       ),
                     ),
                   ],
@@ -173,7 +177,6 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
             ),
           ),
         ),
-        const SizedBox(width: 32),
         // Hedefin üstünde içilen su da kayda girmeli: sayaç hedefte
         // durduruluyordu, fazlası kaydedilemiyordu
         _counterBtn(Icons.add, l10n.increase,
@@ -204,7 +207,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                           ? () => setDialogState(() => tempGoal--)
                           : null,
                       icon: const Icon(Icons.remove_circle_outline_rounded),
-                      color: AppColors.water,
+                      color: AppColors.categoryText(context, AppColors.water),
                     ),
                     const SizedBox(width: 16),
                     Text(
@@ -212,7 +215,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                       style: Theme.of(context)
                           .textTheme
                           .displayMedium!
-                          .copyWith(color: AppColors.water),
+                          .copyWith(color: AppColors.categoryText(context, AppColors.water)),
                     ),
                     const SizedBox(width: 16),
                     IconButton(
@@ -220,7 +223,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                           ? () => setDialogState(() => tempGoal++)
                           : null,
                       icon: const Icon(Icons.add_circle_outline_rounded),
-                      color: AppColors.water,
+                      color: AppColors.categoryText(context, AppColors.water),
                     ),
                   ],
                 ),
@@ -241,6 +244,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
               ),
               TextButton(
                 onPressed: () {
+                  if (!ensureTrackingWriteAccess(context, ref)) return;
                   ref
                       .read(userProfileProvider.notifier)
                       .saveProfile(waterGoal: tempGoal);
@@ -303,7 +307,8 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
             itemBuilder: (context, index) {
               final isFilled = index < _glasses;
               return AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
+                duration:
+                    context.motionDuration(const Duration(milliseconds: 300)),
                 decoration: BoxDecoration(
                   color: isFilled
                       ? AppColors.water.withValues(alpha: 0.15)
@@ -346,7 +351,9 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
   }
 
   Future<void> _save() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     await ref.read(dailyLogProvider.notifier).updateWater(ref.read(selectedDateProvider), _glasses);
+    notifyTrackingRecordSaved();
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(

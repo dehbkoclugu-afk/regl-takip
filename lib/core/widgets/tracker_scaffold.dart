@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
 import '../theme/app_colors.dart';
+import '../utils/adaptive_layout.dart';
 
 /// 10 takip ekranının ortak iskeleti: Scaffold + AppBar + kaydırılan
 /// gövde + alt aksiyon alanı + kaydedilmemiş değişiklik koruması.
@@ -10,7 +11,7 @@ import '../theme/app_colors.dart';
 /// çıkış) 6-7 ekranda ayrı ayrı düzeltilmek zorunda kalmıştı — kalıp tek
 /// yerde olsaydı tek düzeltmeydi. Bu bileşen o tek yer; dirty-guard artık
 /// yalnız Notlar'da değil, kullanan her ekranda bedava.
-class TrackerScaffold extends StatelessWidget {
+class TrackerScaffold extends StatefulWidget {
   /// AppBar başlığı.
   final String title;
 
@@ -43,6 +44,25 @@ class TrackerScaffold extends StatelessWidget {
     this.floatingActionButton,
   });
 
+  @override
+  State<TrackerScaffold> createState() => _TrackerScaffoldState();
+}
+
+class _TrackerScaffoldState extends State<TrackerScaffold> {
+  @override
+  void initState() {
+    super.initState();
+    // Kaydet-ve-kapan akışlarında bildirim çubuğu kök ScaffoldMessenger'da
+    // yaşıyor, yani onu açan ekran kapandıktan sonra da ayakta kalıyor.
+    // Kullanıcı süre dolmadan başka bir izleyiciye girerse ruh hali ekranının
+    // "Ruh hali kaydedildi" mesajı akış ekranının Kaydet butonunun üstünde
+    // duruyordu — hem yanlış ekranda hem de birincil eylemi örterek.
+    // Yeni bir izleyici açılırken önceki ekranın mesajı artık temizleniyor.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ScaffoldMessenger.of(context).clearSnackBars();
+    });
+  }
+
   Future<bool> _confirmDiscard(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
     final discard = await showDialog<bool>(
@@ -70,8 +90,9 @@ class TrackerScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final largeText = usesLargeText(MediaQuery.textScalerOf(context));
     return PopScope(
-      canPop: !isDirty,
+      canPop: !widget.isDirty,
       onPopInvokedWithResult: (didPop, _) async {
         if (didPop) return;
         final navigator = Navigator.of(context);
@@ -82,24 +103,26 @@ class TrackerScaffold extends StatelessWidget {
       child: Scaffold(
         backgroundColor: AppColors.bg(context),
         appBar: AppBar(
-          title: Text(title,
+          title: Text(widget.title,
+              maxLines: largeText ? 2 : 1,
               style: TextStyle(
                   fontWeight: FontWeight.bold, color: AppColors.tp(context))),
+          toolbarHeight: largeText ? 80 : null,
           backgroundColor: AppColors.bg(context),
           elevation: 0,
           iconTheme: IconThemeData(color: AppColors.tp(context)),
-          bottom: appBarBottom,
+          bottom: widget.appBarBottom,
         ),
-        floatingActionButton: floatingActionButton,
+        floatingActionButton: widget.floatingActionButton,
         body: Column(
           children: [
-            Expanded(child: body),
-            if (bottomBar != null)
+            Expanded(child: widget.body),
+            if (widget.bottomBar != null)
               SafeArea(
                 top: false,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-                  child: bottomBar!,
+                  child: widget.bottomBar!,
                 ),
               ),
           ],

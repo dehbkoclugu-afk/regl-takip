@@ -46,6 +46,8 @@ class AppTheme {
         surface: surface,
         error: AppColors.error,
       ),
+      focusColor: (isDark ? AppColors.primaryLight : AppColors.primaryDeep)
+          .withValues(alpha: isDark ? 0.32 : 0.20),
       scaffoldBackgroundColor:
           isDark ? AppColors.backgroundDark : AppColors.background,
       textTheme: TextTheme(

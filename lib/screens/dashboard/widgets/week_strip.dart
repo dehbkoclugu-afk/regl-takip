@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/access.dart';
@@ -91,8 +93,7 @@ class WeekStrip extends ConsumerWidget {
         '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
     final hasLog = logs[dateKey] != null;
 
-    final numberColor =
-        isToday ? AppColors.tp(context) : AppColors.ts(context);
+    final numberColor = isToday ? AppColors.tp(context) : AppColors.ts(context);
 
     return Semantics(
       button: !isFuture,
@@ -102,8 +103,18 @@ class WeekStrip extends ConsumerWidget {
         onTap: isFuture
             ? null
             : () {
-                if (!ensurePremiumAccess(context, ref)) return;
+                ref.read(selectedDateProvider.notifier).state = date;
+                if (ref.read(accessProvider) == AccessLevel.free) {
+                  context.push('/log');
+                  return;
+                }
                 showQuickLogSheet(context, ref, date);
+              },
+        onLongPress: isFuture
+            ? null
+            : () {
+                if (!ensurePremiumAccess(context, ref)) return;
+                _showFlowQuickPick(context, ref, date);
               },
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 6),
@@ -151,8 +162,10 @@ class WeekStrip extends ConsumerWidget {
                 ),
                 // Doku modu: renk + desen çift kodlama
                 foregroundDecoration: ref.watch(phasePatternProvider)
-                    ? patternOverlayFor(barColor,
-                        radius: BorderRadius.circular(3))
+                    ? patternOverlayFor(
+                        barColor,
+                        radius: BorderRadius.circular(3),
+                      )
                     : null,
               ),
               const SizedBox(height: 4),
@@ -162,9 +175,7 @@ class WeekStrip extends ConsumerWidget {
                 height: 4,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: hasLog
-                      ? AppColors.primaryDeep
-                      : Colors.transparent,
+                  color: hasLog ? AppColors.primaryDeep : Colors.transparent,
                 ),
               ),
             ],
@@ -172,5 +183,58 @@ class WeekStrip extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _showFlowQuickPick(
+    BuildContext context,
+    WidgetRef ref,
+    DateTime date,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final selected = await showModalBottomSheet<FlowIntensity?>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.flow,
+                style: Theme.of(
+                  sheetContext,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 12),
+              for (final option in [
+                (FlowIntensity.light, l10n.light, 1),
+                (FlowIntensity.normal, l10n.medium, 2),
+                (FlowIntensity.heavy, l10n.heavy, 3),
+                (FlowIntensity.veryHeavy, l10n.veryHeavy, 4),
+              ])
+                ListTile(
+                  leading: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: List.generate(
+                      option.$3,
+                      (_) => const Icon(
+                        Icons.water_drop_rounded,
+                        size: 14,
+                        color: AppColors.primaryStrong,
+                      ),
+                    ),
+                  ),
+                  title: Text(option.$2),
+                  onTap: () => Navigator.of(sheetContext).pop(option.$1),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (selected == null) return;
+    await ref.read(dailyLogProvider.notifier).setFlowIntensity(date, selected);
   }
 }

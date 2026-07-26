@@ -5,7 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/access.dart';
+import '../../../core/utils/adaptive_layout.dart';
 import '../../../core/utils/enum_labels.dart';
+import '../../../core/utils/statistics_summary.dart';
 import '../../../models/enums.dart';
 import '../../../providers/providers.dart';
 import '../../../core/utils/motion.dart';
@@ -73,6 +76,7 @@ class QuickStatusCards extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final largeText = usesLargeText(MediaQuery.textScalerOf(context));
     final dailyLogs = ref.watch(dailyLogProvider);
     final now = DateTime.now();
     final todayKey =
@@ -83,41 +87,178 @@ class QuickStatusCards extends ConsumerWidget {
     final hasSymptoms =
         todayLog != null && todayLog.symptoms.isNotEmpty;
     final hasAnyLog = hasMood || hasSymptoms;
+    final consistency = calculateTrackingConsistency(
+      dailyLogs.values,
+      today: now,
+    );
+    final consistencyText = consistency.streakDays > 0
+        ? '${l10n.trackingStreak(consistency.streakDays)} · '
+            '${l10n.weeklyTracking(consistency.lastSevenDays)}'
+        : l10n.weeklyTracking(consistency.lastSevenDays);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 12),
-          child: Text(
-            l10n.todaySummary,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: AppColors.tp(context),
-            ),
+          // Rozet başlıkla aynı satırı paylaşıyordu ve iki fakti birden
+          // taşıdığı için sıkışıp sarıyordu: "… Son 7 günde 1 / kayıt".
+          // Kendi satırında tam genişliği bulunca tek satıra sığıyor ve
+          // hiçbir bilgi kırpılmıyor.
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.todaySummary,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.tp(context),
+                ),
+              ),
+              if (consistency.lastSevenDays > 0) ...[
+                const SizedBox(height: 6),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    consistencyText,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primaryDeep,
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
         if (!hasAnyLog) _buildEmptyState(context, ref, l10n),
-        if (hasAnyLog)
-          Row(
-            children: [
-              if (hasMood)
-                Expanded(
-                  child: _buildMoodCard(context, todayLog!.mood!.type, l10n),
-                ),
-              if (hasMood && hasSymptoms) const SizedBox(width: 12),
-              if (hasSymptoms)
-                Expanded(
-                  child: _buildSymptomCard(context, todayLog.symptoms.length, l10n),
-                ),
-            ],
-          ),
+        if (hasAnyLog) ...[
+          if (largeText && hasMood && hasSymptoms)
+            Column(
+              children: [
+                _buildMoodCard(context, ref, todayLog.mood!.type, l10n),
+                const SizedBox(height: 12),
+                _buildSymptomCard(
+                    context, ref, todayLog.symptoms.length, l10n),
+              ],
+            )
+          else
+            Row(
+              children: [
+                if (hasMood)
+                  Expanded(
+                    child: _buildMoodCard(
+                        context, ref, todayLog!.mood!.type, l10n),
+                  ),
+                if (hasMood && hasSymptoms) const SizedBox(width: 12),
+                if (hasSymptoms)
+                  Expanded(
+                    child: _buildSymptomCard(
+                        context, ref, todayLog.symptoms.length, l10n),
+                  ),
+              ],
+            ),
+          // Kısmi gün: biri girilmiş, diğeri boş. Boş durumda yönlendirme
+          // vardı ama yarısı dolu günde eksik olan hiç istenmiyordu.
+          if (!hasMood || !hasSymptoms) ...[
+            const SizedBox(height: 10),
+            _buildMissingPrompt(
+              context,
+              ref,
+              label: hasMood ? l10n.symptoms : l10n.mood,
+              route: hasMood ? '/symptoms' : '/mood',
+              icon: hasMood
+                  ? Icons.monitor_heart_rounded
+                  : Icons.add_reaction_rounded,
+              l10n: l10n,
+            ),
+          ],
+        ],
       ],
     )
         .animateSafe(context)
         .fadeIn(delay: 600.ms, duration: 600.ms)
         .slideY(begin: 0.15, end: 0, delay: 600.ms, duration: 600.ms);
+  }
+
+  /// Kart kabuğunu bozmadan dokunulabilir yapar.
+  Widget _tappable(
+    BuildContext context,
+    WidgetRef ref, {
+    required String route,
+    required String semanticsLabel,
+    required Widget child,
+  }) {
+    return Semantics(
+      button: true,
+      label: semanticsLabel,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () {
+            ref.read(selectedDateProvider.notifier).state = DateTime.now();
+            context.push(route);
+          },
+          child: ExcludeSemantics(child: child),
+        ),
+      ),
+    );
+  }
+
+  /// Eksik olanı isteyen ince satır. Kart değil: gün zaten yarı dolu,
+  /// ikinci bir kart kabuğu özeti bastırırdı.
+  Widget _buildMissingPrompt(
+    BuildContext context,
+    WidgetRef ref, {
+    required String label,
+    required String route,
+    required IconData icon,
+    required AppLocalizations l10n,
+  }) {
+    return Semantics(
+      button: true,
+      label: l10n.notLoggedToday(label),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: () {
+            ref.read(selectedDateProvider.notifier).state = DateTime.now();
+            context.push(route);
+          },
+          child: Padding(
+            // 18 px ikon + 2x15 = 48 px: Material asgari dokunma hedefi
+            padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+            child: Row(
+              children: [
+                Icon(icon, size: 18, color: AppColors.ts(context)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l10n.notLoggedToday(label),
+                    style: TextStyle(
+                        fontSize: 13, color: AppColors.ts(context)),
+                  ),
+                ),
+                Icon(Icons.chevron_right_rounded,
+                    size: 18, color: AppColors.ts(context)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildEmptyState(
@@ -131,6 +272,12 @@ class QuickStatusCards extends ConsumerWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: () {
+            // "Kayıt Ekle" butonuyla aynı kapı: ikisi de günlük ekranına
+            // gidiyor, ikisi de aynı kontrolden geçmeli. Kart bu kontrolü
+            // atlıyordu, yani ücretsiz kullanıcı formu doldurup ancak
+            // kaydederken duvara tosluyordu — emek harcattıktan sonra
+            // reddetmek, baştan söylemekten kötü.
+            if (!ensurePremiumAccess(context, ref)) return;
             // Dashboard'dan kayıt her zaman bugüne girilir
             ref.read(selectedDateProvider.notifier).state = DateTime.now();
             context.push('/log');
@@ -206,8 +353,16 @@ class QuickStatusCards extends ConsumerWidget {
     );
   }
 
-  Widget _buildMoodCard(BuildContext context, MoodType mood, AppLocalizations l10n) {
-    return Container(
+  Widget _buildMoodCard(BuildContext context, WidgetRef ref, MoodType mood,
+      AppLocalizations l10n) {
+    // Kart özeti gösteriyordu ama dokunulmuyordu: düzeltmek için günlük
+    // ekranından dolaşmak gerekiyordu
+    return _tappable(
+      context,
+      ref,
+      route: '/mood',
+      semanticsLabel: '${l10n.mood}: ${_moodName(mood, l10n)}',
+      child: Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.sf(context),
@@ -269,11 +424,18 @@ class QuickStatusCards extends ConsumerWidget {
           ),
         ],
       ),
+      ),
     );
   }
 
-  Widget _buildSymptomCard(BuildContext context, int symptomCount, AppLocalizations l10n) {
-    return Container(
+  Widget _buildSymptomCard(BuildContext context, WidgetRef ref,
+      int symptomCount, AppLocalizations l10n) {
+    return _tappable(
+      context,
+      ref,
+      route: '/symptoms',
+      semanticsLabel: '${l10n.symptoms}: ${l10n.nSymptoms(symptomCount)}',
+      child: Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.sf(context),
@@ -333,6 +495,7 @@ class QuickStatusCards extends ConsumerWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

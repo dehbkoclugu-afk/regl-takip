@@ -3,9 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/adaptive_layout.dart';
+import '../../core/utils/access.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/widgets/tracker_scaffold.dart';
-import '../../core/art/art_slot.dart';
 import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../providers/providers.dart';
@@ -79,29 +80,34 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: ArtSlot(
-                      id: 'R13-mood-spot',
-                      height: 96,
-                      fit: BoxFit.contain,
-                    ).animate().fadeIn(duration: 350.ms),
-                  ),
-                  const SizedBox(height: 12),
                   Text(l10n.howAreYouFeeling,
                       style: TextStyle(
                           fontSize: 22, fontWeight: FontWeight.bold,
                           color: AppColors.tp(context)))
                       .animateSafe(context).fadeIn(duration: 400.ms),
                   const SizedBox(height: 20),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3, childAspectRatio: 0.9,
-                      crossAxisSpacing: 12, mainAxisSpacing: 12,
-                    ),
-                    itemCount: MoodType.values.length,
-                    itemBuilder: (context, index) {
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final textScale = effectiveTextScale(
+                        MediaQuery.textScalerOf(context),
+                      );
+                      return GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: adaptiveGridColumns(
+                            width: constraints.maxWidth,
+                            textScale: textScale,
+                            maxColumns: 3,
+                            minCardWidth: 80,
+                          ),
+                          mainAxisExtent: scaledGridExtent(110, textScale),
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                        ),
+                        itemCount: MoodType.values.length,
+                        itemBuilder: (context, index) {
                       final mood = MoodType.values[index];
                       final emojiData = _moodEmojis[mood]!;
                       // Etiketler tek kaynaktan (EnumLabels); ekranın kendi
@@ -119,7 +125,8 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                             _selectedMood = _selectedMood == mood ? null : mood),
                         child: ExcludeSemantics(
                         child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 250),
+                          duration: context.motionDuration(
+                              const Duration(milliseconds: 250)),
                           decoration: BoxDecoration(
                             gradient: isSelected
                                 ? LinearGradient(
@@ -148,8 +155,13 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                                     fontSize: 13,
                                     fontWeight: isSelected
                                         ? FontWeight.w700 : FontWeight.w600,
+                                    // Pastelin kendisi metin olarak okunmuyordu
+                                    // (moodHappy beyaz üstünde 1,26:1); ton
+                                    // korunur, parlaklık kısılır
                                     color: isSelected
-                                        ? emojiData.$2 : AppColors.ts(context),
+                                        ? AppColors.readable(
+                                            context, emojiData.$2)
+                                        : AppColors.ts(context),
                                   )),
                             ],
                           ),
@@ -161,6 +173,8 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                           .scale(begin: const Offset(0.9, 0.9),
                               end: const Offset(1.0, 1.0),
                               delay: (index * 40).ms, duration: 300.ms);
+                        },
+                      );
                     },
                   ),
                   const SizedBox(height: 24),
@@ -218,6 +232,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
   }
 
   Future<void> _save() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     final selected = _selectedMood;
     final mood = selected == null
         ? null
@@ -230,6 +245,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
     await ref
         .read(dailyLogProvider.notifier)
         .updateMood(ref.read(selectedDateProvider), mood);
+    notifyTrackingRecordSaved();
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(

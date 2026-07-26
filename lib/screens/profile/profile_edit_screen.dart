@@ -300,11 +300,13 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                 child: Icon(icon, color: AppColors.primary, size: 20),
               ),
               const SizedBox(width: 12),
-              Text(title,
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.tp(context))),
+              Expanded(
+                child: Text(title,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.tp(context))),
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -345,11 +347,14 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                 color: hasValue ? AppColors.primary : AppColors.ts(context),
                 size: 20),
             const SizedBox(width: 12),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 15,
-                color: hasValue ? AppColors.tp(context) : AppColors.ts(context),
+            Expanded(
+              child: Text(
+                value,
+                style: TextStyle(
+                  fontSize: 15,
+                  color:
+                      hasValue ? AppColors.tp(context) : AppColors.ts(context),
+                ),
               ),
             ),
           ],

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/adaptive_layout.dart';
+import '../../core/utils/access.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/widgets/tracker_scaffold.dart';
 import '../../models/enums.dart';
@@ -152,14 +154,25 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
 
   Widget _buildCategoryGrid(SymptomCategory category, AppLocalizations l10n) {
     final symptoms = _getSymptomsForCategory(category);
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, childAspectRatio: 1.4,
-        crossAxisSpacing: 12, mainAxisSpacing: 12,
-      ),
-      itemCount: symptoms.length,
-      itemBuilder: (context, index) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textScale =
+            effectiveTextScale(MediaQuery.textScalerOf(context));
+        return GridView.builder(
+          padding: const EdgeInsets.all(16),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: adaptiveGridColumns(
+              width: constraints.maxWidth - 32,
+              textScale: textScale,
+              maxColumns: 2,
+              minCardWidth: 130,
+            ),
+            mainAxisExtent: scaledGridExtent(105, textScale),
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+          ),
+          itemCount: symptoms.length,
+          itemBuilder: (context, index) {
         final symptom = symptoms[index];
         final isSelected = _selectedSymptoms.containsKey(symptom);
         final severity = _selectedSymptoms[symptom] ?? 1;
@@ -180,7 +193,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
               }
             }),
             child: AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
+            duration: context.motionDuration(const Duration(milliseconds: 250)),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               gradient: isSelected
@@ -202,17 +215,23 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(_symptomIcon(symptom),
-                    color: isSelected ? AppColors.primary : AppColors.ts(context),
+                    // primary beyaz zeminde 2,01:1 — ikon için de 3:1 gerekir
+                    color: isSelected
+                        ? AppColors.primaryStrong
+                        : AppColors.ts(context),
                     size: 28),
                 const SizedBox(height: 6),
                 Text(_symptomName(symptom, l10n),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                      color: isSelected ? AppColors.primary : AppColors.tp(context),
+                      // Seçim etiketi primary'ye dönüyordu: 2,01:1. Ailenin
+                      // bordo ucu aynı kimliği 6,30:1 ile veriyor
+                      color: isSelected
+                          ? AppColors.primaryDeep
+                          : AppColors.tp(context),
                     ),
-                    textAlign: TextAlign.center, maxLines: 1,
-                    overflow: TextOverflow.ellipsis),
+                    textAlign: TextAlign.center),
                 if (isSelected) ...[
                   const SizedBox(height: 2),
                   // Şiddet noktaları 10 px ikon + 2 px boşluktu: dokunma
@@ -250,11 +269,14 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
           ),
           ),
         ).animateSafe(context).fadeIn(delay: (index * 50).ms, duration: 300.ms);
+          },
+        );
       },
     );
   }
 
   Future<void> _save() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     final notifier = ref.read(dailyLogProvider.notifier);
     final date = ref.read(selectedDateProvider);
     final entries = _selectedSymptoms.entries
@@ -268,6 +290,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
     }
 
     await notifier.updateSymptoms(date, entries);
+    notifyTrackingRecordSaved();
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(

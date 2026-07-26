@@ -1,0 +1,72 @@
+name: Android APK
+
+# Codemagic'teki android-workflow ile aynı adımlar; farkı çıktının GitHub
+# release'ine asılması.
+#
+# workflow_dispatch ancak dosya varsayılan dala girdikten sonra Actions
+# sekmesinde görünür — GitHub elle tetiklemeyi yalnızca oradan okur. O yüzden
+# APK dalında push tetikleyicisi de var: bu dala her push kendiliğinden bir
+# build başlatır.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - claude/regl-takip-apk-commit-cwoni4
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # codemagic.yaml ile aynı sürüme sabit: 3.44.8 eklenti zinciri
+      # (table_calendar 3.2.0 / intl 0.20.2) bu sürüme göre çözüldü ve
+      # derlemesi doğrulandı. İki hattın farklı Flutter'la derlemesi,
+      # yalnız birinde çıkan hatalar demek.
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.8
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate localizations
+        run: flutter gen-l10n
+
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Tests
+        run: flutter test
+
+      # key.properties CI'da yoksa gradle guard'ı debug anahtarıyla imzalar
+      - name: Build APK
+        run: flutter build apk --release --split-per-abi
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-${{ github.run_number }}
+          name: Test APK — ${{ github.ref_name }} (${{ github.run_number }})
+          body: |
+            `${{ github.ref_name }}` dalının ${{ github.sha }} commit'inden
+            otomatik üretilmiş test APK'sı.
+
+            Telefona kurmak için **arm64-v8a** dosyasını indirin (2019 sonrası
+            hemen her Android cihaz bu mimaride). Kurulum sırasında
+            "bilinmeyen kaynaklardan yüklemeye izin ver" gerekir.
+
+            Debug anahtarıyla imzalıdır — Play Store'a yüklenemez, yalnızca
+            elden kurulum içindir.
+          prerelease: true
+          files: build/app/outputs/flutter-apk/*.apk

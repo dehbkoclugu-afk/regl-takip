@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/access.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/tracker_scaffold.dart';
 import '../../models/enums.dart';
@@ -97,8 +98,10 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
       (FlowIntensity.veryHeavy, l10n.veryHeavy, 4, AppColors.flowVeryHeavy),
     ];
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return Wrap(
+      alignment: WrapAlignment.spaceAround,
+      spacing: 12,
+      runSpacing: 12,
       children: items.asMap().entries.map((entry) {
         final i = entry.key;
         final item = entry.value;
@@ -113,7 +116,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                 () => _intensity = _intensity == item.$1 ? null : item.$1),
             child: ExcludeSemantics(
               child: AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
+            duration: context.motionDuration(const Duration(milliseconds: 250)),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             decoration: BoxDecoration(
               gradient: isSelected
@@ -143,7 +146,13 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                      color: isSelected ? item.$4 : AppColors.ts(context),
+                      // Akış tonları yalnız parlaklıkla ayrışıyor (1,36:1 —
+                      // 2,93:1): metin olarak okunmuyorlar, koyulaştırılınca
+                      // da dördü aynı renge çöküyor. Yoğunluğu damla sayısı,
+                      // çerçeve ve zemin taşıyor; etiket okunur kalmalı
+                      color: isSelected
+                          ? AppColors.tp(context)
+                          : AppColors.ts(context),
                     )),
               ],
             ),
@@ -165,8 +174,10 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
       (FlowColor.brown, l10n.brown, const Color(0xFFA08070)),
     ];
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return Wrap(
+      alignment: WrapAlignment.spaceAround,
+      spacing: 12,
+      runSpacing: 12,
       children: colors.asMap().entries.map((entry) {
         final i = entry.key;
         final item = entry.value;
@@ -183,7 +194,8 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
               child: Column(
             children: [
               AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
+                duration:
+                    context.motionDuration(const Duration(milliseconds: 250)),
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
@@ -224,21 +236,23 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.clots,
-                  style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w700,
-                      color: AppColors.tp(context))),
-              Text(l10n.clotsQuestion,
-                  style: TextStyle(
-                      fontSize: 13, color: AppColors.ts(context))),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.clots,
+                    style: TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w700,
+                        color: AppColors.tp(context))),
+                Text(l10n.clotsQuestion,
+                    style: TextStyle(
+                        fontSize: 13, color: AppColors.ts(context))),
+              ],
+            ),
           ),
           Switch.adaptive(
             value: _hasClots,
-            activeColor: AppColors.primary,
+            activeThumbColor: AppColors.primary,
             onChanged: (v) => setState(() => _hasClots = v),
           ),
         ],
@@ -322,6 +336,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
   }
 
   Future<void> _save() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     final notifier = ref.read(dailyLogProvider.notifier);
     final date = ref.read(selectedDateProvider);
 
@@ -345,6 +360,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
       hasClots: _hasClots,
       padChangeCount: _padChanges,
     );
+    notifyTrackingRecordSaved();
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(

@@ -10,6 +10,7 @@ import '../../screens/statistics/statistics_screen.dart';
 import '../../screens/settings/settings_screen.dart';
 import '../../screens/shell/app_shell.dart';
 import '../../screens/log/log_screen.dart';
+import '../../screens/measurements/daily_measurements_screen.dart';
 import '../../screens/flow/flow_tracking_screen.dart';
 import '../../screens/water/water_tracking_screen.dart';
 import '../../screens/temperature/temperature_tracking_screen.dart';
@@ -19,29 +20,13 @@ import '../../screens/sexual_activity/sexual_activity_screen.dart';
 import '../../screens/medication/medication_tracking_screen.dart';
 import '../../screens/notes/notes_screen.dart';
 import '../../screens/paywall/paywall_screen.dart';
+import '../../screens/period_history/period_history_screen.dart';
 import '../../screens/profile/profile_edit_screen.dart';
 import '../../providers/providers.dart';
 
-/// Ücretsiz katmanda kilitli rotalar: günlük takip ekranlarının tamamı.
-/// Ücretsiz sürüm = regl takibi + takvim + tahminler (dashboard/calendar/
-/// settings açık; istatistik sekmesi kendi içinde kilit gösterir ki
-/// kullanıcı neyi kaçırdığını görsün).
-const _premiumPaths = {
-  '/log',
-  '/flow',
-  '/symptoms',
-  '/mood',
-  '/water',
-  '/temperature',
-  '/weight',
-  '/sleep',
-  '/sexual-activity',
-  '/medication',
-  '/notes',
-};
-
 // Navigation keys for each branch in the StatefulShellRoute
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
+GlobalKey<NavigatorState> get rootNavigatorKey => _rootNavigatorKey;
 final _shellNavigatorDashboardKey =
     GlobalKey<NavigatorState>(debugLabel: 'dashboard');
 final _shellNavigatorCalendarKey =
@@ -67,12 +52,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       final atOnboarding = state.matchedLocation == '/onboarding';
       if (!onboarded && !atOnboarding) return '/onboarding';
       if (onboarded && atOnboarding) return '/dashboard';
-      // Deneme bitti + abonelik yok: takip ekranları tek kapıdan paywall'a.
-      // Bildirim/deep-link girişleri dahil her yol burada kesilir.
-      if (_premiumPaths.contains(state.matchedLocation) &&
-          ref.read(accessProvider) == AccessLevel.free) {
-        return '/paywall';
-      }
+      // Deneme bittikten sonra takip rotaları salt-okunur açılır. Yazma
+      // eylemleri ekranlardaki ortak premium kapısında durdurulur; böylece
+      // kullanıcı yıllardır tuttuğu geçmişi görmeye devam eder.
       return null;
     },
     // Bilinmeyen yol (eski bildirim payload'ı, hatalı deep link) kırmızı
@@ -165,6 +147,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const WaterTrackingScreen(),
       ),
       GoRoute(
+        path: '/measurements',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const DailyMeasurementsScreen(),
+      ),
+      GoRoute(
         path: '/temperature',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const TemperatureTrackingScreen(),
@@ -198,6 +185,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/profile-edit',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ProfileEditScreen(),
+      ),
+      // Ücretsiz katmanın vaadi regl takibi; yanlış girilen kaydı
+      // düzeltmek o vaadin parçası ve yazma istisnası olarak kalır.
+      GoRoute(
+        path: '/period-history',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const PeriodHistoryScreen(),
       ),
       GoRoute(
         path: '/paywall',

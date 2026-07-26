@@ -173,6 +173,7 @@
   "deleteRecord": "Supprimer l'enregistrement",
   "recordDeleted": "Enregistrement supprimé",
   "invalidWeight": "Saisissez un poids valide (20-300 kg)",
+  "invalidTemperature": "Saisissez une température valide (35-40 °C)",
   "discardChangesTitle": "Modifications non enregistrées",
   "discardChangesBody": "Votre note n'est pas enregistrée. Si vous quittez maintenant, elle sera perdue.",
   "discard": "Abandonner",
@@ -194,6 +195,7 @@
   "nGlassesWater": "{count} verres d'eau",
   "noRecordForDay": "Aucun enregistrement pour ce jour.",
   "dailyLog": "Journal quotidien",
+  "dailyMeasurements": "Mesures quotidiennes",
   "flow": "Flux",
   "recorded": "Enregistré",
   "nMedications": "{count} médicaments",
@@ -251,6 +253,8 @@
   "medicationTracking": "Suivi des médicaments",
   "addMedication": "Ajouter un médicament",
   "noMedicationsYet": "Aucun médicament pour l'instant",
+  "medicationPlanHint": "Ce plan s'applique chaque jour. La case enregistre uniquement le jour sélectionné.",
+  "medicationAlreadyInPlan": "Ce médicament figure déjà dans le plan",
   "tapToAdd": "Touchez + pour ajouter",
   "add": "Ajouter",
   "dailyNote": "Note du jour",
@@ -353,6 +357,11 @@
   "trimester1": "1er trimestre",
   "trimester2": "2e trimestre",
   "trimester3": "3e trimestre",
+  "pregnancyDevelopmentTitle": "Développement cette semaine",
+  "pregnancyDevelopment1": "Une période de développement rapide se poursuit pendant la formation des principaux organes et systèmes de votre bébé.",
+  "pregnancyDevelopment2": "Les mouvements de votre bébé deviennent plus coordonnés ; le moment où vous les ressentez varie selon les personnes.",
+  "pregnancyDevelopment3": "Votre bébé continue de grandir tandis que la préparation à la naissance prend de l'importance.",
+  "pregnancyCheckupReminder": "Suivez le calendrier de consultations recommandé par votre professionnel de santé.",
   "pregnancyStartLabel": "Dernières règles (début de grossesse)",
   "pregnancyModeInfo": "En mode grossesse, prévisions et rappels de règles sont désactivés",
   "pillPackStartLabel": "Début de la plaquette",
@@ -371,13 +380,26 @@
   "consentBody": "Toutes vos données sont stockées chiffrées uniquement sur cet appareil ; rien n'est envoyé à un serveur. La politique de confidentialité se trouve dans Réglages > À propos. En continuant, vous acceptez ce traitement sur votre appareil.",
   "consentAccept": "J'accepte",
   "quickLog": "Saisie rapide",
+  "shortcutQuickLog": "Saisie rapide",
+  "shortcutToday": "Voir aujourd’hui",
   "allTrackers": "Tous les suivis",
   "disguiseTitle": "Mode camouflage",
   "disguiseDesc": "L'application prend l'identité « Notes » : nom, icône, widget, notifications et écran de démarrage deviennent neutres. Retour : appui long sur le titre Notes.",
   "decoyTitle": "Notes",
   "decoyEmpty": "Pas encore de notes",
   "decoyHint": "Écrivez quelque chose…",
-  "backupData": "Sauvegarder (JSON)",
+  "backupData": "Créer une sauvegarde protégée",
+  "backupPassword": "Mot de passe de sauvegarde",
+  "backupPasswordConfirm": "Saisissez à nouveau le mot de passe",
+  "backupPasswordLength": "Le mot de passe doit contenir entre 10 et 128 caractères",
+  "backupPasswordsDoNotMatch": "Les mots de passe ne correspondent pas",
+  "backupNoRecovery": "Ce mot de passe n’est pas stocké sur l’appareil et ne peut pas être récupéré. Si vous l’oubliez, vous ne pourrez pas ouvrir la sauvegarde.",
+  "unlockBackupTitle": "Saisissez le mot de passe",
+  "unlockBackupBody": "Cette sauvegarde ne peut être ouverte qu’avec le mot de passe utilisé lors de sa création.",
+  "backupPasswordOrFileInvalid": "Le mot de passe est incorrect ou le fichier de sauvegarde est endommagé.",
+  "legacyBackupWarning": "Cette ancienne sauvegarde n’est pas chiffrée. Après sa restauration, les nouvelles sauvegardes seront protégées par mot de passe.",
+  "showPassword": "Afficher le mot de passe",
+  "hidePassword": "Masquer le mot de passe",
   "restoreData": "Restaurer une sauvegarde",
   "restoreConfirmTitle": "Restaurer la sauvegarde ?",
   "restoreConfirmBody": "Toutes les données actuelles seront supprimées et {count} enregistrements de la sauvegarde seront restaurés. Cette action est irréversible.",
@@ -425,6 +447,220 @@
   "coachPersonalInsight": "D'après vos saisies, le plus fréquent dans cette phase : {symptom} ({percent}%)",
   "notificationInsightTitle": "Conseil de phase",
   "notificationInsightBody": "La phase lutéale commence. D'après vos saisies, votre symptôme le plus fréquent dans cette phase : {symptom}.",
+  "notificationPeriodTitle": "Rappel de règles",
+  "notificationPeriodTimingToday": "Vos règles pourraient commencer aujourd'hui.",
+  "notificationPeriodTimingTomorrow": "Vos règles pourraient commencer demain.",
+  "notificationPeriodTimingInDays": "Vos règles pourraient commencer dans {days} jours.",
+  "@notificationPeriodTimingInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "notificationPeriodTip1": "Pensez à emporter une serviette ou un tampon.",
+  "notificationPeriodTip2": "Un peu de préparation facilite les choses.",
+  "notificationPeriodTip3": "Enregistrer le début améliore vos prédictions.",
+  "notificationPeriodChannel": "Rappel de règles",
+  "notificationPeriodChannelDesc": "Rappels du cycle menstruel",
+  "notificationOvulationTitle": "Rappel d'ovulation",
+  "notificationOvulationBody": "C'est votre jour d'ovulation. Vous êtes dans votre fenêtre fertile !",
+  "notificationOvulationChannel": "Rappel d'ovulation",
+  "notificationOvulationChannelDesc": "Rappels d'ovulation",
+  "notificationMedicationTitle": "Rappel de médicament",
+  "notificationMedicationBody": "N'oubliez pas de prendre votre médicament !",
+  "notificationMedicationChannel": "Rappel de médicament",
+  "notificationMedicationChannelDesc": "Rappels de médicaments",
+  "notificationDiscreetTitle": "Rappel",
+  "notificationDiscreetBody": "Vous avez un rappel pour aujourd'hui",
+  "notificationFertileTitle": "Votre fenêtre de fertilité commence",
+  "notificationFertileBody": "À partir d'aujourd'hui, ce sont les jours les plus propices à la conception.",
+  "notificationChainEndTitle": "Les rappels sont en pause",
+  "notificationChainEndBody": "Les rappels programmés sont épuisés. Ouvrez l'application pour en planifier de nouveaux.",
+  "noPurchasesToRestore": "Aucun achat à restaurer",
+  "restoringPurchases": "Restauration des achats…",
+  "backdateHint": "Appui long pour choisir un autre jour",
+  "periodStartDateHelp": "Quand vos règles ont-elles commencé ?",
+  "periodEndDateHelp": "Quand vos règles se sont-elles terminées ?",
+  "headlinePeriodToday": "Vos règles peuvent commencer aujourd’hui",
+  "headlinePeriodTomorrow": "Vos règles peuvent commencer demain",
+  "headlineNoData": "Ajoutez la date de vos dernières règles",
+  "headlinePeriodInDays": "Vos règles dans {days} jours",
+  "@headlinePeriodInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "headlinePeriodDay": "Jour {day} de vos règles",
+  "@headlinePeriodDay": {
+    "placeholders": {
+      "day": {"type": "int"}
+    }
+  },
+  "headlineDelaySubtitle": "Une variation est normale. Enregistrez-les si elles ont commencé.",
+  "notificationDelayTitle": "La date prévue est passée",
+  "notificationDelayBody": "Si vos règles ont commencé, pensez à les enregistrer. Une variation est normale.",
+  "notificationDelayBodyAlt1": "Aucune entrée pour l'instant. Si elles ont commencé, un appui suffit.",
+  "notificationDelayBodyAlt2": "Un décalage de quelques jours est courant. Votre suivi est-il à jour ?",
+  "notificationDelayChannel": "Rappel de retard",
+  "notificationDelayChannelDesc": "Rappel lorsque la date prévue est passée",
+  "headlineDelay": "Vos règles ont {days} jours de retard",
+  "@headlineDelay": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "delayDays": "{days} jours de retard",
+  "@delayDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "yourDataStays": "Vos données restent sur votre appareil à la fin de l’essai.",
+  "periodStartedOnThisDay": "Mes règles ont commencé ce jour",
+  "nCyclesRecorded": "{count} cycles enregistrés",
+  "@nCyclesRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "nLogsRecorded": "{count} journaux quotidiens",
+  "@nLogsRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notifPermissionTitle": "Activer les rappels ?",
+  "notifPermissionBody": "Nous vous prévenons à l’approche de vos règles, le jour de l’ovulation et quand la date prévue est passée. Les notifications ne quittent jamais votre appareil. Vous pouvez aussi les activer plus tard dans les réglages.",
+  "enableNotifications": "Activer",
+  "notNow": "Plus tard",
+  "optionalField": "Facultatif",
+  "privacyAssurance": "Vos données restent chiffrées sur cet appareil uniquement",
+  "privacySummary": "Vos données principales sont chiffrées sur cet appareil; elles n'en sortent que si vous les exportez ou activez Health Connect.",
+  "dontRememberExactly": "Je ne sais plus exactement",
+  "approxTitle": "C’était à peu près quand ?",
+  "approxSubtitle": "Une date approximative suffit. Les prévisions s’ajustent au fil de vos saisies.",
+  "approxThisWeek": "Cette semaine",
+  "approxLastWeek": "La semaine dernière",
+  "approxTwoWeeks": "Il y a environ 2 semaines",
+  "approxThreeWeeks": "Il y a environ 3 semaines",
+  "approxMonthOrMore": "Il y a un mois ou plus",
+  "cycleReminderTime": "Heure des rappels de cycle",
+  "medicationReminderTime": "Heure des rappels de médicament",
+  "periodReminderLead": "Rappel de règles",
+  "notificationQuietChannelSuffix": "silencieux",
+  "quietNotifications": "Notifications silencieuses",
+  "quietNotificationsDesc": "Sans son ni fenêtre contextuelle, uniquement dans le volet des notifications",
+  "leadSameDay": "Le jour même",
+  "leadNDaysBefore": "{days} jours avant",
+  "@leadNDaysBefore": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "regularityInfoIrregular": "Il y a 9 jours ou plus entre votre cycle le plus court et le plus long. Une durée de cycle variable est très courante ; le stress, le sommeil, la maladie et les changements de vie y contribuent. Ceci n’est pas un diagnostic.",
+  "regularityInfoRegular": "L’écart entre votre cycle le plus court et le plus long est inférieur à 9 jours. Les prévisions sont plus fiables avec cette régularité.",
+  "regularityInfoSeeDoctor": "Si votre cycle est constamment plus court que 21 jours ou plus long que 35, si vous n’avez pas eu de règles depuis plus de trois mois, ou si les saignements sont inhabituellement abondants, il vaut mieux consulter un professionnel de santé.",
+  "typicalRangeNote": "Plage courante : cycle {min}–{max} jours, règles jusqu’à {pmax} jours. Ce n’est pas un seuil diagnostique.",
+  "@typicalRangeNote": {
+    "placeholders": {
+      "min": {"type": "int"},
+      "max": {"type": "int"},
+      "pmax": {"type": "int"}
+    }
+  },
+  "lowConfidenceNote": "Ces moyennes proviennent de seulement {count} cycles ; elles s’affineront avec vos saisies.",
+  "@lowConfidenceNote": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "regularityInfoInsufficient": "Il faut au moins {count} intervalles de cycle pour parler de régularité. En dessous, le jugement serait trompeur.",
+  "@regularityInfoInsufficient": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "backupNever": "Vous n’avez encore jamais fait de sauvegarde.",
+  "backupStaleHint": "Si vous perdez votre téléphone, les données seront irrécupérables.",
+  "backupLastAt": "Dernière sauvegarde : {date}",
+  "@backupLastAt": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "durationsStepTitle": "Vos données de cycle",
+  "durationsStepHelp": "Pas sûre ? Laissez tel quel — vous pourrez les modifier dans les réglages.",
+  "lockTimeoutTitle": "Délai de verrouillage",
+  "lockTimeoutDesc": "Pas de code si vous revenez après un court instant",
+  "lockImmediately": "Immédiatement",
+  "previousDay": "Jour précédent",
+  "nextDay": "Jour suivant",
+  "showLegend": "Légende des couleurs",
+  "hideLegend": "Masquer la légende",
+  "backToToday": "Revenir à aujourd’hui",
+  "monthNoRecords": "Aucune donnée ce mois-ci",
+  "doctorSummary": "Exporter un résumé pour mon médecin",
+  "healthImport": "Importer depuis Health Connect",
+  "healthImportAction": "Importer",
+  "allTime": "Tout",
+  "actionPeriodStarted": "Mes règles ont commencé",
+  "actionMedicationTaken": "Pris",
+  "pregnancyTestReady": "Un test de grossesse peut désormais être fiable",
+  "notLoggedToday": "Aucune saisie aujourd’hui : {what}",
+  "@notLoggedToday": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
+  "pregnancyTestFrom": "Test fiable à partir du {date}",
+  "@pregnancyTestFrom": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "pillBreakIn": "La pause commence dans {days} jours",
+  "@pillBreakIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "pillNewPackIn": "Nouvelle plaquette dans {days} jours",
+  "@pillNewPackIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "healthImportNothingNew": "Aucune nouvelle donnée à importer",
+  "healthImportConfirm": "{count} périodes trouvées dans Health Connect et absentes de l’app. Les ajouter à vos données ? Vos données existantes ne changent pas.",
+  "@healthImportConfirm": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "healthImportDone": "{count} périodes importées",
+  "@healthImportDone": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthPeriodDays": "{count} jours de règles",
+  "@monthPeriodDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthLoggedDays": "{count} jours renseignés",
+  "@monthLoggedDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "pinNoRecoveryWarning": "Si vous oubliez votre code, il n’y a aucun moyen de le récupérer ; la seule issue est de supprimer toutes vos données. Choisissez un code dont vous vous souviendrez.",
+  "lockAfterMinutes": "Après {minutes} min",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
   "reportTitle": "Rapport de santé du cycle",
   "reportGenerated": "Généré",
   "profileSummary": "Résumé du profil",
@@ -444,6 +680,30 @@
   "storyTrendUp": "Hausse de {delta} {unit} sur cette période.",
   "storyTrendDown": "Baisse de {delta} {unit} sur cette période.",
   "storyTrendFlat": "Pas de changement notable sur cette période — la tendance est stable.",
+  "averageSeverity": "Moy. {value}/5",
+  "@averageSeverity": {"placeholders": {"value": {"type": "String"}}},
+  "dataCoverage": "Densité des données",
+  "dataCoverageValue": "Données sur {logged} jours sur {total} ({percent} %)",
+  "@dataCoverageValue": {"placeholders": {"logged": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "tapChartPointHint": "Touchez un point pour ouvrir ce jour.",
+  "shareCalendarMonth": "Partager le mois du calendrier",
+  "longPressDayHint": "Appuyez longuement sur un jour pour un aperçu rapide.",
+  "markPeriodRange": "Marquer la période des règles",
+  "periodRangeOverlap": "Cette période chevauche un enregistrement existant.",
+  "periodRangeSaved": "Période des règles enregistrée",
+  "trackingStreak": "Série de {count} jours",
+  "@trackingStreak": {"placeholders": {"count": {"type": "int"}}},
+  "weeklyTracking": "{count}/7 jours suivis",
+  "@weeklyTracking": {"placeholders": {"count": {"type": "int"}}},
+  "exportCalendarFile": "Exporter le calendrier (.ics)",
+  "ovulationMarkerHint": "Ligne pointillée : ovulation estimée ou confirmée",
+  "addPastCycles": "Ajouter des cycles passés",
+  "addPastCyclesHint": "Sélectionnez jusqu’à 3 périodes de règles et enregistrez-les ensemble.",
+  "addPeriodRange": "Ajouter une période de règles",
+  "cycleOverlayTitle": "Comparaison des cycles",
+  "symptomLoadComparison": "Intensité quotidienne des symptômes alignée sur le jour du cycle",
+  "currentCycleLabel": "Ce cycle",
+  "previousCycleLabel": "Cycle précédent",
   "colorBlindPattern": "Couleurs de phase texturées",
   "colorBlindPatternDesc": "Ajoute une texture aux bandes de phase — utile si les couleurs sont difficiles à distinguer",
   "undo": "Annuler",
@@ -474,5 +734,16 @@
   "nextPeriodInfo": "La date estimée de début de vos prochaines règles. Calculée d'après la durée de votre cycle.",
   "phaseInfoTitle": "Qu'est-ce que cette phase ?",
   "learnMore": "Info",
-  "healthDisclaimer": "Cette application ne remplace pas un avis médical. Pour toute question de santé, consultez un professionnel."
+  "healthDisclaimer": "Cette application ne remplace pas un avis médical. Pour toute question de santé, consultez un professionnel.",
+  "homePriority": "Priorité de l’accueil",
+  "cycleFirst": "Cycle d’abord",
+  "todayFirst": "Aujourd’hui d’abord",
+  "planLifetime": "À vie",
+  "planLifetimeDetail": "Un paiement, premium pour toujours",
+  "cycleNotificationFrequency": "Niveau des notifications du cycle",
+  "cycleNotificationFrequencyDesc": "Les rappels de médicaments ne changent pas",
+  "notificationFrequencyEssential": "Essentiel",
+  "notificationFrequencyBalanced": "Équilibré",
+  "notificationFrequencyDetailed": "Détaillé",
+  "readOnlyHistoryNotice": "Vous pouvez consulter vos anciens suivis ; les nouveaux suivis et modifications nécessitent Premium."
 }

@@ -1,9 +1,29 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:regl_takip/core/utils/access.dart';
 import 'package:regl_takip/providers/providers.dart';
 
-/// Erişim modeli: 30 gün deneme → premium yoksa yalnız regl takibi.
+/// Erişim modeli: 30 gün deneme → geçmiş salt okunur, yeni günlük kayıt
+/// premium; regl takibi ücretsiz kalır.
 void main() {
+  test('daily history is writable only during trial or premium', () {
+    expect(canWriteDailyTracking(AccessLevel.premium), isTrue);
+    expect(canWriteDailyTracking(AccessLevel.trial), isTrue);
+    expect(canWriteDailyTracking(AccessLevel.free), isFalse);
+  });
+
+  test('undo edilen kayıt reklam olayı üretmez', () {
+    expect(
+      shouldNotifyTrackingRecord(SnackBarClosedReason.action),
+      isFalse,
+    );
+    expect(
+      shouldNotifyTrackingRecord(SnackBarClosedReason.timeout),
+      isTrue,
+    );
+  });
+
   ProviderContainer container({
     bool premium = false,
     DateTime? trialStart,
@@ -44,5 +64,40 @@ void main() {
   test('çözülmemiş deneme başlangıcı kullanıcıyı kısıtlamaz', () {
     final c = container(trialStart: null);
     expect(c.read(accessProvider), AccessLevel.trial);
+  });
+
+  test('deneme sonu açıklaması yalnız ilk ücretsiz açılışta gösterilir', () {
+    expect(
+      shouldShowTrialEndNotice(
+        access: AccessLevel.free,
+        alreadyShown: false,
+        onboardingCompleted: true,
+      ),
+      isTrue,
+    );
+    expect(
+      shouldShowTrialEndNotice(
+        access: AccessLevel.free,
+        alreadyShown: true,
+        onboardingCompleted: true,
+      ),
+      isFalse,
+    );
+    expect(
+      shouldShowTrialEndNotice(
+        access: AccessLevel.trial,
+        alreadyShown: false,
+        onboardingCompleted: true,
+      ),
+      isFalse,
+    );
+    expect(
+      shouldShowTrialEndNotice(
+        access: AccessLevel.free,
+        alreadyShown: false,
+        onboardingCompleted: false,
+      ),
+      isFalse,
+    );
   });
 }

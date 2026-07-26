@@ -34,18 +34,34 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       darkModeEnabled: fields[14] as bool,
       waterGoal: fields[15] == null ? 8 : fields[15] as int,
       smartPredictionEnabled: fields[16] == null ? true : fields[16] as bool,
-      trackingMode:
-          fields[17] == null ? TrackingMode.period : fields[17] as TrackingMode,
+      trackingMode: fields[17] == null
+          ? TrackingMode.period
+          : fields[17] as TrackingMode,
       pregnancyStartDate: fields[18] as DateTime?,
       pillPackStartDate: fields[19] as DateTime?,
       themePreference: fields[20] == null ? '' : fields[20] as String,
+      medicationReminderHour: fields[21] as int?,
+      medicationReminderMinute: fields[22] as int?,
+      cycleReminderHour: fields[23] as int?,
+      cycleReminderMinute: fields[24] as int?,
+      periodReminderLeadDays: fields[25] == null ? 1 : fields[25] as int,
+      quietNotifications: fields[26] == null ? false : fields[26] as bool,
+      usePounds: fields[27] == null ? false : fields[27] as bool,
+      useFahrenheit: fields[28] == null ? false : fields[28] as bool,
+      medicationPlan: fields[29] == null
+          ? <MedicationEntry>[]
+          : (fields[29] as List).cast<MedicationEntry>(),
+      medicationPlanMigrated:
+          fields[30] == null ? false : fields[30] as bool,
+      cycleNotificationFrequency:
+          fields[31] == null ? 3 : fields[31] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(32)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -87,7 +103,29 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(19)
       ..write(obj.pillPackStartDate)
       ..writeByte(20)
-      ..write(obj.themePreference);
+      ..write(obj.themePreference)
+      ..writeByte(21)
+      ..write(obj.medicationReminderHour)
+      ..writeByte(22)
+      ..write(obj.medicationReminderMinute)
+      ..writeByte(23)
+      ..write(obj.cycleReminderHour)
+      ..writeByte(24)
+      ..write(obj.cycleReminderMinute)
+      ..writeByte(25)
+      ..write(obj.periodReminderLeadDays)
+      ..writeByte(26)
+      ..write(obj.quietNotifications)
+      ..writeByte(27)
+      ..write(obj.usePounds)
+      ..writeByte(28)
+      ..write(obj.useFahrenheit)
+      ..writeByte(29)
+      ..write(obj.medicationPlan)
+      ..writeByte(30)
+      ..write(obj.medicationPlanMigrated)
+      ..writeByte(31)
+      ..write(obj.cycleNotificationFrequency);
   }
 
   @override

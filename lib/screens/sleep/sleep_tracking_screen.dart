@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/adaptive_layout.dart';
+import '../../core/utils/access.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/tracker_scaffold.dart';
 import '../../providers/providers.dart';
@@ -115,7 +117,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
           Text(_calculateDuration(),
               style: TextStyle(
                   fontSize: 42, fontWeight: FontWeight.bold,
-                  color: AppColors.sleep)),
+                  color: AppColors.categoryText(context, AppColors.sleep))),
           const SizedBox(height: 4),
           Text(l10n.totalSleep,
               style: TextStyle(
@@ -126,23 +128,36 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
   }
 
   Widget _buildTimeCards(AppLocalizations l10n) {
-    return Row(
-      children: [
-        Expanded(child: _buildTimeCard(
+    final cards = [
+      _buildTimeCard(
           Icons.nightlight_round, l10n.bedTimeLabel, _bedTime,
           () async {
             final p = await showTimePicker(context: context, initialTime: _bedTime);
             if (p != null) setState(() => _bedTime = p);
           },
-        )),
-        const SizedBox(width: 12),
-        Expanded(child: _buildTimeCard(
+        ),
+      _buildTimeCard(
           Icons.wb_sunny_rounded, l10n.wakeTimeLabel, _wakeTime,
           () async {
             final p = await showTimePicker(context: context, initialTime: _wakeTime);
             if (p != null) setState(() => _wakeTime = p);
           },
-        )),
+        ),
+    ];
+    if (usesLargeText(MediaQuery.textScalerOf(context))) {
+      return Column(
+        children: [
+          cards.first,
+          const SizedBox(height: 12),
+          cards.last,
+        ],
+      );
+    }
+    return Row(
+      children: [
+        Expanded(child: cards.first),
+        const SizedBox(width: 12),
+        Expanded(child: cards.last),
       ],
     );
   }
@@ -175,10 +190,10 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
                             fontSize: 13, color: AppColors.ts(context))),
                     const SizedBox(height: 4),
                     Text(time.format(context),
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.sleep)),
+                            color: AppColors.categoryText(context, AppColors.sleep))),
                   ],
                 ),
               ),
@@ -219,7 +234,8 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
                         horizontal: 6, vertical: 4),
                     child: AnimatedScale(
                       scale: star <= _quality ? 1.1 : 1.0,
-                      duration: const Duration(milliseconds: 200),
+                      duration: context.motionDuration(
+                          const Duration(milliseconds: 200)),
                       child: Icon(
                         star <= _quality
                             ? Icons.star_rounded
@@ -240,7 +256,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
             child: Text(_qualityLabelText(l10n),
                 style: TextStyle(
                     fontSize: 16, fontWeight: FontWeight.w600,
-                    color: AppColors.sleep)),
+                    color: AppColors.categoryText(context, AppColors.sleep))),
           ),
         ],
       ),
@@ -266,6 +282,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
   }
 
   Future<void> _save() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     final l10n = AppLocalizations.of(context)!;
     final bedStr =
         '${_bedTime.hour.toString().padLeft(2, '0')}:${_bedTime.minute.toString().padLeft(2, '0')}';
@@ -277,6 +294,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
       sleepEnd: wakeStr,
       sleepQuality: _quality,
     );
+    notifyTrackingRecordSaved();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.sleepSaved),

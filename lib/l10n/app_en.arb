@@ -179,6 +179,7 @@
   "deleteRecord": "Delete record",
   "recordDeleted": "Record deleted",
   "invalidWeight": "Enter a valid weight (20-300 kg)",
+  "invalidTemperature": "Enter a valid temperature (35-40 °C)",
   "discardChangesTitle": "Unsaved changes",
   "discardChangesBody": "Your note is not saved. Leaving now discards it.",
   "discard": "Discard",
@@ -225,6 +226,7 @@
   },
   "noRecordForDay": "No record for this day.",
   "dailyLog": "Daily Log",
+  "dailyMeasurements": "Daily Measurements",
   "flow": "Flow",
   "recorded": "Recorded",
   "nMedications": "{count} medications",
@@ -302,6 +304,8 @@
   "medicationTracking": "Medication Tracking",
   "addMedication": "Add Medication",
   "noMedicationsYet": "No medications added yet",
+  "medicationPlanHint": "This plan applies every day. The checkbox records only the selected day.",
+  "medicationAlreadyInPlan": "This medication is already in the plan",
   "tapToAdd": "Tap + to add",
   "add": "Add",
   "dailyNote": "Daily Note",
@@ -444,6 +448,11 @@
   "trimester1": "1st Trimester",
   "trimester2": "2nd Trimester",
   "trimester3": "3rd Trimester",
+  "pregnancyDevelopmentTitle": "Development this week",
+  "pregnancyDevelopment1": "A period of rapid development continues as your baby's major organs and body systems form.",
+  "pregnancyDevelopment2": "Your baby's movements are becoming more coordinated; when you feel them can vary from person to person.",
+  "pregnancyDevelopment3": "Your baby continues to grow as preparation for birth becomes more prominent.",
+  "pregnancyCheckupReminder": "Follow the checkup schedule recommended by your healthcare professional.",
   "pregnancyStartLabel": "Last period date (pregnancy start)",
   "pregnancyModeInfo": "Predictions and period reminders are off in pregnancy mode",
   "pillPackStartLabel": "Pill pack start",
@@ -497,6 +506,8 @@
   "consentBody": "All your data is stored encrypted on this device only; nothing is sent to any server. You can read the privacy policy under Settings > About. By continuing you accept that your data is processed on your device this way.",
   "consentAccept": "I Accept",
   "quickLog": "Quick Log",
+  "shortcutQuickLog": "Quick Log",
+  "shortcutToday": "View Today",
   "allTrackers": "All tracker types",
   "savedGeneric": "Saved",
   "disguiseTitle": "Disguise Mode",
@@ -504,7 +515,18 @@
   "decoyTitle": "Notes",
   "decoyEmpty": "No notes yet",
   "decoyHint": "Write something…",
-  "backupData": "Back Up (JSON)",
+  "backupData": "Create Password Backup",
+  "backupPassword": "Backup password",
+  "backupPasswordConfirm": "Enter password again",
+  "backupPasswordLength": "Password must be 10–128 characters",
+  "backupPasswordsDoNotMatch": "Passwords do not match",
+  "backupNoRecovery": "This password is not stored on the device and cannot be recovered. If you forget it, you cannot open the backup.",
+  "unlockBackupTitle": "Enter backup password",
+  "unlockBackupBody": "This backup can only be opened with the password used when it was created.",
+  "backupPasswordOrFileInvalid": "The password is incorrect or the backup file is damaged.",
+  "legacyBackupWarning": "This older backup is not encrypted. After restoring it, new backups will be password protected.",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
   "restoreData": "Restore from Backup",
   "restoreConfirmTitle": "Restore backup?",
   "restoreConfirmBody": "All current data will be deleted and {count} records from the backup will be restored. This cannot be undone.",
@@ -577,6 +599,220 @@
       "symptom": {"type": "String"}
     }
   },
+  "notificationPeriodTitle": "Period Reminder",
+  "notificationPeriodTimingToday": "Your period may start today.",
+  "notificationPeriodTimingTomorrow": "Your period may start tomorrow.",
+  "notificationPeriodTimingInDays": "Your period may start in {days} days.",
+  "@notificationPeriodTimingInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "notificationPeriodTip1": "Remember to pack a pad or tampon.",
+  "notificationPeriodTip2": "A little preparation makes it easier.",
+  "notificationPeriodTip3": "Logging the start improves your predictions.",
+  "notificationPeriodChannel": "Period Reminder",
+  "notificationPeriodChannelDesc": "Period cycle reminders",
+  "notificationOvulationTitle": "Ovulation Reminder",
+  "notificationOvulationBody": "Today is your ovulation day. You are in your fertile window!",
+  "notificationOvulationChannel": "Ovulation Reminder",
+  "notificationOvulationChannelDesc": "Ovulation reminders",
+  "notificationMedicationTitle": "Medication Reminder",
+  "notificationMedicationBody": "Don't forget to take your medication!",
+  "notificationMedicationChannel": "Medication Reminder",
+  "notificationMedicationChannelDesc": "Medication reminders",
+  "notificationDiscreetTitle": "Reminder",
+  "notificationDiscreetBody": "You have a reminder for today",
+  "notificationFertileTitle": "Your fertile window starts",
+  "notificationFertileBody": "From today you're in the days with the highest chance of conceiving.",
+  "notificationChainEndTitle": "Reminders are pausing",
+  "notificationChainEndBody": "The scheduled reminders have run out. Open the app to set up new ones.",
+  "noPurchasesToRestore": "No purchases found to restore",
+  "restoringPurchases": "Restoring purchases…",
+  "backdateHint": "Long-press for a different day",
+  "periodStartDateHelp": "When did your period start?",
+  "periodEndDateHelp": "When did your period end?",
+  "headlinePeriodToday": "Your period may start today",
+  "headlinePeriodTomorrow": "Your period may start tomorrow",
+  "headlineNoData": "Add your last period date",
+  "headlinePeriodInDays": "Your period in {days} days",
+  "@headlinePeriodInDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "headlinePeriodDay": "Day {day} of your period",
+  "@headlinePeriodDay": {
+    "placeholders": {
+      "day": {"type": "int"}
+    }
+  },
+  "headlineDelaySubtitle": "Some variation is normal. Log it if it has started.",
+  "notificationDelayTitle": "Predicted date has passed",
+  "notificationDelayBody": "If your period has started, remember to log it. Some variation is normal.",
+  "notificationDelayBodyAlt1": "No entry yet. If it started, logging takes one tap.",
+  "notificationDelayBodyAlt2": "A shift of a few days is common. Is your log up to date?",
+  "notificationDelayChannel": "Delay Reminder",
+  "notificationDelayChannelDesc": "Reminder when the predicted date has passed",
+  "headlineDelay": "Your period is {days} days late",
+  "@headlineDelay": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "delayDays": "{days} days late",
+  "@delayDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "yourDataStays": "Your records stay on your device when the trial ends.",
+  "periodStartedOnThisDay": "My period started on this day",
+  "nCyclesRecorded": "{count} cycles recorded",
+  "@nCyclesRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "nLogsRecorded": "{count} daily logs",
+  "@nLogsRecorded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notifPermissionTitle": "Turn on reminders?",
+  "notifPermissionBody": "We let you know when your period is close, on your ovulation day, and when the predicted date has passed. Notifications never leave your device. You can also turn them on later in settings.",
+  "enableNotifications": "Turn on",
+  "notNow": "Not now",
+  "optionalField": "Optional",
+  "privacyAssurance": "Your data stays encrypted on this device only",
+  "privacySummary": "Your core data is encrypted on this device; it leaves only when you export it or enable Health Connect.",
+  "dontRememberExactly": "I don’t remember exactly",
+  "approxTitle": "Roughly when was it?",
+  "approxSubtitle": "A rough date is enough. Predictions correct themselves as you log.",
+  "approxThisWeek": "This week",
+  "approxLastWeek": "Last week",
+  "approxTwoWeeks": "About 2 weeks ago",
+  "approxThreeWeeks": "About 3 weeks ago",
+  "approxMonthOrMore": "A month or more ago",
+  "cycleReminderTime": "Cycle reminder time",
+  "medicationReminderTime": "Medication reminder time",
+  "periodReminderLead": "Period reminder",
+  "notificationQuietChannelSuffix": "quiet",
+  "quietNotifications": "Quiet notifications",
+  "quietNotificationsDesc": "No sound or pop-up — they wait silently in the notification shade",
+  "leadSameDay": "Same day",
+  "leadNDaysBefore": "{days} days before",
+  "@leadNDaysBefore": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "regularityInfoIrregular": "There are 9 or more days between your shortest and longest cycle. Cycle length varying is very common; stress, sleep, illness and life changes all affect it. This is not a diagnosis.",
+  "regularityInfoRegular": "The difference between your shortest and longest cycle is under 9 days. Predictions are more accurate with this consistency.",
+  "regularityInfoSeeDoctor": "If your cycle is consistently shorter than 21 days or longer than 35, if you have had no period for more than three months, or if bleeding is unusually heavy, it is worth speaking to a healthcare professional.",
+  "typicalRangeNote": "Commonly accepted range: cycle {min}–{max} days, period up to {pmax} days. Not a diagnostic threshold.",
+  "@typicalRangeNote": {
+    "placeholders": {
+      "min": {"type": "int"},
+      "max": {"type": "int"},
+      "pmax": {"type": "int"}
+    }
+  },
+  "lowConfidenceNote": "These averages come from only {count} cycles; they will sharpen as you log more.",
+  "@lowConfidenceNote": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "regularityInfoInsufficient": "At least {count} cycle gaps are needed before regularity means anything. A judgement on less would mislead.",
+  "@regularityInfoInsufficient": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "backupNever": "You have never made a backup.",
+  "backupStaleHint": "If you lose your phone, the records cannot be recovered.",
+  "backupLastAt": "Last backup: {date}",
+  "@backupLastAt": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "durationsStepTitle": "Your cycle details",
+  "durationsStepHelp": "Not sure? Leave them as they are — you can change these in settings later.",
+  "lockTimeoutTitle": "Lock delay",
+  "lockTimeoutDesc": "Skip the PIN when you come back after a short moment away",
+  "lockImmediately": "Immediately",
+  "previousDay": "Previous day",
+  "nextDay": "Next day",
+  "showLegend": "Colour key",
+  "hideLegend": "Hide colour key",
+  "backToToday": "Back to today",
+  "monthNoRecords": "No records this month",
+  "doctorSummary": "Export a summary for my doctor",
+  "healthImport": "Import from Health Connect",
+  "healthImportAction": "Import",
+  "allTime": "All time",
+  "actionPeriodStarted": "My period started",
+  "actionMedicationTaken": "Taken",
+  "pregnancyTestReady": "A pregnancy test can be meaningful now",
+  "notLoggedToday": "No {what} logged today",
+  "@notLoggedToday": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
+  "pregnancyTestFrom": "Earliest useful test: {date}",
+  "@pregnancyTestFrom": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "pillBreakIn": "Break starts in {days} days",
+  "@pillBreakIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "pillNewPackIn": "New pack in {days} days",
+  "@pillNewPackIn": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "healthImportNothingNew": "No new records found to import",
+  "healthImportConfirm": "Found {count} period spans in Health Connect that are not in the app. Add them to your records? Your existing records are untouched.",
+  "@healthImportConfirm": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "healthImportDone": "{count} periods imported",
+  "@healthImportDone": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthPeriodDays": "{count} period days",
+  "@monthPeriodDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "monthLoggedDays": "{count} days logged",
+  "@monthLoggedDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "pinNoRecoveryWarning": "If you forget your PIN there is no way to recover it; the only way back in is deleting all your data. Choose something you will remember.",
+  "lockAfterMinutes": "After {minutes} min",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
   "reportTitle": "Cycle Health Report",
   "reportGenerated": "Generated",
   "profileSummary": "Profile Summary",
@@ -600,6 +836,30 @@
   "storyTrendDown": "Down {delta} {unit} over this period.",
   "@storyTrendDown": {"placeholders": {"delta": {"type": "String"}, "unit": {"type": "String"}}},
   "storyTrendFlat": "No meaningful change over this period — the trend is flat.",
+  "averageSeverity": "Avg. {value}/5",
+  "@averageSeverity": {"placeholders": {"value": {"type": "String"}}},
+  "dataCoverage": "Data coverage",
+  "dataCoverageValue": "Data on {logged} of {total} days ({percent}%)",
+  "@dataCoverageValue": {"placeholders": {"logged": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "tapChartPointHint": "Tap a point to open that day.",
+  "shareCalendarMonth": "Share calendar month",
+  "longPressDayHint": "Press and hold a day for a quick preview.",
+  "markPeriodRange": "Mark period date range",
+  "periodRangeOverlap": "This range overlaps an existing period record.",
+  "periodRangeSaved": "Period date range saved",
+  "trackingStreak": "{count}-day streak",
+  "@trackingStreak": {"placeholders": {"count": {"type": "int"}}},
+  "weeklyTracking": "{count}/7 days logged",
+  "@weeklyTracking": {"placeholders": {"count": {"type": "int"}}},
+  "exportCalendarFile": "Export calendar (.ics)",
+  "ovulationMarkerHint": "Dashed line: estimated or confirmed ovulation",
+  "addPastCycles": "Add past cycles",
+  "addPastCyclesHint": "Select up to 3 period date ranges and save them together.",
+  "addPeriodRange": "Add period range",
+  "cycleOverlayTitle": "Cycle comparison",
+  "symptomLoadComparison": "Daily symptom severity aligned by cycle day",
+  "currentCycleLabel": "This cycle",
+  "previousCycleLabel": "Previous cycle",
   "colorBlindPattern": "Patterned phase colors",
   "colorBlindPatternDesc": "Adds texture to phase bands — helpful when colors are hard to tell apart",
   "undo": "Undo",
@@ -636,5 +896,16 @@
   "nextPeriodInfo": "The estimated start date of your next period. Calculated based on your cycle length.",
   "phaseInfoTitle": "What is this phase?",
   "learnMore": "Info",
-  "healthDisclaimer": "This app is not a substitute for medical advice. Please consult a healthcare professional for health concerns."
+  "healthDisclaimer": "This app is not a substitute for medical advice. Please consult a healthcare professional for health concerns.",
+  "homePriority": "Home screen priority",
+  "cycleFirst": "Cycle first",
+  "todayFirst": "Today first",
+  "planLifetime": "Lifetime",
+  "planLifetimeDetail": "One payment, premium forever",
+  "cycleNotificationFrequency": "Cycle notification level",
+  "cycleNotificationFrequencyDesc": "Medication reminders are not affected",
+  "notificationFrequencyEssential": "Essential",
+  "notificationFrequencyBalanced": "Balanced",
+  "notificationFrequencyDetailed": "Detailed",
+  "readOnlyHistoryNotice": "You can view your past entries; new daily entries and changes require Premium."
 }

@@ -3,6 +3,7 @@
      satırı (sonraki regl / ovülasyon / verimli pencere). Daha fazla
      alan verene daha fazla değer. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
@@ -110,4 +111,18 @@
                 android:textColor="#2D2D3A" />
         </LinearLayout>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/widget_period_action"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/widget_period_action_bg"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="+"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
 </LinearLayout>

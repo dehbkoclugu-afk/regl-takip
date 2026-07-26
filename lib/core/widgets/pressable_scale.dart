@@ -28,7 +28,7 @@ class _PressableScaleState extends State<PressableScale> {
       onPointerCancel: (_) => setState(() => _pressed = false),
       child: AnimatedScale(
         scale: _pressed && motion ? 0.98 : 1.0,
-        duration: const Duration(milliseconds: 100),
+        duration: context.motionDuration(const Duration(milliseconds: 100)),
         curve: Curves.easeOut,
         child: widget.child,
       ),

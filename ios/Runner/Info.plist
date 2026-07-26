@@ -42,9 +42,11 @@
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
 		<key>NSHealthUpdateUsageDescription</key>
-		<string>Adet günlerinizi Sağlık uygulamasına aktarabilmek için izin gerekiyor.</string>
+		<string>Girdiğiniz adet günlerini Sağlık uygulamasına aktarabilmek için yazma izni gerekiyor.</string>
 		<key>NSHealthShareUsageDescription</key>
-		<string>Adet verilerinizi Sağlık uygulamasıyla paylaşabilmek için izin gerekiyor.</string>
+		<string>Sağlık uygulamasındaki adet günlerinizi içe aktarabilmek için okuma izni gerekiyor.</string>
+		<key>NSFaceIDUsageDescription</key>
+		<string>Uygulama kilidini güvenli biçimde açmak için Face ID kullanılır.</string>
 		<key>GADApplicationIdentifier</key>
 		<string>ca-app-pub-2554058432197193~3764480294</string>
 		<key>NSUserTrackingUsageDescription</key>

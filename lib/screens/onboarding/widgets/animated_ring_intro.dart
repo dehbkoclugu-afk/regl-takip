@@ -32,9 +32,7 @@ class AnimatedRingIntro extends StatelessWidget {
       ),
       child: TweenAnimationBuilder<double>(
         tween: Tween(begin: motion ? 0 : 1, end: 1),
-        duration: motion
-            ? const Duration(milliseconds: 1400)
-            : Duration.zero,
+        duration: context.motionDuration(const Duration(milliseconds: 1400)),
         curve: Curves.easeOutCubic,
         builder: (context, t, _) => CustomPaint(
           painter: _RingIntroPainter(progress: t),

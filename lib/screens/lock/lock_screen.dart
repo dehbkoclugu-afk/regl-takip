@@ -256,49 +256,60 @@ class _LockScreenState extends ConsumerState<LockScreen> {
           ),
         ),
         child: SafeArea(
-          child: Column(
-            children: [
-              const Spacer(flex: 2),
-              lockIcon,
-              const SizedBox(height: 16),
-              title,
-              if (_isLockedOut)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    l10n.tooManyAttempts(_lockoutRemainingSeconds),
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.yellow.shade200,
-                    ),
+          child: LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      const Spacer(flex: 2),
+                      lockIcon,
+                      const SizedBox(height: 16),
+                      title,
+                      if (_isLockedOut)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            l10n.tooManyAttempts(_lockoutRemainingSeconds),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.yellow.shade200,
+                            ),
+                          ),
+                        )
+                      else if (_isError)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: wrongPinText,
+                        ),
+                      const SizedBox(height: 32),
+                      PinDots(filled: _enteredPin.length, isError: _isError),
+                      const Spacer(),
+                      PinPad(
+                        onDigit: _onDigitPressed,
+                        onDelete: _onDeletePressed,
+                        enabled: _acceptsInput,
+                      ),
+                      const SizedBox(height: 16),
+                      if (profile?.biometricEnabled == true)
+                        TextButton.icon(
+                          onPressed: _tryBiometric,
+                          icon: const Icon(Icons.fingerprint_rounded,
+                              color: Colors.white, size: 28),
+                          label: Text(
+                            l10n.unlockWithBiometric,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      const SizedBox(height: 24),
+                    ],
                   ),
-                )
-              else if (_isError)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: wrongPinText,
                 ),
-              const SizedBox(height: 32),
-              PinDots(filled: _enteredPin.length, isError: _isError),
-              const Spacer(),
-              PinPad(
-                onDigit: _onDigitPressed,
-                onDelete: _onDeletePressed,
-                enabled: _acceptsInput,
               ),
-              const SizedBox(height: 16),
-              if (profile?.biometricEnabled == true)
-                TextButton.icon(
-                  onPressed: _tryBiometric,
-                  icon: const Icon(Icons.fingerprint_rounded,
-                      color: Colors.white, size: 28),
-                  label: Text(
-                    l10n.unlockWithBiometric,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              const SizedBox(height: 24),
-            ],
+            ),
           ),
         ),
       ),

@@ -149,6 +149,62 @@ void main() {
   });
 
   group('kayıt düzenleyici primitifleri', () {
+    test('tamamlanmış tarih aralığını tek kayıt olarak ekler', () async {
+      final notifier = PeriodRecordsNotifier(service);
+
+      final record = await notifier.addCompletedPeriodRange(
+        DateTime(2026, 7, 10, 12),
+        DateTime(2026, 7, 14, 20),
+      );
+
+      expect(record, isNotNull);
+      expect(notifier.state.single.startDate, DateTime(2026, 7, 10));
+      expect(notifier.state.single.endDate, DateTime(2026, 7, 14));
+    });
+
+    test('mevcut kayıtla kesişen tarih aralığını reddeder', () async {
+      final notifier = PeriodRecordsNotifier(service);
+      await notifier.addRecord(PeriodRecord(
+        id: 'r1',
+        startDate: DateTime(2026, 7, 10),
+        endDate: DateTime(2026, 7, 14),
+      ));
+
+      final record = await notifier.addCompletedPeriodRange(
+        DateTime(2026, 7, 13),
+        DateTime(2026, 7, 17),
+      );
+
+      expect(record, isNull);
+      expect(notifier.state, hasLength(1));
+    });
+
+    test('üç geçmiş döngüyü birlikte ekler', () async {
+      final notifier = PeriodRecordsNotifier(service);
+
+      final records = await notifier.addCompletedPeriodRanges([
+        (start: DateTime(2026, 4, 1), end: DateTime(2026, 4, 5)),
+        (start: DateTime(2026, 5, 1), end: DateTime(2026, 5, 5)),
+        (start: DateTime(2026, 6, 1), end: DateTime(2026, 6, 5)),
+      ]);
+
+      expect(records, hasLength(3));
+      expect(notifier.state, hasLength(3));
+    });
+
+    test('toplu paketin kendi içindeki çakışmada hiçbir kayıt yazmaz',
+        () async {
+      final notifier = PeriodRecordsNotifier(service);
+
+      final records = await notifier.addCompletedPeriodRanges([
+        (start: DateTime(2026, 4, 1), end: DateTime(2026, 4, 5)),
+        (start: DateTime(2026, 4, 4), end: DateTime(2026, 4, 8)),
+      ]);
+
+      expect(records, isNull);
+      expect(notifier.state, isEmpty);
+    });
+
     test('updateRecordDates tarihleri normalize eder, bitişi kelepçeler',
         () async {
       final notifier = PeriodRecordsNotifier(service);

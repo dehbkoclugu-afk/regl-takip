@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/access.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/tracker_scaffold.dart';
 import '../../models/enums.dart';
@@ -137,7 +138,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
                   color: AppColors.tp(context))),
           Switch.adaptive(
             value: _orgasm,
-            activeColor: AppColors.moodRomantic,
+            activeThumbColor: AppColors.moodRomantic,
             onChanged: (v) => setState(() => _orgasm = v),
           ),
         ],
@@ -218,6 +219,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
   }
 
   Future<void> _delete() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     final l10n = AppLocalizations.of(context)!;
     await ref
         .read(dailyLogProvider.notifier)
@@ -232,6 +234,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
   }
 
   Future<void> _save() async {
+    if (!ensureTrackingWriteAccess(context, ref)) return;
     final l10n = AppLocalizations.of(context)!;
     final entry = SexualActivityEntry(
       protectionMethod: _protection,
@@ -241,6 +244,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
     await ref
         .read(dailyLogProvider.notifier)
         .updateSexualActivity(ref.read(selectedDateProvider), entry);
+    notifyTrackingRecordSaved();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.savedGeneric),

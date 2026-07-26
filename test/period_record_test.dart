@@ -54,4 +54,23 @@ void main() {
       expect(ExportService.sanitizeCsvCell('ağrı vardı'), 'ağrı vardı');
     });
   });
+
+  test('ICS export uses exclusive end date and escapes event title', () {
+    final ics = ExportService.buildCalendarIcs(
+      [
+        PeriodRecord(
+          id: 'period-1',
+          startDate: DateTime(2026, 1, 1),
+          endDate: DateTime(2026, 1, 5),
+        ),
+      ],
+      eventTitle: 'Regl, günü;',
+      generatedAt: DateTime.utc(2026, 1, 10, 12),
+    );
+
+    expect(ics, contains('DTSTART;VALUE=DATE:20260101\r\n'));
+    expect(ics, contains('DTEND;VALUE=DATE:20260106\r\n'));
+    expect(ics, contains(r'SUMMARY:Regl\, günü\;'));
+    expect(ics, endsWith('END:VCALENDAR\r\n'));
+  });
 }
