@@ -37,7 +37,12 @@ double scaledGridExtent(
 /// gezinme çubuğunun boşluğunu saymıyordu. Üç tuşlu gezinmesi olan bir
 /// telefonda istatistikteki yasal uyarı bu yüzden ortasından kesiliyordu.
 ///
-/// Pill'in yüksekliği kabuktaki ölçülerin toplamı: dikey kenar boşluğu 2×16,
-/// iç dolgu 2×4, `NavigationBar`'ın kendi yüksekliği 80.
-double bottomNavInset(BuildContext context) =>
-    MediaQuery.viewPaddingOf(context).bottom + 120;
+/// Pill'in yüksekliği kabuktaki ölçülerin toplamı: kenar boşluğu 16 üst +
+/// 24 alt, iç dolgu 2×4, `NavigationBar`'ın kendi yüksekliği 80 — toplam 128.
+/// Kabuktaki ölçüler değişirse burası da değişmeli; testi bu sayıyı sabitler.
+///
+/// [gap] pill ile içeriğin son satırı arasında kalacak nefes payı. Sıfırken
+/// içerik tam pill'in üstünde bitiyor ve son satır çubuğa yapışık duruyor —
+/// yasal uyarı gibi tek satırlık kapanışlarda bu sıkışık görünüyordu.
+double bottomNavInset(BuildContext context, {double gap = 24}) =>
+    MediaQuery.viewPaddingOf(context).bottom + 128 + gap;

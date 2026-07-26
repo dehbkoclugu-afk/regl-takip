@@ -603,7 +603,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           );
 
           return SingleChildScrollView(
-            padding: EdgeInsets.only(bottom: bottomNavInset(context)),
+            // Takvim kartı AppBar'ın hemen altından başlıyordu; diğer
+            // sekmelerin tersine üstte hiç pay yoktu.
+            padding: EdgeInsets.only(
+              top: 24,
+              bottom: bottomNavInset(context),
+            ),
             child: Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1180),

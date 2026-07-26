@@ -84,7 +84,10 @@ class AppShell extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         top: false,
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          // Alt boşluk üstten fazla: pill sistem gezinme çubuğuna yapışık
+          // duruyordu. SafeArea çubuğun kendi yüksekliğini veriyor ama
+          // ikisinin arasında görünür bir pay bırakmıyor.
+          margin: const EdgeInsets.fromLTRB(20, 16, 20, 24),
           // Opak pill: cam bırakıldı — son BackdropFilter da kalktı,
           // düşük donanımda kaydırma maliyeti sıfırlandı
           decoration: BoxDecoration(

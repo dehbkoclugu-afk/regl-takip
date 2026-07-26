@@ -84,8 +84,9 @@ void main() {
       return result;
     }
 
-    // Pill'in kendi yüksekliği: kenar boşluğu 2x16 + iç dolgu 2x4 + 80
-    expect(await insetFor(0), 120);
-    expect(await insetFor(48), 168);
+    // Pill'in kendi yüksekliği: kenar boşluğu 16+24, iç dolgu 2x4, çubuk 80
+    // — toplam 128; üstüne varsayılan 24 piksellik nefes payı
+    expect(await insetFor(0), 152);
+    expect(await insetFor(48), 200);
   });
 }
