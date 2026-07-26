@@ -1,4 +1,6 @@
-import 'package:flutter/widgets.dart';
+import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -32,3 +34,16 @@ bool ensureTrackingWriteAccess(BuildContext context, WidgetRef ref) =>
 /// gösterilmeyeceği burada değil, erişim ve 24 saat sınırı yeniden
 /// doğrulandıktan sonra kökte kararlaştırılır.
 void notifyTrackingRecordSaved() => AdService.notifyRecordSaved();
+
+bool shouldNotifyTrackingRecord(SnackBarClosedReason reason) =>
+    reason != SnackBarClosedReason.action;
+
+/// Geri alınabilir kayıt reklamla kesilmez. Kullanıcı Geri Al'a basarsa
+/// ortada kalıcı kayıt yoktur ve reklam olayı üretilmez.
+void notifyTrackingRecordAfterUndoWindow(
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> controller,
+) {
+  unawaited(controller.closed.then((reason) {
+    if (shouldNotifyTrackingRecord(reason)) notifyTrackingRecordSaved();
+  }));
+}

@@ -64,8 +64,10 @@ sonrasına bağlamak hem daha az can sıkıcı hem dönüşümü yüksek: kullan
 işini bitirmiş oluyor.
 
 *Uygulandı:* uygulama açılışı ve kilit açılışı artık reklam tetiklemiyor.
-Reklam yalnız başarılı günlük kayıttan sonra; ücretsiz katman, 24 saat sınırı,
-kılık/kilit ve oturumdaki tek gösterim koşulları yeniden doğrulanarak geliyor.
+Reklam yalnız başarılı kullanıcı kaydından sonra; ücretsiz katman, 24 saat
+sınırı, kılık/kilit ve oturumdaki tek gösterim koşulları yeniden doğrulanarak
+geliyor. Geri Al penceresi kapanmadan gösterilmiyor ve geri alınan kayıt reklam
+üretmiyor; widget hızlı kaydı reklamsız kalıyor.
 
 **8. 🟡 İki plan arasındaki fark okunmuyor.** Yıllık kart "en iyi değer"
 rozeti taşıyor ama tasarruf oranı yazmıyor. "Ayda ₺16,6 — %43 tasarruf"

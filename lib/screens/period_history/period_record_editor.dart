@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/access.dart';
 import '../../models/period_record.dart';
 import '../../providers/providers.dart';
 
@@ -185,6 +186,7 @@ Future<void> showPeriodRecordEditor(
                       .read(periodRecordsProvider.notifier)
                       .updateRecordDates(record.id, start, end);
                   await _syncProfileToNewestRecord(ref);
+                  notifyTrackingRecordSaved();
                   messenger.showSnackBar(SnackBar(
                       content: Text(l10n.recordUpdated),
                       backgroundColor: AppColors.success));

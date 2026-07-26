@@ -119,6 +119,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
         await ref
             .read(userProfileProvider.notifier)
             .saveProfile(lastPeriodStart: record.startDate);
+        notifyTrackingRecordSaved();
         break;
       case NotificationService.actionMedicationTaken:
         // Deneme bittikten sonra geçmiş görünür, yeni günlük yazma premium.

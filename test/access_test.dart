@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:regl_takip/core/utils/access.dart';
@@ -10,6 +11,17 @@ void main() {
     expect(canWriteDailyTracking(AccessLevel.premium), isTrue);
     expect(canWriteDailyTracking(AccessLevel.trial), isTrue);
     expect(canWriteDailyTracking(AccessLevel.free), isFalse);
+  });
+
+  test('undo edilen kayıt reklam olayı üretmez', () {
+    expect(
+      shouldNotifyTrackingRecord(SnackBarClosedReason.action),
+      isFalse,
+    );
+    expect(
+      shouldNotifyTrackingRecord(SnackBarClosedReason.timeout),
+      isTrue,
+    );
   });
 
   ProviderContainer container({

@@ -7,7 +7,8 @@ Tasarım incelemesinin kalan 3, 7, 9 ve 71. maddeleri tamamlandı.
 - Denemesi biten kullanıcı günlük takip ekranlarında geçmişini salt okunur
   görebiliyor; yazma ve silme eylemleri veriye dokunmadan plan ekranına gidiyor
 - Tam ekran reklam uygulama açılışından kaldırıldı; yalnız başarılı kayıt
-  sonrasında, ücretsiz katmanda ve mevcut 24 saat sınırıyla çalışıyor
+  sonrasında, ücretsiz katmanda ve mevcut 24 saat sınırıyla çalışıyor. Geri
+  alınan kayıt ve widget hızlı eylemi reklam üretmiyor
 - Mağazanın `premium_no_ads` ürününü döndürdüğü kurulumlarda yerelleştirilmiş
   fiyatlı ömür boyu premium planı paywall'da koşullu gösteriliyor
 - Döngü bildirimlerine Temel/Dengeli/Ayrıntılı yoğunluk tercihi eklendi;

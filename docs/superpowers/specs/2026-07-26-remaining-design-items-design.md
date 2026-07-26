@@ -17,8 +17,10 @@ katmanın mevcut istisnası olarak korunur.
 
 ## 7 — Kayıt sonrası reklam
 
-Uygulama açılışı ve kilit açılışı reklam tetiklemez. Başarılı günlük kayıt
-sonrasında uygulama köküne tek bir olay gönderilir. Kök, ücretsiz erişim,
+Uygulama açılışı ve kilit açılışı reklam tetiklemez. Başarılı kullanıcı kaydı
+sonrasında uygulama köküne tek bir olay gönderilir. Ücretsiz katmanda bunun
+gerçek kaynağı regl başlatma/bitirme ve düzeltme akışıdır; geri alınan kayıt
+olay üretmez. Kök, ücretsiz erişim,
 deneme sonu açıklaması, 24 saat sınırı, kılık/kilit ve oturumdaki tek gösterim
 kurallarını yeniden doğruladıktan sonra reklamı gösterir. Bir hızlı kayıt
 birden fazla alan yazsa bile olay yalnız kullanıcı eylemi tamamlanınca

@@ -538,7 +538,7 @@ class DashboardScreen extends ConsumerWidget {
       final recordId = ongoingPeriod.id;
       await recordsNotifier.endPeriod(recordId, date);
       profileNotifier.refresh();
-      messenger.showSnackBar(SnackBar(
+      final snackBar = messenger.showSnackBar(SnackBar(
         content: Text(l10n.periodMarkedEnded),
         duration: const Duration(seconds: 6),
         action: SnackBarAction(
@@ -549,10 +549,11 @@ class DashboardScreen extends ConsumerWidget {
           },
         ),
       ));
+      notifyTrackingRecordAfterUndoWindow(snackBar);
     } else {
       final record = await recordsNotifier.startPeriod(date);
       await profileNotifier.saveProfile(lastPeriodStart: record.startDate);
-      messenger.showSnackBar(SnackBar(
+      final snackBar = messenger.showSnackBar(SnackBar(
         content: Text(l10n.periodMarkedStarted),
         duration: const Duration(seconds: 6),
         action: SnackBarAction(
@@ -569,6 +570,7 @@ class DashboardScreen extends ConsumerWidget {
           },
         ),
       ));
+      notifyTrackingRecordAfterUndoWindow(snackBar);
     }
   }
 

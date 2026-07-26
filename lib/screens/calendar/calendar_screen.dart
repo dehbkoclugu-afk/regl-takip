@@ -181,7 +181,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           .saveProfile(lastPeriodStart: record.startDate);
     }
     if (!mounted) return;
-    messenger.showSnackBar(
+    final snackBar = messenger.showSnackBar(
       SnackBar(
         content: Text(l10n.periodRangeSaved),
         duration: const Duration(seconds: 6),
@@ -202,6 +202,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         ),
       ),
     );
+    notifyTrackingRecordAfterUndoWindow(snackBar);
   }
 
   Future<void> _addPastCycles() async {
@@ -257,7 +258,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             if (!sheetContext.mounted) return;
             Navigator.of(sheetContext).pop();
             final messenger = ScaffoldMessenger.of(context);
-            messenger.showSnackBar(
+            final snackBar = messenger.showSnackBar(
               SnackBar(
                 content: Text(l10n.nCyclesRecorded(records.length)),
                 duration: const Duration(seconds: 6),
@@ -280,6 +281,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 ),
               ),
             );
+            notifyTrackingRecordAfterUndoWindow(snackBar);
           }
 
           return Container(
@@ -1244,7 +1246,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final created = !idsBefore.contains(record.id);
     await profileNotifier.saveProfile(lastPeriodStart: record.startDate);
 
-    messenger.showSnackBar(SnackBar(
+    final snackBar = messenger.showSnackBar(SnackBar(
       content: Text(l10n.periodMarkedStarted),
       duration: const Duration(seconds: 6),
       action: SnackBarAction(
@@ -1265,6 +1267,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         },
       ),
     ));
+    notifyTrackingRecordAfterUndoWindow(snackBar);
   }
 
   void _showDayDetailSheet(BuildContext context, DateTime day,
