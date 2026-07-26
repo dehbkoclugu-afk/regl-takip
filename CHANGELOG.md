@@ -1,5 +1,15 @@
 # Changelog
 
+## Yayınlanmamış — Telefon testi: beş görsel hata (2026-07-26)
+
+Ekran görüntülerinden çıkan hatalar.
+
+- **Gezinme çubuğunun altında ölü alan**: `SafeArea` yüzen pill'in *içindeydi*, yani sistem çubuğu boşluğu pill'in içine dolgu olarak giriyor ve etiketlerin altında boşluk bırakıyordu. Dışarı alındı, pill artık sistem çubuğunun üstüne oturuyor
+- **İstatistikte yasal uyarı kesiliyordu**: kabuk `extendBody: true` kullanıyor, her ekran son öğesini pill'in üstünde tutacak kadar alt dolgu vermek zorunda. Sayı elle yazıldığı için dağılmıştı (istatistik 112, takvim ve ana sayfa 92) ve hiçbiri sistem gezinme çubuğunu saymıyordu. Ortak `bottomNavInset(context)` yardımcısı geldi, dördü de ona bağlandı ve testi yazıldı
+- **Tema seçicide "Sistem" ikiye bölünüyordu** ("Siste/m"): onay tiki seçili segmentten ~24 piksel yiyor, üç segment genişliği paylaşınca etiket ikinci satıra düşüyordu. Tik kaldırıldı — dolu zemin seçimi zaten anlatıyor. Türkçe taşan tek dil değildi: İspanyolca "Sistema", Fransızca "Système", Rusça "Система" daha uzun
+- **Yaklaşık tarih sayfasında seçenekler görünmezdi**: sayfanın zemini temadan bağımsız açık, `ListTile` başlığı ise rengini ortam temasından alıyordu ve koyu temada açık renge düşüyordu. Sayfanın kendi başlığı ile açıklaması rengini belirttiği için yalnız seçenekler kayboluyordu
+- **Üç tahmin kartının hizası bozuktu**: "Verimli Pencere" başlığı iki satıra sarınca o kart uzuyor, diğer ikisi kısa kalıp dikeyde ortalanıyordu. `IntrinsicHeight` + `stretch` ile kartlar eşit boya geldi, tarihler kartın altına yaslanarak aynı hizaya oturdu
+
 ## Yayınlanmamış — Kurulum tek ekrana indi (2026-07-26)
 
 Telefon testi geri bildirimi: "art arda gelen, kaç tanesi olduğu bilinmeyen sorular baştan uyuz ediyor."

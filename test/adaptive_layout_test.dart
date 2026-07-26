@@ -62,4 +62,30 @@ void main() {
     expect(scaledGridExtent(100, 1), 100);
     expect(scaledGridExtent(100, 2), 165);
   });
+
+  testWidgets('gezinme dolgusu sistem çubuğu boşluğunu da sayar',
+      (tester) async {
+    // Hata buydu: ekranlar sabit sayı yazıyordu (istatistik 112, takvim ve
+    // ana sayfa 92) ve hiçbiri cihazın gezinme çubuğunu saymıyordu. Üç tuşlu
+    // gezinmesi olan telefonda istatistikteki yasal uyarı kesiliyordu.
+    Future<double> insetFor(double systemBar) async {
+      late double result;
+      await tester.pumpWidget(
+        MediaQuery(
+          data: MediaQueryData(
+            viewPadding: EdgeInsets.only(bottom: systemBar),
+          ),
+          child: Builder(builder: (context) {
+            result = bottomNavInset(context);
+            return const SizedBox();
+          }),
+        ),
+      );
+      return result;
+    }
+
+    // Pill'in kendi yüksekliği: kenar boşluğu 2x16 + iç dolgu 2x4 + 80
+    expect(await insetFor(0), 120);
+    expect(await insetFor(48), 168);
+  });
 }

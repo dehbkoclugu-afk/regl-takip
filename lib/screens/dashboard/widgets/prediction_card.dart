@@ -14,6 +14,14 @@ class PredictionCard extends StatelessWidget {
   final Color color;
   final String? infoText;
 
+  /// Kart verilen boyu doldursun ve tarih altına yaslansın.
+  ///
+  /// Yalnız üçlü sıra bunu kullanıyor: orada kartların boyu eşitlendiği için
+  /// tarihi alta yaslamak üç tarihi aynı hizaya getiriyor. Tek başına dikey
+  /// dizildiğinde (büyük yazı) boy sınırsız olur, o durumda esnek çocuk
+  /// kullanılamaz — bu yüzden varsayılan kapalı.
+  final bool fillHeight;
+
   const PredictionCard({
     super.key,
     required this.icon,
@@ -21,7 +29,17 @@ class PredictionCard extends StatelessWidget {
     required this.value,
     required this.color,
     this.infoText,
+    this.fillHeight = false,
   });
+
+  PredictionCard filling() => PredictionCard(
+        icon: icon,
+        title: title,
+        value: value,
+        color: color,
+        infoText: infoText,
+        fillHeight: true,
+      );
 
   void _showInfoDialog(BuildContext context) {
     if (infoText == null) return;
@@ -87,7 +105,8 @@ class PredictionCard extends StatelessWidget {
                     const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
                 child: ExcludeSemantics(
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize:
+                        fillHeight ? MainAxisSize.max : MainAxisSize.min,
                     children: [
               Container(
                 width: 44,
@@ -133,7 +152,9 @@ class PredictionCard extends StatelessWidget {
                   ],
                 ],
               ),
-              const SizedBox(height: 4),
+              // Başlık bir kartta bir, diğerinde iki satır olabiliyor; tarihi
+              // alta yaslamak üçünü aynı hizada tutuyor.
+              if (fillHeight) const Spacer() else const SizedBox(height: 4),
               Text(
                 value,
                 style: TextStyle(
@@ -212,10 +233,20 @@ class PredictionCardsRow extends StatelessWidget {
               ],
             ],
           )
-        : Row(
-            children: [
-              for (final card in cards) Expanded(child: card),
-            ],
+        // IntrinsicHeight + stretch: üç kart en uzun olanın boyuna eşitlenir.
+        // Öncesinde Row ortalama yapıyordu, yani "Verimli Pencere" başlığı
+        // iki satıra sardığında o kart uzuyor, diğer ikisi kısa kalıp dikeyde
+        // ortalanıyordu — üç kutunun da üst ve alt kenarı birbirini tutmuyordu.
+        // Kartlar eşit boya gelince tarihler de aynı hizaya oturuyor
+        // (PredictionCard.fillHeight tarihi kartın altına yaslıyor).
+        : IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final card in cards)
+                  Expanded(child: card.filling()),
+              ],
+            ),
           );
     return content
         .animateSafe(context)

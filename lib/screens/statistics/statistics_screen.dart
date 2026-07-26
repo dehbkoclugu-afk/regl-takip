@@ -96,7 +96,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final content = SingleChildScrollView(
         // Kilitliyken kaydırma kapalı: bulanık içerik gezilecek bir şey değil
         physics: locked ? const NeverScrollableScrollPhysics() : null,
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 112),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, bottomNavInset(context)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

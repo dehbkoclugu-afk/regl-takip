@@ -160,7 +160,7 @@ class DashboardScreen extends ConsumerWidget {
         child: SingleChildScrollView(
           // Alt boşluk yüzen gezinme çubuğunu aşacak kadar — fazlası
           // sayfa sonunda ölü alan bırakıyordu
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 92),
+          padding: EdgeInsets.fromLTRB(20, 0, 20, bottomNavInset(context)),
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1180),

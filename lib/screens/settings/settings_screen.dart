@@ -52,7 +52,7 @@ class SettingsScreen extends ConsumerWidget {
         elevation: 0,
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 112),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, bottomNavInset(context)),
         children: [
           GlassCard(
             borderRadius: 16,
@@ -302,6 +302,7 @@ class SettingsScreen extends ConsumerWidget {
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               trailing: SegmentedButton<bool>(
+                showSelectedIcon: false,
                 segments: const [
                   ButtonSegment(value: false, label: Text('kg')),
                   ButtonSegment(value: true, label: Text('lb')),
@@ -337,6 +338,7 @@ class SettingsScreen extends ConsumerWidget {
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               trailing: SegmentedButton<bool>(
+                showSelectedIcon: false,
                 segments: const [
                   ButtonSegment(value: false, label: Text('°C')),
                   ButtonSegment(value: true, label: Text('°F')),
@@ -379,6 +381,12 @@ class SettingsScreen extends ConsumerWidget {
               subtitle: Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: SegmentedButton<String>(
+                  // Onay tiki seçili segmentten ~24 piksel yiyor ve üç
+                  // segment genişliği paylaşınca etiketi ikinci satıra
+                  // itiyordu: "Siste/m". Dolu zemin seçimi zaten anlatıyor.
+                  // Türkçede taşan tek dil değil — İspanyolca "Sistema",
+                  // Fransızca "Système", Rusça "Система" daha da uzun.
+                  showSelectedIcon: false,
                   segments: [
                     ButtonSegment(
                       value: 'system',

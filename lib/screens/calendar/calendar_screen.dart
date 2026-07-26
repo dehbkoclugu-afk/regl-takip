@@ -17,6 +17,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/access.dart';
+import '../../core/utils/adaptive_layout.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_pattern.dart';
@@ -602,7 +603,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           );
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.only(bottom: 92),
+            padding: EdgeInsets.only(bottom: bottomNavInset(context)),
             child: Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1180),

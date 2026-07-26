@@ -1006,9 +1006,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       color: AppColors.textSecondary)),
             ),
             const SizedBox(height: 8),
+            // Renk açıkça veriliyor: sayfanın zemini AppColors.surface, yani
+            // temadan bağımsız açık (kurulumun kartları da öyle). ListTile
+            // başlığı ise rengini ortam temasından alıyordu ve koyu temada
+            // açık renge düşüp beyaz zeminde okunmaz oluyordu. Sayfanın
+            // başlığı ile açıklaması rengini zaten belirttiği için yalnız
+            // seçenekler görünmezdi.
             for (final (label, days) in options)
               ListTile(
-                title: Text(label),
+                title: Text(
+                  label,
+                  style: const TextStyle(color: AppColors.textPrimary),
+                ),
                 onTap: () => Navigator.pop(sheetContext, days),
               ),
             const SizedBox(height: 8),

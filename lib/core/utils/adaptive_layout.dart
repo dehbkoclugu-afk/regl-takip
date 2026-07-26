@@ -27,3 +27,17 @@ double scaledGridExtent(
   double growth = 0.65,
 }) =>
     baseExtent * (1 + (math.max(1, textScale) - 1) * growth);
+
+/// Yüzen gezinme pill'inin kapladığı dikey alan.
+///
+/// Kabuk `extendBody: true` kullanıyor, yani sekme içerikleri pill'in altından
+/// akıyor ve her ekran son öğesini pill'in üstünde tutacak kadar alt dolgu
+/// vermek zorunda. Bu sayı elle yazıldığında kaçınılmaz olarak dağılıyordu —
+/// istatistik 112, takvim ve ana sayfa 92 kullanıyordu — ve hiçbiri sistem
+/// gezinme çubuğunun boşluğunu saymıyordu. Üç tuşlu gezinmesi olan bir
+/// telefonda istatistikteki yasal uyarı bu yüzden ortasından kesiliyordu.
+///
+/// Pill'in yüksekliği kabuktaki ölçülerin toplamı: dikey kenar boşluğu 2×16,
+/// iç dolgu 2×4, `NavigationBar`'ın kendi yüksekliği 80.
+double bottomNavInset(BuildContext context) =>
+    MediaQuery.viewPaddingOf(context).bottom + 120;
