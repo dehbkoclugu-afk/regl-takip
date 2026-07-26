@@ -301,11 +301,11 @@ class CycleUtils {
         DateTime(packStart.year, packStart.month, packStart.day);
     final days = normalizedNow.difference(start).inDays;
     if (days < 0) return 1;
-    return (days % 28) + 1;
+    return (days % AppConstants.pillPackDays) + 1;
   }
 
   static bool isPillBreakDay(DateTime packStart) =>
-      pillDayInPack(packStart) > 21;
+      pillIsBreak(pillDayInPack(packStart));
 
   /// Gelecek döngülerde tahmini adet günü mü? (mevcut döngünün gerçek
   /// kayıtları hariç — onları PeriodRecord işaretler)

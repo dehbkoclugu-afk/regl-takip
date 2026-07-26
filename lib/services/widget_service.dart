@@ -7,6 +7,7 @@ import 'package:home_widget/home_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../core/constants/app_constants.dart';
 import '../core/utils/cycle_utils.dart';
 import '../core/utils/language_utils.dart';
 import '../core/utils/ring_segments.dart';
@@ -222,9 +223,11 @@ class WidgetService {
             if (profile.pillPackStartDate != null) {
               final day =
                   CycleUtils.pillDayInPack(profile.pillPackStartDate!);
-              line1 = day > 21
-                  ? '${_t(locale, 'breakWeek')} ${day - 21}/7'
-                  : '${_t(locale, 'pill')} $day/21';
+              line1 = CycleUtils.pillIsBreak(day)
+                  ? '${_t(locale, 'breakWeek')} '
+                      '${day - AppConstants.pillActiveDays}/'
+                      '${AppConstants.pillPackDays - AppConstants.pillActiveDays}'
+                  : '${_t(locale, 'pill')} $day/${AppConstants.pillActiveDays}';
             }
             break;
           case TrackingMode.ttc:

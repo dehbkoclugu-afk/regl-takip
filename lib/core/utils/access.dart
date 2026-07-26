@@ -17,8 +17,10 @@ bool shouldShowTrialEndNotice({
 bool canWriteDailyTracking(AccessLevel access) => access != AccessLevel.free;
 
 /// Premium kapısı: erişim varsa true; ücretsiz katmandaysa paywall'ı
-/// açar ve false döner. Rota dışı giriş noktaları (sheet, buton) için —
-/// rotalar router redirect'iyle korunur.
+/// açar ve false döner. Router hiçbir rotayı erişim seviyesine göre
+/// engellemiyor — deneme bittikten sonra da takip ekranları salt-okunur
+/// açılır. Bu yüzden her yazma eylemi (sheet, buton, kart) bu kapıyı
+/// kendisi çağırmalı; router'a güvenerek atlanamaz.
 bool ensurePremiumAccess(BuildContext context, WidgetRef ref) {
   if (canWriteDailyTracking(ref.read(accessProvider))) return true;
   GoRouter.of(context).push('/paywall');
