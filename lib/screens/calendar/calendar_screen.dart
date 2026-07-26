@@ -552,11 +552,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final dailyLogs = ref.watch(dailyLogProvider);
     final firstDayOfWeek =
         MaterialLocalizations.of(context).firstDayOfWeekIndex;
-    final calendarWeekStart = switch (firstDayOfWeek) {
-      0 => StartingDayOfWeek.sunday,
-      6 => StartingDayOfWeek.saturday,
-      _ => StartingDayOfWeek.monday,
-    };
+    final calendarWeekStart = startingDayOfWeekFromIndex(firstDayOfWeek);
 
     return Scaffold(
       backgroundColor: AppColors.bg(context),
@@ -1473,3 +1469,15 @@ class _DashedCirclePainter extends CustomPainter {
   bool shouldRepaint(_DashedCirclePainter oldDelegate) =>
       oldDelegate.color != color;
 }
+
+/// Flutter'ın haftanın ilk günü indeksini `table_calendar`'ın enum'una çevirir.
+///
+/// İki sayım farklı yerden başlıyor: `firstDayOfWeekIndex` 0 = pazar,
+/// `StartingDayOfWeek.values` ise 0 = pazartesi. Kaydırma bu yüzden.
+///
+/// Yedi indeksin hepsi karşılanıyor: elle yazılan bir switch yalnız pazar,
+/// cumartesi ve pazartesiyi tanıyordu, cuma ile başlayan yereller sessizce
+/// pazartesiye düşüyordu. Uygulamanın altı dilinde bu fark görünmüyor ama
+/// dil eklendiğinde sessizce yanlış davranan bir yol bırakmaya gerek yok.
+StartingDayOfWeek startingDayOfWeekFromIndex(int firstDayOfWeekIndex) =>
+    StartingDayOfWeek.values[(firstDayOfWeekIndex + 6) % 7];
