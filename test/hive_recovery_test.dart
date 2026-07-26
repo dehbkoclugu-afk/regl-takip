@@ -23,8 +23,19 @@ void main() {
   });
 
   tearDown(() async {
-    await Hive.close();
-    await tempDir.delete(recursive: true);
+    // Temizlik adımı testi düşürmemeli. Test edilen kod bozuk kutuları
+    // karantinaya alırken dosyaları taşıyor/siliyor; Hive kapanışta kendi
+    // kilit dosyasını bulamayınca PathNotFoundException atıyor. Doğrulama o
+    // noktada çoktan bitmiş oluyor, yani bu hata testin sonucu hakkında
+    // hiçbir şey söylemiyor — CI'da rastgele düşmelere yol açıyordu.
+    try {
+      await Hive.close();
+    } on FileSystemException {
+      // karantina dosyaları zaten kaldırmış
+    }
+    if (tempDir.existsSync()) {
+      await tempDir.delete(recursive: true);
+    }
   });
 
   test('yanlış anahtar (yeni cihaz) çökmek yerine temiz başlar', () async {
