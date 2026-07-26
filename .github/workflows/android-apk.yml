@@ -1,10 +1,17 @@
 name: Android APK
 
-# Elle tetiklenir: Actions sekmesinden "Run workflow" ile herhangi bir dal
-# seçilip test APK'sı alınabilir. Codemagic'teki android-workflow ile aynı
-# adımlar, farkı çıktının GitHub release'ine asılması.
+# Codemagic'teki android-workflow ile aynı adımlar; farkı çıktının GitHub
+# release'ine asılması.
+#
+# workflow_dispatch ancak dosya varsayılan dala girdikten sonra Actions
+# sekmesinde görünür — GitHub elle tetiklemeyi yalnızca oradan okur. O yüzden
+# APK dalında push tetikleyicisi de var: bu dala her push kendiliğinden bir
+# build başlatır.
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - claude/regl-takip-apk-commit-cwoni4
 
 permissions:
   contents: write
