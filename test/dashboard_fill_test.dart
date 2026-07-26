@@ -5,39 +5,46 @@ import 'package:flutter_test/flutter_test.dart';
 ///
 /// İçerik ekranı doldurmadığında artan alan sayfanın sonunda tek parça ölü
 /// boşluk olarak kalıyordu. Kaydırma yokken dolguyu azaltmak bunu kapatmıyor
-/// — görünen şey viewport'un kendisi — o yüzden düzeltme yapısal: sütun en az
-/// viewport kadar uzun tutuluyor ve artan alan kısayol satırının üstündeki
-/// esnek boşluğa veriliyor.
+/// — görünen şey viewport'un kendisi. Çözüm: kapanış satırı kaydırma alanının
+/// dışında, sabit bir alt şerit. Artan alan şeridin üstünde kalıyor, yani
+/// sayfa sonundaki ölü boşluk yerine bölümler arası bir ayrım oluyor.
 ///
-/// Buradaki test o yerleşimin kendisini sabitliyor: kaydırılamayan sayfada
-/// kapanış satırı ekranın altına yaslanmalı, kaydırılabilir sayfada ise
-/// yerleşim hiç değişmemeli.
+/// Bu yerleşime iki başarısız denemeden sonra gelindi. Önce `IntrinsicHeight`,
+/// sonra `SliverFillRemaining(hasScrollBody: false)` denendi; ikisi de sütuna
+/// sınırlı boy vermek için intrinsic ölçüm istiyor, ana sayfanın içindeki
+/// geniş ekran `LayoutBuilder`'ı ise intrinsic ölçüm veremiyor. Sonuç her
+/// karede layout hatasıydı: ana sayfa donuyor, kaydırma da dokunma da
+/// çalışmıyordu.
+///
+/// Aşağıdaki sayfa bu yüzden bilerek bir `LayoutBuilder` taşıyor. Yerleşim
+/// yeniden intrinsic ölçüm isteyen bir sarmalayıcıya geçerse bu testler
+/// düşer.
 Widget _page({required double contentHeight, required double bottomInset}) {
-  return LayoutBuilder(
-    builder: (context, viewport) => SingleChildScrollView(
-      padding: EdgeInsets.only(bottom: bottomInset),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: 1180,
-            minHeight: viewport.maxHeight - bottomInset,
-          ),
-          child: IntrinsicHeight(
-            child: Column(
-              children: [
-                SizedBox(
-                    key: const Key('content'),
-                    height: contentHeight,
-                    width: double.infinity),
-                const Spacer(),
-                const SizedBox(
-                    key: Key('footer'), height: 60, width: double.infinity),
-              ],
-            ),
+  return Column(
+    children: [
+      Expanded(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Column(
+            children: [
+              // Gerçek sayfadaki geniş ekran dalının karşılığı.
+              LayoutBuilder(
+                builder: (context, constraints) => SizedBox(
+                  key: const Key('content'),
+                  height: contentHeight,
+                  width: double.infinity,
+                ),
+              ),
+            ],
           ),
         ),
       ),
-    ),
+      Padding(
+        padding: EdgeInsets.only(top: 8, bottom: bottomInset),
+        child: const SizedBox(
+            key: Key('footer'), height: 60, width: double.infinity),
+      ),
+    ],
   );
 }
 
@@ -52,36 +59,43 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: _page(
-              contentHeight: contentHeight, bottomInset: bottomInset),
+          body: _page(contentHeight: contentHeight, bottomInset: bottomInset),
         ),
       ),
     );
   }
 
-  testWidgets('kısa sayfada kapanış satırı ekranın altına yaslanır',
+  testWidgets('kapanış satırı gezinme payının hemen üstünde durur',
       (tester) async {
     await pump(tester, 200);
+    expect(tester.takeException(), isNull);
 
     final footer = tester.getRect(find.byKey(const Key('footer')));
-    // Sütun viewport kadar uzun: kapanış satırının altı, gezinme çubuğuna
-    // ayrılan payın hemen üstünde bitmeli — arkasında ölü alan kalmamalı.
     expect(footer.bottom, viewportHeight - bottomInset);
 
-    // Artan alan içerikle kapanış arasında: içerik yukarıda kalıyor.
+    // Artan alan içerikle kapanış arasında kalıyor: içerik yukarıda.
     final content = tester.getRect(find.byKey(const Key('content')));
     expect(content.bottom, 200);
     expect(footer.top, greaterThan(content.bottom));
   });
 
-  testWidgets('uzun sayfada esnek boşluk yerleşimi değiştirmez',
-      (tester) async {
+  testWidgets('içerik uzunken kapanış satırı yerinde kalır', (tester) async {
     await pump(tester, 2000);
+    expect(tester.takeException(), isNull);
 
-    final content = tester.getRect(find.byKey(const Key('content')));
     final footer = tester.getRect(find.byKey(const Key('footer')));
-    // İçerik zaten taşıyor: Spacer sıfır pay alıyor, kapanış satırı
-    // doğrudan içeriğin ardından geliyor.
-    expect(footer.top, content.bottom);
+    expect(footer.bottom, viewportHeight - bottomInset);
+  });
+
+  testWidgets('uzun sayfa gerçekten kaydırılabiliyor', (tester) async {
+    // Donmanın belirtisi buydu: kaydırma ölmüştü.
+    await pump(tester, 2000);
+    final before = tester.getRect(find.byKey(const Key('content'))).top;
+    await tester.drag(
+        find.byType(SingleChildScrollView), const Offset(0, -300));
+    await tester.pump();
+    final after = tester.getRect(find.byKey(const Key('content'))).top;
+    expect(after, lessThan(before));
+    expect(tester.takeException(), isNull);
   });
 }

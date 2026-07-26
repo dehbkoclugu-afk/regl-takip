@@ -158,28 +158,24 @@ class DashboardScreen extends ConsumerWidget {
         ),
       ),
       child: SafeArea(
-        // İçerik ekranı doldurmadığında artan alan sayfanın sonunda tek
-        // parça ölü boşluk olarak kalıyordu: kaydırma yoksa dolguyu
-        // azaltmak bunu kapatmıyor, görünen şey viewport'un kendisi.
-        // Sütun en az viewport kadar uzun tutuluyor ve artan alan
-        // kısayol satırının ÜSTÜNE veriliyor (aşağıdaki Spacer), böylece
-        // satır sayfanın altına yaslanıyor ve boşluk bölümler arası
-        // ayrım hâline geliyor. İçerik uzunsa artan alan zaten sıfır,
-        // yerleşim değişmiyor.
-        child: LayoutBuilder(
-          builder: (context, viewport) {
-            final bottomInset = bottomNavInset(context, gap: 0);
-            return SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, bottomInset),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: 1180,
-                    minHeight: viewport.maxHeight - bottomInset,
-                  ),
-                  // IntrinsicHeight olmadan sütunun boyu belirsiz kalır ve
-                  // esnek çocuk (Spacer) kullanılamaz.
-                  child: IntrinsicHeight(
+        // Kısayol satırı kaydırma alanının DIŞINDA, sabit alt şerit olarak
+        // duruyor. İçerik ekranı doldurmadığında artan alan bu şeridin
+        // üstünde kalıyor, yani sayfa sonunda tek parça ölü boşluk yerine
+        // özet ile kısayollar arasında bir ayrım oluyor.
+        //
+        // Esnek boşluk (Spacer) ile denendi ve olmadı: sütuna sınırlı boy
+        // vermek için IntrinsicHeight ya da SliverFillRemaining gerekiyor,
+        // ikisi de intrinsic ölçüm istiyor, sayfanın içindeki geniş ekran
+        // LayoutBuilder'ı ise intrinsic ölçüm veremiyor. Sarmalandığında
+        // her karede layout hatası atıyor; kaydırma da dokunma da ölüyordu.
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 1180),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -371,16 +367,24 @@ class DashboardScreen extends ConsumerWidget {
               // yutuyor: satır ekranın altına yaslanıyor, boşluk da özet
               // ile kısayollar arasında bir ayrıma dönüşüyor. Sabit 28
               // asgari payı korur, Spacer yalnız fazlalığı alır.
-              const SizedBox(height: 28),
-              const Spacer(),
-              const QuickAccessRow(),
                       ],
                     ),
                   ),
                 ),
               ),
-            );
-          },
+            ),
+            // Sabit alt şerit: her zaman erişilebilir, çubuğun üstünde durur
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                  20, 8, 20, bottomNavInset(context, gap: 0)),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1180),
+                  child: const QuickAccessRow(),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
