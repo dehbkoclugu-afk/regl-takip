@@ -158,27 +158,19 @@ class DashboardScreen extends ConsumerWidget {
         ),
       ),
       child: SafeArea(
-        // Kısayol satırı kaydırma alanının DIŞINDA, sabit alt şerit olarak
-        // duruyor. İçerik ekranı doldurmadığında artan alan bu şeridin
-        // üstünde kalıyor, yani sayfa sonunda tek parça ölü boşluk yerine
-        // özet ile kısayollar arasında bir ayrım oluyor.
-        //
-        // Esnek boşluk (Spacer) ile denendi ve olmadı: sütuna sınırlı boy
-        // vermek için IntrinsicHeight ya da SliverFillRemaining gerekiyor,
-        // ikisi de intrinsic ölçüm istiyor, sayfanın içindeki geniş ekran
-        // LayoutBuilder'ı ise intrinsic ölçüm veremiyor. Sarmalandığında
-        // her karede layout hatası atıyor; kaydırma da dokunma da ölüyordu.
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 1180),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
+        child: SingleChildScrollView(
+          // Alt pay küçük: kabuk extendBody ile gövdeye çubuğun yüksekliğini
+          // dolgu olarak veriyor ve bu ekran SafeArea içinde, yani çubuğun
+          // alanı zaten ayrılmış. Buraya bir de bottomNavInset koymak aynı
+          // boşluğu ikinci kez ayırıyordu ve sayfa sonunda geniş bir ölü alan
+          // bırakıyordu — şikayet edilen boşluğun kaynağı buydu.
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1180),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
               const SizedBox(height: 20),
               // Selamlama artık display anı değil: ekranın en büyük yazısı
               // kullanıcının sorusuna ("ne zaman?") ait olmalı, ismine değil.
@@ -363,34 +355,16 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(height: 28),
                 const QuickStatusCards(),
               ],
-              // Sayfayı kapatan kısayol satırı. Öndeki Spacer artan alanı
-              // yutuyor: satır ekranın altına yaslanıyor, boşluk da özet
-              // ile kısayollar arasında bir ayrıma dönüşüyor. Sabit 28
-              // asgari payı korur, Spacer yalnız fazlalığı alır.
-                      ],
-                    ),
-                  ),
-                ),
+              // Sayfayı kapatan kısayol satırı. Kaydırmanın İÇİNDE: sabit
+              // şerit olarak denendi ve iyi olmadı — gezinme çubuğunun hemen
+              // üstünde ikinci bir çubuk gibi duruyor, kalıcı yer kaplıyor ve
+              // kaydırma alanını kısaltıp hafta şeridini ortasından kesiyordu.
+              const SizedBox(height: 28),
+              const QuickAccessRow(),
+                ],
               ),
             ),
-            // Sabit alt şerit: her zaman erişilebilir, çubuğun üstünde durur.
-            //
-            // Burada bottomNavInset KULLANILMAZ. Kabuk extendBody ile birlikte
-            // gövdeye alt dolgu olarak çubuğun yüksekliğini veriyor ve bu
-            // ekran SafeArea içinde — yani çubuğun alanı zaten ayrılmış.
-            // İnset'i bir de buraya eklemek aynı boşluğu ikinci kez ayırıyor
-            // ve şeridin altında o kadar ölü alan bırakıyordu. Diğer sekmeler
-            // SafeArea kullanmadığı için orada inset doğru çalışıyor.
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 1180),
-                  child: const QuickAccessRow(),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
