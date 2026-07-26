@@ -21,7 +21,6 @@ import '../../models/enums.dart';
 import '../../models/period_record.dart';
 import '../../models/user_profile.dart';
 import '../../providers/providers.dart';
-import '../log/quick_log_sheet.dart';
 import 'widgets/cycle_progress_ring.dart';
 import 'widgets/prediction_card.dart';
 import 'widgets/quick_status_cards.dart';
@@ -469,11 +468,20 @@ class DashboardScreen extends ConsumerWidget {
                       icon: Icons.add_reaction_rounded,
                       label: l10n.addRecord,
                       color: AppColors.primaryStrong,
+                      // "Kayıt Ekle" ile aşağıdaki "Bugün nasıl
+                      // hissediyorsun" kartı aynı niyeti taşıyor: bugüne
+                      // kayıt gir. İkisi ayrı yere gidiyordu — biri hızlı
+                      // kayıt sayfasına, diğeri tam günlük ekranına — yani
+                      // kullanıcı hangisine bastığına göre başka bir yere
+                      // düşüyordu. İkisi de artık günlük ekranına gidiyor.
                       onTap: () {
                         // Günlük kayıt premium kapsamı: ücretsiz katman
                         // yalnız regl takibi
                         if (!ensurePremiumAccess(context, ref)) return;
-                        showQuickLogSheet(context, ref, DateTime.now());
+                        // Kart da böyle yapıyor: kayıt her zaman bugüne
+                        ref.read(selectedDateProvider.notifier).state =
+                            DateTime.now();
+                        context.push('/log');
                       },
                     ),
     ];
