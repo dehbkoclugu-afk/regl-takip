@@ -818,29 +818,50 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     ),
                   ),
                 )
+              // Dört öğeyi genişliğe göre saran bir Wrap, dile göre (uzun
+              // "Ovülasyon" gibi etiketlerde) kâh 3+1 kâh 2+2 bölünüyordu;
+              // tek başına kalan öğe ve kapatma butonunun iki satırın tam
+              // ortasına hizalanması lejantı dağınık gösteriyordu. Sabit
+              // 2x2 ızgara genişlikten bağımsız her zaman dengeli, X de
+              // üst satırla hizalı.
               : Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: Wrap(
-                        alignment: WrapAlignment.spaceEvenly,
-                        spacing: 12,
-                        runSpacing: 8,
+                      child: Column(
                         children: [
-                          _legendItem(
-                            AppColors.periodDay,
-                            l10n.periodDayLabel,
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _legendItem(
+                                  AppColors.periodDay,
+                                  l10n.periodDayLabel,
+                                ),
+                              ),
+                              Expanded(
+                                child: _legendItem(
+                                  AppColors.predictedPeriod,
+                                  l10n.predicted,
+                                ),
+                              ),
+                            ],
                           ),
-                          _legendItem(
-                            AppColors.predictedPeriod,
-                            l10n.predicted,
-                          ),
-                          _legendItem(
-                            AppColors.ovulationDay,
-                            l10n.ovulation,
-                          ),
-                          _legendItem(
-                            AppColors.fertileWindow,
-                            l10n.fertile,
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _legendItem(
+                                  AppColors.ovulationDay,
+                                  l10n.ovulation,
+                                ),
+                              ),
+                              Expanded(
+                                child: _legendItem(
+                                  AppColors.fertileWindow,
+                                  l10n.fertile,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
