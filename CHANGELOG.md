@@ -1,5 +1,13 @@
 # Changelog
 
+## Yayınlanmamış — Ana sayfayı kapatan kısayol satırı (2026-07-26)
+
+- **Sayfanın sonundaki ölü alan dolduruldu**: içerik ekranı doldurmuyordu ve altta yüzen çubuğa kadar boşluk uzuyordu. Dolgu azaltmak bu boşluğu kapatmıyor — kaydırma olmadığında görünen alan viewport'un kendisi
+- **Oraya bilgi değil eylem konuldu**: ekranın işi "ne zaman?" sorusunu cevaplayıp kayıt almak. Kayıt almanın yolu üç dokunuştu (Kayıt Ekle → günlük ekranı → kategori); dört kısayolla tek dokunuş oldu: Akış, Belirtiler, Ruh Hâli, Günlük Ölçümler
+- **Yeni çeviri gerekmedi**: dört etiket de zaten altı dilde vardı, rotalar da hazırdı
+- **Giriş kontrolü ana sayfadaki diğer iki kayıt girişiyle aynı**: dördü de günlük takip kapsamında, yani ücretsiz katmanda kapalı. Rotalar router redirect'iyle zaten korunuyor; buradaki kontrol kullanıcıya baştan söylemek için
+- **Büyük yazıda ikişerli iki sıra**: dört sütun etiketleri okunmaz hâle getiriyordu. Etiketler üstten hizalı, böylece "Günlük Ölçümler" gibi iki satıra sarkan bir etiket komşusunun ikonunu aşağı itmiyor
+
 ## Yayınlanmamış — Telefon testi ikinci tur: dört görsel hata (2026-07-26)
 
 - **İlaç ekleme sayfasında "Ekle" butonu sistem çubuğunun altında kalıyordu**: sayfanın alt dolgusu yalnız `viewInsets` (klavye) sayıyor, gezinme çubuğunu saymıyordu. Klavye kapalıyken dolgu 20 piksele düşüyordu. `SafeArea` eklendi — klavye açıkken kendi boşluğunu sıfırladığı için iki dolgu üst üste binmiyor

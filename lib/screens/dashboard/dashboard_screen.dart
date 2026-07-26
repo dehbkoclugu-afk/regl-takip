@@ -23,6 +23,7 @@ import '../../models/user_profile.dart';
 import '../../providers/providers.dart';
 import 'widgets/cycle_progress_ring.dart';
 import 'widgets/prediction_card.dart';
+import 'widgets/quick_access_row.dart';
 import 'widgets/quick_status_cards.dart';
 import 'widgets/week_strip.dart';
 import '../../core/utils/motion.dart';
@@ -354,6 +355,10 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(height: 28),
                 const QuickStatusCards(),
               ],
+              // Sayfayı kapatan kısayol satırı: sonunda kalan ölü alanı
+              // ekranın en sık yapılan işiyle dolduruyor.
+              const SizedBox(height: 28),
+              const QuickAccessRow(),
                 ],
               ),
             ),
