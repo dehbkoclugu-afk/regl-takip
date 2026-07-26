@@ -27,11 +27,14 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      # Yerel geliştirme beta ile yapılıyor; health/home_widget bağımlılıkları
-      # eski stable'da çözülmeyebilir
+      # codemagic.yaml ile aynı sürüme sabit: 3.44.8 eklenti zinciri
+      # (table_calendar 3.2.0 / intl 0.20.2) bu sürüme göre çözüldü ve
+      # derlemesi doğrulandı. İki hattın farklı Flutter'la derlemesi,
+      # yalnız birinde çıkan hatalar demek.
       - uses: subosito/flutter-action@v2
         with:
-          channel: beta
+          flutter-version: 3.44.8
+          channel: stable
           cache: true
 
       - name: Install dependencies
