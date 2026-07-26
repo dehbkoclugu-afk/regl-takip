@@ -601,52 +601,45 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             expanded: expanded,
           );
 
-          // Yasal uyarı içeriğin hemen ardından geliyordu, ekranın geri
-          // kalanı boş kalıyordu. Denenip vazgeçilen ilk çözüm (minHeight +
-          // IntrinsicHeight) bozuktu: IntrinsicHeight, Expanded(SizedBox())
-          // boyutsuz olduğu için esnek boşluğu hesaba hiç katmıyor, sütunu
-          // olması gerekenden kısa ölçüyor — uyarı ve lejantın alt kısmı
-          // gezinme çubuğunun arkasında kalıyordu. Kaydırılabilir alan artık
-          // Expanded ile kendi payını alıyor (intrinsic ölçüm gerekmez),
-          // uyarı da kaydırmanın DIŞINDA sabit bir alt şerit: içerik kısaysa
-          // doğal olarak en altta duruyor, uzunsa her zaman görünür kalıyor.
-          return Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  // Takvim kartı AppBar'ın hemen altından başlıyordu; diğer
-                  // sekmelerin tersine üstte hiç pay yoktu.
-                  padding: const EdgeInsets.only(top: 24),
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 1180),
-                      child: FocusTraversalGroup(
-                        policy: WidgetOrderTraversalPolicy(),
-                        child: expanded
-                            ? Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12),
-                                child: Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(flex: 3, child: calendar),
-                                    const SizedBox(width: 28),
-                                    Expanded(flex: 2, child: support),
-                                  ],
-                                ),
-                              )
-                            : Column(children: [calendar, support]),
-                      ),
-                    ),
+          // İki "en alta sabitle" denemesi de (IntrinsicHeight, sonra
+          // Expanded + kaydırmanın dışında sabit şerit) gezinme pili ile
+          // çakışmaya devam etti — nedeni doğrulanamadı. Uygulamada zaten
+          // aynı pille aynı şekilde çalışan, kanıtlanmış desene dönüldü:
+          // istatistik ekranındaki gibi tek SingleChildScrollView, uyarı
+          // kaydırılabilir içeriğin normal son öğesi, alt dolgu
+          // bottomNavInset. Uyarı artık kısa günlerde ekranın en dibine
+          // yapışmıyor ama pille asla çakışmıyor.
+          return SingleChildScrollView(
+            // Takvim kartı AppBar'ın hemen altından başlıyordu; diğer
+            // sekmelerin tersine üstte hiç pay yoktu.
+            padding: EdgeInsets.only(top: 24, bottom: bottomNavInset(context)),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1180),
+                child: FocusTraversalGroup(
+                  policy: WidgetOrderTraversalPolicy(),
+                  child: Column(
+                    children: [
+                      expanded
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(flex: 3, child: calendar),
+                                  const SizedBox(width: 28),
+                                  Expanded(flex: 2, child: support),
+                                ],
+                              ),
+                            )
+                          : Column(children: [calendar, support]),
+                      _buildDisclaimer(l10n),
+                    ],
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.only(bottom: bottomNavInset(context)),
-                child: _buildDisclaimer(l10n),
-              ),
-            ],
+            ),
           );
         },
       ),
