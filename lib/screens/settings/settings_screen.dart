@@ -1101,7 +1101,9 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
-          const SizedBox(height: 32),
+          // Son öğe için ayrıca alt boşluk yok: bottomNavInset zaten pill'in
+          // üstünde 24 px pay bırakıyor; buradaki ek SizedBox sayfa sonunda
+          // gereksiz boş alan bırakıyordu.
         ],
       ),
     );

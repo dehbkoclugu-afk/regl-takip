@@ -187,7 +187,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            // Son öğe için ayrıca alt boşluk yok: bottomNavInset zaten pill'in
+            // üstünde 24 px nefes payı bırakıyor; buradaki ek SizedBox sayfa
+            // sonunda bir-iki satırlık boş alanı ikiye katlıyordu.
           ],
         ),
       );
