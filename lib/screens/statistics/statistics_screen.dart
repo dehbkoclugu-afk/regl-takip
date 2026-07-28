@@ -192,7 +192,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             // sonunda bir-iki satÄ±rlÄ±k boÅŸ alanÄ± ikiye katlÄ±yordu.
           ],
         ),
-      );
+      ),
+    );
+
+    /*
 
     return Scaffold(
       backgroundColor: AppColors.bg(context),
@@ -443,6 +446,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   }
 
   /// BirleÅŸik segmentli dÃ¶nem seÃ§ici: 3 ay / 6 ay / 12 ay tek kapsÃ¼lde
+  */
+
   Widget _buildFilterBar(AppLocalizations l10n) {
     final options = [
       (l10n.last3Months, 3),
