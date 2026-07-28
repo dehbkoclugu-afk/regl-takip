@@ -14,6 +14,7 @@ import '../../core/utils/date_range_label.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_insights.dart';
 import '../../core/widgets/glass_card.dart';
+import '../../core/widgets/info_dialog.dart';
 import '../../core/widgets/phase_glyph.dart';
 import '../../core/widgets/pressable_scale.dart';
 import '../../models/enums.dart';
@@ -26,8 +27,25 @@ import 'widgets/quick_status_cards.dart';
 import 'widgets/week_strip.dart';
 import '../../core/utils/motion.dart';
 
-class DashboardScreen extends ConsumerWidget {
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
+
+  @override
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  /// Ring'de bir segmente dokununca üstteki faz çipi de o fazı göstersin diye:
+  /// ring seçimini buraya yazar, çip bunu dinler. null = seçim yok → güncel
+  /// faz gösterilir. ValueNotifier (setState değil) seçildi ki yalnız çip
+  /// yeniden çizilsin, tüm ekran ve giriş animasyonları tekrar oynamasın.
+  final ValueNotifier<CyclePhase?> _ringSelectedPhase = ValueNotifier(null);
+
+  @override
+  void dispose() {
+    _ringSelectedPhase.dispose();
+    super.dispose();
+  }
 
   List<Color> _gradientForPhase(CyclePhase phase) {
     switch (phase) {
@@ -55,32 +73,36 @@ class DashboardScreen extends ConsumerWidget {
     }
   }
 
-  void _showPhaseInfoDialog(BuildContext context, CyclePhase phase, AppLocalizations l10n) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: AppColors.sf(context),
-        title: Text(
-          EnumLabels.phase(phase, l10n),
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        content: Text(
-          _phaseInfo(phase, l10n),
-          style: TextStyle(fontSize: 14, height: 1.5),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.done),
-          ),
-        ],
-      ),
+  /// Faz için okunur (koyu) ton — bilgi penceresindeki ikon halkasında ve
+  /// dokunulan segmentin çipinde kullanılır.
+  Color _phaseColor(CyclePhase phase) {
+    switch (phase) {
+      case CyclePhase.menstrual:
+        return AppColors.menstrualText;
+      case CyclePhase.follicular:
+        return AppColors.follicularText;
+      case CyclePhase.ovulation:
+        return AppColors.ovulationText;
+      case CyclePhase.luteal:
+        return AppColors.lutealText;
+    }
+  }
+
+  void _showPhaseInfoDialog(
+      BuildContext context, CyclePhase phase, AppLocalizations l10n) {
+    final color = _phaseColor(phase);
+    showInfoDialog(
+      context,
+      icon: PhaseGlyph(phase: phase, size: 28, color: color),
+      color: color,
+      title: EnumLabels.phase(phase, l10n),
+      body: _phaseInfo(phase, l10n),
+      doneLabel: l10n.done,
     );
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final profile = ref.watch(userProfileProvider);
     final cycleDay = ref.watch(currentCycleDayProvider);
     final phase = ref.watch(currentCyclePhaseProvider);
@@ -215,50 +237,59 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                 ],
               ] else ...[
-                // Phase name — faz bilgisini açan buton
-                PressableScale(
-                    child: Semantics(
-                  button: true,
-                  label: EnumLabels.phase(phase, l10n),
-                  child: Material(
-                    color: AppColors.sf(context),
-                    borderRadius: BorderRadius.circular(16),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () => _showPhaseInfoDialog(context, phase, l10n),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            PhaseGlyph(
-                                phase: phase,
-                                size: 15,
-                                color: AppColors.primaryDeep),
-                            const SizedBox(width: 7),
-                            Flexible(
-                              child: Text(
-                                EnumLabels.phase(phase, l10n),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.tp(context),
+                // Phase name — faz bilgisini açan buton. Ring'de bir segmente
+                // dokunulduğunda o segmentin fazını gösterir; seçim yokken
+                // (ya da 5 sn sonra seçim kalkınca) güncel faza döner.
+                ValueListenableBuilder<CyclePhase?>(
+                  valueListenable: _ringSelectedPhase,
+                  builder: (context, selected, _) {
+                    final chipPhase = selected ?? phase;
+                    return PressableScale(
+                        child: Semantics(
+                      button: true,
+                      label: EnumLabels.phase(chipPhase, l10n),
+                      child: Material(
+                        color: AppColors.sf(context),
+                        borderRadius: BorderRadius.circular(16),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () =>
+                              _showPhaseInfoDialog(context, chipPhase, l10n),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                PhaseGlyph(
+                                    phase: chipPhase,
+                                    size: 15,
+                                    color: AppColors.primaryDeep),
+                                const SizedBox(width: 7),
+                                Flexible(
+                                  child: Text(
+                                    EnumLabels.phase(chipPhase, l10n),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.tp(context),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(width: 6),
+                                Icon(
+                                  Icons.info_outline_rounded,
+                                  size: 16,
+                                  color: AppColors.ts(context),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 6),
-                            Icon(
-                              Icons.info_outline_rounded,
-                              size: 16,
-                              color: AppColors.ts(context),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                )).animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms),
+                    ));
+                  },
+                ).animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms),
                 if (mode == TrackingMode.pill &&
                     profile?.pillPackStartDate != null) ...[
                   const SizedBox(height: 8),
@@ -281,6 +312,7 @@ class DashboardScreen extends ConsumerWidget {
                               delayDays: ref.watch(periodDelayProvider),
                               lastPeriodStart: profile?.lastPeriodStart,
                               patterned: ref.watch(phasePatternProvider),
+                              selectedPhase: _ringSelectedPhase,
                             ),
                             const SizedBox(height: 20),
                             const WeekStrip()

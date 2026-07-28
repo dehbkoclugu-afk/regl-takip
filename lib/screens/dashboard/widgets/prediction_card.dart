@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/adaptive_layout.dart';
 import '../../../core/widgets/glass_card.dart';
+import '../../../core/widgets/info_dialog.dart';
 import '../../../core/utils/motion.dart';
 
 class PredictionCard extends StatelessWidget {
@@ -44,41 +45,13 @@ class PredictionCard extends StatelessWidget {
   void _showInfoDialog(BuildContext context) {
     if (infoText == null) return;
     final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: AppColors.sf(context),
-        title: Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [color.withValues(alpha: 0.3), color.withValues(alpha: 0.15)],
-                ),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: color, size: 18),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(title,
-                  style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold)),
-            ),
-          ],
-        ),
-        content: Text(infoText!,
-            style: TextStyle(fontSize: 14, height: 1.5)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.done),
-          ),
-        ],
-      ),
+    showInfoDialog(
+      context,
+      icon: Icon(icon, color: color, size: 30),
+      color: color,
+      title: title,
+      body: infoText!,
+      doneLabel: l10n.done,
     );
   }
 
