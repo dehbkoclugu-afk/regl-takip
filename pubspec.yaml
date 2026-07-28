@@ -37,10 +37,8 @@ dependencies:
   # saat dilimini okuyup setLocalLocation ile bağlamak için gerekli
   flutter_timezone: ^5.1.0
   google_mobile_ads: ^5.3.0
-  # google_mobile_ads iOS podspec'i WKWebView eklentisine doğrudan ihtiyaç
-  # duyuyor; Podfile'a yerel Flutter podu olarak eklenmesi için bu bağımlılık
-  # uygulama düzeyinde de bildirilir.
-  webview_flutter_wkwebview: ^3.23.0
+  # Google Mobile Ads WebView entegrasyonu için resmi üst seviye eklenti.
+  webview_flutter: ^4.13.0
   shared_preferences: ^2.4.8
   crypto: ^3.0.7
   cryptography: ^2.9.0
