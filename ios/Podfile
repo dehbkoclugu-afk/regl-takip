@@ -32,11 +32,6 @@ require File.expand_path(
 flutter_ios_podfile_setup
 
 target 'Runner' do
-  # google_mobile_ads, WebView köprüsünü CocoaPods'ta yerel Flutter
-  # eklentisi olarak bekler. Bazı CI ortamlarında bu transitif pod otomatik
-  # kaydedilmediği için yolunu açıkça veriyoruz.
-  pod 'webview_flutter_wkwebview', :path => File.join('.symlinks', 'plugins', 'webview_flutter_wkwebview', 'ios')
-
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 
   target 'RunnerTests' do
