@@ -18,4 +18,11 @@
     <style name="NormalTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">?android:colorBackground</item>
     </style>
+    <!-- Gizli mod alias'ının Android 12+ sistem splash'ı: markalı pembe zemin
+         ve android12splash yerine nötr defter ikonu — kılık ilk kareden. -->
+    <style name="NeutralLaunchTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowSplashScreenBackground">@android:color/white</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_disguised</item>
+    </style>
 </resources>

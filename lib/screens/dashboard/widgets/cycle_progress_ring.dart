@@ -293,8 +293,20 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
     if (start != null) {
       final locale = Localizations.localeOf(context).toString();
       final fmt = DateFormat('d MMM', locale);
-      final from = start.add(Duration(days: s.startDay - 1));
-      final to = start.add(Duration(days: s.endDay - 1));
+      var from = start.add(Duration(days: s.startDay - 1));
+      var to = start.add(Duration(days: s.endDay - 1));
+      // Ring bu döngünün haritası; segment tümüyle geçmişte kaldıysa
+      // (bitişi bugünden önce) tahmin kartlarıyla aynı dili konuşmak için
+      // bir sonraki döngüdeki karşılığına sarılır — aksi halde kart
+      // "Verimli Pencere 15–21 Ağu" derken ring aynı pencereyi geçmiş
+      // "18–24 Tem" olarak gösterip çelişiyordu.
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final toDay = DateTime(to.year, to.month, to.day);
+      if (toDay.isBefore(today)) {
+        from = from.add(Duration(days: widget.cycleLength));
+        to = to.add(Duration(days: widget.cycleLength));
+      }
       range = s.startDay == s.endDay
           ? fmt.format(from)
           : '${fmt.format(from)} – ${fmt.format(to)}';

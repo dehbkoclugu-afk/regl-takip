@@ -2,6 +2,7 @@ package com.regl.regl_takip
 
 import android.content.ComponentName
 import android.content.pm.PackageManager
+import android.os.Bundle
 import android.view.WindowManager
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -16,6 +17,21 @@ class MainActivity : FlutterFragmentActivity() {
         private const val PRIVACY_CHANNEL = "regl_takip/privacy"
         private const val ALIAS_DEFAULT = "com.regl.regl_takip.MainActivityDefault"
         private const val ALIAS_DISGUISED = "com.regl.regl_takip.MainActivityDisguised"
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        // Gizli mod açıkken markalı açılış ekranı kılığı daha ilk karede ele
+        // veriyordu: MainActivity tek aktivite ve teması manifest'te LaunchTheme'e
+        // sabit, yani "Notlar" alias'ından açılsa bile pencere arka planı markalı
+        // splash'ı (launch_background) gösteriyordu. Stealth aktifse pencereyi
+        // nötr temaya alıp Regl Takip splash'ını hiç göstermiyoruz — Android 12+
+        // sistem splash'ı da alias'ın NeutralLaunchTheme'inden nötr geliyor.
+        // setTheme super.onCreate'ten ÖNCE çağrılmalı: pencere arka planı tema
+        // çözüldüğünde uygulanıyor.
+        if (isDisguised()) {
+            setTheme(R.style.NeutralLaunchTheme)
+        }
+        super.onCreate(savedInstanceState)
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
