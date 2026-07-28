@@ -41,17 +41,17 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    // İstatistik premium kapsamı. Sekme görünür kalır (kullanıcı neyi
-    // kaçırdığını bilsin); içerik kilidin ardında bulanık duruyor.
+    // Ä°statistik premium kapsamÄ±. Sekme gÃ¶rÃ¼nÃ¼r kalÄ±r (kullanÄ±cÄ± neyi
+    // kaÃ§Ä±rdÄ±ÄŸÄ±nÄ± bilsin); iÃ§erik kilidin ardÄ±nda bulanÄ±k duruyor.
     final locked = ref.watch(accessProvider) == AccessLevel.free;
 
     final records = ref.watch(periodRecordsProvider);
     final dailyLogs = ref.watch(dailyLogProvider);
     final profile = ref.watch(userProfileProvider);
 
-    // 0 = tüm zamanlar. Aylık pencereler kısa geçmişi olan kullanıcıyı
-    // kendi verisinden mahrum bırakıyordu: 12 aydan eski kaydı olan da
-    // tamamını görebilmeli.
+    // 0 = tÃ¼m zamanlar. AylÄ±k pencereler kÄ±sa geÃ§miÅŸi olan kullanÄ±cÄ±yÄ±
+    // kendi verisinden mahrum bÄ±rakÄ±yordu: 12 aydan eski kaydÄ± olan da
+    // tamamÄ±nÄ± gÃ¶rebilmeli.
     final cutoff = _filterMonths == 0
         ? DateTime.fromMillisecondsSinceEpoch(0)
         : DateTime.now().subtract(Duration(days: _filterMonths * 30));
@@ -84,24 +84,24 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       end: today,
     );
 
-    // Filtre çipleri KARTIN TAMAMINA işler: önceden Ort. Döngü ve
-    // Düzenlilik tüm kayıtlardan, Ort. Regl filtreden hesaplanıyordu —
-    // aynı kartta iki farklı kapsam (hangi sayının neye baktığı belirsizdi)
+    // Filtre Ã§ipleri KARTIN TAMAMINA iÅŸler: Ã¶nceden Ort. DÃ¶ngÃ¼ ve
+    // DÃ¼zenlilik tÃ¼m kayÄ±tlardan, Ort. Regl filtreden hesaplanÄ±yordu â€”
+    // aynÄ± kartta iki farklÄ± kapsam (hangi sayÄ±nÄ±n neye baktÄ±ÄŸÄ± belirsizdi)
     final avgCycle = CycleUtils.calculateAverageCycleLength(filteredRecords);
-    // Seçili aralıktaki tüm kayıtlar devam ediyorsa (endDate yok) eski
-    // hesap 0/1 = 0 veriyor ve "0,0 gün" yazıyordu — profil değeri kullanılır
+    // SeÃ§ili aralÄ±ktaki tÃ¼m kayÄ±tlar devam ediyorsa (endDate yok) eski
+    // hesap 0/1 = 0 veriyor ve "0,0 gÃ¼n" yazÄ±yordu â€” profil deÄŸeri kullanÄ±lÄ±r
     final avgPeriod = CycleUtils.averagePeriodDuration(
         filteredRecords, profile?.averagePeriodLength ?? 5);
 
     final content = SingleChildScrollView(
-        // Kilitliyken kaydırma kapalı: bulanık içerik gezilecek bir şey değil
+        // Kilitliyken kaydÄ±rma kapalÄ±: bulanÄ±k iÃ§erik gezilecek bir ÅŸey deÄŸil
         physics: locked ? const NeverScrollableScrollPhysics() : null,
         padding: EdgeInsets.fromLTRB(16, 16, 16, bottomNavInset(context)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Hiç kayıt yoksa: tek seferlik yönlendirme metni
-            // (kart içi boşlukların üstünde, tekrarı önler)
+            // HiÃ§ kayÄ±t yoksa: tek seferlik yÃ¶nlendirme metni
+            // (kart iÃ§i boÅŸluklarÄ±n Ã¼stÃ¼nde, tekrarÄ± Ã¶nler)
             if (records.isEmpty) ...[
               Center(
                 child: Padding(
@@ -115,25 +115,25 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               ),
               const SizedBox(height: 20),
             ],
-            // Doktora götürülecek özet uygulamanın en somut faydası ama
-            // ayarların derinliğinde duruyordu — istatistiğin başında olmalı
+            // Doktora gÃ¶tÃ¼rÃ¼lecek Ã¶zet uygulamanÄ±n en somut faydasÄ± ama
+            // ayarlarÄ±n derinliÄŸinde duruyordu â€” istatistiÄŸin baÅŸÄ±nda olmalÄ±
             _buildDoctorExportButton(l10n, records, dailyLogs, profile)
                 .animateSafe(context)
                 .fadeIn(duration: 400.ms),
             const SizedBox(height: 20),
-            // Tek parça segmentli filtre: üç ayrı baloncuk yerine
-            // birleşik seçici — daha derli toplu, daha "ürün" his
+            // Tek parÃ§a segmentli filtre: Ã¼Ã§ ayrÄ± baloncuk yerine
+            // birleÅŸik seÃ§ici â€” daha derli toplu, daha "Ã¼rÃ¼n" his
             _buildFilterBar(l10n).animateSafe(context).fadeIn(duration: 400.ms),
             const SizedBox(height: 24),
             _sectionHeader(l10n.statsSectionOverview),
             _buildOverviewCard(l10n, avgCycle, avgPeriod, filteredRecords),
             const SizedBox(height: 16),
-            // "Son döngün normaline göre nasıldı?" — filtreden bağımsız:
-            // "son" ve "ortalaman" kişisel normun tamamından hesaplanır
+            // "Son dÃ¶ngÃ¼n normaline gÃ¶re nasÄ±ldÄ±?" â€” filtreden baÄŸÄ±msÄ±z:
+            // "son" ve "ortalaman" kiÅŸisel normun tamamÄ±ndan hesaplanÄ±r
             _buildComparisonCard(l10n, records, profile),
             const SizedBox(height: 16),
-            // "Yılım": son 12 ay tek halka — düzenlilik bir bakışta.
-            // Ring/faz şeridiyle aynı görsel aile (imza dili üçüncü yüzeyde)
+            // "YÄ±lÄ±m": son 12 ay tek halka â€” dÃ¼zenlilik bir bakÄ±ÅŸta.
+            // Ring/faz ÅŸeridiyle aynÄ± gÃ¶rsel aile (imza dili Ã¼Ã§Ã¼ncÃ¼ yÃ¼zeyde)
             _buildYearRing(l10n, records, profile),
             const SizedBox(height: 16),
             _buildDataCoverageCard(l10n, coverage, monthlyCoverage),
@@ -156,7 +156,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             const SizedBox(height: 16),
             _buildTrendChart(
               l10n.temperatureTrend, filteredLogs,
-              (log) => log.temperature, AppColors.temperature, '°C',
+              (log) => log.temperature, AppColors.temperature, 'Â°C',
               records, profile,
             ),
             const SizedBox(height: 16),
@@ -187,9 +187,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 ],
               ),
             ),
-            // Son öğe için ayrıca alt boşluk yok: bottomNavInset zaten pill'in
-            // üstünde 24 px nefes payı bırakıyor; buradaki ek SizedBox sayfa
-            // sonunda bir-iki satırlık boş alanı ikiye katlıyordu.
+            // Son Ã¶ÄŸe iÃ§in ayrÄ±ca alt boÅŸluk yok: bottomNavInset zaten pill'in
+            // Ã¼stÃ¼nde 24 px nefes payÄ± bÄ±rakÄ±yor; buradaki ek SizedBox sayfa
+            // sonunda bir-iki satÄ±rlÄ±k boÅŸ alanÄ± ikiye katlÄ±yordu.
           ],
         ),
       );
@@ -206,9 +206,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       body: locked
           ? Stack(
               children: [
-                // Kilit ekranı ikon + metinden ibaretti: kullanıcı neyi
-                // kaçırdığını görmüyordu. Arkada kendi verisi duruyor —
-                // uydurma bir örnek değil, bulanıklaştırılmış gerçek.
+                // Kilit ekranÄ± ikon + metinden ibaretti: kullanÄ±cÄ± neyi
+                // kaÃ§Ä±rdÄ±ÄŸÄ±nÄ± gÃ¶rmÃ¼yordu. Arkada kendi verisi duruyor â€”
+                // uydurma bir Ã¶rnek deÄŸil, bulanÄ±klaÅŸtÄ±rÄ±lmÄ±ÅŸ gerÃ§ek.
                 Positioned.fill(
                   child: ImageFiltered(
                     imageFilter:
@@ -228,8 +228,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     );
   }
 
-  /// "Doktoruma özet çıkar": PDF raporu paylaşım sayfasına verir.
-  /// Ayarlar > Veri altındaki aynı akış; oradaki giriş de duruyor.
+  /// "Doktoruma Ã¶zet Ã§Ä±kar": PDF raporu paylaÅŸÄ±m sayfasÄ±na verir.
+  /// Ayarlar > Veri altÄ±ndaki aynÄ± akÄ±ÅŸ; oradaki giriÅŸ de duruyor.
   Widget _buildDoctorExportButton(
     AppLocalizations l10n,
     List<PeriodRecord> records,
@@ -239,7 +239,130 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton.icon(
-        // Profil yoksa rapor üretilemez (exportPdf profil istiyor)
+        // Profil yoksa rapor Ã¼retilemez (exportPdf profil istiyor)
+        onPressed: profile == null
+            ? null
+            : () async {
+                final messenger = ScaffoldMessenger.of(context);
+                try {
+                  final service = ExportService();
+                  final path = await service.exportPdf(
+                      profile, records, dailyLogs, l10n);
+                  await service.shareFile(path);
+                } catch (e) {
+                  messenger.showSnackBar(SnackBar(
+                    content: Text(l10n.errorOccurred(e.toString())),
+                    backgroundColor: AppColors.error,
+                  ));
+                }
+              },
+        icon: const Icon(Icons.picture_as_pdf_rounded, size: 18),
+        label: Text(l10n.doctorSummary),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.primaryDeep,
+          side: BorderSide(color: AppColors.dv(context)),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLockCard(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: AppColors.sf(context),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.dv(context)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.12),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.lock_outline_rounded,
+                size: 40, color: AppColors.primaryStrong),
+            const SizedBox(height: 12),
+            Text(l10n.premiumLockedTitle,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.tp(context))),
+            const SizedBox(height: 8),
+            Text(l10n.premiumLockedBody,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 14,
+                    height: 1.45,
+                    color: AppColors.ts(context))),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => context.push('/paywall'),
+                child: Text(l10n.seePlans),
+              ),
+            ),
+          ],
+        ),
+      );
+
+    return Scaffold(
+      backgroundColor: AppColors.bg(context),
+      appBar: AppBar(
+        title: Text(l10n.statistics,
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
+        backgroundColor: AppColors.bg(context),
+        elevation: 0,
+      ),
+      body: locked
+          ? Stack(
+              children: [
+                // Kilit ekranÄ± ikon + metinden ibaretti: kullanÄ±cÄ± neyi
+                // kaÃ§Ä±rdÄ±ÄŸÄ±nÄ± gÃ¶rmÃ¼yordu. Arkada kendi verisi duruyor â€”
+                // uydurma bir Ã¶rnek deÄŸil, bulanÄ±klaÅŸtÄ±rÄ±lmÄ±ÅŸ gerÃ§ek.
+                Positioned.fill(
+                  child: ImageFiltered(
+                    imageFilter:
+                        ui.ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                    child: IgnorePointer(child: content),
+                  ),
+                ),
+                Positioned.fill(
+                  child: Container(
+                    color: AppColors.bg(context).withValues(alpha: 0.55),
+                  ),
+                ),
+                Center(child: _buildLockCard(l10n)),
+              ],
+            )
+          : content,
+    );
+  }
+
+  /// "Doktoruma Ã¶zet Ã§Ä±kar": PDF raporu paylaÅŸÄ±m sayfasÄ±na verir.
+  /// Ayarlar > Veri altÄ±ndaki aynÄ± akÄ±ÅŸ; oradaki giriÅŸ de duruyor.
+  Widget _buildDoctorExportButton(
+    AppLocalizations l10n,
+    List<PeriodRecord> records,
+    Map<String, DailyLog> dailyLogs,
+    UserProfile? profile,
+  ) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        // Profil yoksa rapor Ã¼retilemez (exportPdf profil istiyor)
         onPressed: profile == null
             ? null
             : () async {
@@ -319,7 +442,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     );
   }
 
-  /// Birleşik segmentli dönem seçici: 3 ay / 6 ay / 12 ay tek kapsülde
+  /// BirleÅŸik segmentli dÃ¶nem seÃ§ici: 3 ay / 6 ay / 12 ay tek kapsÃ¼lde
   Widget _buildFilterBar(AppLocalizations l10n) {
     final options = [
       (l10n.last3Months, 3),
@@ -377,8 +500,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     );
   }
 
-  /// Sayfa bölümleri: kart yığını tek düze akıyordu — kısa başlıklar
-  /// hiyerarşi kurar
+  /// Sayfa bÃ¶lÃ¼mleri: kart yÄ±ÄŸÄ±nÄ± tek dÃ¼ze akÄ±yordu â€” kÄ±sa baÅŸlÄ±klar
+  /// hiyerarÅŸi kurar
   Widget _sectionHeader(String title) {
     return Padding(
       padding: const EdgeInsets.only(left: 4, bottom: 10),
@@ -394,10 +517,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     );
   }
 
-  /// "Yılım" halkası: son 365 gün saat yönünde tek çember. Gerçek regl
-  /// günleri koyu, geçmiş günlerin fazları soluk tonlarda; ilk kayıttan
-  /// önceki dönem boş iz. Düzenli bir yıl eşit aralıklı koyu dilimler
-  /// olarak okunur — düzensizlik kendini gösterir.
+  /// "YÄ±lÄ±m" halkasÄ±: son 365 gÃ¼n saat yÃ¶nÃ¼nde tek Ã§ember. GerÃ§ek regl
+  /// gÃ¼nleri koyu, geÃ§miÅŸ gÃ¼nlerin fazlarÄ± soluk tonlarda; ilk kayÄ±ttan
+  /// Ã¶nceki dÃ¶nem boÅŸ iz. DÃ¼zenli bir yÄ±l eÅŸit aralÄ±klÄ± koyu dilimler
+  /// olarak okunur â€” dÃ¼zensizlik kendini gÃ¶sterir.
   Widget _buildYearRing(
       AppLocalizations l10n, List<PeriodRecord> records, UserProfile? profile) {
     if (records.isEmpty || profile == null) return const SizedBox.shrink();
@@ -410,7 +533,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final segments = ringSegmentsFor(cycleLen, periodLen);
     final sortedStarts = records.map((r) => r.startDate).toList()..sort();
 
-    // Yıl içindeki döngü sayısı (halka merkez özeti)
+    // YÄ±l iÃ§indeki dÃ¶ngÃ¼ sayÄ±sÄ± (halka merkez Ã¶zeti)
     final cyclesInYear = sortedStarts
         .where((s) => !s.isBefore(start) && !s.isAfter(today))
         .length;
@@ -419,7 +542,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       if (records.any((r) => r.containsDate(date))) {
         return AppColors.ringMenstrual;
       }
-      // Tarihten önceki en yakın gerçek başlangıç o günün döngüsünü belirler
+      // Tarihten Ã¶nceki en yakÄ±n gerÃ§ek baÅŸlangÄ±Ã§ o gÃ¼nÃ¼n dÃ¶ngÃ¼sÃ¼nÃ¼ belirler
       DateTime? anchor;
       for (final s in sortedStarts) {
         if (!s.isAfter(date)) {
@@ -428,10 +551,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           break;
         }
       }
-      if (anchor == null) return null; // ilk kayıttan önce: bilinmiyor
+      if (anchor == null) return null; // ilk kayÄ±ttan Ã¶nce: bilinmiyor
       final day = CycleUtils.dayInCycleFor(date, anchor, cycleLen);
       if (day == null) return null;
-      // Fazlar soluk: gerçek regl günleri baskın kalsın
+      // Fazlar soluk: gerÃ§ek regl gÃ¼nleri baskÄ±n kalsÄ±n
       return segmentColorForDay(segments, day).withValues(alpha: 0.35);
     }
 
@@ -624,11 +747,11 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         .slideY(begin: 0.1, end: 0);
   }
 
-  /// Son döngü ve son regl, kullanıcının kendi ortalamasıyla kıyaslanır
-  /// (Clue'nun sevilen deseni: "normalin nasıl?" sorusuna tek bakış).
+  /// Son dÃ¶ngÃ¼ ve son regl, kullanÄ±cÄ±nÄ±n kendi ortalamasÄ±yla kÄ±yaslanÄ±r
+  /// (Clue'nun sevilen deseni: "normalin nasÄ±l?" sorusuna tek bakÄ±ÅŸ).
   Widget _buildComparisonCard(
       AppLocalizations l10n, List<PeriodRecord> records, UserProfile? profile) {
-    // Son tamamlanmış döngü = son iki başlangıç arası
+    // Son tamamlanmÄ±ÅŸ dÃ¶ngÃ¼ = son iki baÅŸlangÄ±Ã§ arasÄ±
     final starts = records.map((r) => r.startDate).toList()..sort();
     if (starts.length < 2) return const SizedBox.shrink();
 
@@ -691,7 +814,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             AppColors.isDark(context)
                 ? AppColors.primaryLight
                 : AppColors.primaryStrong,
-            '${l10n.lastCycleLength(lastGap)} — '
+            '${l10n.lastCycleLength(lastGap)} â€” '
             '${diffText(lastGap, avgCycleAll)}',
           ),
           if (lastCompleted != null)
@@ -700,7 +823,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               AppColors.isDark(context)
                   ? AppColors.menstrual
                   : AppColors.menstrualText,
-              '${l10n.lastPeriodLength(lastCompleted.durationDays)} — '
+              '${l10n.lastPeriodLength(lastCompleted.durationDays)} â€” '
               '${diffText(lastCompleted.durationDays, avgPeriodAll)}',
             ),
         ],
@@ -719,8 +842,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
 
   Widget _buildOverviewCard(
       AppLocalizations l10n, double avgCycle, double avgPeriod, List<PeriodRecord> records) {
-    // null = veri yetersiz; aksi halde en uzun/en kısa döngü farkı >= 9 gün
-    // düzensiz sayılır (CycleUtils.isIrregular)
+    // null = veri yetersiz; aksi halde en uzun/en kÄ±sa dÃ¶ngÃ¼ farkÄ± >= 9 gÃ¼n
+    // dÃ¼zensiz sayÄ±lÄ±r (CycleUtils.isIrregular)
     final irregular = CycleUtils.isIrregular(records);
     final gapCount = CycleUtils.validCycleGaps(records).length;
     final statItems = <Widget>[
@@ -778,15 +901,15 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               ],
             ),
           const SizedBox(height: 14),
-          // Sayının tek başına anlamı yok: "29,3 gün" iyi mi kötü mü?
+          // SayÄ±nÄ±n tek baÅŸÄ±na anlamÄ± yok: "29,3 gÃ¼n" iyi mi kÃ¶tÃ¼ mÃ¼?
           Text(
             l10n.typicalRangeNote(AppConstants.typicalCycleMin,
                 AppConstants.typicalCycleMax, AppConstants.typicalPeriodMax),
             style: TextStyle(
                 fontSize: 11, height: 1.4, color: AppColors.ts(context)),
           ),
-          // Az veriyle hesaplanan ortalama yanıltıcı: kaç döngüden
-          // çıktığı söylenmeli
+          // Az veriyle hesaplanan ortalama yanÄ±ltÄ±cÄ±: kaÃ§ dÃ¶ngÃ¼den
+          // Ã§Ä±ktÄ±ÄŸÄ± sÃ¶ylenmeli
           if (gapCount < AppConstants.minGapsForRegularity) ...[
             const SizedBox(height: 6),
             Row(
@@ -812,8 +935,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     ).animateSafe(context).fadeIn(delay: 60.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
-  /// Düzenlilik yargısının ne demek olduğunu açıklar. Ölçütü saklamak
-  /// kullanıcıyı yargının karşısında çaresiz bırakıyor.
+  /// DÃ¼zenlilik yargÄ±sÄ±nÄ±n ne demek olduÄŸunu aÃ§Ä±klar. Ã–lÃ§Ã¼tÃ¼ saklamak
+  /// kullanÄ±cÄ±yÄ± yargÄ±nÄ±n karÅŸÄ±sÄ±nda Ã§aresiz bÄ±rakÄ±yor.
   void _showRegularityInfo(
       AppLocalizations l10n, bool? irregular, int gapCount) {
     final body = irregular == null
@@ -857,8 +980,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     );
   }
 
-  /// Genel bakış metriği: kahraman sayı + küçük birim (metrik ölçek
-  /// dili). unit null ise değer metin olarak (düzenlilik durumu) yazılır.
+  /// Genel bakÄ±ÅŸ metriÄŸi: kahraman sayÄ± + kÃ¼Ã§Ã¼k birim (metrik Ã¶lÃ§ek
+  /// dili). unit null ise deÄŸer metin olarak (dÃ¼zenlilik durumu) yazÄ±lÄ±r.
   Widget _statItem(
       String label, String value, String? unit, IconData icon, Color color) {
     return Column(
@@ -918,7 +1041,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       return _emptyCard(l10n.symptomFrequency, l10n.noSymptomData);
     }
 
-    // Hikâye cümlesi: son 30 gün vs önceki 30 gün toplam belirti kaydı
+    // HikÃ¢ye cÃ¼mlesi: son 30 gÃ¼n vs Ã¶nceki 30 gÃ¼n toplam belirti kaydÄ±
     final now = DateTime.now();
     var recent = 0;
     var previous = 0;
@@ -959,7 +1082,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             _storyLine(story),
           ],
           const SizedBox(height: 16),
-          // Ekran okuyucu için grafik verisi metin özeti olarak sunulur
+          // Ekran okuyucu iÃ§in grafik verisi metin Ã¶zeti olarak sunulur
           Semantics(
             label: top5
                 .map((e) =>
@@ -973,9 +1096,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
                 maxY: (top5.first.count + 2).toDouble(),
-                // Değer çubuğun üstünde kalıcı yazılır: dokunma kapalıyken
-                // gören kullanıcı yalnız göreli yükseklik görüyordu (ekran
-                // okuyucu özeti sayı alırken görene sayı yoktu)
+                // DeÄŸer Ã§ubuÄŸun Ã¼stÃ¼nde kalÄ±cÄ± yazÄ±lÄ±r: dokunma kapalÄ±yken
+                // gÃ¶ren kullanÄ±cÄ± yalnÄ±z gÃ¶reli yÃ¼kseklik gÃ¶rÃ¼yordu (ekran
+                // okuyucu Ã¶zeti sayÄ± alÄ±rken gÃ¶rene sayÄ± yoktu)
                 barTouchData: BarTouchData(
                   enabled: false,
                   touchTooltipData: BarTouchTooltipData(
@@ -998,8 +1121,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      // İki satırlık tam ad için yer; 4 harfe kırpma
-                      // ("Baş ", "Kram") TR'de hiçbir şey ayırt etmiyordu
+                      // Ä°ki satÄ±rlÄ±k tam ad iÃ§in yer; 4 harfe kÄ±rpma
+                      // ("BaÅŸ ", "Kram") TR'de hiÃ§bir ÅŸey ayÄ±rt etmiyordu
                       reservedSize: 40,
                       getTitlesWidget: (value, meta) {
                         final idx = value.toInt();
@@ -1008,8 +1131,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                           return Padding(
                             padding: const EdgeInsets.only(top: 6),
                             child: SizedBox(
-                              // 60 px etiketler 5 çubuklu dar grafikte
-                              // birbirine değiyordu
+                              // 60 px etiketler 5 Ã§ubuklu dar grafikte
+                              // birbirine deÄŸiyordu
                               width: 50,
                               child: Text(
                                 name,
@@ -1074,7 +1197,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      '${_symptomName(summary.type, l10n)} · '
+                      '${_symptomName(summary.type, l10n)} Â· '
                       '${l10n.averageSeverity(summary.averageSeverity.toStringAsFixed(1))}',
                       style: TextStyle(
                         fontSize: 11,
@@ -1131,7 +1254,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   fontWeight: FontWeight.bold,
                   color: AppColors.tp(context))),
           const SizedBox(height: 16),
-          // Ekran okuyucu için pasta grafiği metin özeti olarak sunulur
+          // Ekran okuyucu iÃ§in pasta grafiÄŸi metin Ã¶zeti olarak sunulur
           Semantics(
             label: moodCount.entries
                 .map((e) =>
@@ -1147,8 +1270,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     sections: moodCount.entries.map((e) {
                       final pct = (e.value / total * 100).toStringAsFixed(0);
                       final sliceColor = colors[e.key] ?? AppColors.moodNeutral;
-                      // Soluk pastel dilimde beyaz yüzde okunmuyor (~1.4:1):
-                      // dilimin parlaklığına göre koyu/beyaz metin seçilir
+                      // Soluk pastel dilimde beyaz yÃ¼zde okunmuyor (~1.4:1):
+                      // dilimin parlaklÄ±ÄŸÄ±na gÃ¶re koyu/beyaz metin seÃ§ilir
                       final titleColor = sliceColor.computeLuminance() > 0.5
                           ? AppColors.textPrimary
                           : Colors.white;
@@ -1185,10 +1308,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  // Yüzde lejantta da yazar: dilimi lejanta bağlayan tek
-                  // kanal renkti ve ruh hâli paleti pastel — deuteranopiada
-                  // sarı/turuncu/yeşil noktalar birbirine karışıyor.
-                  // Dilimin içindeki "%38" ile lejanttaki "%38" eşleşiyor.
+                  // YÃ¼zde lejantta da yazar: dilimi lejanta baÄŸlayan tek
+                  // kanal renkti ve ruh hÃ¢li paleti pastel â€” deuteranopiada
+                  // sarÄ±/turuncu/yeÅŸil noktalar birbirine karÄ±ÅŸÄ±yor.
+                  // Dilimin iÃ§indeki "%38" ile lejanttaki "%38" eÅŸleÅŸiyor.
                   Text(
                       '${_moodName(e.key, l10n)} '
                       '%${(e.value / total * 100).toStringAsFixed(0)}',
@@ -1203,8 +1326,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     ).animateSafe(context).fadeIn(delay: 180.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
-  /// Semptom kayıtlarını döngü fazlarına eşler; her semptomun en sık
-  /// görüldüğü fazı yüzdesiyle listeler.
+  /// Semptom kayÄ±tlarÄ±nÄ± dÃ¶ngÃ¼ fazlarÄ±na eÅŸler; her semptomun en sÄ±k
+  /// gÃ¶rÃ¼ldÃ¼ÄŸÃ¼ fazÄ± yÃ¼zdesiyle listeler.
   Widget _buildPhaseInsights(
     AppLocalizations l10n,
     List<DailyLog> logs,
@@ -1215,8 +1338,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       return _emptyCard(l10n.phaseInsights, l10n.noInsightsYet);
     }
 
-    // Motor core'da (topPhaseSymptoms): koç satırı ve faz-ipucu bildirimi
-    // ile aynı hesap. Burada filtreli loglar beslenir (ekranın kapsamı).
+    // Motor core'da (topPhaseSymptoms): koÃ§ satÄ±rÄ± ve faz-ipucu bildirimi
+    // ile aynÄ± hesap. Burada filtreli loglar beslenir (ekranÄ±n kapsamÄ±).
     final insights = topPhaseSymptoms(
       logs: logs,
       periodStarts: records.map((r) => r.startDate).toList(),
@@ -1482,9 +1605,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   fontWeight: FontWeight.bold,
                   color: AppColors.tp(context))),
           const SizedBox(height: 12),
-          // Kayıtlar salt-okunur değil: yanlış girilen tarih düzeltilebilmeli,
-          // yanlış açılan kayıt silinebilmeli — aksi halde bozuk veri kalıcı
-          // ve tahmin motoru onunla çalışır
+          // KayÄ±tlar salt-okunur deÄŸil: yanlÄ±ÅŸ girilen tarih dÃ¼zeltilebilmeli,
+          // yanlÄ±ÅŸ aÃ§Ä±lan kayÄ±t silinebilmeli â€” aksi halde bozuk veri kalÄ±cÄ±
+          // ve tahmin motoru onunla Ã§alÄ±ÅŸÄ±r
           ...records.take(10).map((r) => Semantics(
                 button: true,
                 label:
@@ -1505,8 +1628,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                               shape: BoxShape.circle),
                         ),
                         const SizedBox(width: 12),
-                        // Tarih aralığı + süre + kalem dar ekranda taşıyordu:
-                        // tarih bölümü esner, gerekirse kısalır
+                        // Tarih aralÄ±ÄŸÄ± + sÃ¼re + kalem dar ekranda taÅŸÄ±yordu:
+                        // tarih bÃ¶lÃ¼mÃ¼ esner, gerekirse kÄ±salÄ±r
                         Expanded(
                           child: Text.rich(
                             TextSpan(
@@ -1563,8 +1686,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     ).animateSafe(context).fadeIn(delay: 260.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
-  /// Kayıt düzenleyici artık ortak: aynı sayfa ücretsiz katmandaki
-  /// regl geçmişi ekranından da açılıyor.
+  /// KayÄ±t dÃ¼zenleyici artÄ±k ortak: aynÄ± sayfa Ã¼cretsiz katmandaki
+  /// regl geÃ§miÅŸi ekranÄ±ndan da aÃ§Ä±lÄ±yor.
   Future<void> _showRecordEditor(PeriodRecord record) =>
       showPeriodRecordEditor(context, ref, record);
 
@@ -1590,9 +1713,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       return _emptyCard(title, AppLocalizations.of(context)!.noDataYet);
     }
 
-    // x = ilk ölçümden itibaren GÜN: önceden x liste indeksiydi, seyrek
-    // veri (bir haftada 3 ölçüm + iki ay boşluk) eşit aralıklı çizilip
-    // eğilimin biçimini çarpıtıyordu
+    // x = ilk Ã¶lÃ§Ã¼mden itibaren GÃœN: Ã¶nceden x liste indeksiydi, seyrek
+    // veri (bir haftada 3 Ã¶lÃ§Ã¼m + iki ay boÅŸluk) eÅŸit aralÄ±klÄ± Ã§izilip
+    // eÄŸilimin biÃ§imini Ã§arpÄ±tÄ±yordu
     final firstDay = DateTime(dataPoints.first.key.year,
         dataPoints.first.key.month, dataPoints.first.key.day);
     double dayOf(DateTime d) =>
@@ -1644,8 +1767,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final localeStr = Localizations.localeOf(context).toString();
     final dateFormat = DateFormat('d/M', localeStr);
 
-    // Hikâye cümlesi: grafik okumayan kullanıcı da değeri alsın —
-    // dönem içi net değişim tek cümlede (küçük dalgalanma "yatay" sayılır)
+    // HikÃ¢ye cÃ¼mlesi: grafik okumayan kullanÄ±cÄ± da deÄŸeri alsÄ±n â€”
+    // dÃ¶nem iÃ§i net deÄŸiÅŸim tek cÃ¼mlede (kÃ¼Ã§Ã¼k dalgalanma "yatay" sayÄ±lÄ±r)
     final l10nStory = AppLocalizations.of(context)!;
     String? story;
     if (spots.length >= 2) {
@@ -1678,7 +1801,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             _storyLine(story),
           ],
           const SizedBox(height: 16),
-          // Ekran okuyucu için trend özeti: son / en düşük / en yüksek
+          // Ekran okuyucu iÃ§in trend Ã¶zeti: son / en dÃ¼ÅŸÃ¼k / en yÃ¼ksek
           Semantics(
             label:
                 '$title: ${spots.last.y.toStringAsFixed(1)} $unit. '
@@ -1861,8 +1984,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     ).animateSafe(context).fadeIn(delay: 300.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
-  /// Grafik kartının başlığı altına veriden türetilmiş tek cümle:
-  /// sayı-anlatıcı kimliğin metin hali
+  /// Grafik kartÄ±nÄ±n baÅŸlÄ±ÄŸÄ± altÄ±na veriden tÃ¼retilmiÅŸ tek cÃ¼mle:
+  /// sayÄ±-anlatÄ±cÄ± kimliÄŸin metin hali
   Widget _storyLine(String text) {
     return Text(
       text,
@@ -1892,8 +2015,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   }
 }
 
-/// Son 365 günü saat yönünde tek çember olarak çizer: gün başına ince bir
-/// yay dilimi. Ay başlangıçları dış kenarda kısa adlarla işaretlenir.
+/// Son 365 gÃ¼nÃ¼ saat yÃ¶nÃ¼nde tek Ã§ember olarak Ã§izer: gÃ¼n baÅŸÄ±na ince bir
+/// yay dilimi. Ay baÅŸlangÄ±Ã§larÄ± dÄ±ÅŸ kenarda kÄ±sa adlarla iÅŸaretlenir.
 class _YearRingPainter extends CustomPainter {
   final List<Color?> dayColors;
   final List<String> monthLabels;
@@ -1912,7 +2035,7 @@ class _YearRingPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    // Dışta ay etiketlerine yer bırak
+    // DÄ±ÅŸta ay etiketlerine yer bÄ±rak
     final radius = size.width / 2 - _stroke / 2 - 18;
     final rect = Rect.fromCircle(center: center, radius: radius);
     final total = dayColors.length;
@@ -1924,8 +2047,8 @@ class _YearRingPainter extends CustomPainter {
       ..color = trackColor.withValues(alpha: 0.5);
     canvas.drawCircle(center, radius, trackPaint);
 
-    // Ardışık aynı renkli günleri tek yayda birleştir (365 ayrı çizim
-    // yerine tipik ~40 yay — hem hızlı hem dikişsiz)
+    // ArdÄ±ÅŸÄ±k aynÄ± renkli gÃ¼nleri tek yayda birleÅŸtir (365 ayrÄ± Ã§izim
+    // yerine tipik ~40 yay â€” hem hÄ±zlÄ± hem dikiÅŸsiz)
     var runStart = 0;
     while (runStart < total) {
       final color = dayColors[runStart];
@@ -1950,7 +2073,7 @@ class _YearRingPainter extends CustomPainter {
       runStart = runEnd + 1;
     }
 
-    // Ay etiketleri: her ayın halkadaki başlangıç açısına
+    // Ay etiketleri: her ayÄ±n halkadaki baÅŸlangÄ±Ã§ aÃ§Ä±sÄ±na
     final labelRadius = size.width / 2 - 7;
     for (var i = 0; i < monthLabels.length; i++) {
       final angle = -math.pi / 2 + (i * total / 12) * sweepPerDay;
@@ -1967,7 +2090,7 @@ class _YearRingPainter extends CustomPainter {
             color: labelColor,
           ),
         ),
-        // intl paketi de TextDirection tanımlıyor — dart:ui'ninki kastedilen
+        // intl paketi de TextDirection tanÄ±mlÄ±yor â€” dart:ui'ninki kastedilen
         textDirection: ui.TextDirection.ltr,
       )..layout();
       tp.paint(canvas, pos - Offset(tp.width / 2, tp.height / 2));
@@ -1980,3 +2103,4 @@ class _YearRingPainter extends CustomPainter {
       oldDelegate.trackColor != trackColor ||
       oldDelegate.labelColor != labelColor;
 }
+

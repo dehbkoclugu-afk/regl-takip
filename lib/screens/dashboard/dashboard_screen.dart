@@ -23,6 +23,7 @@ import '../../models/user_profile.dart';
 import '../../providers/providers.dart';
 import 'widgets/cycle_progress_ring.dart';
 import 'widgets/prediction_card.dart';
+import 'widgets/quick_access_row.dart';
 import 'widgets/quick_status_cards.dart';
 import 'widgets/week_strip.dart';
 import '../../core/utils/motion.dart';
@@ -35,10 +36,10 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
-  /// Ring'de bir segmente dokununca üstteki faz çipi de o fazı göstersin diye:
-  /// ring seçimini buraya yazar, çip bunu dinler. null = seçim yok → güncel
-  /// faz gösterilir. ValueNotifier (setState değil) seçildi ki yalnız çip
-  /// yeniden çizilsin, tüm ekran ve giriş animasyonları tekrar oynamasın.
+  /// Ring'de bir segmente dokununca Ã¼stteki faz Ã§ipi de o fazÄ± gÃ¶stersin diye:
+  /// ring seÃ§imini buraya yazar, Ã§ip bunu dinler. null = seÃ§im yok â†’ gÃ¼ncel
+  /// faz gÃ¶sterilir. ValueNotifier (setState deÄŸil) seÃ§ildi ki yalnÄ±z Ã§ip
+  /// yeniden Ã§izilsin, tÃ¼m ekran ve giriÅŸ animasyonlarÄ± tekrar oynamasÄ±n.
   final ValueNotifier<CyclePhase?> _ringSelectedPhase = ValueNotifier(null);
 
   @override
@@ -73,8 +74,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
   }
 
-  /// Faz için okunur (koyu) ton — bilgi penceresindeki ikon halkasında ve
-  /// dokunulan segmentin çipinde kullanılır.
+  /// Faz iÃ§in okunur (koyu) ton â€” bilgi penceresindeki ikon halkasÄ±nda ve
+  /// dokunulan segmentin Ã§ipinde kullanÄ±lÄ±r.
   Color _phaseColor(CyclePhase phase) {
     switch (phase) {
       case CyclePhase.menstrual:
@@ -115,7 +116,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     String nextPeriodStr = '-';
     String ovulationStr = '-';
     String fertileStr = '-';
-    // Tarih olarak da lazım: TTC kartındaki test günü bundan hesaplanıyor
+    // Tarih olarak da lazÄ±m: TTC kartÄ±ndaki test gÃ¼nÃ¼ bundan hesaplanÄ±yor
     DateTime? ovulationDate;
 
     final effectiveCycleLen = ref.watch(effectiveCycleLengthProvider);
@@ -123,9 +124,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final trialDaysLeft = ref.watch(trialDaysLeftProvider);
     final todayFirst =
         ref.watch(homePriorityProvider) == HomePriority.today;
-    // Ücretsiz katman yalnız regl takibi: modlara özel arayüz (hamilelik
-    // hero'su, hap çipi, TTC kartı) premium kapsamında — free'de veri
-    // silinmez ama görünüm klasik regl takibine döner
+    // Ãœcretsiz katman yalnÄ±z regl takibi: modlara Ã¶zel arayÃ¼z (hamilelik
+    // hero'su, hap Ã§ipi, TTC kartÄ±) premium kapsamÄ±nda â€” free'de veri
+    // silinmez ama gÃ¶rÃ¼nÃ¼m klasik regl takibine dÃ¶ner
     final storedMode = profile?.trackingMode ?? TrackingMode.period;
     final mode =
         access == AccessLevel.free ? TrackingMode.period : storedMode;
@@ -133,7 +134,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     if (profile?.lastPeriodStart != null) {
       final cycleLen = effectiveCycleLen;
       final lastStart = profile!.lastPeriodStart!;
-      // Tahmin geçmişte kaldıysa (gecikmiş döngü) ileri sarılmış tarih göster
+      // Tahmin geÃ§miÅŸte kaldÄ±ysa (gecikmiÅŸ dÃ¶ngÃ¼) ileri sarÄ±lmÄ±ÅŸ tarih gÃ¶ster
       final nextPeriod = CycleUtils.nextFuturePeriod(lastStart, cycleLen);
       nextPeriodStr = dateFormat.format(nextPeriod);
 
@@ -144,7 +145,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       if (ovulation.isBefore(today)) {
         ovulation = ovulation.add(Duration(days: cycleLen));
       }
-      // Sıcaklıktan teyit varsa tahmin yerine ölçülen tarih gösterilir
+      // SÄ±caklÄ±ktan teyit varsa tahmin yerine Ã¶lÃ§Ã¼len tarih gÃ¶sterilir
       if (confirmedOvulation != null) {
         ovulation = confirmedOvulation;
       }
@@ -156,8 +157,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
 
     final isDarkTheme = AppColors.isDark(context);
-    // Faz değişince zemin rengi atlamak yerine yumuşakça akar
-    // (AnimatedContainer gradyanı kendisi lerp'ler)
+    // Faz deÄŸiÅŸince zemin rengi atlamak yerine yumuÅŸakÃ§a akar
+    // (AnimatedContainer gradyanÄ± kendisi lerp'ler)
     return AnimatedContainer(
       duration: context.motionDuration(const Duration(milliseconds: 600)),
       curve: Curves.easeOutQuart,
@@ -166,10 +167,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            // Koyu temada tint zemini AÇIYOR, yani açık renkli ikincil
-            // metnin kontrastını düşürüyor: aynı alfada dört fazın hepsi
-            // 2,6–3,7:1'e iniyordu. Kısılmış alfa hem okunurluğu kurtarıyor
-            // hem "parlak öğeler dark'ta kısılır" ilkesiyle uyumlu.
+            // Koyu temada tint zemini AÃ‡IYOR, yani aÃ§Ä±k renkli ikincil
+            // metnin kontrastÄ±nÄ± dÃ¼ÅŸÃ¼rÃ¼yor: aynÄ± alfada dÃ¶rt fazÄ±n hepsi
+            // 2,6â€“3,7:1'e iniyordu. KÄ±sÄ±lmÄ±ÅŸ alfa hem okunurluÄŸu kurtarÄ±yor
+            // hem "parlak Ã¶ÄŸeler dark'ta kÄ±sÄ±lÄ±r" ilkesiyle uyumlu.
             gradient[0].withValues(alpha: isDarkTheme ? 0.15 : 0.35),
             gradient[1].withValues(alpha: isDarkTheme ? 0.10 : 0.20),
             AppColors.bg(context),
@@ -179,11 +180,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       ),
       child: SafeArea(
         child: SingleChildScrollView(
-          // Alt pay küçük: kabuk extendBody ile gövdeye çubuğun yüksekliğini
-          // dolgu olarak veriyor ve bu ekran SafeArea içinde, yani çubuğun
-          // alanı zaten ayrılmış. Buraya bir de bottomNavInset koymak aynı
-          // boşluğu ikinci kez ayırıyordu ve sayfa sonunda geniş bir ölü alan
-          // bırakıyordu — şikayet edilen boşluğun kaynağı buydu.
+          // Alt pay kÃ¼Ã§Ã¼k: kabuk extendBody ile gÃ¶vdeye Ã§ubuÄŸun yÃ¼ksekliÄŸini
+          // dolgu olarak veriyor ve bu ekran SafeArea iÃ§inde, yani Ã§ubuÄŸun
+          // alanÄ± zaten ayrÄ±lmÄ±ÅŸ. Buraya bir de bottomNavInset koymak aynÄ±
+          // boÅŸluÄŸu ikinci kez ayÄ±rÄ±yordu ve sayfa sonunda geniÅŸ bir Ã¶lÃ¼ alan
+          // bÄ±rakÄ±yordu â€” ÅŸikayet edilen boÅŸluÄŸun kaynaÄŸÄ± buydu.
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
           child: Center(
             child: ConstrainedBox(
@@ -192,11 +193,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
               const SizedBox(height: 20),
-              // Selamlama artık display anı değil: ekranın en büyük yazısı
-              // kullanıcının sorusuna ("ne zaman?") ait olmalı, ismine değil.
-              // Tema düğmesi de buradan kalktı — ayda bir kullanılan bir
-              // tercih, her açılışta göz hizasındaki köşeyi hak etmiyor
-              // (üçlü seçici ayarlarda duruyor).
+              // Selamlama artÄ±k display anÄ± deÄŸil: ekranÄ±n en bÃ¼yÃ¼k yazÄ±sÄ±
+              // kullanÄ±cÄ±nÄ±n sorusuna ("ne zaman?") ait olmalÄ±, ismine deÄŸil.
+              // Tema dÃ¼ÄŸmesi de buradan kalktÄ± â€” ayda bir kullanÄ±lan bir
+              // tercih, her aÃ§Ä±lÄ±ÅŸta gÃ¶z hizasÄ±ndaki kÃ¶ÅŸeyi hak etmiyor
+              // (Ã¼Ã§lÃ¼ seÃ§ici ayarlarda duruyor).
               Text(
                 (profile?.name.trim().isNotEmpty ?? false)
                     ? l10n.helloName(profile!.name.trim())
@@ -225,7 +226,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ],
               const SizedBox(height: 14),
               if (mode == TrackingMode.pregnancy) ...[
-                // Hamilelik modu: hafta sayacı hero, tahminler gizli
+                // Hamilelik modu: hafta sayacÄ± hero, tahminler gizli
                 const SizedBox(height: 20),
                 _buildPregnancyHero(context, l10n, profile?.pregnancyStartDate),
                 if (profile?.pregnancyStartDate != null) ...[
@@ -237,9 +238,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   ),
                 ],
               ] else ...[
-                // Phase name — faz bilgisini açan buton. Ring'de bir segmente
-                // dokunulduğunda o segmentin fazını gösterir; seçim yokken
-                // (ya da 5 sn sonra seçim kalkınca) güncel faza döner.
+                // Phase name â€” faz bilgisini aÃ§an buton. Ring'de bir segmente
+                // dokunulduÄŸunda o segmentin fazÄ±nÄ± gÃ¶sterir; seÃ§im yokken
+                // (ya da 5 sn sonra seÃ§im kalkÄ±nca) gÃ¼ncel faza dÃ¶ner.
                 ValueListenableBuilder<CyclePhase?>(
                   valueListenable: _ringSelectedPhase,
                   builder: (context, selected, _) {
@@ -371,8 +372,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   },
                 ),
               ],
-              // Deneme/ücretsiz durumu görünür kalır ama ekranın tepesinde
-              // değil: orası "ne zaman?" cevabının yeri
+              // Deneme/Ã¼cretsiz durumu gÃ¶rÃ¼nÃ¼r kalÄ±r ama ekranÄ±n tepesinde
+              // deÄŸil: orasÄ± "ne zaman?" cevabÄ±nÄ±n yeri
               if (access == AccessLevel.free ||
                   (access == AccessLevel.trial && trialDaysLeft <= 7)) ...[
                 const SizedBox(height: 24),
@@ -382,6 +383,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 const SizedBox(height: 28),
                 const QuickStatusCards(),
               ],
+              const SizedBox(height: 28),
+              const QuickAccessRow(),
                 ],
               ),
             ),
@@ -391,12 +394,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  /// Ekranın tek cümlelik cevabı: "ne zaman?".
+  /// EkranÄ±n tek cÃ¼mlelik cevabÄ±: "ne zaman?".
   ///
-  /// Ring döngü gününü görsel olarak anlatıyordu ama kullanıcının %90
-  /// sorusuna açık bir cümleyle cevap veren hiçbir şey yoktu — tarih yalnız
-  /// tahmin kartlarının içinde, kaydırmanın altındaydı. Ekranın en büyük
-  /// yazısı artık bu.
+  /// Ring dÃ¶ngÃ¼ gÃ¼nÃ¼nÃ¼ gÃ¶rsel olarak anlatÄ±yordu ama kullanÄ±cÄ±nÄ±n %90
+  /// sorusuna aÃ§Ä±k bir cÃ¼mleyle cevap veren hiÃ§bir ÅŸey yoktu â€” tarih yalnÄ±z
+  /// tahmin kartlarÄ±nÄ±n iÃ§inde, kaydÄ±rmanÄ±n altÄ±ndaydÄ±. EkranÄ±n en bÃ¼yÃ¼k
+  /// yazÄ±sÄ± artÄ±k bu.
   Widget _buildHeadline(
     BuildContext context,
     AppLocalizations l10n,
@@ -412,12 +415,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     String? subtitle;
 
     if (profile?.lastPeriodStart == null) {
-      // Kurulum yarım kalmış: cevap yerine tek yapılacak iş
+      // Kurulum yarÄ±m kalmÄ±ÅŸ: cevap yerine tek yapÄ±lacak iÅŸ
       headline = l10n.headlineNoData;
     } else if (delay > 0) {
-      // Kullanıcının uygulamayı en çok açtığı an: cevap "gecikme" olmalı,
-      // ileri sarılmış bir sonraki tahmin değil. Alt satır sakinleştirici
-      // ve eyleme dönük — tanı koymaz.
+      // KullanÄ±cÄ±nÄ±n uygulamayÄ± en Ã§ok aÃ§tÄ±ÄŸÄ± an: cevap "gecikme" olmalÄ±,
+      // ileri sarÄ±lmÄ±ÅŸ bir sonraki tahmin deÄŸil. Alt satÄ±r sakinleÅŸtirici
+      // ve eyleme dÃ¶nÃ¼k â€” tanÄ± koymaz.
       headline = l10n.headlineDelay(delay);
       subtitle = l10n.headlineDelaySubtitle;
     } else if (ongoing != null) {
@@ -470,13 +473,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   Widget _buildActionRow(
       BuildContext context, WidgetRef ref, AppLocalizations l10n) {
     final ongoingPeriod = ref.watch(ongoingPeriodProvider);
-    // Keşfi olmayan bir hareket olmayan bir özelliktir: ipucu, kullanıcı
-    // hareketi bir kez kullanana kadar durur, sonra kalıcı olarak kapanır
+    // KeÅŸfi olmayan bir hareket olmayan bir Ã¶zelliktir: ipucu, kullanÄ±cÄ±
+    // hareketi bir kez kullanana kadar durur, sonra kalÄ±cÄ± olarak kapanÄ±r
     final showHint = ref.watch(backdateHintProvider);
 
-    // "Kayıt Ekle" kaldırıldı: aşağıdaki "Bugün nasıl hissediyorsun" kartı
-    // aynı niyeti (bugüne kayıt) zaten karşılıyordu, iki ayrı giriş
-    // gereksizdi. Bu satırda yalnız regl başlangıcı/bitişi kalıyor.
+    // "KayÄ±t Ekle" kaldÄ±rÄ±ldÄ±: aÅŸaÄŸÄ±daki "BugÃ¼n nasÄ±l hissediyorsun" kartÄ±
+    // aynÄ± niyeti (bugÃ¼ne kayÄ±t) zaten karÅŸÄ±lÄ±yordu, iki ayrÄ± giriÅŸ
+    // gereksizdi. Bu satÄ±rda yalnÄ±z regl baÅŸlangÄ±cÄ±/bitiÅŸi kalÄ±yor.
     final row = SizedBox(
       width: double.infinity,
       child: _buildActionButton(
@@ -484,13 +487,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         icon: Icons.water_drop_rounded,
         label: ongoingPeriod != null ? l10n.periodEnded : l10n.periodStarted,
         color: AppColors.menstrual,
-        // Regl geçmişi en değerli veri, dokunuş yanlışlıkla olabilir:
-        // onay diyaloğu yerine 6 sn'lik Geri Al
+        // Regl geÃ§miÅŸi en deÄŸerli veri, dokunuÅŸ yanlÄ±ÅŸlÄ±kla olabilir:
+        // onay diyaloÄŸu yerine 6 sn'lik Geri Al
         onTap: () =>
             _togglePeriod(context, ref, l10n, ongoingPeriod, DateTime.now()),
-        // Regl iki gün sonra hatırlanabiliyor: dokunuş hep bugünü yazdığı
-        // için geç kalan kullanıcı yanlış tarih girmek zorundaydı. Uzun
-        // bas = gün seç.
+        // Regl iki gÃ¼n sonra hatÄ±rlanabiliyor: dokunuÅŸ hep bugÃ¼nÃ¼ yazdÄ±ÄŸÄ±
+        // iÃ§in geÃ§ kalan kullanÄ±cÄ± yanlÄ±ÅŸ tarih girmek zorundaydÄ±. Uzun
+        // bas = gÃ¼n seÃ§.
         onLongPress: () => _pickPeriodDate(context, ref, l10n, ongoingPeriod),
       ),
     );
@@ -518,8 +521,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         .slideY(begin: 0.15, end: 0, delay: 250.ms, duration: 400.ms);
   }
 
-  /// Regl başlangıcı/bitişi kaydeder. [date] hem bugün (dokunuş) hem geçmiş
-  /// bir gün (uzun bas → tarih seçici) olabilir.
+  /// Regl baÅŸlangÄ±cÄ±/bitiÅŸi kaydeder. [date] hem bugÃ¼n (dokunuÅŸ) hem geÃ§miÅŸ
+  /// bir gÃ¼n (uzun bas â†’ tarih seÃ§ici) olabilir.
   Future<void> _togglePeriod(
     BuildContext context,
     WidgetRef ref,
@@ -532,8 +535,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final profileNotifier = ref.read(userProfileProvider.notifier);
     final prevProfile = ref.read(userProfileProvider);
 
-    // Uygulamanın en önemli veri anı: dokunuşa fiziksel teyit eşlik eder
-    // (ring + zemin de yeni faza yumuşakça akar)
+    // UygulamanÄ±n en Ã¶nemli veri anÄ±: dokunuÅŸa fiziksel teyit eÅŸlik eder
+    // (ring + zemin de yeni faza yumuÅŸakÃ§a akar)
     HapticFeedback.mediumImpact();
     if (ongoingPeriod != null) {
       final recordId = ongoingPeriod.id;
@@ -562,7 +565,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           onPressed: () async {
             await recordsNotifier.deleteRecord(record.id);
             // Profil (lastPeriodStart dahil) eski haline:
-            // updateProfile bildirim/widget'ı da tazeler
+            // updateProfile bildirim/widget'Ä± da tazeler
             if (prevProfile != null) {
               await profileNotifier.updateProfile(prevProfile);
             } else {
@@ -575,8 +578,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
   }
 
-  /// Geçmiş bir gün için regl başlangıcı/bitişi. Gelecek seçilemez; geriye
-  /// 90 gün yeter (daha eskisi geçmiş düzenlemesi, kayıt değil).
+  /// GeÃ§miÅŸ bir gÃ¼n iÃ§in regl baÅŸlangÄ±cÄ±/bitiÅŸi. Gelecek seÃ§ilemez; geriye
+  /// 90 gÃ¼n yeter (daha eskisi geÃ§miÅŸ dÃ¼zenlemesi, kayÄ±t deÄŸil).
   Future<void> _pickPeriodDate(
     BuildContext context,
     WidgetRef ref,
@@ -585,7 +588,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   ) async {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    // Bitiş, başlangıçtan önce olamaz
+    // BitiÅŸ, baÅŸlangÄ±Ã§tan Ã¶nce olamaz
     final earliest = ongoingPeriod != null
         ? DateTime(ongoingPeriod.startDate.year, ongoingPeriod.startDate.month,
             ongoingPeriod.startDate.day)
@@ -602,7 +605,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
     if (picked == null || !context.mounted) return;
 
-    // Hareket kullanıldı: ipucu artık yer kaplamasın
+    // Hareket kullanÄ±ldÄ±: ipucu artÄ±k yer kaplamasÄ±n
     if (ref.read(backdateHintProvider)) {
       ref.read(backdateHintProvider.notifier).state = false;
       final prefs = await SharedPreferences.getInstance();
@@ -616,9 +619,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   Widget _buildAccessChip(BuildContext context, AppLocalizations l10n,
       AccessLevel access, int daysLeft) {
     final isFree = access == AccessLevel.free;
-    // Deneme bitişi sessizce geliyordu: 30. gün her şey açık, 31. gün on
-    // ekran birden kapalı. Son üç gün çip uyarı diline geçer ki kapanış
-    // sürpriz olmasın.
+    // Deneme bitiÅŸi sessizce geliyordu: 30. gÃ¼n her ÅŸey aÃ§Ä±k, 31. gÃ¼n on
+    // ekran birden kapalÄ±. Son Ã¼Ã§ gÃ¼n Ã§ip uyarÄ± diline geÃ§er ki kapanÄ±ÅŸ
+    // sÃ¼rpriz olmasÄ±n.
     final isEnding = !isFree && daysLeft <= 3;
     final label =
         isFree ? l10n.freeBadge : l10n.trialBadge(daysLeft);
@@ -700,8 +703,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           l10n.coachLuteal2
         ],
     };
-    // Gün bazlı deterministik rotasyon: aynı gün hep aynı mesaj,
-    // ertesi gün değişir
+    // GÃ¼n bazlÄ± deterministik rotasyon: aynÄ± gÃ¼n hep aynÄ± mesaj,
+    // ertesi gÃ¼n deÄŸiÅŸir
     final dayOfYear =
         DateTime.now().difference(DateTime(DateTime.now().year)).inDays;
     return messages[dayOfYear % messages.length];
@@ -717,8 +720,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       String locale) {
     final level = CycleUtils.fertilityLevelForDay(cycleDay, cycleLength);
     final isDark = AppColors.isDark(context);
-    // Rozet METNİ pastel durum rengiyle yazılamaz (açık zeminde ~2:1):
-    // açık temada koyu metin tonu, zemin tonu pastel kalır
+    // Rozet METNÄ° pastel durum rengiyle yazÄ±lamaz (aÃ§Ä±k zeminde ~2:1):
+    // aÃ§Ä±k temada koyu metin tonu, zemin tonu pastel kalÄ±r
     final (levelText, levelColor, levelTextColor) = switch (level) {
       FertilityLevel.high => (
           l10n.fertilityHigh,
@@ -776,8 +779,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
             ],
           ),
-          // TTC kullanıcısının en beklediği tarih buydu ve hiçbir yerde
-          // yazmıyordu. Daha erken test yanlış negatif verir.
+          // TTC kullanÄ±cÄ±sÄ±nÄ±n en beklediÄŸi tarih buydu ve hiÃ§bir yerde
+          // yazmÄ±yordu. Daha erken test yanlÄ±ÅŸ negatif verir.
           if (ovulationDate != null) ...[
             const SizedBox(height: 10),
             Builder(builder: (context) {
@@ -905,17 +908,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   Widget _buildCoachCard(BuildContext context, WidgetRef ref,
       CyclePhase phase, AppLocalizations l10n) {
-    // Genel ipucunun üstüne kişisel içgörü: kullanıcının KENDİ kayıtları
-    // bu fazda hangi semptomu gösteriyorsa o söylenir — "uygulama beni
-    // tanıyor" anı (motor: topPhaseSymptoms, istatistikle aynı).
-    // Kişisel içgörü premium kapsamı: ücretsizde genel ipucu kalır.
+    // Genel ipucunun Ã¼stÃ¼ne kiÅŸisel iÃ§gÃ¶rÃ¼: kullanÄ±cÄ±nÄ±n KENDÄ° kayÄ±tlarÄ±
+    // bu fazda hangi semptomu gÃ¶steriyorsa o sÃ¶ylenir â€” "uygulama beni
+    // tanÄ±yor" anÄ± (motor: topPhaseSymptoms, istatistikle aynÄ±).
+    // KiÅŸisel iÃ§gÃ¶rÃ¼ premium kapsamÄ±: Ã¼cretsizde genel ipucu kalÄ±r.
     final personal = ref.watch(accessProvider) == AccessLevel.free
         ? null
         : topInsightForPhase(ref.watch(phaseInsightsProvider), phase);
 
-    // Kart perhizi: koç bilgi bloğudur, dokunulmaz — kart kabuğu yerine
-    // çıplak blok (her şey kart olunca hiçbir şey kart değildi).
-    // Faz glifi bloğun kimliği; kişisel içgörü aynı hizada ikinci satır.
+    // Kart perhizi: koÃ§ bilgi bloÄŸudur, dokunulmaz â€” kart kabuÄŸu yerine
+    // Ã§Ä±plak blok (her ÅŸey kart olunca hiÃ§bir ÅŸey kart deÄŸildi).
+    // Faz glifi bloÄŸun kimliÄŸi; kiÅŸisel iÃ§gÃ¶rÃ¼ aynÄ± hizada ikinci satÄ±r.
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Column(
@@ -974,8 +977,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   Widget _buildPregnancyHero(
       BuildContext context, AppLocalizations l10n, DateTime? start) {
-    // Başlangıç tarihi yoksa "1. hafta" göstermek uydurma bilgi olur:
-    // kullanıcıyı tarihi gireceği yere yönlendir
+    // BaÅŸlangÄ±Ã§ tarihi yoksa "1. hafta" gÃ¶stermek uydurma bilgi olur:
+    // kullanÄ±cÄ±yÄ± tarihi gireceÄŸi yere yÃ¶nlendir
     if (start == null) {
       return Semantics(
         button: true,
@@ -1138,10 +1141,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     ).animateSafe(context).fadeIn(delay: 180.ms, duration: 400.ms);
   }
 
-  /// Hap paketi kartı.
+  /// Hap paketi kartÄ±.
   ///
-  /// Tek bir çipti: kaçıncı gün olduğu yazıyordu ama bu modun asıl sorusu
-  /// ("ara ne zaman başlıyor", "yeni paket ne zaman") cevapsızdı.
+  /// Tek bir Ã§ipti: kaÃ§Ä±ncÄ± gÃ¼n olduÄŸu yazÄ±yordu ama bu modun asÄ±l sorusu
+  /// ("ara ne zaman baÅŸlÄ±yor", "yeni paket ne zaman") cevapsÄ±zdÄ±.
   Widget _buildPillCard(
       BuildContext context, AppLocalizations l10n, DateTime packStart) {
     final day = CycleUtils.pillDayInPack(packStart);
@@ -1184,7 +1187,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ],
             ),
           ),
-          // 28 günlük paketin neresindeyiz — sayı yerine oran
+          // 28 gÃ¼nlÃ¼k paketin neresindeyiz â€” sayÄ± yerine oran
           Text(
             '$day/${AppConstants.pillPackDays}',
             style: TextStyle(
@@ -1235,8 +1238,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   child: Icon(icon, color: color, size: 20),
                 ),
                 const SizedBox(width: 10),
-                // Etiket iki butona bölünmüş dar alanda yaşıyor: büyük yazı
-                // tipinde satırı taşırmak yerine sarmalı
+                // Etiket iki butona bÃ¶lÃ¼nmÃ¼ÅŸ dar alanda yaÅŸÄ±yor: bÃ¼yÃ¼k yazÄ±
+                // tipinde satÄ±rÄ± taÅŸÄ±rmak yerine sarmalÄ±
                 Flexible(
                   child: Text(
                     label,
@@ -1255,3 +1258,4 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     ));
   }
 }
+
