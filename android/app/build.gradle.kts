@@ -75,9 +75,13 @@ android {
 
     buildTypes {
         release {
-            // Never fall back to the debug key: Google Play updates must be signed
-            // with the same upload key used by the published application.
-            signingConfig = signingConfigs.getByName("release")
+            // Release tasks are blocked above unless the original Play upload key exists.
+            // The debug fallback only keeps non-release Gradle configuration usable in clean clones.
+            signingConfig = if (hasReleaseSigning) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 }
