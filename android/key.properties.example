@@ -1,0 +1,8 @@
+# Copy this file to android/key.properties and replace every placeholder.
+# Use the SAME upload keystore that signed the already-published Play Store app.
+# Never commit key.properties or the .jks file.
+
+storeFile=../keystore/upload-keystore.jks
+storePassword=CHANGE_ME
+keyAlias=upload
+keyPassword=CHANGE_ME
