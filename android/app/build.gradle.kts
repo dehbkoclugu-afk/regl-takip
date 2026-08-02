@@ -14,6 +14,27 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
+val releaseSigningKeys = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
+val missingReleaseSigningKeys = releaseSigningKeys.filter {
+    keystoreProperties.getProperty(it).isNullOrBlank()
+}
+val hasReleaseSigning = keystorePropertiesFile.exists() && missingReleaseSigningKeys.isEmpty()
+val isReleaseTask = gradle.startParameter.taskNames.any {
+    it.contains("release", ignoreCase = true) || it.contains("bundle", ignoreCase = true)
+}
+
+if (isReleaseTask && !hasReleaseSigning) {
+    error(
+        "Release signing is not configured. Copy android/key.properties.example " +
+            "to android/key.properties and provide the original Play Store upload key values. " +
+            if (missingReleaseSigningKeys.isNotEmpty()) {
+                "Missing: ${missingReleaseSigningKeys.joinToString()}"
+            } else {
+                "android/key.properties was not found."
+            }
+    )
+}
+
 android {
     namespace = "com.regl.regl_takip"
     compileSdk = flutter.compileSdkVersion
@@ -42,21 +63,21 @@ android {
     }
 
     signingConfigs {
-        // key.properties sadece imza anahtarı olan makinede bulunur;
-        // yokken (temiz klon, CI) debug anahtarıyla build alınabilmeli
-        if (keystorePropertiesFile.exists()) {
+        if (hasReleaseSigning) {
             create("release") {
-                keyAlias = keystoreProperties["keyAlias"] as String
-                keyPassword = keystoreProperties["keyPassword"] as String
-                storeFile = file(keystoreProperties["storeFile"] as String)
-                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
             }
         }
     }
 
     buildTypes {
         release {
-            signingConfig = if (keystorePropertiesFile.exists()) {
+            // Release tasks are blocked above unless the original Play upload key exists.
+            // The debug fallback only keeps non-release Gradle configuration usable in clean clones.
+            signingConfig = if (hasReleaseSigning) {
                 signingConfigs.getByName("release")
             } else {
                 signingConfigs.getByName("debug")

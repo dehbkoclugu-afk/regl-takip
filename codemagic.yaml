@@ -3,8 +3,8 @@ workflows:
     name: Android Build
     max_build_duration: 60
     environment:
-      # Güncel eklenti zinciri Dart >=3.9 istiyor; hareketli kanal yerine
-      # doğrulanan kararlı araç zincirini yeniden üretilebilir biçimde sabitle.
+      android_signing:
+        - regl
       flutter: 3.44.8
       java: 17
     scripts:
@@ -20,12 +20,17 @@ workflows:
       - name: Tests
         script: |
           flutter test
+      - name: Configure Android signing
+        script: |
+          cat > "$CM_BUILD_DIR/android/key.properties" <<EOF
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyPassword=$CM_KEY_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          storeFile=$CM_KEYSTORE_PATH
+          EOF
       - name: Build app bundle
         script: |
-          # Play Console APK değil AAB bekliyor. key.properties CI'da yoksa
-          # bu yalnız derleme doğrulama artefaktıdır; mağaza yüklemesi yerel
-          # release anahtarıyla imzalanmış AAB üzerinden yapılır.
-          flutter build appbundle --release
+          flutter build appbundle --release --build-name=1.1.1 --build-number=8
     artifacts:
       - build/app/outputs/bundle/release/*.aab
     publishing:
