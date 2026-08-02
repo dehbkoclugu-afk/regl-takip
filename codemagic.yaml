@@ -30,7 +30,7 @@ workflows:
           EOF
       - name: Build app bundle
         script: |
-          flutter build appbundle --release
+          flutter build appbundle --release --build-name=1.1.1 --build-number=8
     artifacts:
       - build/app/outputs/bundle/release/*.aab
     publishing:
