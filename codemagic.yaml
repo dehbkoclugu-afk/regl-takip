@@ -31,8 +31,12 @@ workflows:
       - name: Build app bundle
         script: |
           flutter build appbundle --release --build-name=1.1.1 --build-number=8
+      - name: Build installable APKs
+        script: |
+          flutter build apk --release --split-per-abi --build-name=1.1.1 --build-number=8
     artifacts:
       - build/app/outputs/bundle/release/*.aab
+      - build/app/outputs/flutter-apk/*.apk
     publishing:
       email:
         recipients:
