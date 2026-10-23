@@ -100,7 +100,7 @@ class QuickStatusCards extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
+          padding: const EdgeInsetsDirectional.only(start: 4, bottom: 12),
           // Rozet başlıkla aynı satırı paylaşıyordu ve iki fakti birden
           // taşıdığı için sıkışıp sarıyordu: "… Son 7 günde 1 / kayıt".
           // Kendi satırında tam genişliği bulunca tek satıra sığıyor ve

@@ -745,5 +745,7 @@
   "notificationFrequencyEssential": "Основные",
   "notificationFrequencyBalanced": "Сбалансированные",
   "notificationFrequencyDetailed": "Подробные",
-  "readOnlyHistoryNotice": "Прошлые записи доступны для просмотра; новые записи и изменения требуют Premium."
+  "readOnlyHistoryNotice": "Прошлые записи доступны для просмотра; новые записи и изменения требуют Premium.",
+  "screenProtectionTitle": "Защита экрана",
+  "screenProtectionDescription": "Блокирует снимки экрана и предпросмотр недавних приложений."
 }

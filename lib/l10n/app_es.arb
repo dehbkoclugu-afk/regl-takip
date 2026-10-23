@@ -745,5 +745,7 @@
   "notificationFrequencyEssential": "Esencial",
   "notificationFrequencyBalanced": "Equilibrado",
   "notificationFrequencyDetailed": "Detallado",
-  "readOnlyHistoryNotice": "Puedes ver tus registros anteriores; los registros nuevos y los cambios requieren Premium."
+  "readOnlyHistoryNotice": "Puedes ver tus registros anteriores; los registros nuevos y los cambios requieren Premium.",
+  "screenProtectionTitle": "Protección de pantalla",
+  "screenProtectionDescription": "Bloquea capturas y la vista previa de aplicaciones recientes."
 }

@@ -102,7 +102,7 @@ class _PinVerifyScreenState extends State<_PinVerifyScreen> {
           child: Column(
             children: [
               Align(
-                alignment: Alignment.topLeft,
+                alignment: AlignmentDirectional.topStart,
                 child: IconButton(
                   onPressed: _isVerifying
                       ? null
@@ -238,7 +238,7 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
           child: Column(
             children: [
               Align(
-                alignment: Alignment.topLeft,
+                alignment: AlignmentDirectional.topStart,
                 child: IconButton(
                   onPressed:
                       _isSaving ? null : () => Navigator.of(context).pop(false),

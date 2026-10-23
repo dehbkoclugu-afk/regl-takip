@@ -379,7 +379,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   /// hiyerarşi kurar
   Widget _sectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 10),
+      padding: const EdgeInsetsDirectional.only(start: 4, bottom: 10),
       child: Text(
         title,
         style: TextStyle(

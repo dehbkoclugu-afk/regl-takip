@@ -2129,4 +2129,11 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get readOnlyHistoryNotice =>
       'Puedes ver tus registros anteriores; los registros nuevos y los cambios requieren Premium.';
+
+  @override
+  String get screenProtectionTitle => 'Protección de pantalla';
+
+  @override
+  String get screenProtectionDescription =>
+      'Bloquea capturas y la vista previa de aplicaciones recientes.';
 }

@@ -9,6 +9,7 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/app_colors.dart';
 import 'core/router/app_router.dart';
 import 'core/utils/access.dart';
+import 'core/utils/language_utils.dart';
 import 'core/utils/medication_plan.dart';
 import 'providers/providers.dart';
 import 'screens/decoy/decoy_notes_screen.dart';
@@ -568,7 +569,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     }
 
     return MaterialApp.router(
-      title: 'Regl Takip',
+      onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
       scaffoldMessengerKey: _scaffoldMessengerKey,
       theme: AppTheme.lightTheme,
@@ -577,13 +578,14 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
       // sistemi koyu kullanan kullanıcı ilk açılışta kör edilmez
       themeMode: themeMode,
       locale: locale,
+      localeListResolutionCallback: (preferred, _) => resolveAppLocale(preferred),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      // Desteklenen diller arb dosyalarından: tr, en, es, de, fr, ru
+      // Supported languages are generated from the ARB resources.
       supportedLocales: AppLocalizations.supportedLocales,
       routerConfig: router,
       builder: (context, child) {

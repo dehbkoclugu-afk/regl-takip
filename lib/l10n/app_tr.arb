@@ -907,5 +907,7 @@
   "notificationFrequencyEssential": "Temel",
   "notificationFrequencyBalanced": "Dengeli",
   "notificationFrequencyDetailed": "Ayrıntılı",
-  "readOnlyHistoryNotice": "Geçmiş kayıtlarını görüntüleyebilirsin; yeni günlük kayıt ve değişiklikler Premium'da."
+  "readOnlyHistoryNotice": "Geçmiş kayıtlarını görüntüleyebilirsin; yeni günlük kayıt ve değişiklikler Premium'da.",
+  "screenProtectionTitle": "Ekran görüntüsü koruması",
+  "screenProtectionDescription": "Ekran görüntülerini ve son uygulamalar önizlemesini engeller."
 }

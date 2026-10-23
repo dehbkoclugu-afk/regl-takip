@@ -2125,4 +2125,11 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get readOnlyHistoryNotice =>
       'Прошлые записи доступны для просмотра; новые записи и изменения требуют Premium.';
+
+  @override
+  String get screenProtectionTitle => 'Защита экрана';
+
+  @override
+  String get screenProtectionDescription =>
+      'Блокирует снимки экрана и предпросмотр недавних приложений.';
 }

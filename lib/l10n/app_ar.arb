@@ -1,0 +1,1106 @@
+{
+  "@@locale": "ar",
+  "appTitle": "متتبع الدورة الشهرية",
+  "home": "الرئيسية",
+  "calendar": "التقويم",
+  "log": "تسجيل",
+  "statistics": "الإحصائيات",
+  "settings": "الإعدادات",
+  "profile": "الملف الشخصي",
+  "onboardingWelcome": "مرحبًا!",
+  "onboardingWelcomeDesc": "أسهل طريقة لتتبع صحتك",
+  "onboardingTitle1": "تابعي دورتك الشهرية",
+  "onboardingDesc1": "سجلي دورتك الشهرية واطلعي على الموعد المتوقع للدورة التالية.",
+  "onboardingTitle2": "مراقبة صحتك",
+  "onboardingDesc2": "تتبع الأعراض والمزاج ودرجة الحرارة والمزيد.",
+  "onboardingTitle3": "عرض التحليل الخاص بك",
+  "onboardingDesc3": "افهم دورتك من خلال الرسوم البيانية والإحصائيات التفصيلية.",
+  "onboardingTitle4": "احصل على الإخطارات",
+  "onboardingDesc4": "تلقي تذكيرات للدورة الشهرية وأيام الإباضة.",
+  "getStarted": "ابدأ",
+  "next": "التالي",
+  "skip": "تخطي",
+  "back": "العودة",
+  "save": "حفظ",
+  "cancel": "إلغاء",
+  "delete": "حذف",
+  "edit": "تحرير",
+  "done": "تم",
+  "maybeLater": "قم بالإعداد لاحقًا",
+  "enableBiometric": "بصمة الإصبع / التعرف على الوجه",
+  "enablePin": "القفل باستخدام رقم التعريف الشخصي",
+  "securitySetup": "إعداد الأمان",
+  "securitySetupDesc": "هل ترغب في قفل التطبيق؟",
+  "enterName": "أدخل اسمك",
+  "name": "الاسم",
+  "birthDate": "تاريخ الميلاد",
+  "lastPeriodDate": "تاريخ آخر دورة شهرية",
+  "averageCycleLength": "متوسط طول الدورة",
+  "averagePeriodLength": "متوسط مدة الحيض",
+  "days": "أيام",
+  "day": "يوم",
+  "today": "اليوم",
+  "cycleDay": "يوم الدورة",
+  "periodIn": "موعد الحيض بعد",
+  "daysLeft": "باقي {count} أيام",
+  "@daysLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "periodToday": "قد تبدأ دورتك الشهرية اليوم",
+  "periodOngoing": "أنت في دورتك الشهرية",
+  "ovulationDay": "يوم الإباضة",
+  "fertileWindow": "فترة الخصوبة",
+  "lutealPhase": "المرحلة الأصفرية",
+  "follicularPhase": "المرحلة الجريبية",
+  "periodPhase": "مرحلة الحيض",
+  "logPeriod": "تسجيل الحيض",
+  "periodStarted": "بدأ الحيض",
+  "periodEnded": "انتهى الحيض",
+  "flowIntensity": "شدة تدفق الحيض",
+  "light": "خفيف",
+  "medium": "متوسط",
+  "heavy": "غزير",
+  "veryHeavy": "غزير جداً",
+  "spotting": "تبقيع دموي",
+  "symptoms": "الأعراض",
+  "mood": "المزاج",
+  "temperature": "درجة حرارة الجسم",
+  "weight": "الوزن",
+  "waterIntake": "كمية المياه",
+  "sleep": "النوم",
+  "sexualActivity": "النشاط الجنسي",
+  "medication": "الدواء",
+  "notes": "ملاحظات",
+  "cramps": "تشنجات",
+  "headache": "الصداع",
+  "bloating": "الانتفاخ",
+  "breastTenderness": "ألم الثدي عند اللمس",
+  "backPain": "آلام الظهر",
+  "fatigue": "التعب",
+  "nausea": "غثيان",
+  "dizziness": "الدوخة",
+  "stress": "الإجهاد",
+  "anxiety": "القلق",
+  "irritability": "التهيج",
+  "crying": "البكاء",
+  "sensitivity": "الحساسية",
+  "acne": "حب الشباب",
+  "oilySkin": "البشرة الدهنية",
+  "drySkin": "البشرة الجافة",
+  "constipation": "الإمساك",
+  "diarrhea": "الإسهال",
+  "gas": "غازات البطن",
+  "increasedAppetite": "زيادة الشهية",
+  "decreasedAppetite": "انخفاض الشهية",
+  "insomnia": "الأرق",
+  "hotFlash": "هبات ساخنة",
+  "swelling": "تورم",
+  "hairLoss": "تساقط الشعر",
+  "happy": "سعيد",
+  "sad": "حزين",
+  "angry": "غاضب",
+  "anxious": "قلق",
+  "calm": "الهدوء",
+  "energetic": "نشيط",
+  "tired": "متعب",
+  "romantic": "رومانسي",
+  "confused": "مرتبك",
+  "confident": "واثق",
+  "avgCycleLength": "متوسط طول الدورة",
+  "avgPeriodLength": "متوسط مدة الحيض",
+  "cycleHistory": "سجل الدورات",
+  "symptomFrequency": "تردد الأعراض",
+  "moodDistribution": "توزيع المزاج",
+  "temperatureTrend": "اتجاه درجة الحرارة",
+  "weightTrend": "اتجاه الوزن",
+  "last3Months": "آخر 3 أشهر",
+  "last6Months": "آخر 6 أشهر",
+  "last12Months": "آخر 12 شهرًا",
+  "exportData": "تصدير البيانات",
+  "exportPdf": "تقرير بصيغة PDF",
+  "exportCsv": "ملف CSV",
+  "language": "اللغة",
+  "theme": "المظهر",
+  "lightTheme": "المظهر الفاتح",
+  "darkTheme": "المظهر الداكن",
+  "notifications": "الإخطارات",
+  "periodReminder": "تذكير بالحيض",
+  "ovulationReminder": "تذكير الإباضة",
+  "medicationReminder": "تذكير الدواء",
+  "waterReminder": "تذكير بالمياه",
+  "security": "الأمن",
+  "pinLock": "قفل رقم التعريف الشخصي",
+  "biometricLock": "قفل البيومترية",
+  "dataBackup": "النسخ الاحتياطي للبيانات",
+  "deleteAllData": "حذف كافة البيانات",
+  "about": "حول",
+  "version": "الإصدار",
+  "glasses": "أكواب",
+  "dailyGoal": "الهدف اليومي",
+  "sleepQuality": "جودة النوم",
+  "bedTime": "وقت النوم",
+  "wakeTime": "وقت الاستيقاظ",
+  "totalSleep": "النوم التام",
+  "hours": "ساعات",
+  "protection": "الحماية",
+  "condom": "الواقي الذكري",
+  "pill": "حبوب منع الحمل",
+  "iud": "اللولب",
+  "none": "لا شيء",
+  "other": "أخرى",
+  "medicationName": "اسم الدواء",
+  "dose": "جرعة",
+  "reminderTime": "وقت التذكير",
+  "taken": "تم التناول",
+  "notTaken": "لم يتم التناول",
+  "addNote": "أضف ملاحظة",
+  "selectDate": "حدد التاريخ",
+  "noDataYet": "لا توجد بيانات حتى الآن",
+  "predictions": "التنبؤات",
+  "nextPeriod": "الدورة الشهرية القادمة",
+  "nextOvulation": "التبويض التالي",
+  "cycleRegularity": "انتظام الدورة",
+  "regular": "منتظم",
+  "irregular": "غير منتظم",
+  "setupComplete": "اكتمل الإعداد!",
+  "letsStart": "لنبدأ",
+  "bmi": "مؤشر كتلة الجسم",
+  "goalReached": "تم الوصول للهدف!",
+  "helloGeneric": "مرحبا!",
+  "dayHasRecord": "لديه سجل",
+  "increase": "زيادة",
+  "decrease": "إنقاص",
+  "bbtHint": "للحصول على قراءة دقيقة، قم بالقياس مباشرة بعد الاستيقاظ، وقبل النهوض من السرير، في نفس الوقت كل يوم. يعتمد تأكيد الإباضة على هذه القراءات.",
+  "deleteMeasurement": "حذف القياس",
+  "measurementDeleted": "تم حذف القياس",
+  "deleteRecord": "حذف السجل",
+  "recordDeleted": "تم حذف السجل",
+  "invalidWeight": "أدخل وزنًا صالحًا (20-300 كجم)",
+  "invalidTemperature": "أدخل درجة حرارة صالحة (35-40 درجة مئوية)",
+  "discardChangesTitle": "التغييرات غير المحفوظة",
+  "discardChangesBody": "لم يتم حفظ ملاحظتك. ترك الآن يتجاهل ذلك.",
+  "discard": "تجاهل",
+  "severityLevel": "خطورة {level}/5",
+  "@severityLevel": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "pregnancySetStartPrompt": "انقر لتعيين بداية الحمل",
+  "helloName": "مرحبًا، {name}!",
+  "@helloName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ovulationPhase": "مرحلة التبويض",
+  "menstrualPhase": "مرحلة الحيض",
+  "todaySummary": "ملخص اليوم",
+  "howAreYouFeeling": "كيف تشعر اليوم؟",
+  "logMoodAndSymptoms": "سجل حالتك المزاجية والأعراض",
+  "addRecord": "إضافة سجل",
+  "nSymptoms": "أعراض {count}",
+  "@nSymptoms": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "periodDayLabel": "يوم الحيض",
+  "predicted": "توقع",
+  "fertile": "فترة الخصوبة",
+  "ovulation": "الإباضة",
+  "moodLabel": "المزاج: {mood}",
+  "@moodLabel": {
+    "placeholders": {
+      "mood": {
+        "type": "String"
+      }
+    }
+  },
+  "nGlassesWater": "{count} أكواب ماء",
+  "@nGlassesWater": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noRecordForDay": "لا يوجد سجل لهذا اليوم.",
+  "dailyLog": "السجل اليومي",
+  "dailyMeasurements": "القياسات اليومية",
+  "flow": "تدفق الحيض",
+  "recorded": "مسجلة",
+  "nMedications": "أدوية {count}",
+  "@nMedications": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nGlasses": "{count} أكواب",
+  "@nGlasses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "flowTracking": "تتبع تدفق الحيض",
+  "color": "اللون",
+  "lightRed": "أحمر فاتح",
+  "red": "أحمر",
+  "darkRed": "أحمر داكن",
+  "brown": "براون",
+  "clots": "جلطات دموية",
+  "clotsQuestion": "أي جلطات؟",
+  "padChange": "تغييرات الفوط الصحية",
+  "flowSaved": "تم حفظ تدفق الحيض",
+  "symptomTracking": "تتبع الأعراض",
+  "physical": "جسدية",
+  "emotional": "عاطفية",
+  "skinCategory": "الجلد",
+  "digestive": "الجهاز الهضمي",
+  "otherCategory": "أخرى",
+  "glowingSkin": "بشرة متوهجة",
+  "saveNSymptoms": "حفظ (أعراض {count})",
+  "@saveNSymptoms": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nSymptomsSaved": "تم حفظ أعراض {count}",
+  "@nSymptomsSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addNoteOptional": "إضافة ملاحظة (اختياري)",
+  "writeAboutToday": "أكتب شيئا عن اليوم...",
+  "moodSaved": "تم حفظ المزاج",
+  "sensitiveM": "حساسة",
+  "irritableM": "سريع الانفعال",
+  "neutralM": "محايد",
+  "lowTemp": "منخفض",
+  "normalTemp": "عادي",
+  "highTemp": "عالية",
+  "fever": "حمى",
+  "measurementTime": "وقت القياس",
+  "temperatureSaved": "تم حفظ درجة الحرارة",
+  "quickAdjust": "ضبط سريع",
+  "manualEntry": "الإدخال اليدوي",
+  "weightSaved": "تم حفظ الوزن",
+  "waterTracking": "تتبع المياه",
+  "waterSaved": "حفظ المياه",
+  "sleepTracking": "تتبع النوم",
+  "bedTimeLabel": "وقت النوم",
+  "wakeTimeLabel": "وقت الاستيقاظ",
+  "veryBad": "سيء جدًا",
+  "bad": "سيئة",
+  "moderate": "معتدل",
+  "good": "جيد",
+  "great": "عظيم",
+  "sleepSaved": "تم حفظ النوم",
+  "protectionMethod": "طريقة الحماية",
+  "orgasm": "هزة الجماع",
+  "noteOptional": "ملاحظة (اختياري)",
+  "addNoteHint": "إضافة ملاحظة...",
+  "savedGeneric": "تم الحفظ",
+  "medicationTracking": "تتبع الدواء",
+  "addMedication": "أضف الدواء",
+  "noMedicationsYet": "لم تتم إضافة أي أدوية حتى الآن",
+  "medicationPlanHint": "تنطبق هذه الخطة كل يوم. يسجل مربع الاختيار اليوم المحدد فقط.",
+  "medicationAlreadyInPlan": "هذا الدواء موجود بالفعل في الخطة",
+  "tapToAdd": "اضغط على + للإضافة",
+  "add": "أضف",
+  "dailyNote": "ملاحظة يومية",
+  "myNotes": "ملاحظاتي",
+  "notesHint": "كيف تشعر؟ أكتب ملاحظاتك هنا...",
+  "noteSaved": "تم حفظ الملاحظة",
+  "cycleOverview": "نظرة عامة على الدورة",
+  "avgCycle": "متوسط الدورة",
+  "avgPeriod": "متوسط مدة الحيض",
+  "regularity": "الانتظام",
+  "insufficientData": "بيانات غير كافية",
+  "noSymptomData": "لا توجد بيانات الأعراض حتى الآن",
+  "noMoodData": "لا توجد بيانات الحالة المزاجية حتى الآن",
+  "noCycleData": "لا توجد بيانات دورة حتى الآن",
+  "ongoing": "مستمر",
+  "nDays": "أيام {count}",
+  "@nDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileSection": "الملف الشخصي",
+  "preferences": "التفضيلات",
+  "age": "العمر",
+  "nYearsOld": "{count} سنة",
+  "@nYearsOld": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleDuration": "طول الدورة الشهرية",
+  "periodDuration": "مدة الحيض",
+  "dataSection": "البيانات",
+  "exportPdfReport": "تصدير تقرير PDF",
+  "exportCsvFile": "تصدير CSV",
+  "pdfExportSoon": "تصدير PDF قريبا!",
+  "csvExportSoon": "تصدير CSV قريبا!",
+  "letsKnowYou": "دعونا نتعرف عليك",
+  "whatShouldWeCallYou": "ماذا يجب أن نسميك؟",
+  "yourName": "اسمك",
+  "yourBirthDate": "تاريخ ميلادك",
+  "birthDateHelp": "يساعدنا على تقديم اقتراحات مناسبة للعمر.",
+  "selectDateHint": "اختر التاريخ",
+  "selectDateToContinue": "حدد تاريخًا للمتابعة",
+  "stepOfSteps": "الخطوة {current} من {total}",
+  "@stepOfSteps": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "lastPeriodTitle": "آخر دورة شهرية",
+  "lastPeriodHelp": "اختاري تاريخ بدء دورتك الشهرية الأخيرة.",
+  "cycleLengthTitle": "طول الدورة",
+  "cycleLengthHelp": "كم عدد أيام دورتك المتوسطة؟\n(من أول يوم للدورة إلى أول يوم للدورة التالية)",
+  "periodLengthTitle": "مدة الحيض",
+  "periodLengthHelp": "كم يوما تستمر دورتك الشهرية عادة؟",
+  "averageLabel": "متوسط",
+  "completeBtn": "كامل",
+  "continueBtn": "متابعة",
+  "errorOccurred": "حدث خطأ: {error}",
+  "@errorOccurred": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "welcomeInfoTitle": "مرحبًا!",
+  "welcomeInfoDesc": "الطريقة الأسهل والأجمل لمتابعة صحتك. نحن معك في كل خطوة من دورتك.",
+  "trackCycleTitle": "تابعي دورتك الشهرية",
+  "trackCycleDesc": "سجلي مواعيد دورتك الشهرية وأعراضها وحالتك المزاجية بسهولة. جميع البيانات الخاصة بك آمنة.",
+  "getPredictionsTitle": "احصل على التوقعات",
+  "getPredictionsDesc": "تعرفي على دورتك القادمة وأيام خصوبتك من خلال التنبؤات الذكية.",
+  "startBtn": "ابدأ",
+  "daysLater": "في أيام {count}",
+  "@daysLater": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "todayExclamation": "اليوم!",
+  "spiral": "اللولب",
+  "enterPin": "أدخل رقم التعريف الشخصي",
+  "createPin": "إنشاء رقم التعريف الشخصي",
+  "confirmPin": "تأكيد رقم التعريف الشخصي",
+  "pinMismatch": "أرقام التعريف الشخصية غير متطابقة، حاول مرة أخرى",
+  "verifyPinTitle": "أدخل رقم التعريف الشخصي الحالي الخاص بك",
+  "wrongPin": "رقم تعريف شخصي خاطئ",
+  "tooManyAttempts": "الكثير من المحاولات الخاطئة. انتظر ثواني {seconds}",
+  "@tooManyAttempts": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "coachMenstrual0": "أيام النزيف تعني فقدان الحديد، وتساعد اللحوم الحمراء والعدس والخضر الورقية الداكنة.",
+  "coachMenstrual1": "بالنسبة للتشنجات، يمكن أن تعمل الحرارة والتمدد اللطيف مثل معظم مسكنات الألم.",
+  "coachMenstrual2": "يعد انخفاض الطاقة أمرًا طبيعيًا اليوم - فالمشي يتفوق على التمرين المكثف.",
+  "coachFollicular0": "يرتفع هرمون الاستروجين: عادةً ما تصل الطاقة والتركيز إلى ذروتهما في هذه المرحلة. جدولة المهام الصعبة الآن.",
+  "coachFollicular1": "عادة ما تكون البشرة في أفضل حالاتها في هذه المرحلة، وهي فرصة جيدة لتجربة منتجات جديدة.",
+  "coachFollicular2": "جسمك جاهز الآن لممارسة التمارين عالية الكثافة.",
+  "coachOvulation0": "أنت في فترة الخصوبة — تصرفي وفقًا لخطتك، سواء وسائل منع الحمل أو الحمل.",
+  "coachOvulation1": "تشعر بعض النساء بألم خفيف في جانب واحد أثناء الإباضة (mittelschmerz) — وهذا أمر طبيعي.",
+  "coachOvulation2": "تميل الطاقة الاجتماعية إلى الارتفاع هذه الأيام، وهو توقيت جيد للمحادثات المهمة.",
+  "coachLuteal0": "قد تبدأ أعراض الدورة الشهرية في هذه المرحلة، حيث يمكن أن يخففها المغنيسيوم والنوم المنتظم.",
+  "coachLuteal1": "يمكن أن ترتفع الرغبة الشديدة في تناول السكر: جرب الوجبات الخفيفة الغنية بالبروتين للحفاظ على استقرار نسبة السكر في الدم.",
+  "coachLuteal2": "قد ترتفع الحساسية العاطفية، تهاني على نفسك، فهي هرمونية ومؤقتة.",
+  "ovulationConfirmed": "التبويض✓",
+  "ovulationConfirmedInfo": "هذا التاريخ ليس تقديريًا: لقد تم تأكيده من خلال ارتفاع قراءات درجة حرارة الجسم الأساسية (قاعدة 3 على 6).",
+  "premiumSection": "قسط",
+  "removeAds": "إزالة الإعلانات",
+  "restorePurchases": "استعادة المشتريات",
+  "premiumActive": "الإصدار المميز نشط — الإعلانات متوقفة",
+  "storeUnavailable": "المتجر غير متوفر حاليا",
+  "healthSync": "المزامنة مع الصحة الاتصال",
+  "healthSyncSuccess": "تمت مزامنة بيانات الفترة",
+  "healthSyncDenied": "تم رفض إذن البيانات الصحية",
+  "healthSyncUnavailable": "لا توجد خدمة صحية على هذا الجهاز",
+  "healthSyncFailed": "فشلت المزامنة",
+  "trackingModeTitle": "وضع التتبع",
+  "modePeriod": "الحيض",
+  "modePregnancy": "الحمل",
+  "modePill": "حبوب منع الحمل",
+  "modeTtc": "محاولة الحمل",
+  "lhTestTitle": "اختبار الإباضة (LH).",
+  "lhPositive": "إيجابي",
+  "lhNegative": "سلبي",
+  "fertilityToday": "الخصوبة اليوم",
+  "fertilityHigh": "عالية",
+  "fertilityMedium": "متوسط",
+  "fertilityLow": "منخفض",
+  "pregnancyWeekLabel": "الأسبوع {week}",
+  "@pregnancyWeekLabel": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "trimester1": "الفصل الأول",
+  "trimester2": "الفصل الثاني",
+  "trimester3": "الفصل الثالث",
+  "pregnancyDevelopmentTitle": "التطوير هذا الاسبوع",
+  "pregnancyDevelopment1": "تستمر فترة التطور السريع حيث تتشكل أعضاء طفلك الرئيسية وأنظمة جسمه.",
+  "pregnancyDevelopment2": "أصبحت حركات طفلك أكثر تنسيقاً؛ عندما تشعر بها يمكن أن تختلف من شخص لآخر.",
+  "pregnancyDevelopment3": "يستمر طفلك في النمو حيث يصبح الاستعداد للولادة أكثر بروزًا.",
+  "pregnancyCheckupReminder": "اتبع جدول الفحص الموصى به من قبل أخصائي الرعاية الصحية الخاص بك.",
+  "pregnancyStartLabel": "تاريخ آخر دورة (بداية الحمل)",
+  "pregnancyModeInfo": "يتم إيقاف التنبؤات وتذكيرات الدورة الشهرية في وضع الحمل",
+  "pillPackStartLabel": "تبدأ حزمة حبوب منع الحمل",
+  "pillDayLabel": "يوم حبوب منع الحمل {day}/21",
+  "@pillDayLabel": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "pillBreakLabel": "استراحة الأسبوع • اليوم {day}",
+  "@pillBreakLabel": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "smartPrediction": "التنبؤ الذكي",
+  "smartPredictionDesc": "تستخدم التوقعات المتوسط الذي تعلمته من دوراتك السابقة",
+  "learnedCycleLength": "تعلمت: أيام {days}",
+  "@learnedCycleLength": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "phaseInsights": "رؤى المرحلة",
+  "noInsightsYet": "لا توجد بيانات كافية للرؤى حتى الآن. أثناء قيامك بتسجيل الأعراض، ستظهر هنا الأنماط المستندة إلى المرحلة.",
+  "insightLine": "يحدث {symptom} غالبًا في الطور {phase} ({percent}%)",
+  "@insightLine": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      },
+      "phase": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "notContraceptionWarning": "التوقعات هي لأغراض إعلامية فقط. هذا التطبيق ليس وسيلة لمنع الحمل ويجب عدم استخدامه لمنع الحمل.",
+  "privacyPolicy": "سياسة الخصوصية",
+  "aboutSection": "حول",
+  "consentTitle": "بياناتك وخصوصيتك",
+  "consentBody": "يتم تخزين جميع بياناتك مشفرة على هذا الجهاز فقط؛ لا يتم إرسال أي شيء إلى أي خادم. يمكنك قراءة سياسة الخصوصية ضمن الإعدادات > حول. من خلال المتابعة فإنك توافق على معالجة بياناتك على جهازك بهذه الطريقة.",
+  "consentAccept": "أنا أقبل",
+  "quickLog": "سجل سريع",
+  "shortcutQuickLog": "سجل سريع",
+  "shortcutToday": "عرض اليوم",
+  "allTrackers": "جميع أنواع التتبع",
+  "disguiseTitle": "وضع تمويه",
+  "disguiseDesc": "يأخذ التطبيق هوية \"الملاحظات\": يصبح الاسم والرمز والأداة والإشعارات وشاشة التشغيل محايدة. العودة: اضغط لفترة طويلة على عنوان الملاحظات.",
+  "decoyTitle": "ملاحظات",
+  "decoyEmpty": "لا توجد ملاحظات حتى الآن",
+  "decoyHint": "أكتب شيئا...",
+  "backupData": "إنشاء نسخة احتياطية لكلمة المرور",
+  "backupPassword": "كلمة المرور الاحتياطية",
+  "backupPasswordConfirm": "أدخل كلمة المرور مرة أخرى",
+  "backupPasswordLength": "يجب أن تتكون كلمة المرور من 10 إلى 128 حرفًا",
+  "backupPasswordsDoNotMatch": "كلمات المرور غير متطابقة",
+  "backupNoRecovery": "لا يتم تخزين كلمة المرور هذه على الجهاز ولا يمكن استعادتها. إذا نسيت ذلك، لا يمكنك فتح النسخة الاحتياطية.",
+  "unlockBackupTitle": "أدخل كلمة المرور الاحتياطية",
+  "unlockBackupBody": "لا يمكن فتح هذه النسخة الاحتياطية إلا باستخدام كلمة المرور المستخدمة عند إنشائها.",
+  "backupPasswordOrFileInvalid": "كلمة المرور غير صحيحة أو ملف النسخ الاحتياطي تالف.",
+  "legacyBackupWarning": "هذه النسخة الاحتياطية الأقدم غير مشفرة. وبعد استعادتها، ستكون النسخ الاحتياطية الجديدة محمية بكلمة مرور.",
+  "showPassword": "إظهار كلمة المرور",
+  "hidePassword": "إخفاء كلمة المرور",
+  "restoreData": "استعادة من النسخة الاحتياطية",
+  "restoreConfirmTitle": "استعادة النسخة الاحتياطية؟",
+  "restoreConfirmBody": "سيتم حذف جميع البيانات الحالية وستتم استعادة سجلات {count} من النسخة الاحتياطية. لا يمكن التراجع عن هذا.",
+  "@restoreConfirmBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "restore": "استعادة",
+  "backupRestored": "تمت استعادة النسخة الاحتياطية",
+  "invalidBackupFile": "ملف النسخ الاحتياطي غير صالح",
+  "dateLabel": "التاريخ",
+  "modeStepTitle": "ما الذي ستستخدمه من أجله؟",
+  "modeStepSubtitle": "يمكنك تغيير هذا لاحقًا في الإعدادات",
+  "modePeriodDesc": "تتبع الدورة والتنبؤات",
+  "modePregnancyDesc": "الحمل اسبوع بعد اسبوع",
+  "modePillDesc": "21+7 جدول حبوب منع الحمل",
+  "modeTtcDesc": "تتبع يركز على الخصوبة",
+  "paywallTitle": "اذهب إلى الإصدار المميز",
+  "paywallTrialSubtitle": "الإصدار التجريبي الخاص بك نشط: {days} من الأيام المتبقية. Premium يبقي كل شيء مفتوحًا.",
+  "@paywallTrialSubtitle": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "paywallFreeSubtitle": "انتهت محاكمتك. النسخة المجانية تحافظ على تتبع الدورة الشهرية والتقويم. التتبع اليومي والرؤى مميزة.",
+  "paywallFeatureTrackers": "جميع أجهزة التتبع اليومية: الأعراض، الحالة المزاجية، الماء، النوم، الوزن، درجة الحرارة، الدواء، الملاحظات",
+  "paywallFeatureStats": "الإحصائيات والاتجاهات وخاتم My Year",
+  "paywallFeatureInsights": "الرؤى الشخصية وإخطارات تلميح المرحلة",
+  "paywallFeatureExport": "تصدير PDF / CSV",
+  "paywallFeatureHealth": "مزامنة الصحة الاتصال",
+  "paywallFeatureDisguise": "وضع التنكر مع شرك الملاحظات",
+  "paywallFeatureNoAds": "تجربة خالية من الإعلانات",
+  "planMonthly": "شهريا",
+  "planYearly": "سنويا",
+  "perMonth": "/ مو",
+  "perYear": "/ سنة",
+  "bestValue": "أفضل قيمة",
+  "continueFreeBtn": "تواصل مع مجانا في الوقت الراهن",
+  "trialBadge": "المحاكمة: {days} أيام متبقية",
+  "@trialBadge": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "freeBadge": "نسخة مجانية",
+  "freeExplain": "النسخة المجانية تحافظ على تتبع الدورة الشهرية والتقويم والتنبؤات. تعد أدوات التتبع اليومية والإحصائيات والتصدير والاتصال الصحي ووضع التنكر والأوضاع مميزة.",
+  "seePlans": "انظر الخطط",
+  "premiumLockedTitle": "الإحصائيات ممتازة",
+  "premiumLockedBody": "يتم فتح الرسوم البيانية والاتجاهات ورؤى المرحلة وخاتم My Year مع Premium. كل ما قمت بتسجيله أثناء التجربة يظل آمنًا.",
+  "yearRingTitle": "سنتي",
+  "yearRingCycles": "دورات",
+  "yearRingSummary": "آخر 12 شهرًا: دورات {count}",
+  "@yearRingSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleComparison": "دورتك الأخيرة",
+  "lastCycleLength": "الدورة الأخيرة: أيام {days}",
+  "@lastCycleLength": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "lastPeriodLength": "الفترة الأخيرة: أيام {days}",
+  "@lastPeriodLength": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "vsAverageMore": "{days} أيام أطول من المتوسط الخاص بك",
+  "@vsAverageMore": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "vsAverageLess": "أيام {days} أقصر من المتوسط",
+  "@vsAverageLess": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "vsAverageSame": "نفس متوسطك",
+  "coachPersonalInsight": "بناءً على سجلاتك، الأكثر شيوعًا في هذه المرحلة: {symptom} ({percent}%)",
+  "@coachPersonalInsight": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationInsightTitle": "نصيحة المرحلة",
+  "notificationInsightBody": "تبدأ المرحلة الأصفرية. بناءً على سجلاتك، فإن الأعراض الأكثر شيوعًا في هذه المرحلة هي: {symptom}.",
+  "@notificationInsightBody": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationPeriodTitle": "تذكير الفترة",
+  "notificationPeriodTimingToday": "قد تبدأ دورتك الشهرية اليوم.",
+  "notificationPeriodTimingTomorrow": "قد تبدأ دورتك الشهرية غدًا.",
+  "notificationPeriodTimingInDays": "قد تبدأ الدورة الشهرية بعد أيام {days}.",
+  "@notificationPeriodTimingInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationPeriodTip1": "تذكري أن تحزمي فوطة أو سدادة قطنية.",
+  "notificationPeriodTip2": "القليل من التحضير يجعل الأمر أسهل.",
+  "notificationPeriodTip3": "يؤدي تسجيل البداية إلى تحسين توقعاتك.",
+  "notificationPeriodChannel": "تذكير الفترة",
+  "notificationPeriodChannelDesc": "تذكير دورة الدورة الشهرية",
+  "notificationOvulationTitle": "تذكير الإباضة",
+  "notificationOvulationBody": "اليوم هو موعد الإباضة المتوقع. قد تكونين في فترة الخصوبة.",
+  "notificationOvulationChannel": "تذكير الإباضة",
+  "notificationOvulationChannelDesc": "تذكيرات الإباضة",
+  "notificationMedicationTitle": "تذكير الدواء",
+  "notificationMedicationBody": "لا تنس أن تتناول أدويتك!",
+  "notificationMedicationChannel": "تذكير الدواء",
+  "notificationMedicationChannelDesc": "تذكيرات الدواء",
+  "notificationDiscreetTitle": "تذكير",
+  "notificationDiscreetBody": "لديك تذكير لهذا اليوم",
+  "notificationFertileTitle": "تبدأ نافذتك الخصبة",
+  "notificationFertileBody": "من اليوم أنتِ في الأيام التي تتمتع بأعلى فرصة للحمل.",
+  "notificationChainEndTitle": "التذكيرات متوقفة مؤقتًا",
+  "notificationChainEndBody": "لقد نفدت التذكيرات المجدولة. افتح التطبيق لإعداد تطبيقات جديدة.",
+  "noPurchasesToRestore": "لم يتم العثور على مشتريات لاستعادتها",
+  "restoringPurchases": "جارٍ استعادة عمليات الشراء...",
+  "backdateHint": "اضغط لفترة طويلة ليوم مختلف",
+  "periodStartDateHelp": "متى بدأت دورتك الشهرية؟",
+  "periodEndDateHelp": "متى انتهت دورتك الشهرية؟",
+  "headlinePeriodToday": "قد تبدأ دورتك الشهرية اليوم",
+  "headlinePeriodTomorrow": "قد تبدأ دورتك الشهرية غدًا",
+  "headlineNoData": "أضف تاريخ الدورة الشهرية الأخيرة",
+  "headlinePeriodInDays": "دورتك الشهرية بالأيام {days}",
+  "@headlinePeriodInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "headlinePeriodDay": "اليوم {day} من الدورة الشهرية",
+  "@headlinePeriodDay": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "headlineDelaySubtitle": "بعض الاختلاف أمر طبيعي. قم بتسجيله إذا كان قد بدأ.",
+  "notificationDelayTitle": "لقد مر التاريخ المتوقع",
+  "notificationDelayBody": "إذا بدأت دورتك الشهرية، فتذكري تسجيلها. بعض الاختلاف أمر طبيعي.",
+  "notificationDelayBodyAlt1": "لا يوجد دخول بعد. إذا بدأ، فإن التسجيل يستغرق نقرة واحدة.",
+  "notificationDelayBodyAlt2": "التحول لبضعة أيام أمر شائع. هل السجل الخاص بك محدث؟",
+  "notificationDelayChannel": "تذكير بالتأخير",
+  "notificationDelayChannelDesc": "تذكير عند مرور التاريخ المتوقع",
+  "headlineDelay": "تأخرت الدورة الشهرية {days} أيامًا",
+  "@headlineDelay": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "delayDays": "{days} متأخرا بأيام",
+  "@delayDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "yourDataStays": "تبقى سجلاتك على جهازك عند انتهاء النسخة التجريبية.",
+  "periodStartedOnThisDay": "بدأت دورتي الشهرية في هذا اليوم",
+  "nCyclesRecorded": "دورات {count} المسجلة",
+  "@nCyclesRecorded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nLogsRecorded": "{count} السجلات اليومية",
+  "@nLogsRecorded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notifPermissionTitle": "هل تريد تفعيل التذكيرات؟",
+  "notifPermissionBody": "نخبرك بموعد اقتراب الدورة الشهرية، وفي يوم الإباضة، ومتى انقضى التاريخ المتوقع. الإخطارات لا تترك جهازك أبدًا. ويمكنك أيضًا تشغيلها لاحقًا في الإعدادات.",
+  "enableNotifications": "تشغيل",
+  "notNow": "ليس الآن",
+  "optionalField": "اختياري",
+  "privacyAssurance": "تظل بياناتك مشفرة على هذا الجهاز فقط",
+  "privacySummary": "يتم تشفير بياناتك الأساسية على هذا الجهاز؛ يتم تركه فقط عند تصديره أو تمكين Health Connect.",
+  "dontRememberExactly": "لا أتذكر بالضبط",
+  "approxTitle": "تقريبا متى كان؟",
+  "approxSubtitle": "موعد تقريبي يكفي. تصحح التوقعات نفسها أثناء تسجيل الدخول.",
+  "approxThisWeek": "هذا الاسبوع",
+  "approxLastWeek": "الاسبوع الماضي",
+  "approxTwoWeeks": "منذ حوالي 2 أسابيع",
+  "approxThreeWeeks": "منذ حوالي 3 أسابيع",
+  "approxMonthOrMore": "منذ شهر أو أكثر",
+  "cycleReminderTime": "وقت تذكير الدورة",
+  "medicationReminderTime": "وقت تذكير الدواء",
+  "periodReminderLead": "تذكير الفترة",
+  "notificationQuietChannelSuffix": "هادئ",
+  "quietNotifications": "إشعارات هادئة",
+  "quietNotificationsDesc": "لا يوجد صوت أو نافذة منبثقة - ينتظرون بصمت في مركز الإشعارات",
+  "leadSameDay": "نفس اليوم",
+  "leadNDaysBefore": "{days} قبل أيام",
+  "@leadNDaysBefore": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "regularityInfoIrregular": "هناك 9 أيام أو أكثر بين أقصر وأطول دورة. يعد تغيير طول الدورة أمرًا شائعًا جدًا؛ الإجهاد والنوم والمرض وتغيرات الحياة كلها تؤثر عليه. هذا ليس تشخيصا.",
+  "regularityInfoRegular": "الفرق بين أقصر وأطول دورة لديك هو أقل من 9 أيام. التوقعات أكثر دقة مع هذا الاتساق.",
+  "regularityInfoSeeDoctor": "إذا كانت دورتك الشهرية باستمرار أقل من 21 يومًا أو أطول من 35 يومًا، أو إذا لم تأتيك الدورة الشهرية لأكثر من ثلاثة أشهر، أو إذا كان النزيف غزيرًا على غير العادة، فمن المفيد التحدث إلى أخصائي الرعاية الصحية.",
+  "typicalRangeNote": "النطاق المقبول عمومًا: دورة {min} – {max} أيام، فترة تصل إلى {pmax} أيام. ليس عتبة التشخيص.",
+  "@typicalRangeNote": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "pmax": {
+        "type": "int"
+      }
+    }
+  },
+  "lowConfidenceNote": "تأتي هذه المتوسطات من دورات {count} فقط؛ سوف تزداد حدة كلما قمت بتسجيل المزيد.",
+  "@lowConfidenceNote": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "regularityInfoInsufficient": "هناك حاجة على الأقل إلى فجوات دورة {count} قبل أن يعني الانتظام أي شيء. الحكم على أقل من شأنه أن يكون مضللاً.",
+  "@regularityInfoInsufficient": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupNever": "لم تقم بعمل نسخة احتياطية مطلقًا.",
+  "backupStaleHint": "إذا فقدت هاتفك، فلن تتمكن من استعادة السجلات.",
+  "backupLastAt": "آخر نسخة احتياطية: {date}",
+  "@backupLastAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "durationsStepTitle": "تفاصيل دورتك",
+  "durationsStepHelp": "لست متأكدا؟ اتركها كما هي — ويمكنك تغييرها في الإعدادات لاحقًا.",
+  "lockTimeoutTitle": "تأخير القفل",
+  "lockTimeoutDesc": "تخطي رقم التعريف الشخصي عندما تعود بعد لحظة قصيرة",
+  "lockImmediately": "على الفور",
+  "previousDay": "اليوم السابق",
+  "nextDay": "في اليوم التالي",
+  "showLegend": "مفتاح اللون",
+  "hideLegend": "إخفاء مفتاح اللون",
+  "backToToday": "العودة إلى اليوم",
+  "monthNoRecords": "لا توجد سجلات هذا الشهر",
+  "doctorSummary": "تصدير ملخص لطبيبي",
+  "healthImport": "الاستيراد من الصحة الاتصال",
+  "healthImportAction": "استيراد",
+  "allTime": "كل الوقت",
+  "actionPeriodStarted": "بدأت دورتي الشهرية",
+  "actionMedicationTaken": "مأخوذ",
+  "pregnancyTestReady": "اختبار الحمل يمكن أن يكون ذا معنى الآن",
+  "notLoggedToday": "لم يتم تسجيل {what} اليوم",
+  "@notLoggedToday": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "pregnancyTestFrom": "أول اختبار مفيد: {date}",
+  "@pregnancyTestFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "pillBreakIn": "تبدأ الاستراحة خلال أيام {days}",
+  "@pillBreakIn": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "pillNewPackIn": "حزمة جديدة في أيام {days}",
+  "@pillNewPackIn": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "healthImportNothingNew": "لم يتم العثور على سجلات جديدة للاستيراد",
+  "healthImportConfirm": "تم العثور على فترات زمنية {count} في Health Connect غير موجودة في التطبيق. إضافتها إلى السجلات الخاصة بك؟ السجلات الموجودة لديك لم تمس.",
+  "@healthImportConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "healthImportDone": "تم استيراد فترات {count}",
+  "@healthImportDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "monthPeriodDays": "أيام الفترة {count}",
+  "@monthPeriodDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "monthLoggedDays": "تم تسجيل أيام {count}",
+  "@monthLoggedDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pinNoRecoveryWarning": "إذا نسيت رقم التعريف الشخصي (PIN) الخاص بك، فلا توجد طريقة لاستعادته؛ الطريقة الوحيدة للعودة هي حذف جميع بياناتك. اختر شيئًا سوف تتذكره.",
+  "lockAfterMinutes": "بعد {minutes} دقيقة",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "reportTitle": "تقرير صحة الدورة",
+  "reportGenerated": "تم إنشاؤها",
+  "profileSummary": "ملخص الملف الشخصي",
+  "periodHistory": "تاريخ الفترة",
+  "last30DaysSummary": "ملخص آخر 30 يومًا",
+  "durationDaysHeader": "المدة (أيام)",
+  "themeSystem": "النظام",
+  "themeLight": "ضوء",
+  "themeDark": "الظلام",
+  "languageSystem": "النظام",
+  "statsSectionOverview": "نظرة عامة",
+  "statsSectionCharts": "الرسوم البيانية",
+  "statsSectionHistory": "التاريخ والاتجاهات",
+  "storySymptomsMore": "كانت آخر 30 يومًا أكثر قسوة من الفترة السابقة (إدخالات {recent} مقابل {previous}).",
+  "@storySymptomsMore": {
+    "placeholders": {
+      "recent": {
+        "type": "int"
+      },
+      "previous": {
+        "type": "int"
+      }
+    }
+  },
+  "storySymptomsLess": "كانت آخر 30 يومًا أسهل من الفترة السابقة (إدخالات {recent} مقابل {previous}).",
+  "@storySymptomsLess": {
+    "placeholders": {
+      "recent": {
+        "type": "int"
+      },
+      "previous": {
+        "type": "int"
+      }
+    }
+  },
+  "storySymptomsSame": "وظلت شدة الأعراض مماثلة خلال الفترتين الأخيرتين.",
+  "storyTrendUp": "يصل {delta} {unit} خلال هذه الفترة.",
+  "@storyTrendUp": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "storyTrendDown": "أسفل {delta} {unit} خلال هذه الفترة.",
+  "@storyTrendDown": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "storyTrendFlat": "لا يوجد تغيير ملموس خلال هذه الفترة – الاتجاه ثابت.",
+  "averageSeverity": "متوسط {value}/5",
+  "@averageSeverity": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "dataCoverage": "تغطية البيانات",
+  "dataCoverageValue": "بيانات عن {logged} لأيام {total} ({percent}%)",
+  "@dataCoverageValue": {
+    "placeholders": {
+      "logged": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "tapChartPointHint": "اضغط على نقطة لفتح ذلك اليوم.",
+  "shareCalendarMonth": "مشاركة الشهر التقويمي",
+  "longPressDayHint": "اضغط مع الاستمرار على يوم واحد لمعاينة سريعة.",
+  "markPeriodRange": "تحديد نطاق تواريخ الحيض",
+  "periodRangeOverlap": "تتداخل هذه التواريخ مع سجل حيض موجود.",
+  "periodRangeSaved": "تم حفظ تواريخ الحيض",
+  "trackingStreak": "{count} أيام متتالية من التسجيل",
+  "@trackingStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weeklyTracking": "{count}/7 أيام مسجلة",
+  "@weeklyTracking": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportCalendarFile": "تصدير التقويم (.ics)",
+  "ovulationMarkerHint": "الخط المتقطع: الإباضة المقدرة أو المؤكدة",
+  "addPastCycles": "إضافة الدورات الماضية",
+  "addPastCyclesHint": "حدد ما يصل إلى 3 نطاقات زمنية للفترات واحفظها معًا.",
+  "addPeriodRange": "إضافة تواريخ الحيض",
+  "cycleOverlayTitle": "مقارنة الدورة",
+  "symptomLoadComparison": "شدة الأعراض اليومية تتماشى مع يوم الدورة",
+  "currentCycleLabel": "هذه الدورة",
+  "previousCycleLabel": "الدورة السابقة",
+  "colorBlindPattern": "ألوان المرحلة منقوشة",
+  "colorBlindPatternDesc": "يضيف نسيجًا إلى نطاقات الطور - وهو أمر مفيد عندما يصعب التمييز بين الألوان",
+  "undo": "تراجع",
+  "periodMarkedStarted": "تم حفظ بداية الحيض",
+  "periodMarkedEnded": "تم حفظ نهاية الحيض",
+  "editPeriodRecord": "تعديل سجل الحيض",
+  "startDateLabel": "ابدأ",
+  "endDateLabel": "نهاية",
+  "recordUpdated": "تم تحديث السجل",
+  "dataResetTitle": "لا يمكن قراءة البيانات الخاصة بك",
+  "dataResetBody": "لا يمكن فك تشفير بيانات التطبيق على هذا الجهاز. يحدث هذا عادةً بعد تبديل الهواتف أو استعادة نسخة احتياطية للنظام: يتم تشفير البيانات بمفتاح خاص بالجهاز لا يمكن نقله إلى جهاز جديد. بدأ التطبيق جديدًا.\n\nلنقل بياناتك بين الأجهزة، قم بتصدير نسخة احتياطية من JSON بانتظام عبر الإعدادات > النسخ الاحتياطي للبيانات.",
+  "pinSet": "تم تعيين رقم التعريف الشخصي بنجاح",
+  "pinRemoved": "تمت إزالة رقم التعريف الشخصي",
+  "unlockWithBiometric": "فتح القفل ببصمة الإصبع أو الوجه",
+  "biometricNotAvailable": "المصادقة البيومترية غير متوفرة على هذا الجهاز",
+  "editProfile": "تحرير الملف الشخصي",
+  "profileSaved": "تم حفظ الملف الشخصي",
+  "sleepDurationShort": "{hours} س {minutes} د",
+  "@sleepDurationShort": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteAllDataConfirm": "هل أنت متأكد أنك تريد حذف كافة البيانات؟ لا يمكن التراجع عن هذا الإجراء.",
+  "dataDeleted": "تم حذف كافة البيانات",
+  "doseHint": "على سبيل المثال 500 ملغ",
+  "menstrualPhaseInfo": "الفترة التي يحدث فيها نزيف الدورة الشهرية. يستمر عادة 3-7 أيام. يتخلص الجسم من بطانة الرحم.",
+  "follicularPhaseInfo": "بعد الدورة الشهرية، يقوم المبيضان بإعداد بويضة جديدة. يرتفع هرمون الاستروجين وترتفع مستويات الطاقة.",
+  "ovulationPhaseInfo": "المرحلة التي يتم فيها إطلاق البويضة من المبيض. احتمالية الحمل في أعلى مستوياتها.",
+  "lutealPhaseInfo": "المرحلة من الإباضة حتى الدورة التالية. يرتفع هرمون البروجسترون، وقد تظهر أعراض الدورة الشهرية.",
+  "fertileWindowInfo": "الفترة التي لديها أعلى فرصة للحمل. يبدأ قبل 5 أيام من الإباضة وينتهي بعد يوم واحد.",
+  "ovulationCardInfo": "اليوم المقدر لخروج البويضة من المبيض. يحدث في منتصف الدورة.",
+  "nextPeriodInfo": "التاريخ المتوقع لبدء دورتك الشهرية التالية. يتم حسابه بناءً على طول دورتك.",
+  "phaseInfoTitle": "ما هي هذه المرحلة؟",
+  "learnMore": "معلومات",
+  "healthDisclaimer": "هذا التطبيق ليس بديلا عن المشورة الطبية. يرجى استشارة أخصائي الرعاية الصحية للمخاوف الصحية.",
+  "homePriority": "أولوية الشاشة الرئيسية",
+  "cycleFirst": "الدورة أولاً",
+  "todayFirst": "اليوم أولا",
+  "planLifetime": "مدى الحياة",
+  "planLifetimeDetail": "دفعة واحدة، ومزايا Premium مدى الحياة",
+  "cycleNotificationFrequency": "مستوى الإخطار دورة",
+  "cycleNotificationFrequencyDesc": "لا تتأثر تذكيرات الدواء",
+  "notificationFrequencyEssential": "ضروري",
+  "notificationFrequencyBalanced": "متوازن",
+  "notificationFrequencyDetailed": "مفصلة",
+  "readOnlyHistoryNotice": "يمكنك عرض إدخالاتك السابقة. الإدخالات والتغييرات اليومية الجديدة تتطلب Premium.",
+  "screenProtectionTitle": "حماية الشاشة",
+  "screenProtectionDescription": "تمنع لقطات الشاشة ومعاينة التطبيق في قائمة التطبيقات الأخيرة."
+}

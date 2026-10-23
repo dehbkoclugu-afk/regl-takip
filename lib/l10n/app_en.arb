@@ -907,5 +907,7 @@
   "notificationFrequencyEssential": "Essential",
   "notificationFrequencyBalanced": "Balanced",
   "notificationFrequencyDetailed": "Detailed",
-  "readOnlyHistoryNotice": "You can view your past entries; new daily entries and changes require Premium."
+  "readOnlyHistoryNotice": "You can view your past entries; new daily entries and changes require Premium.",
+  "screenProtectionTitle": "Screen protection",
+  "screenProtectionDescription": "Blocks screenshots and the recent-apps preview."
 }

@@ -745,5 +745,7 @@
   "notificationFrequencyEssential": "Essentiel",
   "notificationFrequencyBalanced": "Équilibré",
   "notificationFrequencyDetailed": "Détaillé",
-  "readOnlyHistoryNotice": "Vous pouvez consulter vos anciens suivis ; les nouveaux suivis et modifications nécessitent Premium."
+  "readOnlyHistoryNotice": "Vous pouvez consulter vos anciens suivis ; les nouveaux suivis et modifications nécessitent Premium.",
+  "screenProtectionTitle": "Protection de l’écran",
+  "screenProtectionDescription": "Bloque les captures et l’aperçu des applications récentes."
 }

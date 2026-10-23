@@ -2121,4 +2121,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get readOnlyHistoryNotice =>
       'You can view your past entries; new daily entries and changes require Premium.';
+
+  @override
+  String get screenProtectionTitle => 'Screen protection';
+
+  @override
+  String get screenProtectionDescription =>
+      'Blocks screenshots and the recent-apps preview.';
 }

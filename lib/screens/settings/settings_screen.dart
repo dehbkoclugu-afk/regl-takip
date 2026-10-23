@@ -244,7 +244,7 @@ class SettingsScreen extends ConsumerWidget {
                 l10n.language,
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
-              // 6 dil + sistem: varsayılan cihaz dilini izler
+              // 10 dil + sistem: varsayılan cihaz dilini izler
               trailing: DropdownButton<String>(
                 value: profile?.language ?? 'system',
                 underline: const SizedBox.shrink(),
@@ -260,6 +260,10 @@ class SettingsScreen extends ConsumerWidget {
                   const DropdownMenuItem(value: 'de', child: Text('Deutsch')),
                   const DropdownMenuItem(value: 'fr', child: Text('Français')),
                   const DropdownMenuItem(value: 'ru', child: Text('Русский')),
+                  const DropdownMenuItem(value: 'pt', child: Text('Português')),
+                  const DropdownMenuItem(value: 'ar', child: Text('العربية')),
+                  const DropdownMenuItem(value: 'hi', child: Text('हिन्दी')),
+                  const DropdownMenuItem(value: 'zh', child: Text('简体中文')),
                 ],
                 onChanged: (value) {
                   if (value == null) return;
@@ -1616,7 +1620,7 @@ class SettingsScreen extends ConsumerWidget {
     // Bölüm başlığı dili: 13/w700 ikincil renk — kart başlıklarından
     // (18/bold birincil) net biçimde ayrışır, ListView ritmini bozmaz
     return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 8, top: 4),
+      padding: const EdgeInsetsDirectional.only(start: 4, bottom: 8, top: 4),
       child: Text(
         title,
         style: TextStyle(
@@ -2145,32 +2149,8 @@ class _ScreenProtectionTileState extends State<_ScreenProtectionTile> {
   }
 
   (String, String) _labels(BuildContext context) {
-    return switch (Localizations.localeOf(context).languageCode) {
-      'tr' => (
-          'Ekran görüntüsü koruması',
-          'Ekran görüntülerini ve son uygulamalar önizlemesini engeller.'
-        ),
-      'de' => (
-          'Bildschirmschutz',
-          'Blockiert Screenshots und die Vorschau der letzten Apps.'
-        ),
-      'es' => (
-          'Protección de pantalla',
-          'Bloquea capturas y la vista previa de aplicaciones recientes.'
-        ),
-      'fr' => (
-          'Protection de l’écran',
-          'Bloque les captures et l’aperçu des applications récentes.'
-        ),
-      'ru' => (
-          'Защита экрана',
-          'Блокирует снимки экрана и предпросмотр недавних приложений.'
-        ),
-      _ => (
-          'Screen protection',
-          'Blocks screenshots and the recent-apps preview.'
-        ),
-    };
+    final l10n = AppLocalizations.of(context)!;
+    return (l10n.screenProtectionTitle, l10n.screenProtectionDescription);
   }
 
   @override

@@ -745,5 +745,7 @@
   "notificationFrequencyEssential": "Basis",
   "notificationFrequencyBalanced": "Ausgewogen",
   "notificationFrequencyDetailed": "Detailliert",
-  "readOnlyHistoryNotice": "Du kannst frühere Einträge ansehen; neue Einträge und Änderungen benötigen Premium."
+  "readOnlyHistoryNotice": "Du kannst frühere Einträge ansehen; neue Einträge und Änderungen benötigen Premium.",
+  "screenProtectionTitle": "Bildschirmschutz",
+  "screenProtectionDescription": "Blockiert Screenshots und die Vorschau der letzten Apps."
 }

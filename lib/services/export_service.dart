@@ -157,12 +157,20 @@ class ExportService {
     final fontData =
         await rootBundle.load('assets/fonts/Nunito-Variable.ttf');
     final nunito = pw.Font.ttf(fontData);
+    // Bundle fonts for offline reports; Nunito lacks these script glyphs.
+    final fallbackFonts = await Future.wait(
+      ['NotoSansArabic', 'NotoSansDevanagari', 'NotoSansSC'].map((name) async {
+        final data = await rootBundle.load('assets/fonts/$name.ttf');
+        return pw.Font.ttf(data);
+      }),
+    );
     final pdf = pw.Document(
       theme: pw.ThemeData.withFont(
         base: nunito,
         bold: nunito,
         italic: nunito,
         boldItalic: nunito,
+        fontFallback: fallbackFonts,
       ),
     );
 
@@ -180,6 +188,9 @@ class ExportService {
 
     pdf.addPage(
       pw.MultiPage(
+        textDirection: l10n.localeName == 'ar'
+            ? pw.TextDirection.rtl
+            : pw.TextDirection.ltr,
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(32),
         build: (context) => [

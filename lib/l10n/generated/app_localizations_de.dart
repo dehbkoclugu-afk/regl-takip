@@ -2136,4 +2136,11 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get readOnlyHistoryNotice =>
       'Du kannst frühere Einträge ansehen; neue Einträge und Änderungen benötigen Premium.';
+
+  @override
+  String get screenProtectionTitle => 'Bildschirmschutz';
+
+  @override
+  String get screenProtectionDescription =>
+      'Blockiert Screenshots und die Vorschau der letzten Apps.';
 }

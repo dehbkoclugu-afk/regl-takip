@@ -1,0 +1,1106 @@
+{
+  "@@locale": "pt",
+  "appTitle": "Calendário Menstrual",
+  "home": "Início",
+  "calendar": "Calendário",
+  "log": "Registrar",
+  "statistics": "Estatísticas",
+  "settings": "Configurações",
+  "profile": "Perfil",
+  "onboardingWelcome": "Bem-vindo!",
+  "onboardingWelcomeDesc": "A maneira mais fácil de monitorar sua saúde",
+  "onboardingTitle1": "Acompanhe seu ciclo menstrual",
+  "onboardingDesc1": "Registre sua menstruação e veja a previsão da próxima.",
+  "onboardingTitle2": "Monitore sua saúde",
+  "onboardingDesc2": "Acompanhe sintomas, humor, temperatura e muito mais.",
+  "onboardingTitle3": "Veja sua análise",
+  "onboardingDesc3": "Entenda seu ciclo com gráficos e estatísticas detalhadas.",
+  "onboardingTitle4": "Receba notificações",
+  "onboardingDesc4": "Receba lembretes sobre sua menstruação e dias de ovulação.",
+  "getStarted": "Comece",
+  "next": "Próximo",
+  "skip": "Pular",
+  "back": "Voltar",
+  "save": "Salvar",
+  "cancel": "Cancelar",
+  "delete": "Excluir",
+  "edit": "Editar",
+  "done": "Concluído",
+  "maybeLater": "Configurar mais tarde",
+  "enableBiometric": "Impressão digital/reconhecimento facial",
+  "enablePin": "Bloquear com PIN",
+  "securitySetup": "Configuração de segurança",
+  "securitySetupDesc": "Gostaria de bloquear o aplicativo?",
+  "enterName": "Digite seu nome",
+  "name": "Nome",
+  "birthDate": "Data de Nascimento",
+  "lastPeriodDate": "Data da última menstruação",
+  "averageCycleLength": "Duração média do ciclo",
+  "averagePeriodLength": "Duração média da menstruação",
+  "days": "dias",
+  "day": "dia",
+  "today": "Hoje",
+  "cycleDay": "Dia do ciclo",
+  "periodIn": "Menstruação em",
+  "daysLeft": "Faltam {count} dias",
+  "@daysLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "periodToday": "Sua menstruação pode começar hoje",
+  "periodOngoing": "Você está menstruada",
+  "ovulationDay": "Dia da Ovulação",
+  "fertileWindow": "Janela fértil",
+  "lutealPhase": "Fase Lútea",
+  "follicularPhase": "Fase Folicular",
+  "periodPhase": "Fase menstrual",
+  "logPeriod": "Registrar menstruação",
+  "periodStarted": "Menstruação começou",
+  "periodEnded": "Menstruação terminou",
+  "flowIntensity": "Intensidade do fluxo menstrual",
+  "light": "Leve",
+  "medium": "Médio",
+  "heavy": "Intenso",
+  "veryHeavy": "Muito intenso",
+  "spotting": "Sangramento de escape",
+  "symptoms": "Sintomas",
+  "mood": "Humor",
+  "temperature": "Temperatura corporal",
+  "weight": "Peso",
+  "waterIntake": "Ingestão de água",
+  "sleep": "Sono",
+  "sexualActivity": "Atividade Sexual",
+  "medication": "Medicação",
+  "notes": "Notas",
+  "cramps": "Cólicas",
+  "headache": "Dor de cabeça",
+  "bloating": "Inchaço",
+  "breastTenderness": "Sensibilidade nas mamas",
+  "backPain": "Dor nas costas",
+  "fatigue": "Fadiga",
+  "nausea": "Náusea",
+  "dizziness": "Tontura",
+  "stress": "Estresse",
+  "anxiety": "Ansiedade",
+  "irritability": "Irritabilidade",
+  "crying": "Chorando",
+  "sensitivity": "Sensibilidade",
+  "acne": "Acne",
+  "oilySkin": "Pele oleosa",
+  "drySkin": "Pele seca",
+  "constipation": "Constipação",
+  "diarrhea": "Diarréia",
+  "gas": "Gases",
+  "increasedAppetite": "Aumento do apetite",
+  "decreasedAppetite": "Diminuição do apetite",
+  "insomnia": "Insônia",
+  "hotFlash": "Ondas de calor",
+  "swelling": "Inchaço",
+  "hairLoss": "Perda de cabelo",
+  "happy": "Feliz",
+  "sad": "Triste",
+  "angry": "Irritado",
+  "anxious": "Ansioso",
+  "calm": "Calma",
+  "energetic": "Energético",
+  "tired": "Cansado",
+  "romantic": "Romântico",
+  "confused": "Confuso",
+  "confident": "Confiante",
+  "avgCycleLength": "Duração média do ciclo",
+  "avgPeriodLength": "Duração média da menstruação",
+  "cycleHistory": "Histórico dos ciclos",
+  "symptomFrequency": "Frequência dos sintomas",
+  "moodDistribution": "Distribuição de humor",
+  "temperatureTrend": "Tendência de temperatura",
+  "weightTrend": "Tendência de peso",
+  "last3Months": "Últimos 3 meses",
+  "last6Months": "Últimos 6 meses",
+  "last12Months": "Últimos 12 meses",
+  "exportData": "Exportar dados",
+  "exportPdf": "Relatório PDF",
+  "exportCsv": "Arquivo CSV",
+  "language": "Idioma",
+  "theme": "Tema",
+  "lightTheme": "Tema claro",
+  "darkTheme": "Tema escuro",
+  "notifications": "Notificações",
+  "periodReminder": "Lembrete de menstruação",
+  "ovulationReminder": "Lembrete de ovulação",
+  "medicationReminder": "Lembrete de medicação",
+  "waterReminder": "Lembrete de água",
+  "security": "Segurança",
+  "pinLock": "Bloqueio de PIN",
+  "biometricLock": "Bloqueio Biométrico",
+  "dataBackup": "Backup de dados",
+  "deleteAllData": "Excluir todos os dados",
+  "about": "Sobre",
+  "version": "Versão",
+  "glasses": "copos",
+  "dailyGoal": "Meta diária",
+  "sleepQuality": "Qualidade do sono",
+  "bedTime": "Hora de dormir",
+  "wakeTime": "Hora de acordar",
+  "totalSleep": "Sono Total",
+  "hours": "horas",
+  "protection": "Proteção",
+  "condom": "Preservativo",
+  "pill": "Pílula",
+  "iud": "DIU",
+  "none": "Nenhum",
+  "other": "Outro",
+  "medicationName": "Nome do medicamento",
+  "dose": "Dose",
+  "reminderTime": "Hora do lembrete",
+  "taken": "Tomado",
+  "notTaken": "Não tomado",
+  "addNote": "Adicionar nota",
+  "selectDate": "Selecione a data",
+  "noDataYet": "Ainda não há dados",
+  "predictions": "Previsões",
+  "nextPeriod": "Próxima menstruação",
+  "nextOvulation": "Próxima ovulação",
+  "cycleRegularity": "Regularidade do Ciclo",
+  "regular": "Normal",
+  "irregular": "Irregular",
+  "setupComplete": "Configuração concluída!",
+  "letsStart": "Vamos começar",
+  "bmi": "IMC",
+  "goalReached": "Meta alcançada!",
+  "helloGeneric": "Olá!",
+  "dayHasRecord": "tem um registro",
+  "increase": "Aumentar",
+  "decrease": "Diminuir",
+  "bbtHint": "Para uma leitura precisa, meça logo ao acordar, antes de sair da cama, no mesmo horário todos os dias. A confirmação da ovulação depende dessas leituras.",
+  "deleteMeasurement": "Excluir medição",
+  "measurementDeleted": "Medição excluída",
+  "deleteRecord": "Excluir registro",
+  "recordDeleted": "Registro excluído",
+  "invalidWeight": "Insira um peso válido (20-300 kg)",
+  "invalidTemperature": "Insira uma temperatura válida (35-40 °C)",
+  "discardChangesTitle": "Alterações não salvas",
+  "discardChangesBody": "Sua nota não foi salva. Sair agora descarta isso.",
+  "discard": "Descartar",
+  "severityLevel": "gravidade {level}/5",
+  "@severityLevel": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "pregnancySetStartPrompt": "Toque para definir o início da gravidez",
+  "helloName": "Olá, {name}!",
+  "@helloName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ovulationPhase": "Fase de ovulação",
+  "menstrualPhase": "Fase menstrual",
+  "todaySummary": "Resumo de hoje",
+  "howAreYouFeeling": "Como você está se sentindo hoje?",
+  "logMoodAndSymptoms": "Registre seu humor e sintomas",
+  "addRecord": "Adicionar registro",
+  "nSymptoms": "Sintomas {count}",
+  "@nSymptoms": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "periodDayLabel": "Dia de menstruação",
+  "predicted": "Previsto",
+  "fertile": "Fértil",
+  "ovulation": "Ovulação",
+  "moodLabel": "Humor: {mood}",
+  "@moodLabel": {
+    "placeholders": {
+      "mood": {
+        "type": "String"
+      }
+    }
+  },
+  "nGlassesWater": "{count} copos de água",
+  "@nGlassesWater": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noRecordForDay": "Nenhum registro para este dia.",
+  "dailyLog": "Registro Diário",
+  "dailyMeasurements": "Medições Diárias",
+  "flow": "Fluxo menstrual",
+  "recorded": "Gravado",
+  "nMedications": "Medicamentos {count}",
+  "@nMedications": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nGlasses": "{count} copos",
+  "@nGlasses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "flowTracking": "Acompanhar fluxo menstrual",
+  "color": "Cor",
+  "lightRed": "Vermelho claro",
+  "red": "Vermelho",
+  "darkRed": "Vermelho escuro",
+  "brown": "Marrom",
+  "clots": "Coágulos",
+  "clotsQuestion": "Algum coágulo?",
+  "padChange": "Trocas de absorvente",
+  "flowSaved": "Fluxo menstrual salvo",
+  "symptomTracking": "Rastreamento de sintomas",
+  "physical": "Físico",
+  "emotional": "Emocional",
+  "skinCategory": "Pele",
+  "digestive": "Digestivo",
+  "otherCategory": "Outro",
+  "glowingSkin": "Pele brilhante",
+  "saveNSymptoms": "Salvar (sintomas {count})",
+  "@saveNSymptoms": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nSymptomsSaved": "Sintomas {count} salvos",
+  "@nSymptomsSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addNoteOptional": "Adicionar nota (opcional)",
+  "writeAboutToday": "Escreva algo sobre hoje...",
+  "moodSaved": "Humor salvo",
+  "sensitiveM": "Sensível",
+  "irritableM": "Irritável",
+  "neutralM": "Neutro",
+  "lowTemp": "Baixo",
+  "normalTemp": "Normais",
+  "highTemp": "Alto",
+  "fever": "Febre",
+  "measurementTime": "Tempo de medição",
+  "temperatureSaved": "Temperatura salva",
+  "quickAdjust": "Ajuste rápido",
+  "manualEntry": "Entrada manual",
+  "weightSaved": "Peso economizado",
+  "waterTracking": "Rastreamento de Água",
+  "waterSaved": "Água economizada",
+  "sleepTracking": "Rastreamento do sono",
+  "bedTimeLabel": "Hora de dormir",
+  "wakeTimeLabel": "Hora de acordar",
+  "veryBad": "Muito ruim",
+  "bad": "Ruim",
+  "moderate": "Moderado",
+  "good": "Bom",
+  "great": "Ótimo",
+  "sleepSaved": "Sono salvo",
+  "protectionMethod": "Método de proteção",
+  "orgasm": "Orgasmo",
+  "noteOptional": "Nota (opcional)",
+  "addNoteHint": "Adicionar nota...",
+  "savedGeneric": "Salvo",
+  "medicationTracking": "Rastreamento de Medicamentos",
+  "addMedication": "Adicionar medicação",
+  "noMedicationsYet": "Nenhum medicamento adicionado ainda",
+  "medicationPlanHint": "Este plano se aplica todos os dias. A caixa de seleção registra apenas o dia selecionado.",
+  "medicationAlreadyInPlan": "Este medicamento já está no plano",
+  "tapToAdd": "Toque em + para adicionar",
+  "add": "Adicionar",
+  "dailyNote": "Nota Diária",
+  "myNotes": "Minhas notas",
+  "notesHint": "Como você está se sentindo? Escreva suas anotações aqui...",
+  "noteSaved": "Nota salva",
+  "cycleOverview": "Visão geral do ciclo",
+  "avgCycle": "Ciclo médio",
+  "avgPeriod": "Média da menstruação",
+  "regularity": "Regularidade",
+  "insufficientData": "Dados insuficientes",
+  "noSymptomData": "Ainda não há dados de sintomas",
+  "noMoodData": "Ainda não há dados de humor",
+  "noCycleData": "Ainda não há dados de ciclo",
+  "ongoing": "em andamento",
+  "nDays": "{count} dias",
+  "@nDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileSection": "Perfil",
+  "preferences": "Preferências",
+  "age": "Idade",
+  "nYearsOld": "{count} anos",
+  "@nYearsOld": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleDuration": "Duração do ciclo menstrual",
+  "periodDuration": "Duração da menstruação",
+  "dataSection": "Dados",
+  "exportPdfReport": "Exportar relatório em PDF",
+  "exportCsvFile": "Exportar CSV",
+  "pdfExportSoon": "Exportação de PDF em breve!",
+  "csvExportSoon": "Exportação de CSV em breve!",
+  "letsKnowYou": "Vamos conhecer você",
+  "whatShouldWeCallYou": "Como devemos chamá-lo?",
+  "yourName": "Seu nome",
+  "yourBirthDate": "Sua data de nascimento",
+  "birthDateHelp": "Ajuda-nos a fornecer sugestões adequadas à idade.",
+  "selectDateHint": "Selecione a data",
+  "selectDateToContinue": "Selecione uma data para continuar",
+  "stepOfSteps": "Etapa {current} de {total}",
+  "@stepOfSteps": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "lastPeriodTitle": "Sua última menstruação",
+  "lastPeriodHelp": "Selecione a data de início da sua última menstruação.",
+  "cycleLengthTitle": "Duração do ciclo",
+  "cycleLengthHelp": "Quantos dias é o seu ciclo médio?\n(Do primeiro dia de uma menstruação até o primeiro dia da próxima)",
+  "periodLengthTitle": "Duração da menstruação",
+  "periodLengthHelp": "Quantos dias normalmente dura a sua menstruação?",
+  "averageLabel": "média",
+  "completeBtn": "Completo",
+  "continueBtn": "Continuar",
+  "errorOccurred": "Ocorreu um erro: {error}",
+  "@errorOccurred": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "welcomeInfoTitle": "Bem-vindo!",
+  "welcomeInfoDesc": "A maneira mais fácil e bonita de monitorar sua saúde. Estamos com você em cada etapa do seu ciclo.",
+  "trackCycleTitle": "Acompanhe seu ciclo menstrual",
+  "trackCycleDesc": "Registre facilmente as datas da menstruação, sintomas e humor. Todos os seus dados estão seguros.",
+  "getPredictionsTitle": "Obtenha previsões",
+  "getPredictionsDesc": "Aprenda seu próximo ciclo e dias férteis com previsões inteligentes.",
+  "startBtn": "Começar",
+  "daysLater": "em dias {count}",
+  "@daysLater": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "todayExclamation": "Hoje!",
+  "spiral": "DIU",
+  "enterPin": "Insira o PIN",
+  "createPin": "Criar PIN",
+  "confirmPin": "Confirmar PIN",
+  "pinMismatch": "Os PINs não correspondem. Tente novamente",
+  "verifyPinTitle": "Insira seu PIN atual",
+  "wrongPin": "PIN errado",
+  "tooManyAttempts": "Muitas tentativas erradas. Aguarde {seconds} segundos",
+  "@tooManyAttempts": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "coachMenstrual0": "Dias de sangramento significam perda de ferro – carne vermelha, lentilhas e folhas verdes escuras ajudam.",
+  "coachMenstrual1": "Para cólicas, o calor e o alongamento suave podem funcionar tão bem quanto a maioria dos analgésicos.",
+  "coachMenstrual2": "A baixa energia é normal hoje – uma caminhada é melhor do que um treino intenso.",
+  "coachFollicular0": "O estrogênio está aumentando: a energia e o foco geralmente atingem o pico nesta fase. Agende tarefas difíceis agora.",
+  "coachFollicular1": "A pele geralmente está no seu melhor nesta fase – uma boa janela para experimentar novos produtos.",
+  "coachFollicular2": "Seu corpo está mais pronto para exercícios de alta intensidade agora.",
+  "coachOvulation0": "Você está na janela fértil – aja de acordo com seu plano, seja contracepção ou concepção.",
+  "coachOvulation1": "Algumas mulheres sentem uma dor leve e unilateral durante a ovulação (mittelschmerz) – é normal.",
+  "coachOvulation2": "A energia social tende a ser alta hoje em dia – um bom momento para conversas importantes.",
+  "coachLuteal0": "Os sintomas da TPM podem começar nesta fase – o magnésio e o sono regular podem aliviá-los.",
+  "coachLuteal1": "O desejo por açúcar pode aumentar: experimente lanches ricos em proteínas para manter o açúcar no sangue estável.",
+  "coachLuteal2": "A sensibilidade emocional pode aumentar - vá com calma, é hormonal e temporário.",
+  "ovulationConfirmed": "Ovulação ✓",
+  "ovulationConfirmedInfo": "Esta data não é uma estimativa: foi confirmada a partir do aumento nas leituras da sua temperatura corporal basal (regra 3 sobre 6).",
+  "premiumSection": "Prêmio",
+  "removeAds": "Remover anúncios",
+  "restorePurchases": "Restaurar compras",
+  "premiumActive": "Premium ativo – os anúncios estão desativados",
+  "storeUnavailable": "A loja está indisponível no momento",
+  "healthSync": "Sincronizar com o Health Connect",
+  "healthSyncSuccess": "Dados do período sincronizados",
+  "healthSyncDenied": "Permissão de dados de saúde negada",
+  "healthSyncUnavailable": "Nenhum serviço de saúde neste dispositivo",
+  "healthSyncFailed": "Falha na sincronização",
+  "trackingModeTitle": "Modo de rastreamento",
+  "modePeriod": "Menstruação",
+  "modePregnancy": "Gravidez",
+  "modePill": "Pílula",
+  "modeTtc": "Tentar engravidar",
+  "lhTestTitle": "Teste de ovulação (LH)",
+  "lhPositive": "Positivo",
+  "lhNegative": "Negativo",
+  "fertilityToday": "A fertilidade de hoje",
+  "fertilityHigh": "Alto",
+  "fertilityMedium": "Médio",
+  "fertilityLow": "Baixo",
+  "pregnancyWeekLabel": "Semana {week}",
+  "@pregnancyWeekLabel": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "trimester1": "1º Trimestre",
+  "trimester2": "2º Trimestre",
+  "trimester3": "3º Trimestre",
+  "pregnancyDevelopmentTitle": "Desenvolvimento esta semana",
+  "pregnancyDevelopment1": "Um período de rápido desenvolvimento continua à medida que os principais órgãos e sistemas do corpo do seu bebê se formam.",
+  "pregnancyDevelopment2": "Os movimentos do seu bebê estão se tornando mais coordenados; quando você os sente pode variar de pessoa para pessoa.",
+  "pregnancyDevelopment3": "Seu bebê continua a crescer à medida que a preparação para o nascimento se torna mais proeminente.",
+  "pregnancyCheckupReminder": "Siga o cronograma de check-up recomendado pelo seu profissional de saúde.",
+  "pregnancyStartLabel": "Data da última menstruação (início da gravidez)",
+  "pregnancyModeInfo": "As previsões e lembretes de menstruação estão desativados no modo gravidez",
+  "pillPackStartLabel": "Início da embalagem de comprimidos",
+  "pillDayLabel": "Dia da pílula {day}/21",
+  "@pillDayLabel": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "pillBreakLabel": "Semana de folga • dia {day}",
+  "@pillBreakLabel": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "smartPrediction": "Previsão Inteligente",
+  "smartPredictionDesc": "As previsões usam a média aprendida em seus ciclos anteriores",
+  "learnedCycleLength": "Aprendido: dias {days}",
+  "@learnedCycleLength": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "phaseInsights": "Insights de fase",
+  "noInsightsYet": "Ainda não há dados suficientes para insights. À medida que você registra os sintomas, padrões baseados em fases aparecerão aqui.",
+  "insightLine": "{symptom} ocorre principalmente na fase {phase} ({percent}%)",
+  "@insightLine": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      },
+      "phase": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "notContraceptionWarning": "As previsões são apenas para fins informativos. Este aplicativo NÃO é um método contraceptivo e não deve ser usado para prevenir a gravidez.",
+  "privacyPolicy": "Política de Privacidade",
+  "aboutSection": "Sobre",
+  "consentTitle": "Seus dados e privacidade",
+  "consentBody": "Todos os seus dados são armazenados criptografados apenas neste dispositivo; nada é enviado para nenhum servidor. Você pode ler a política de privacidade em Configurações > Sobre. Ao continuar você aceita que seus dados sejam processados ​​em seu dispositivo desta forma.",
+  "consentAccept": "Eu aceito",
+  "quickLog": "Registro rápido",
+  "shortcutQuickLog": "Registro rápido",
+  "shortcutToday": "Ver hoje",
+  "allTrackers": "Todos os tipos de rastreadores",
+  "disguiseTitle": "Modo de disfarce",
+  "disguiseDesc": "O aplicativo assume uma identidade de “Notas”: nome, ícone, widget, notificações e tela de inicialização ficam neutros. Retorno: mantenha pressionado o título das Notas.",
+  "decoyTitle": "Notas",
+  "decoyEmpty": "Ainda não há notas",
+  "decoyHint": "Escreva algo…",
+  "backupData": "Criar backup de senha",
+  "backupPassword": "Senha de backup",
+  "backupPasswordConfirm": "Digite a senha novamente",
+  "backupPasswordLength": "A senha deve ter de 10 a 128 caracteres",
+  "backupPasswordsDoNotMatch": "As senhas não coincidem",
+  "backupNoRecovery": "Esta senha não é armazenada no dispositivo e não pode ser recuperada. Se você esquecer, não poderá abrir o backup.",
+  "unlockBackupTitle": "Digite a senha de backup",
+  "unlockBackupBody": "Este backup só pode ser aberto com a senha utilizada quando foi criado.",
+  "backupPasswordOrFileInvalid": "A senha está incorreta ou o arquivo de backup está danificado.",
+  "legacyBackupWarning": "Este backup mais antigo não está criptografado. Após restaurá-lo, os novos backups serão protegidos por senha.",
+  "showPassword": "Mostrar senha",
+  "hidePassword": "Ocultar senha",
+  "restoreData": "Restaurar do backup",
+  "restoreConfirmTitle": "Restaurar cópia de segurança?",
+  "restoreConfirmBody": "Todos os dados atuais serão excluídos e os registros {count} do backup serão restaurados. Isto não pode ser desfeito.",
+  "@restoreConfirmBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "restore": "Restaurar",
+  "backupRestored": "Backup restaurado",
+  "invalidBackupFile": "Arquivo de backup inválido",
+  "dateLabel": "Data",
+  "modeStepTitle": "Para que você vai usá-lo?",
+  "modeStepSubtitle": "Você pode alterar isso mais tarde em Configurações",
+  "modePeriodDesc": "Acompanhamento de ciclo e previsões",
+  "modePregnancyDesc": "Gravidez semana a semana",
+  "modePillDesc": "Cronograma de 21+7 pílulas",
+  "modeTtcDesc": "Rastreamento focado na fertilidade",
+  "paywallTitle": "Torne-se Premium",
+  "paywallTrialSubtitle": "Sua avaliação está ativa: faltam {days} dias. Premium mantém tudo desbloqueado.",
+  "@paywallTrialSubtitle": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "paywallFreeSubtitle": "Seu teste terminou. A versão gratuita mantém o acompanhamento do período e o calendário; rastreamento diário e insights são Premium.",
+  "paywallFeatureTrackers": "Todos os rastreadores diários: sintomas, humor, água, sono, peso, temperatura, medicação, notas",
+  "paywallFeatureStats": "Estatísticas, tendências e o anel Meu Ano",
+  "paywallFeatureInsights": "Insights pessoais e notificações de dicas de fase",
+  "paywallFeatureExport": "Exportação de PDF/CSV",
+  "paywallFeatureHealth": "Sincronização do Conexão Saúde",
+  "paywallFeatureDisguise": "Modo de disfarce com o chamariz de Notas",
+  "paywallFeatureNoAds": "Experiência sem anúncios",
+  "planMonthly": "Mensalmente",
+  "planYearly": "Anualmente",
+  "perMonth": "/ mês",
+  "perYear": "/ano",
+  "bestValue": "Melhor valor",
+  "continueFreeBtn": "Continue com grátis por enquanto",
+  "trialBadge": "Avaliação: {days} dias restantes",
+  "@trialBadge": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "freeBadge": "Versão gratuita",
+  "freeExplain": "A versão gratuita mantém o acompanhamento do período, o calendário e as previsões. Rastreadores diários, estatísticas, exportação, Health Connect, modo de disfarce e modos são Premium.",
+  "seePlans": "Ver Planos",
+  "premiumLockedTitle": "Estatísticas são Premium",
+  "premiumLockedBody": "Gráficos, tendências, insights de fase e o anel My Year são desbloqueados com Premium. Tudo o que você registrou durante o teste é mantido em segurança.",
+  "yearRingTitle": "Meu ano",
+  "yearRingCycles": "CICLOS",
+  "yearRingSummary": "Últimos 12 meses: ciclos {count}",
+  "@yearRingSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleComparison": "Seu último ciclo",
+  "lastCycleLength": "Último ciclo: dias {days}",
+  "@lastCycleLength": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "lastPeriodLength": "Último período: dias {days}",
+  "@lastPeriodLength": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "vsAverageMore": "{days} dias a mais que a média",
+  "@vsAverageMore": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "vsAverageLess": "{days} dias mais curtos que a média",
+  "@vsAverageLess": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "vsAverageSame": "igual à sua média",
+  "coachPersonalInsight": "Com base nos seus registros, mais comum nesta fase: {symptom} ({percent}%)",
+  "@coachPersonalInsight": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationInsightTitle": "Dica de fase",
+  "notificationInsightBody": "A fase lútea está começando. Com base nos seus registros, seu sintoma mais comum nesta fase: {symptom}.",
+  "@notificationInsightBody": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationPeriodTitle": "Lembrete de Período",
+  "notificationPeriodTimingToday": "Sua menstruação pode começar hoje.",
+  "notificationPeriodTimingTomorrow": "Sua menstruação pode começar amanhã.",
+  "notificationPeriodTimingInDays": "Sua menstruação pode começar em dias {days}.",
+  "@notificationPeriodTimingInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationPeriodTip1": "Lembre-se de levar um absorvente ou absorvente interno.",
+  "notificationPeriodTip2": "Um pouco de preparação torna tudo mais fácil.",
+  "notificationPeriodTip3": "Registrar o início melhora suas previsões.",
+  "notificationPeriodChannel": "Lembrete de Período",
+  "notificationPeriodChannelDesc": "Lembretes do ciclo menstrual",
+  "notificationOvulationTitle": "Lembrete de ovulação",
+  "notificationOvulationBody": "Hoje é o dia da sua ovulação. Você está na sua janela fértil!",
+  "notificationOvulationChannel": "Lembrete de ovulação",
+  "notificationOvulationChannelDesc": "Lembretes de ovulação",
+  "notificationMedicationTitle": "Lembrete de medicação",
+  "notificationMedicationBody": "Não esqueça de tomar seu remédio!",
+  "notificationMedicationChannel": "Lembrete de medicação",
+  "notificationMedicationChannelDesc": "Lembretes de medicação",
+  "notificationDiscreetTitle": "Lembrete",
+  "notificationDiscreetBody": "Você tem um lembrete para hoje",
+  "notificationFertileTitle": "Sua janela fértil começa",
+  "notificationFertileBody": "A partir de hoje você está nos dias com maior chance de engravidar.",
+  "notificationChainEndTitle": "Os lembretes estão pausando",
+  "notificationChainEndBody": "Os lembretes programados acabaram. Abra o aplicativo para configurar novos.",
+  "noPurchasesToRestore": "Nenhuma compra encontrada para restaurar",
+  "restoringPurchases": "Restaurando compras…",
+  "backdateHint": "Pressione longamente para um dia diferente",
+  "periodStartDateHelp": "Quando começou sua menstruação?",
+  "periodEndDateHelp": "Quando terminou sua menstruação?",
+  "headlinePeriodToday": "Sua menstruação pode começar hoje",
+  "headlinePeriodTomorrow": "Sua menstruação pode começar amanhã",
+  "headlineNoData": "Adicione a data da sua última menstruação",
+  "headlinePeriodInDays": "Sua menstruação em dias {days}",
+  "@headlinePeriodInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "headlinePeriodDay": "Dia {day} da sua menstruação",
+  "@headlinePeriodDay": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "headlineDelaySubtitle": "Alguma variação é normal. Registre-o se tiver iniciado.",
+  "notificationDelayTitle": "A data prevista já passou",
+  "notificationDelayBody": "Se a sua menstruação já começou, lembre-se de registrá-la. Alguma variação é normal.",
+  "notificationDelayBodyAlt1": "Nenhuma entrada ainda. Se tiver iniciado, o registro leva um toque.",
+  "notificationDelayBodyAlt2": "Uma mudança de alguns dias é comum. Seu registro está atualizado?",
+  "notificationDelayChannel": "Lembrete de atraso",
+  "notificationDelayChannelDesc": "Lembrete quando a data prevista tiver passado",
+  "headlineDelay": "Sua menstruação está com {days} dias atrasada",
+  "@headlineDelay": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "delayDays": "{days} dias atrasado",
+  "@delayDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "yourDataStays": "Seus registros permanecerão no seu dispositivo quando a avaliação terminar.",
+  "periodStartedOnThisDay": "Minha menstruação começou neste dia",
+  "nCyclesRecorded": "Ciclos {count} registrados",
+  "@nCyclesRecorded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nLogsRecorded": "Registros diários {count}",
+  "@nLogsRecorded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notifPermissionTitle": "Ativar lembretes?",
+  "notifPermissionBody": "Avisamos quando sua menstruação está próxima, no dia da ovulação e quando a data prevista já passou. As notificações nunca saem do seu dispositivo. Você também pode ativá-los posteriormente nas configurações.",
+  "enableNotifications": "Ligar",
+  "notNow": "Agora não",
+  "optionalField": "Opcional",
+  "privacyAssurance": "Seus dados permanecem criptografados apenas neste dispositivo",
+  "privacySummary": "Seus dados principais são criptografados neste dispositivo; ele sai apenas quando você o exporta ou ativa o Health Connect.",
+  "dontRememberExactly": "não me lembro exatamente",
+  "approxTitle": "Aproximadamente quando foi isso?",
+  "approxSubtitle": "Uma data difícil é suficiente. As previsões se corrigem automaticamente conforme você registra.",
+  "approxThisWeek": "Esta semana",
+  "approxLastWeek": "Semana passada",
+  "approxTwoWeeks": "Cerca de 2 semanas atrás",
+  "approxThreeWeeks": "Cerca de 3 semanas atrás",
+  "approxMonthOrMore": "Há um mês ou mais",
+  "cycleReminderTime": "Hora do lembrete do ciclo",
+  "medicationReminderTime": "Hora do lembrete de medicação",
+  "periodReminderLead": "Lembrete de período",
+  "notificationQuietChannelSuffix": "quieto",
+  "quietNotifications": "Notificações silenciosas",
+  "quietNotificationsDesc": "Nenhum som ou pop-up – eles esperam silenciosamente na aba de notificações",
+  "leadSameDay": "Mesmo dia",
+  "leadNDaysBefore": "{days} dias antes",
+  "@leadNDaysBefore": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "regularityInfoIrregular": "Existem 9 ou mais dias entre o ciclo mais curto e o mais longo. A variação da duração do ciclo é muito comum; estresse, sono, doenças e mudanças na vida afetam isso. Isto não é um diagnóstico.",
+  "regularityInfoRegular": "A diferença entre o ciclo mais curto e o mais longo é inferior a 9 dias. As previsões são mais precisas com essa consistência.",
+  "regularityInfoSeeDoctor": "Se o seu ciclo for consistentemente inferior a 21 dias ou superior a 35, se não tiver menstruado durante mais de três meses ou se a hemorragia for invulgarmente intensa, vale a pena falar com um profissional de saúde.",
+  "typicalRangeNote": "Faixa comumente aceita: ciclo {min}–{max} dias, período até {pmax} dias. Não é um limite de diagnóstico.",
+  "@typicalRangeNote": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "pmax": {
+        "type": "int"
+      }
+    }
+  },
+  "lowConfidenceNote": "Essas médias vêm apenas dos ciclos {count}; eles ficarão mais nítidos à medida que você registrar mais.",
+  "@lowConfidenceNote": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "regularityInfoInsufficient": "Pelo menos lacunas no ciclo {count} são necessárias antes que a regularidade signifique alguma coisa. Um julgamento sobre menos seria enganoso.",
+  "@regularityInfoInsufficient": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupNever": "Você nunca fez um backup.",
+  "backupStaleHint": "Se você perder seu telefone, os registros não poderão ser recuperados.",
+  "backupLastAt": "Último backup: {date}",
+  "@backupLastAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "durationsStepTitle": "Detalhes do seu ciclo",
+  "durationsStepHelp": "Não tenho certeza? Deixe-os como estão – você pode alterá-los nas configurações mais tarde.",
+  "lockTimeoutTitle": "Atraso de bloqueio",
+  "lockTimeoutDesc": "Ignore o PIN quando você voltar após um breve momento de ausência",
+  "lockImmediately": "Imediatamente",
+  "previousDay": "Dia anterior",
+  "nextDay": "Dia seguinte",
+  "showLegend": "Chave de cor",
+  "hideLegend": "Ocultar chave de cor",
+  "backToToday": "De volta a hoje",
+  "monthNoRecords": "Nenhum registro neste mês",
+  "doctorSummary": "Exportar um resumo para meu médico",
+  "healthImport": "Importar do Health Connect",
+  "healthImportAction": "Importar",
+  "allTime": "Todo o tempo",
+  "actionPeriodStarted": "Minha menstruação começou",
+  "actionMedicationTaken": "Levado",
+  "pregnancyTestReady": "Um teste de gravidez pode ser significativo agora",
+  "notLoggedToday": "Nenhum {what} registrado hoje",
+  "@notLoggedToday": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "pregnancyTestFrom": "Teste útil mais antigo: {date}",
+  "@pregnancyTestFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "pillBreakIn": "O intervalo começa em dias {days}",
+  "@pillBreakIn": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "pillNewPackIn": "Novo pacote em dias {days}",
+  "@pillNewPackIn": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "healthImportNothingNew": "Nenhum novo registro encontrado para importar",
+  "healthImportConfirm": "Foram encontrados períodos de período {count} no Health Connect que não estão no aplicativo. Adicioná-los aos seus registros? Seus registros existentes permanecem intactos.",
+  "@healthImportConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "healthImportDone": "Períodos {count} importados",
+  "@healthImportDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "monthPeriodDays": "Dias do período {count}",
+  "@monthPeriodDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "monthLoggedDays": "{count} dias registrados",
+  "@monthLoggedDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pinNoRecoveryWarning": "Se você esquecer seu PIN, não há como recuperá-lo; a única maneira de voltar é excluindo todos os seus dados. Escolha algo que você vai lembrar.",
+  "lockAfterMinutes": "Após {minutes} min",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "reportTitle": "Relatório de saúde do ciclo",
+  "reportGenerated": "Gerado",
+  "profileSummary": "Resumo do perfil",
+  "periodHistory": "Histórico do período",
+  "last30DaysSummary": "Resumo dos últimos 30 dias",
+  "durationDaysHeader": "Duração (dias)",
+  "themeSystem": "Sistema",
+  "themeLight": "Luz",
+  "themeDark": "Escuro",
+  "languageSystem": "Sistema",
+  "statsSectionOverview": "VISÃO GERAL",
+  "statsSectionCharts": "GRÁFICOS",
+  "statsSectionHistory": "HISTÓRIA E TENDÊNCIAS",
+  "storySymptomsMore": "Os últimos 30 dias foram mais difíceis do que o período anterior (entradas {recent} vs {previous}).",
+  "@storySymptomsMore": {
+    "placeholders": {
+      "recent": {
+        "type": "int"
+      },
+      "previous": {
+        "type": "int"
+      }
+    }
+  },
+  "storySymptomsLess": "Os últimos 30 dias foram mais fáceis do que o período anterior (entradas {recent} vs {previous}).",
+  "@storySymptomsLess": {
+    "placeholders": {
+      "recent": {
+        "type": "int"
+      },
+      "previous": {
+        "type": "int"
+      }
+    }
+  },
+  "storySymptomsSame": "A intensidade dos sintomas permaneceu semelhante nos dois últimos períodos.",
+  "storyTrendUp": "Aumentou {delta} {unit} durante este período.",
+  "@storyTrendUp": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "storyTrendDown": "Down {delta} {unit} durante este período.",
+  "@storyTrendDown": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "storyTrendFlat": "Nenhuma mudança significativa durante este período – a tendência é plana.",
+  "averageSeverity": "Média {value}/5",
+  "@averageSeverity": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "dataCoverage": "Cobertura de dados",
+  "dataCoverageValue": "Dados em {logged} de dias {total} ({percent}%)",
+  "@dataCoverageValue": {
+    "placeholders": {
+      "logged": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "tapChartPointHint": "Toque em um ponto para abrir naquele dia.",
+  "shareCalendarMonth": "Compartilhe o mês do calendário",
+  "longPressDayHint": "Pressione e segure um dia para uma visualização rápida.",
+  "markPeriodRange": "Marcar datas da menstruação",
+  "periodRangeOverlap": "Estas datas se sobrepõem a uma menstruação registrada.",
+  "periodRangeSaved": "Datas da menstruação salvas",
+  "trackingStreak": "{count} dias seguidos de registros",
+  "@trackingStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weeklyTracking": "{count}/7 dias registrados",
+  "@weeklyTracking": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportCalendarFile": "Exportar calendário (.ics)",
+  "ovulationMarkerHint": "Linha tracejada: ovulação estimada ou confirmada",
+  "addPastCycles": "Adicionar ciclos anteriores",
+  "addPastCyclesHint": "Selecione até 3 intervalos de datas da menstruação e salve-os juntos.",
+  "addPeriodRange": "Adicionar datas da menstruação",
+  "cycleOverlayTitle": "Comparação de ciclo",
+  "symptomLoadComparison": "Gravidade diária dos sintomas alinhada por dia do ciclo",
+  "currentCycleLabel": "Este ciclo",
+  "previousCycleLabel": "Ciclo anterior",
+  "colorBlindPattern": "Cores de fase padronizadas",
+  "colorBlindPatternDesc": "Adiciona textura às faixas de fase – útil quando as cores são difíceis de distinguir",
+  "undo": "Desfazer",
+  "periodMarkedStarted": "Início da menstruação salvo",
+  "periodMarkedEnded": "Fim da menstruação salvo",
+  "editPeriodRecord": "Editar registro menstrual",
+  "startDateLabel": "Começar",
+  "endDateLabel": "Fim",
+  "recordUpdated": "Registro atualizado",
+  "dataResetTitle": "Não foi possível ler seus dados",
+  "dataResetBody": "Não foi possível descriptografar os dados do app neste dispositivo. Isso geralmente acontece após trocar de telefone ou restaurar um backup do sistema: os dados são criptografados com uma chave específica do dispositivo que não pode ser movida para um novo dispositivo. O aplicativo começou do zero.\n\nPara mover seus dados entre dispositivos, exporte um backup JSON regularmente em Configurações > Fazer backup de dados.",
+  "pinSet": "PIN definido com sucesso",
+  "pinRemoved": "PIN removido",
+  "unlockWithBiometric": "Desbloquear com impressão digital ou rosto",
+  "biometricNotAvailable": "Autenticação biométrica não disponível neste dispositivo",
+  "editProfile": "Editar perfil",
+  "profileSaved": "Perfil salvo",
+  "sleepDurationShort": "{hours}h {minutes}min",
+  "@sleepDurationShort": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteAllDataConfirm": "Tem certeza de que deseja excluir todos os dados? Esta ação não pode ser desfeita.",
+  "dataDeleted": "Todos os dados excluídos",
+  "doseHint": "por exemplo 500mg",
+  "menstrualPhaseInfo": "O período em que ocorre o sangramento menstrual. Geralmente dura de 3 a 7 dias. O corpo elimina o revestimento uterino.",
+  "follicularPhaseInfo": "Após a menstruação, os ovários preparam um novo óvulo. O estrogênio aumenta e os níveis de energia aumentam.",
+  "ovulationPhaseInfo": "A fase em que um óvulo é liberado do ovário. A probabilidade de gravidez é máxima.",
+  "lutealPhaseInfo": "A fase da ovulação até a próxima menstruação. A progesterona aumenta, podem ocorrer sintomas de TPM.",
+  "fertileWindowInfo": "O período com maior chance de gravidez. Começa 5 dias antes da ovulação e termina 1 dia depois.",
+  "ovulationCardInfo": "O dia estimado em que um óvulo é liberado do ovário. Ocorre no meio do ciclo.",
+  "nextPeriodInfo": "A data estimada de início da sua próxima menstruação. Calculado com base na duração do seu ciclo.",
+  "phaseInfoTitle": "O que é essa fase?",
+  "learnMore": "Informações",
+  "healthDisclaimer": "Este aplicativo não substitui o aconselhamento médico. Consulte um profissional de saúde para questões de saúde.",
+  "homePriority": "Prioridade da tela inicial",
+  "cycleFirst": "Priorizar o ciclo",
+  "todayFirst": "Hoje primeiro",
+  "planLifetime": "Vitalício",
+  "planLifetimeDetail": "Um pagamento, Premium para sempre",
+  "cycleNotificationFrequency": "Nível de notificação de ciclo",
+  "cycleNotificationFrequencyDesc": "Lembretes de medicação não são afetados",
+  "notificationFrequencyEssential": "Essencial",
+  "notificationFrequencyBalanced": "Equilibrado",
+  "notificationFrequencyDetailed": "Detalhado",
+  "readOnlyHistoryNotice": "Você pode ver suas entradas anteriores; novas entradas e alterações diárias exigem Premium.",
+  "screenProtectionTitle": "Proteção de tela",
+  "screenProtectionDescription": "Bloqueia capturas de tela e a prévia dos aplicativos recentes."
+}

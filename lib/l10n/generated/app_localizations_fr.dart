@@ -2137,4 +2137,11 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get readOnlyHistoryNotice =>
       'Vous pouvez consulter vos anciens suivis ; les nouveaux suivis et modifications nécessitent Premium.';
+
+  @override
+  String get screenProtectionTitle => 'Protection de l’écran';
+
+  @override
+  String get screenProtectionDescription =>
+      'Bloque les captures et l’aperçu des applications récentes.';
 }

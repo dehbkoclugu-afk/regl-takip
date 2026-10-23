@@ -244,6 +244,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
 
     // Reschedule notifications when relevant settings change
     if (periodReminderEnabled != null ||
+        language != null ||
         ovulationReminderEnabled != null ||
         medicationReminderEnabled != null ||
         reminderHour != null ||
@@ -257,7 +258,9 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         averagePeriodLength != null ||
         // Saat ve pencere değişince planlar eski değerlerde kalırdı
         medicationReminderHour != null ||
+        medicationReminderMinute != null ||
         cycleReminderHour != null ||
+        cycleReminderMinute != null ||
         periodReminderLeadDays != null ||
         // Sessizlik tercihi kanal kimliğini değiştiriyor: kurulu
         // bildirimler yeniden planlanmazsa eski kanalda kalır
@@ -269,6 +272,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
           updated,
           records: _hiveService.getAllPeriodRecords(),
           medications: updated.medicationPlan,
+          logs: _hiveService.getAllDailyLogs(),
         );
       } catch (e) {
         debugPrint('[NOTIF] rescheduleAll failed: $e');

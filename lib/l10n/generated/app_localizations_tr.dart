@@ -2120,4 +2120,11 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get readOnlyHistoryNotice =>
       'Geçmiş kayıtlarını görüntüleyebilirsin; yeni günlük kayıt ve değişiklikler Premium\'da.';
+
+  @override
+  String get screenProtectionTitle => 'Ekran görüntüsü koruması';
+
+  @override
+  String get screenProtectionDescription =>
+      'Ekran görüntülerini ve son uygulamalar önizlemesini engeller.';
 }

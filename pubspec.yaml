@@ -80,10 +80,20 @@ flutter:
   generate: true
 
   assets:
+    - assets/fonts/
     - assets/legal/privacy_policy_tr.md
     - assets/legal/privacy_policy_en.md
 
   fonts:
+    - family: NotoSansArabic
+      fonts:
+        - asset: assets/fonts/NotoSansArabic.ttf
+    - family: NotoSansDevanagari
+      fonts:
+        - asset: assets/fonts/NotoSansDevanagari.ttf
+    - family: NotoSansSC
+      fonts:
+        - asset: assets/fonts/NotoSansSC.ttf
     - family: Nunito
       fonts:
         - asset: assets/fonts/Nunito-Variable.ttf

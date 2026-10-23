@@ -273,7 +273,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
           if (_hasExistingWeight) ...[
             const SizedBox(height: 4),
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: TextButton.icon(
                 onPressed: _delete,
                 icon: const Icon(Icons.delete_outline_rounded, size: 18),

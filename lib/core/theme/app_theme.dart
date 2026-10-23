@@ -37,6 +37,11 @@ class AppTheme {
       useMaterial3: true,
       brightness: brightness,
       fontFamily: _fontFamily,
+      fontFamilyFallback: const [
+        'NotoSansArabic',
+        'NotoSansDevanagari',
+        'NotoSansSC',
+      ],
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         brightness: brightness,
