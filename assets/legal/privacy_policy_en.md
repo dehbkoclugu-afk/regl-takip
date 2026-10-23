@@ -1,61 +1,24 @@
-# Privacy Policy
+# Privacy policy
 
-**Last updated: February 27, 2026**
+Updated: October 23, 2026. Developer: CEY Studio. Contact: dehbkoclugu@gmail.com.
 
-At CEY Studio, we respect your privacy while you use the "Cycle Tracker - Period Calendar" app. This privacy policy explains how our app handles your data.
+## Health records
+Names, birth dates, menstrual dates, symptoms, mood, measurements, medication, sexual activity and notes are stored on your device. The app uses encrypted local storage. Losing the device-specific key can make records unreadable; keep an encrypted backup using Settings. Unreadable files are preserved rather than automatically erased.
 
-## 1. Data We Collect
+## User-directed sharing
+If you choose to export or share, the selected data leaves the app through the destination you select. PDF, CSV and calendar exports are readable files; password-protected backups are encrypted. Older app-generated temporary exports are eligible for cleanup after two days. Shared copies may remain with their recipients. If you choose Health Connect or Apple Health synchronization, menstrual records are transferred to that platform under its permissions and privacy settings. Deleting app data does not automatically delete exported copies or data in other services.
 
-Our app stores the following information locally on your device only:
+## Purchases and verification
+Google Play or Apple handles payments. When purchase verification is configured, product identifiers, transaction identifiers and store verification tokens are sent to the developer's verification service and the relevant store to check paid access, expiration or revocation. Health records and notes are not included in these requests. Payment and store processing are subject to the store's own privacy policy. Verification requires an internet connection.
 
-- User name and date of birth
-- Menstrual cycle data (start/end dates, cycle length)
-- Daily health records (mood, symptoms, flow intensity)
-- Water intake, sleep, weight, and body temperature data
-- Medication reminder details
-- Sexual activity records
-- Notes
+## Advertising and diagnostics
+The free tier may display Google AdMob ads. Its SDK can process technical and advertising data according to its consent settings. The app does not send health records to AdMob. Advertising requests are checked against UMP consent eligibility; required privacy choices can be reopened from Settings. Premium and trial access suppress ads. Builds with Sentry enabled may transmit technical crash reports; default personal data and performance tracing are disabled. Avoid entering private information into technical diagnostic fields.
 
-## 2. Data Storage
+## Optional usage counts
+Usage measurement is off by default. If enabled, the app stores aggregate counts of app opening, onboarding completion, tracking actions, paywall views and verified purchases on this device. It does not add identity, health values, notes or dates to these counts, and this version does not upload them. Turning the setting off deletes these counts.
 
-All of your personal data is stored only on your device. Your data is never sent to any server, cloud service, or third-party platform. The app works with full functionality without an internet connection.
+## Local notifications, controls and deletion
+Reminders are scheduled on your device. Notification text can be visible to people near the device; discreet mode uses neutral text. You can configure permissions, PIN/biometric lock, exports and deletion in Settings. Deletion cannot recall copies already shared. For questions or requests, contact the email above.
 
-## 3. Data Sharing
-
-We do not share your data with any third party. The app does not sell, rent, or commercially exploit your personal data.
-
-## 4. Third-Party Services
-
-Your health data is never sent to any third party. The third-party services used for the app to operate are:
-
-- **Google Play Billing**: Used for premium purchases. These transactions are subject to Google's own privacy policy.
-- **Google AdMob**: Used to show ads in the free version. AdMob may process technical data such as device identifiers to serve ads; it cannot access your health data. Users in the EU/UK are separately asked for consent for ad personalization. The premium version contains no ads and no AdMob.
-- **Crash reporting (Sentry)**: Only in builds where it is enabled, technical error information is sent when the app crashes. Sending of personal and health data is disabled.
-
-## 5. Notifications
-
-The app uses your device's notification system to deliver reminders. These notifications are entirely local and do not send data to any server.
-
-## 6. Security
-
-The app can be protected with a PIN code and biometric authentication (fingerprint/face recognition). This security information is stored encrypted on your device.
-
-## 7. Data Export and Deletion
-
-- You can export your data at any time in CSV or PDF format.
-- When you remove the app from your device, all of your data is permanently deleted.
-
-## 8. Children's Privacy
-
-Our app is not directed at children under 13. We do not knowingly collect personal information from children under 13.
-
-## 9. Changes to This Privacy Policy
-
-We may update this privacy policy from time to time. Changes will be published on this page.
-
-## 10. Contact
-
-For questions about our privacy policy, you can contact us:
-
-**Email:** dehbkoclugu@gmail.com
-**Developer:** CEY Studio
+## Audience and updates
+The app is not directed at children under 13. Health predictions are informational and are not medical advice or a contraceptive method. This policy may change when the app's data processing changes; the update date identifies the version.

@@ -32,6 +32,18 @@ void main() {
   });
 
   group('DailyLogNotifier akış alanı', () {
+    test('simultaneous partial updates retain both fields', () async {
+      final notifier = DailyLogNotifier(service);
+      await Future.wait([
+        notifier.updateWater(day, 6),
+        notifier.updateNotes(day, 'Preserved note'),
+        notifier.updateWeight(day, 62.5),
+      ]);
+      final reloaded = DailyLogNotifier(service).getDailyLog(day)!;
+      expect(reloaded.waterIntake, 6);
+      expect(reloaded.notes, 'Preserved note');
+      expect(reloaded.weight, 62.5);
+    });
     test('setFlowIntensity(null) kayıtlı akışı siler', () async {
       final notifier = DailyLogNotifier(service);
       await notifier.setFlowIntensity(day, FlowIntensity.heavy);

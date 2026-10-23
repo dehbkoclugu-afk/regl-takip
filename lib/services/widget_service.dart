@@ -237,8 +237,7 @@ class WidgetService {
         await HomeWidget.saveWidgetData<String>('line1', 'Notlar');
         await HomeWidget.saveWidgetData<String>('line2', '');
         await HomeWidget.saveWidgetData<String>('ring_path', null);
-        await HomeWidget.saveWidgetData<bool>(
-            'period_action_visible', false);
+        await HomeWidget.saveWidgetData<bool>('period_action_visible', false);
         await HomeWidget.saveWidgetData<String>('period_action_label', '');
         await _savePredictions(null, null, null, null);
         await HomeWidget.updateWidget(androidName: _androidProvider);
@@ -268,11 +267,12 @@ class WidgetService {
             break;
           case TrackingMode.pill:
             if (profile.pillPackStartDate != null) {
-              final day =
-                  CycleUtils.pillDayInPack(profile.pillPackStartDate!);
-              line1 = day > 21
-                  ? '${_t(locale, 'breakWeek')} ${day - 21}/7'
-                  : '${_t(locale, 'pill')} $day/21';
+              final day = CycleUtils.pillDayInPack(profile.pillPackStartDate!,
+                  activeDays: profile.pillActiveDays,
+                  breakDays: profile.pillBreakDays);
+              line1 = day > profile.pillActiveDays
+                  ? '${_t(locale, 'breakWeek')} ${day - profile.pillActiveDays}/${profile.pillBreakDays}'
+                  : '${_t(locale, 'pill')} $day/${profile.pillActiveDays}';
             }
             break;
           case TrackingMode.ttc:

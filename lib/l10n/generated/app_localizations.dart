@@ -369,7 +369,7 @@ abstract class AppLocalizations {
   /// No description provided for @daysLeft.
   ///
   /// In tr, this message translates to:
-  /// **'{count} gün kaldı'**
+  /// **'{count, plural, other {{count} gün kaldı}}'**
   String daysLeft(int count);
 
   /// No description provided for @periodToday.
@@ -1233,7 +1233,7 @@ abstract class AppLocalizations {
   /// No description provided for @nSymptoms.
   ///
   /// In tr, this message translates to:
-  /// **'{count} belirti'**
+  /// **'{count, plural, other {{count} belirti}}'**
   String nSymptoms(int count);
 
   /// No description provided for @periodDayLabel.
@@ -1305,13 +1305,13 @@ abstract class AppLocalizations {
   /// No description provided for @nMedications.
   ///
   /// In tr, this message translates to:
-  /// **'{count} ilaç'**
+  /// **'{count, plural, other {{count} ilaç}}'**
   String nMedications(int count);
 
   /// No description provided for @nGlasses.
   ///
   /// In tr, this message translates to:
-  /// **'{count} bardak'**
+  /// **'{count, plural, other {{count} bardak}}'**
   String nGlasses(int count);
 
   /// No description provided for @flowTracking.
@@ -1737,7 +1737,7 @@ abstract class AppLocalizations {
   /// No description provided for @nDays.
   ///
   /// In tr, this message translates to:
-  /// **'{count} gün'**
+  /// **'{count, plural, other {{count} gün}}'**
   String nDays(int count);
 
   /// No description provided for @profileSection.
@@ -1761,7 +1761,7 @@ abstract class AppLocalizations {
   /// No description provided for @nYearsOld.
   ///
   /// In tr, this message translates to:
-  /// **'{count} yaş'**
+  /// **'{count, plural, other {{count} yaş}}'**
   String nYearsOld(int count);
 
   /// No description provided for @cycleDuration.
@@ -2019,85 +2019,85 @@ abstract class AppLocalizations {
   /// No description provided for @coachMenstrual0.
   ///
   /// In tr, this message translates to:
-  /// **'Kanama günlerinde demir kaybı olur — kırmızı et, mercimek ve koyu yeşil yapraklılar iyi gelir.'**
+  /// **'Kanamayı, acıyı ve nasıl hissettiğinizi kaydedebilirsiniz. Sizi ilgilendiren belirtiler için tıbbi yardım alın.'**
   String get coachMenstrual0;
 
   /// No description provided for @coachMenstrual1.
   ///
   /// In tr, this message translates to:
-  /// **'Kramplar için sıcak uygulama ve hafif esneme, çoğu ağrı kesici kadar etkili olabilir.'**
+  /// **'Rahatsanız, hafif hareket veya sıcaklık kendinizi daha iyi hissetmenize yardımcı olabilir. Bireysel deneyimler farklılık gösterir.'**
   String get coachMenstrual1;
 
   /// No description provided for @coachMenstrual2.
   ///
   /// In tr, this message translates to:
-  /// **'Enerjin düşükse bu normal — bugün yoğun antrenman yerine yürüyüş yeterli.'**
+  /// **'Bugün nasıl hissettiğinize göre dinlenmeyi veya aktiviteyi seçin.'**
   String get coachMenstrual2;
 
   /// No description provided for @coachFollicular0.
   ///
   /// In tr, this message translates to:
-  /// **'Östrojen yükselişte: enerji ve odak genelde bu fazda zirve yapar. Zor işleri bugünlere planla.'**
+  /// **'Enerji ve semptomlar insanlar ve döngüler arasında farklılık gösterir. Kalıpları fark etmek için kendi kayıtlarınızı kullanın.'**
   String get coachFollicular0;
 
   /// No description provided for @coachFollicular1.
   ///
   /// In tr, this message translates to:
-  /// **'Cilt bu fazda genelde en iyi halinde — yeni ürün denemek için uygun dönem.'**
+  /// **'Döngü sırasında cildiniz değişebilir. Sabit bir model varsaymak yerine değişiklikleri kaydedin.'**
   String get coachFollicular1;
 
   /// No description provided for @coachFollicular2.
   ///
   /// In tr, this message translates to:
-  /// **'Yüksek tempolu egzersizler için vücudun en hazır olduğu dönemdesin.'**
+  /// **'Egzersizi tahmini bir döngü aşamasına değil, sağlığınıza ve rahatınıza göre seçin.'**
   String get coachFollicular2;
 
   /// No description provided for @coachOvulation0.
   ///
   /// In tr, this message translates to:
-  /// **'Doğurgan penceredesin — korunma ya da gebelik planı ne ise ona göre davran.'**
+  /// **'Bereketli günler tahminidir. Bu uygulama bir doğum kontrol yöntemi değildir.'**
   String get coachOvulation0;
 
   /// No description provided for @coachOvulation1.
   ///
   /// In tr, this message translates to:
-  /// **'Bazı kadınlar ovülasyonda tek taraflı hafif ağrı hisseder (mittelschmerz) — normaldir.'**
+  /// **'Yeni, şiddetli veya inatçı ağrıyı yumurtlamaya bağlamak yerine tıbbi yardım alın.'**
   String get coachOvulation1;
 
   /// No description provided for @coachOvulation2.
   ///
   /// In tr, this message translates to:
-  /// **'Sosyal enerji bu günlerde genelde yüksek — önemli görüşmeler için iyi zamanlama.'**
+  /// **'Ruh hali ve sosyal enerji farklılık gösterir. Tahmin edilen bir aşama nasıl hissedeceğinizi belirleyemez.'**
   String get coachOvulation2;
 
   /// No description provided for @coachLuteal0.
   ///
   /// In tr, this message translates to:
-  /// **'PMS belirtileri bu fazda başlayabilir — magnezyum ve düzenli uyku belirtileri hafifletebilir.'**
+  /// **'Uyku, stres ve diğer birçok faktör semptomları etkileyebilir. Fark ettiğiniz şeyi kaydedin.'**
   String get coachLuteal0;
 
   /// No description provided for @coachLuteal1.
   ///
   /// In tr, this message translates to:
-  /// **'Tatlı isteği artabilir: kan şekerini dengede tutmak için protein ağırlıklı ara öğün dene.'**
+  /// **'İhtiyaçlarınıza uygun yemek ve aktiviteyi seçin. Tahmin edilen bir aşama bir diyet önermez.'**
   String get coachLuteal1;
 
   /// No description provided for @coachLuteal2.
   ///
   /// In tr, this message translates to:
-  /// **'Duygusal hassasiyet artabilir — kendine yüklenme, bu hormonal ve geçici.'**
+  /// **'Ruh hali değişikliklerinin birçok olası nedeni vardır. Devam eden veya sizi endişelendiren belirtiler için destek arayın.'**
   String get coachLuteal2;
 
   /// No description provided for @ovulationConfirmed.
   ///
   /// In tr, this message translates to:
-  /// **'Ovülasyon ✓'**
+  /// **'Olası ovülasyon'**
   String get ovulationConfirmed;
 
   /// No description provided for @ovulationConfirmedInfo.
   ///
   /// In tr, this message translates to:
-  /// **'Bu tarih tahmini değil: bazal vücut sıcaklığı ölçümlerinizdeki yükselişten teyit edildi (3-üstü-6 kuralı).'**
+  /// **'Sıcaklık örüntüsü veya LH testi olası ovülasyona işaret eder. Hastalık, uyku ve ölçüm saati sonucu etkiler. Klinik doğrulama değildir; korunma amacıyla kullanılmamalıdır.'**
   String get ovulationConfirmedInfo;
 
   /// No description provided for @premiumSection.
@@ -3935,6 +3935,114 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Ekran görüntülerini ve son uygulamalar önizlemesini engeller.'**
   String get screenProtectionDescription;
+
+  /// No description provided for @predictionUncertain.
+  ///
+  /// In tr, this message translates to:
+  /// **'Döngü fazı belirsiz'**
+  String get predictionUncertain;
+
+  /// No description provided for @startupRecoveryBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verilerin güvenle açılamadı ve korundu. Yeniden dene veya uygulamayı kapatıp destek al. Yedeğini kurtarmadan uygulamayı yeniden yükleme.'**
+  String get startupRecoveryBody;
+
+  /// No description provided for @retry.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeniden dene'**
+  String get retry;
+
+  /// No description provided for @adPrivacyOptions.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reklam gizlilik tercihleri'**
+  String get adPrivacyOptions;
+
+  /// No description provided for @policyAvailableEnglish.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu politika İngilizce olarak sunulmaktadır. Aşağıda özgün politika metni yer alır.'**
+  String get policyAvailableEnglish;
+
+  /// No description provided for @purchasePending.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ödeme onayı bekleniyor'**
+  String get purchasePending;
+
+  /// No description provided for @purchaseVerifying.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satın alım doğrulanıyor'**
+  String get purchaseVerifying;
+
+  /// No description provided for @purchaseFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satın alım doğrulanamadı. Yeniden dene veya satın alımları geri yükle.'**
+  String get purchaseFailed;
+
+  /// No description provided for @pillSchedule.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hap kullanım planı'**
+  String get pillSchedule;
+
+  /// No description provided for @pillContinuous.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kesintisiz (ara yok)'**
+  String get pillContinuous;
+
+  /// No description provided for @predictionRange.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tahmini tarih aralığı'**
+  String get predictionRange;
+
+  /// No description provided for @analyticsChoice.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kullanım ölçümü (isteğe bağlı)'**
+  String get analyticsChoice;
+
+  /// No description provided for @analyticsChoiceDescription.
+  ///
+  /// In tr, this message translates to:
+  /// **'İsteğe bağlıdır. Yalnızca bu cihazdaki uygulama eylemleri sayılır. Sağlık verileri, notlar, tarihler ve kimlik bilgileri dahil edilmez. Yapılandırılmış bir hizmet olmadan hiçbir şey gönderilmez.'**
+  String get analyticsChoiceDescription;
+
+  /// No description provided for @reportRange.
+  ///
+  /// In tr, this message translates to:
+  /// **'Rapor tarih aralığı'**
+  String get reportRange;
+
+  /// No description provided for @allHistory.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tüm geçmiş'**
+  String get allHistory;
+
+  /// No description provided for @pillActiveDaysTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktif hap günleri (1–120)'**
+  String get pillActiveDaysTitle;
+
+  /// No description provided for @pillBreakDaysTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ara veya plasebo günleri (0-14)'**
+  String get pillBreakDaysTitle;
+
+  /// No description provided for @pillPrescriptionNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yalnızca reçetenizdeki veya klinisyen talimatlarınızdaki programı kullanın. Bu ayar ilacın değiştirilmesini önermez.'**
+  String get pillPrescriptionNote;
 }
 
 class _AppLocalizationsDelegate

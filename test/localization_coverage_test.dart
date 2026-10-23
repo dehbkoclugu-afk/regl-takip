@@ -7,15 +7,19 @@ import 'package:regl_takip/core/utils/language_utils.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 
 void main() {
-  test('every locale has every message and preserves interpolation arguments', () {
+  test('every locale has every message and preserves interpolation arguments',
+      () {
     Map<String, dynamic> read(String code) => jsonDecode(
           File('lib/l10n/app_$code.arb').readAsStringSync(),
         ) as Map<String, dynamic>;
     final template = read('tr');
     final keys = template.keys.where((k) => !k.startsWith('@')).toSet();
-    List<String> arguments(String value) =>
-        RegExp(r'\{(\w+)\}').allMatches(value).map((m) => m[1]!).toList()
-          ..sort();
+    List<String> arguments(String value) => RegExp(r'\{(\w+)(?:\}|,)')
+        .allMatches(value)
+        .map((m) => m[1]!)
+        .toSet()
+        .toList()
+      ..sort();
     for (final code in supportedLanguageCodes) {
       final messages = read(code);
       expect(messages['@@locale'], code);
@@ -34,7 +38,8 @@ void main() {
         supportedLanguageCodes.toSet());
   });
 
-  test('locale resolution respects ordered preferences and English fallback', () {
+  test('locale resolution respects ordered preferences and English fallback',
+      () {
     expect(resolveAppLocale(null), const Locale('en'));
     expect(resolveAppLocale(const [Locale('ja')]), const Locale('en'));
     expect(resolveAppLocale(const [Locale('ja'), Locale('pt', 'BR')]),
@@ -45,7 +50,8 @@ void main() {
   });
 
   for (final code in ['pt', 'ar', 'hi', 'zh']) {
-    testWidgets('$code loads app and platform translations with correct direction',
+    testWidgets(
+        '$code loads app and platform translations with correct direction',
         (tester) async {
       late BuildContext localizedContext;
       await tester.pumpWidget(MaterialApp(
@@ -61,7 +67,8 @@ void main() {
       expect(Localizations.localeOf(localizedContext).languageCode, code);
       expect(Directionality.of(localizedContext),
           code == 'ar' ? TextDirection.rtl : TextDirection.ltr);
-      expect(MaterialLocalizations.of(localizedContext).okButtonLabel, isNotEmpty);
+      expect(
+          MaterialLocalizations.of(localizedContext).okButtonLabel, isNotEmpty);
       expect(tester.takeException(), isNull);
     });
   }

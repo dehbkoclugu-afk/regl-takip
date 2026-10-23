@@ -42,11 +42,12 @@
   "today": "आज",
   "cycleDay": "मासिक चक्र का दिन",
   "periodIn": "अगला मासिक धर्म",
-  "daysLeft": "{count} दिन बाकी",
+  "daysLeft": "{count, plural, other {{count} दिन बाकी}}",
   "@daysLeft": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -188,7 +189,8 @@
   "@severityLevel": {
     "placeholders": {
       "level": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -207,11 +209,12 @@
   "howAreYouFeeling": "आज आप कैसा महसूस कर रहे हैं?",
   "logMoodAndSymptoms": "अपना मूड और लक्षण लॉग करें",
   "addRecord": "रिकॉर्ड जोड़ें",
-  "nSymptoms": "{count} लक्षण",
+  "nSymptoms": "{count, plural, other {{count} लक्षण}}",
   "@nSymptoms": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -231,7 +234,8 @@
   "@nGlassesWater": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -240,19 +244,21 @@
   "dailyMeasurements": "दैनिक माप",
   "flow": "मासिक रक्तस्राव",
   "recorded": "रिकार्ड किया गया",
-  "nMedications": "{count} दवाएं",
+  "nMedications": "{count, plural, other {{count} दवाएं}}",
   "@nMedications": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
-  "nGlasses": "{count} गिलास",
+  "nGlasses": "{count, plural, other {{count} गिलास}}",
   "@nGlasses": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -277,7 +283,8 @@
   "@saveNSymptoms": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -285,7 +292,8 @@
   "@nSymptomsSaved": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -340,22 +348,24 @@
   "noMoodData": "अभी तक कोई मूड डेटा नहीं",
   "noCycleData": "अभी तक कोई चक्र डेटा नहीं",
   "ongoing": "जारी है",
-  "nDays": "{count} दिन",
+  "nDays": "{count, plural, other {{count} दिन}}",
   "@nDays": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
   "profileSection": "प्रोफाइल",
   "preferences": "प्राथमिकताएँ",
   "age": "उम्र",
-  "nYearsOld": "{count} वर्ष पुराना",
+  "nYearsOld": "{count, plural, other {{count} वर्ष पुराना}}",
   "@nYearsOld": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -377,10 +387,12 @@
   "@stepOfSteps": {
     "placeholders": {
       "current": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "total": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -412,7 +424,8 @@
   "@daysLater": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -428,24 +441,25 @@
   "@tooManyAttempts": {
     "placeholders": {
       "seconds": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
-  "coachMenstrual0": "रक्तस्राव के दिनों का मतलब है आयरन की हानि - लाल मांस, दाल और हरी पत्तेदार सब्जियाँ मदद करती हैं।",
-  "coachMenstrual1": "ऐंठन के लिए, गर्मी और हल्की स्ट्रेचिंग अधिकांश दर्द निवारक दवाओं की तरह ही काम कर सकती है।",
-  "coachMenstrual2": "आज कम ऊर्जा सामान्य है - टहलना एक गहन कसरत से बेहतर है।",
-  "coachFollicular0": "एस्ट्रोजन बढ़ रहा है: ऊर्जा और फोकस आमतौर पर इस चरण में चरम पर होता है। कठिन कार्यों को अभी शेड्यूल करें.",
-  "coachFollicular1": "इस चरण में त्वचा आमतौर पर सबसे अच्छी स्थिति में होती है - नए उत्पादों को आज़माने के लिए एक अच्छी खिड़की।",
-  "coachFollicular2": "आपका शरीर इस समय उच्च तीव्रता वाले व्यायाम के लिए सबसे अधिक तैयार है।",
-  "coachOvulation0": "आप उपजाऊ अवधि में हैं - अपनी योजना के अनुसार कार्य करें, चाहे गर्भनिरोधक हो या गर्भधारण।",
-  "coachOvulation1": "कुछ महिलाओं को ओव्यूलेशन के समय हल्का एक तरफा दर्द महसूस होता है (मिटेल्स्चमेर्ज़) - यह सामान्य है।",
-  "coachOvulation2": "इन दिनों सामाजिक ऊर्जा अधिक होती है - महत्वपूर्ण बातचीत के लिए अच्छा समय।",
-  "coachLuteal0": "पीएमएस के लक्षण इस चरण में शुरू हो सकते हैं - मैग्नीशियम और नियमित नींद उन्हें कम कर सकती है।",
-  "coachLuteal1": "चीनी की लालसा बढ़ सकती है: रक्त शर्करा को स्थिर रखने के लिए प्रोटीन-भारी स्नैक्स आज़माएँ।",
-  "coachLuteal2": "भावनात्मक संवेदनशीलता बढ़ सकती है - अपने आप पर संयम रखें, यह हार्मोनल और अस्थायी है।",
-  "ovulationConfirmed": "ओव्यूलेशन ✓",
-  "ovulationConfirmedInfo": "यह तारीख कोई अनुमान नहीं है: इसकी पुष्टि आपके बेसल शरीर के तापमान रीडिंग (3-ओवर-6 नियम) में वृद्धि से हुई थी।",
+  "coachMenstrual0": "आप रक्तस्राव, दर्द और आप कैसा महसूस करते हैं, इसे रिकॉर्ड कर सकते हैं। जिन लक्षणों से आप चिंतित हैं, उनके लिए चिकित्सीय सलाह लें।",
+  "coachMenstrual1": "यदि आरामदायक हो, तो कोमल हलचल या गर्माहट आपको बेहतर महसूस करने में मदद कर सकती है। व्यक्तिगत अनुभव अलग-अलग होते हैं।",
+  "coachMenstrual2": "आज आप कैसा महसूस करते हैं उसके अनुसार आराम या गतिविधि चुनें।",
+  "coachFollicular0": "लोगों और चक्रों के बीच ऊर्जा और लक्षण भिन्न-भिन्न होते हैं। पैटर्न पर ध्यान देने के लिए अपने स्वयं के रिकॉर्ड का उपयोग करें।",
+  "coachFollicular1": "चक्र के दौरान आपकी त्वचा बदल सकती है। एक निश्चित पैटर्न मानने के बजाय परिवर्तन रिकॉर्ड करें।",
+  "coachFollicular2": "अपने स्वास्थ्य और आराम के आधार पर व्यायाम चुनें, न कि अनुमानित चक्र चरण के आधार पर।",
+  "coachOvulation0": "उपजाऊ दिन अनुमानित हैं। यह ऐप कोई गर्भनिरोधक तरीका नहीं है.",
+  "coachOvulation1": "नए, गंभीर या लगातार दर्द के लिए ओव्यूलेशन को जिम्मेदार ठहराने के बजाय चिकित्सकीय सलाह लें।",
+  "coachOvulation2": "मनोदशा और सामाजिक ऊर्जा भिन्न-भिन्न होती है। एक पूर्वानुमानित चरण यह निर्धारित नहीं कर सकता कि आप कैसा महसूस करेंगे।",
+  "coachLuteal0": "नींद, तनाव और कई अन्य कारक लक्षणों को प्रभावित कर सकते हैं। आप जो नोटिस करते हैं उसे रिकॉर्ड करें.",
+  "coachLuteal1": "ऐसा भोजन और गतिविधि चुनें जो आपकी आवश्यकताओं के अनुरूप हो। एक पूर्वानुमानित चरण आहार निर्धारित नहीं करता है।",
+  "coachLuteal2": "मूड में बदलाव के कई संभावित कारण होते हैं। उन लक्षणों के लिए सहायता लें जो लगातार बने रहते हैं या आपको चिंतित करते हैं।",
+  "ovulationConfirmed": "संभव ओव्यूलेशन",
+  "ovulationConfirmedInfo": "तापमान पैटर्न या एलएच परीक्षण संभावित ओव्यूलेशन का सुझाव देता है। बीमारी, नींद और माप का समय परिणामों को प्रभावित करते हैं। यह नैदानिक ​​पुष्टि नहीं है और इसका उपयोग गर्भनिरोधक के लिए नहीं किया जाना चाहिए।",
   "premiumSection": "प्रीमियम",
   "removeAds": "विज्ञापन हटाएँ",
   "restorePurchases": "खरीदारी पुनर्स्थापित करें",
@@ -472,7 +486,8 @@
   "@pregnancyWeekLabel": {
     "placeholders": {
       "week": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -491,7 +506,8 @@
   "@pillDayLabel": {
     "placeholders": {
       "day": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -499,7 +515,8 @@
   "@pillBreakLabel": {
     "placeholders": {
       "day": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -509,7 +526,8 @@
   "@learnedCycleLength": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -525,7 +543,8 @@
         "type": "String"
       },
       "percent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -562,7 +581,8 @@
   "@restoreConfirmBody": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -581,7 +601,8 @@
   "@paywallTrialSubtitle": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -603,7 +624,8 @@
   "@trialBadge": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -618,7 +640,8 @@
   "@yearRingSummary": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -627,7 +650,8 @@
   "@lastCycleLength": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -635,7 +659,8 @@
   "@lastPeriodLength": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -643,7 +668,8 @@
   "@vsAverageMore": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -651,7 +677,8 @@
   "@vsAverageLess": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -663,7 +690,8 @@
         "type": "String"
       },
       "percent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -683,7 +711,8 @@
   "@notificationPeriodTimingInDays": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -718,7 +747,8 @@
   "@headlinePeriodInDays": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -726,7 +756,8 @@
   "@headlinePeriodDay": {
     "placeholders": {
       "day": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -741,7 +772,8 @@
   "@headlineDelay": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -749,7 +781,8 @@
   "@delayDays": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -759,7 +792,8 @@
   "@nCyclesRecorded": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -767,7 +801,8 @@
   "@nLogsRecorded": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -797,7 +832,8 @@
   "@leadNDaysBefore": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -808,13 +844,16 @@
   "@typicalRangeNote": {
     "placeholders": {
       "min": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "max": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "pmax": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -822,7 +861,8 @@
   "@lowConfidenceNote": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -830,7 +870,8 @@
   "@regularityInfoInsufficient": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -882,7 +923,8 @@
   "@pillBreakIn": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -890,7 +932,8 @@
   "@pillNewPackIn": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -899,7 +942,8 @@
   "@healthImportConfirm": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -907,7 +951,8 @@
   "@healthImportDone": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -915,7 +960,8 @@
   "@monthPeriodDays": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -923,7 +969,8 @@
   "@monthLoggedDays": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -932,7 +979,8 @@
   "@lockAfterMinutes": {
     "placeholders": {
       "minutes": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -953,10 +1001,12 @@
   "@storySymptomsMore": {
     "placeholders": {
       "recent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "previous": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -964,10 +1014,12 @@
   "@storySymptomsLess": {
     "placeholders": {
       "recent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "previous": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -1008,13 +1060,16 @@
   "@dataCoverageValue": {
     "placeholders": {
       "logged": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "total": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "percent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -1028,7 +1083,8 @@
   "@trackingStreak": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -1036,7 +1092,8 @@
   "@weeklyTracking": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -1070,10 +1127,12 @@
   "@sleepDurationShort": {
     "placeholders": {
       "hours": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "minutes": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -1102,5 +1161,23 @@
   "notificationFrequencyDetailed": "विस्तृत",
   "readOnlyHistoryNotice": "आप अपनी पिछली प्रविष्टियाँ देख सकते हैं; नई दैनिक प्रविष्टियों और परिवर्तनों के लिए प्रीमियम की आवश्यकता होती है।",
   "screenProtectionTitle": "स्क्रीन सुरक्षा",
-  "screenProtectionDescription": "स्क्रीनशॉट और हाल के ऐप्स में पूर्वावलोकन को रोकती है।"
+  "screenProtectionDescription": "स्क्रीनशॉट और हाल के ऐप्स में पूर्वावलोकन को रोकती है।",
+  "predictionUncertain": "चक्र चरण अनिश्चित",
+  "startupRecoveryBody": "आपका डेटा सुरक्षित रूप से नहीं खोला जा सका. इसे संरक्षित कर लिया गया है. पुनः प्रयास करें, या ऐप बंद करें और सहायता से संपर्क करें। अपना बैकअप पुनर्प्राप्त करने से पहले पुनः इंस्टॉल न करें.",
+  "retry": "पुनः प्रयास करें",
+  "adPrivacyOptions": "विज्ञापन गोपनीयता विकल्प",
+  "policyAvailableEnglish": "यह नीति अंग्रेजी में उपलब्ध है. मूल नीति पाठ इस प्रकार है।",
+  "purchasePending": "भुगतान की पुष्टि की प्रतीक्षा की जा रही है",
+  "purchaseVerifying": "आपकी खरीदारी का सत्यापन किया जा रहा है",
+  "purchaseFailed": "आपकी खरीदारी सत्यापित नहीं की जा सकी. कृपया पुनः प्रयास करें या खरीदारी पुनर्स्थापित करें।",
+  "pillSchedule": "गोली अनुसूची",
+  "pillContinuous": "निरंतर (कोई विराम नहीं)",
+  "predictionRange": "अनुमानित तिथि सीमा",
+  "analyticsChoice": "उपयोग मापन (वैकल्पिक)",
+  "analyticsChoiceDescription": "वैकल्पिक. इस डिवाइस पर केवल ऐप क्रियाओं की गणना करता है। स्वास्थ्य डेटा, नोट्स, दिनांक और पहचान को बाहर रखा गया है। कॉन्फ़िगर की गई सेवा के बिना कुछ भी अपलोड नहीं किया जाता है.",
+  "reportRange": "रिपोर्ट दिनांक सीमा",
+  "allHistory": "सारा इतिहास",
+  "pillActiveDaysTitle": "सक्रिय गोली दिन (1-120)",
+  "pillBreakDaysTitle": "ब्रेक या प्लेसीबो दिन (0-14)",
+  "pillPrescriptionNote": "अपने नुस्खे या चिकित्सक के निर्देशों में केवल शेड्यूल का उपयोग करें। यह सेटिंग दवा बदलने की अनुशंसा नहीं करती है।"
 }

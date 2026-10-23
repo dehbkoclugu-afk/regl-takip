@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'enums.dart';
+import '../core/utils/calendar_days.dart';
 
 part 'period_record.g.dart';
 
@@ -35,14 +36,16 @@ class PeriodRecord extends HiveObject {
         id: json['id'] as String,
         startDate: DateTime.parse(json['startDate'] as String),
         endDate: json['endDate'] != null
-            ? DateTime.tryParse(json['endDate'] as String)
+            ? DateTime.parse(json['endDate'] as String)
             : null,
         notes: json['notes'] as String?,
       );
 
   int get durationDays {
-    if (endDate == null) return DateTime.now().difference(startDate).inDays + 1;
-    return endDate!.difference(startDate).inDays + 1;
+    if (endDate == null) {
+      return CalendarDays.between(DateTime.now(), startDate) + 1;
+    }
+    return CalendarDays.between(endDate!, startDate) + 1;
   }
 
   bool get isOngoing => endDate == null;
@@ -129,8 +132,8 @@ class SexualActivityEntry {
 
   factory SexualActivityEntry.fromJson(Map<String, dynamic> json) =>
       SexualActivityEntry(
-        protectionMethod: enumFromName(ProtectionMethod.values,
-                json['protectionMethod'] as String?) ??
+        protectionMethod: enumFromName(
+                ProtectionMethod.values, json['protectionMethod'] as String?) ??
             ProtectionMethod.none,
         orgasm: json['orgasm'] as bool? ?? false,
         note: json['note'] as String?,

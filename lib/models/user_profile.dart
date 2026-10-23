@@ -139,6 +139,11 @@ class UserProfile extends HiveObject {
   @HiveField(31, defaultValue: 3)
   int cycleNotificationFrequency;
 
+  @HiveField(32, defaultValue: 21)
+  int pillActiveDays;
+  @HiveField(33, defaultValue: 7)
+  int pillBreakDays;
+
   /// Döngü hatırlatmaları için etkin saat (özel saat yoksa genel saat).
   int get effectiveCycleHour => cycleReminderHour ?? reminderHour;
   int get effectiveCycleMinute => cycleReminderMinute ?? reminderMinute;
@@ -182,6 +187,8 @@ class UserProfile extends HiveObject {
     this.medicationPlan = const [],
     this.medicationPlanMigrated = true,
     this.cycleNotificationFrequency = 3,
+    this.pillActiveDays = 21,
+    this.pillBreakDays = 7,
   });
 
   /// Yeni bir kopya döndürür; verilen alanlar güncellenir.
@@ -219,8 +226,12 @@ class UserProfile extends HiveObject {
     List<MedicationEntry>? medicationPlan,
     bool? medicationPlanMigrated,
     int? cycleNotificationFrequency,
+    int? pillActiveDays,
+    int? pillBreakDays,
   }) {
     return UserProfile(
+      pillActiveDays: pillActiveDays ?? this.pillActiveDays,
+      pillBreakDays: pillBreakDays ?? this.pillBreakDays,
       name: name ?? this.name,
       birthDate: birthDate ?? this.birthDate,
       averageCycleLength: averageCycleLength ?? this.averageCycleLength,
@@ -266,93 +277,97 @@ class UserProfile extends HiveObject {
   }
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'birthDate': birthDate?.toIso8601String(),
-    'averageCycleLength': averageCycleLength,
-    'averagePeriodLength': averagePeriodLength,
-    'pinEnabled': pinEnabled,
-    'biometricEnabled': biometricEnabled,
-    'onboardingCompleted': onboardingCompleted,
-    'language': language,
-    'lastPeriodStart': lastPeriodStart?.toIso8601String(),
-    'periodReminderEnabled': periodReminderEnabled,
-    'ovulationReminderEnabled': ovulationReminderEnabled,
-    'medicationReminderEnabled': medicationReminderEnabled,
-    'reminderHour': reminderHour,
-    'reminderMinute': reminderMinute,
-    'darkModeEnabled': darkModeEnabled,
-    'waterGoal': waterGoal,
-    'smartPredictionEnabled': smartPredictionEnabled,
-    'trackingMode': trackingMode.name,
-    'pregnancyStartDate': pregnancyStartDate?.toIso8601String(),
-    'pillPackStartDate': pillPackStartDate?.toIso8601String(),
-    'themePreference': themePreference,
-    'medicationReminderHour': medicationReminderHour,
-    'medicationReminderMinute': medicationReminderMinute,
-    'cycleReminderHour': cycleReminderHour,
-    'cycleReminderMinute': cycleReminderMinute,
-    'periodReminderLeadDays': periodReminderLeadDays,
-    'quietNotifications': quietNotifications,
-    'usePounds': usePounds,
-    'useFahrenheit': useFahrenheit,
-    'medicationPlan': medicationPlan.map((m) => m.toJson()).toList(),
-    'medicationPlanMigrated': medicationPlanMigrated,
-    'cycleNotificationFrequency': cycleNotificationFrequency,
-  };
+        'pillActiveDays': pillActiveDays,
+        'pillBreakDays': pillBreakDays,
+        'name': name,
+        'birthDate': birthDate?.toIso8601String(),
+        'averageCycleLength': averageCycleLength,
+        'averagePeriodLength': averagePeriodLength,
+        'pinEnabled': pinEnabled,
+        'biometricEnabled': biometricEnabled,
+        'onboardingCompleted': onboardingCompleted,
+        'language': language,
+        'lastPeriodStart': lastPeriodStart?.toIso8601String(),
+        'periodReminderEnabled': periodReminderEnabled,
+        'ovulationReminderEnabled': ovulationReminderEnabled,
+        'medicationReminderEnabled': medicationReminderEnabled,
+        'reminderHour': reminderHour,
+        'reminderMinute': reminderMinute,
+        'darkModeEnabled': darkModeEnabled,
+        'waterGoal': waterGoal,
+        'smartPredictionEnabled': smartPredictionEnabled,
+        'trackingMode': trackingMode.name,
+        'pregnancyStartDate': pregnancyStartDate?.toIso8601String(),
+        'pillPackStartDate': pillPackStartDate?.toIso8601String(),
+        'themePreference': themePreference,
+        'medicationReminderHour': medicationReminderHour,
+        'medicationReminderMinute': medicationReminderMinute,
+        'cycleReminderHour': cycleReminderHour,
+        'cycleReminderMinute': cycleReminderMinute,
+        'periodReminderLeadDays': periodReminderLeadDays,
+        'quietNotifications': quietNotifications,
+        'usePounds': usePounds,
+        'useFahrenheit': useFahrenheit,
+        'medicationPlan': medicationPlan.map((m) => m.toJson()).toList(),
+        'medicationPlanMigrated': medicationPlanMigrated,
+        'cycleNotificationFrequency': cycleNotificationFrequency,
+      };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
-    name: json['name'] as String? ?? '',
-    birthDate: json['birthDate'] != null
-        ? DateTime.tryParse(json['birthDate'] as String)
-        : null,
-    averageCycleLength: json['averageCycleLength'] as int? ?? 28,
-    averagePeriodLength: json['averagePeriodLength'] as int? ?? 5,
-    pinEnabled: json['pinEnabled'] as bool? ?? false,
-    biometricEnabled: json['biometricEnabled'] as bool? ?? false,
-    onboardingCompleted: json['onboardingCompleted'] as bool? ?? false,
-    language: json['language'] as String? ?? 'tr',
-    lastPeriodStart: json['lastPeriodStart'] != null
-        ? DateTime.tryParse(json['lastPeriodStart'] as String)
-        : null,
-    periodReminderEnabled: json['periodReminderEnabled'] as bool? ?? true,
-    ovulationReminderEnabled: json['ovulationReminderEnabled'] as bool? ?? true,
-    medicationReminderEnabled:
-        json['medicationReminderEnabled'] as bool? ?? false,
-    reminderHour: json['reminderHour'] as int? ?? 9,
-    reminderMinute: json['reminderMinute'] as int? ?? 0,
-    darkModeEnabled: json['darkModeEnabled'] as bool? ?? false,
-    waterGoal: json['waterGoal'] as int? ?? 8,
-    smartPredictionEnabled: json['smartPredictionEnabled'] as bool? ?? true,
-    trackingMode:
-        enumFromName(TrackingMode.values, json['trackingMode'] as String?) ??
-        TrackingMode.period,
-    pregnancyStartDate: json['pregnancyStartDate'] != null
-        ? DateTime.tryParse(json['pregnancyStartDate'] as String)
-        : null,
-    pillPackStartDate: json['pillPackStartDate'] != null
-        ? DateTime.tryParse(json['pillPackStartDate'] as String)
-        : null,
-    // Eski yedekte alan yok: kullanıcının o günkü seçimi korunur
-    themePreference:
-        json['themePreference'] as String? ??
-        ((json['darkModeEnabled'] as bool? ?? false) ? 'dark' : 'light'),
-    // Eski yedekte yok: null = genel saat kullanılır
-    medicationReminderHour: json['medicationReminderHour'] as int?,
-    medicationReminderMinute: json['medicationReminderMinute'] as int?,
-    cycleReminderHour: json['cycleReminderHour'] as int?,
-    cycleReminderMinute: json['cycleReminderMinute'] as int?,
-    periodReminderLeadDays: json['periodReminderLeadDays'] as int? ?? 1,
-    quietNotifications: json['quietNotifications'] as bool? ?? false,
-    usePounds: json['usePounds'] as bool? ?? false,
-    useFahrenheit: json['useFahrenheit'] as bool? ?? false,
-    medicationPlan: (json['medicationPlan'] as List<dynamic>? ?? [])
-        .map((m) => MedicationEntry.fromJson(m as Map<String, dynamic>))
-        .toList(),
-    medicationPlanMigrated:
-        json['medicationPlanMigrated'] as bool? ?? false,
-    cycleNotificationFrequency:
-        (json['cycleNotificationFrequency'] as int? ?? 3).clamp(1, 3),
-  );
+        pillActiveDays: json['pillActiveDays'] as int? ?? 21,
+        pillBreakDays: json['pillBreakDays'] as int? ?? 7,
+        name: json['name'] as String? ?? '',
+        birthDate: json['birthDate'] != null
+            ? DateTime.tryParse(json['birthDate'] as String)
+            : null,
+        averageCycleLength: json['averageCycleLength'] as int? ?? 28,
+        averagePeriodLength: json['averagePeriodLength'] as int? ?? 5,
+        pinEnabled: json['pinEnabled'] as bool? ?? false,
+        biometricEnabled: json['biometricEnabled'] as bool? ?? false,
+        onboardingCompleted: json['onboardingCompleted'] as bool? ?? false,
+        language: json['language'] as String? ?? 'tr',
+        lastPeriodStart: json['lastPeriodStart'] != null
+            ? DateTime.tryParse(json['lastPeriodStart'] as String)
+            : null,
+        periodReminderEnabled: json['periodReminderEnabled'] as bool? ?? true,
+        ovulationReminderEnabled:
+            json['ovulationReminderEnabled'] as bool? ?? true,
+        medicationReminderEnabled:
+            json['medicationReminderEnabled'] as bool? ?? false,
+        reminderHour: json['reminderHour'] as int? ?? 9,
+        reminderMinute: json['reminderMinute'] as int? ?? 0,
+        darkModeEnabled: json['darkModeEnabled'] as bool? ?? false,
+        waterGoal: json['waterGoal'] as int? ?? 8,
+        smartPredictionEnabled: json['smartPredictionEnabled'] as bool? ?? true,
+        trackingMode: enumFromName(
+                TrackingMode.values, json['trackingMode'] as String?) ??
+            TrackingMode.period,
+        pregnancyStartDate: json['pregnancyStartDate'] != null
+            ? DateTime.tryParse(json['pregnancyStartDate'] as String)
+            : null,
+        pillPackStartDate: json['pillPackStartDate'] != null
+            ? DateTime.tryParse(json['pillPackStartDate'] as String)
+            : null,
+        // Eski yedekte alan yok: kullanıcının o günkü seçimi korunur
+        themePreference: json['themePreference'] as String? ??
+            ((json['darkModeEnabled'] as bool? ?? false) ? 'dark' : 'light'),
+        // Eski yedekte yok: null = genel saat kullanılır
+        medicationReminderHour: json['medicationReminderHour'] as int?,
+        medicationReminderMinute: json['medicationReminderMinute'] as int?,
+        cycleReminderHour: json['cycleReminderHour'] as int?,
+        cycleReminderMinute: json['cycleReminderMinute'] as int?,
+        periodReminderLeadDays: json['periodReminderLeadDays'] as int? ?? 1,
+        quietNotifications: json['quietNotifications'] as bool? ?? false,
+        usePounds: json['usePounds'] as bool? ?? false,
+        useFahrenheit: json['useFahrenheit'] as bool? ?? false,
+        medicationPlan: (json['medicationPlan'] as List<dynamic>? ?? [])
+            .map((m) => MedicationEntry.fromJson(m as Map<String, dynamic>))
+            .toList(),
+        medicationPlanMigrated:
+            json['medicationPlanMigrated'] as bool? ?? false,
+        cycleNotificationFrequency:
+            (json['cycleNotificationFrequency'] as int? ?? 3).clamp(1, 3),
+      );
 
   int? get age {
     if (birthDate == null) return null;

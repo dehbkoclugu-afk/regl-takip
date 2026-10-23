@@ -136,7 +136,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String daysLeft(int count) {
-    return '还剩 $count 天';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '还剩 $countString 天',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -543,7 +552,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String severityLevel(int level) {
-    return '严重性 $level/5';
+    final intl.NumberFormat levelNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String levelString = levelNumberFormat.format(level);
+
+    return '严重性 $levelString/5';
   }
 
   @override
@@ -574,7 +587,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String nSymptoms(int count) {
-    return '$count 症状';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString 症状',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -596,7 +618,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String nGlassesWater(int count) {
-    return '$count 杯水';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 杯水';
   }
 
   @override
@@ -616,12 +642,30 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String nMedications(int count) {
-    return '$count 药物';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString 药物',
+    );
+    return '$_temp0';
   }
 
   @override
   String nGlasses(int count) {
-    return '$count 杯';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString 杯',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -677,12 +721,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String saveNSymptoms(int count) {
-    return '保存（$count症状）';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '保存（$countString症状）';
   }
 
   @override
   String nSymptomsSaved(int count) {
-    return '$count 症状已保存';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 症状已保存';
   }
 
   @override
@@ -840,7 +892,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String nDays(int count) {
-    return '$count 天';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString 天',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -854,7 +915,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String nYearsOld(int count) {
-    return '$count岁';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString岁',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -901,7 +971,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String stepOfSteps(int current, int total) {
-    return '$total 的步骤 $current';
+    final intl.NumberFormat currentNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String currentString = currentNumberFormat.format(current);
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    return '$totalString 的步骤 $currentString';
   }
 
   @override
@@ -959,7 +1036,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String daysLater(int count) {
-    return '在 $count 天内';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '在 $countString 天内';
   }
 
   @override
@@ -988,51 +1069,55 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String tooManyAttempts(int seconds) {
-    return '错误的尝试太多了。等待 $seconds 秒';
+    final intl.NumberFormat secondsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String secondsString = secondsNumberFormat.format(seconds);
+
+    return '错误的尝试太多了。等待 $secondsString 秒';
   }
 
   @override
-  String get coachMenstrual0 => '出血天意味着铁质流失——红肉、扁豆和深色绿叶蔬菜有帮助。';
+  String get coachMenstrual0 => '您可以记录出血、疼痛以及您的感受。针对您担心的症状寻求医疗建议。';
 
   @override
-  String get coachMenstrual1 => '对于痉挛，热敷和温和的伸展运动与大多数止痛药一样有效。';
+  String get coachMenstrual1 => '如果舒服的话，轻柔的动作或温暖可能会帮助您感觉更好。个人经历各有不同。';
 
   @override
-  String get coachMenstrual2 => '如今，精力不足是很正常的事情——散步胜过剧烈的锻炼。';
+  String get coachMenstrual2 => '根据您今天的感受选择休息或活动。';
 
   @override
-  String get coachFollicular0 => '雌激素正在上升：精力和注意力通常在这个阶段达到顶峰。现在安排艰巨的任务。';
+  String get coachFollicular0 => '能量和症状因人和周期而异。使用您自己的记录来注意模式。';
 
   @override
-  String get coachFollicular1 => '皮肤通常在这个阶段处于最佳状态——这是尝试新产品的好时机。';
+  String get coachFollicular1 => '您的皮肤可能会在周期中发生变化。记录变化而不是假设固定模式。';
 
   @override
-  String get coachFollicular2 => '您的身体现在已经做好了进行高强度锻炼的准备。';
+  String get coachFollicular2 => '根据您的健康和舒适度而不是预测的周期阶段来选择运动。';
 
   @override
-  String get coachOvulation0 => '您正处于受孕期——按照您的计划行事，无论是避孕还是受孕。';
+  String get coachOvulation0 => '受孕日是估计值。这个应用程序不是避孕方法。';
 
   @override
-  String get coachOvulation1 => '有些女性在排卵时会感到轻微的一侧疼痛 (mittelschmerz) — 这是正常现象。';
+  String get coachOvulation1 => '如果出现新的、严重的或持续性的疼痛，请寻求医疗建议，而不是将其归因于排卵。';
 
   @override
-  String get coachOvulation2 => '这些天社交能量往往很高——这是进行重要对话的好时机。';
+  String get coachOvulation2 => '情绪和社交能量各不相同。预测的阶段无法确定您的感受。';
 
   @override
-  String get coachLuteal0 => '经前综合症症状可能会在这个阶段开始——镁和规律的睡眠可以缓解这些症状。';
+  String get coachLuteal0 => '睡眠、压力和许多其他因素都会影响症状。记录你注意到的事情。';
 
   @override
-  String get coachLuteal1 => '对糖的渴望可能会激增：尝试富含蛋白质的零食来保持血糖稳定。';
+  String get coachLuteal1 => '选择适合您需求的膳食和活动。预测阶段并不规定饮食。';
 
   @override
-  String get coachLuteal2 => '情绪敏感度可能会上升——对自己放松点，这是荷尔蒙的影响，也是暂时的。';
+  String get coachLuteal2 => '情绪变化有很多可能的原因。针对持续存在或令您担心的症状寻求支持。';
 
   @override
-  String get ovulationConfirmed => '排卵 ✓';
+  String get ovulationConfirmed => '可能排卵';
 
   @override
   String get ovulationConfirmedInfo =>
-      '该日期不是估计值：它是根据您的基础体温读数的升高而确认的（3-over-6 规则）。';
+      '体温模式或 LH 测试表明可能排卵。疾病、睡眠和测量时间都会影响结果。这不是临床证实，不得用于避孕。';
 
   @override
   String get premiumSection => '高级版';
@@ -1102,7 +1187,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String pregnancyWeekLabel(int week) {
-    return '周 $week';
+    final intl.NumberFormat weekNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String weekString = weekNumberFormat.format(week);
+
+    return '周 $weekString';
   }
 
   @override
@@ -1140,12 +1229,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String pillDayLabel(int day) {
-    return '丸日 $day/21';
+    final intl.NumberFormat dayNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String dayString = dayNumberFormat.format(day);
+
+    return '丸日 $dayString/21';
   }
 
   @override
   String pillBreakLabel(int day) {
-    return '休息周•日 $day';
+    final intl.NumberFormat dayNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String dayString = dayNumberFormat.format(day);
+
+    return '休息周•日 $dayString';
   }
 
   @override
@@ -1156,7 +1253,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String learnedCycleLength(int days) {
-    return '学到：$days天';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '学到：$daysString天';
   }
 
   @override
@@ -1167,7 +1268,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String insightLine(String symptom, String phase, int percent) {
-    return '$symptom主要发生在$phase阶段($percent%)';
+    final intl.NumberFormat percentNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String percentString = percentNumberFormat.format(percent);
+
+    return '$symptom主要发生在$phase阶段($percentString%)';
   }
 
   @override
@@ -1261,7 +1366,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String restoreConfirmBody(int count) {
-    return '所有当前数据将被删除，并且备份中的 $count 记录将被恢复。此操作无法撤消。';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '所有当前数据将被删除，并且备份中的 $countString 记录将被恢复。此操作无法撤消。';
   }
 
   @override
@@ -1299,7 +1408,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String paywallTrialSubtitle(int days) {
-    return '您的试用期已生效：还剩 $days 天。高级版可让一切解锁。';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '您的试用期已生效：还剩 $daysString 天。高级版可让一切解锁。';
   }
 
   @override
@@ -1346,7 +1459,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String trialBadge(int days) {
-    return '试用：$days 还剩几天';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '试用：$daysString 还剩几天';
   }
 
   @override
@@ -1374,7 +1491,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String yearRingSummary(int count) {
-    return '过去 12 个月：$count 周期';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '过去 12 个月：$countString 周期';
   }
 
   @override
@@ -1382,22 +1503,38 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String lastCycleLength(int days) {
-    return '最后一个周期：$days 天';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '最后一个周期：$daysString 天';
   }
 
   @override
   String lastPeriodLength(int days) {
-    return '末期：$days 天';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '末期：$daysString 天';
   }
 
   @override
   String vsAverageMore(int days) {
-    return '$days 天数比您的平均天数长';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '$daysString 天数比您的平均天数长';
   }
 
   @override
   String vsAverageLess(int days) {
-    return '$days 天数比您的平均天数短';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '$daysString 天数比您的平均天数短';
   }
 
   @override
@@ -1405,7 +1542,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String coachPersonalInsight(String symptom, int percent) {
-    return '根据您的日志，此阶段最常见的是：$symptom ($percent%)';
+    final intl.NumberFormat percentNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String percentString = percentNumberFormat.format(percent);
+
+    return '根据您的日志，此阶段最常见的是：$symptom ($percentString%)';
   }
 
   @override
@@ -1427,7 +1568,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String notificationPeriodTimingInDays(int days) {
-    return '您的月经可能会在 $days 天后开始。';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '您的月经可能会在 $daysString 天后开始。';
   }
 
   @override
@@ -1513,12 +1658,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String headlinePeriodInDays(int days) {
-    return '您的经期（$days 天）';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '您的经期（$daysString 天）';
   }
 
   @override
   String headlinePeriodDay(int day) {
-    return '您的月经日 $day';
+    final intl.NumberFormat dayNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String dayString = dayNumberFormat.format(day);
+
+    return '您的月经日 $dayString';
   }
 
   @override
@@ -1544,12 +1697,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String headlineDelay(int days) {
-    return '您的月经推迟了 $days 天';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '您的月经推迟了 $daysString 天';
   }
 
   @override
   String delayDays(int days) {
-    return '$days 晚了几天';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '$daysString 晚了几天';
   }
 
   @override
@@ -1560,12 +1721,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String nCyclesRecorded(int count) {
-    return '记录 $count 循环';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '记录 $countString 循环';
   }
 
   @override
   String nLogsRecorded(int count) {
-    return '$count每日日志';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString每日日志';
   }
 
   @override
@@ -1638,7 +1807,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String leadNDaysBefore(int days) {
-    return '$days 天前';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '$daysString 天前';
   }
 
   @override
@@ -1654,17 +1827,35 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String typicalRangeNote(int min, int max, int pmax) {
-    return '常见参考范围：月经周期为 $min–$max 天，经期最多 $pmax 天。这不是诊断标准。';
+    final intl.NumberFormat minNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minString = minNumberFormat.format(min);
+    final intl.NumberFormat maxNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String maxString = maxNumberFormat.format(max);
+    final intl.NumberFormat pmaxNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String pmaxString = pmaxNumberFormat.format(pmax);
+
+    return '常见参考范围：月经周期为 $minString–$maxString 天，经期最多 $pmaxString 天。这不是诊断标准。';
   }
 
   @override
   String lowConfidenceNote(int count) {
-    return '这些平均值仅来自 $count 循环；当您记录更多时，它们会变得锐利。';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '这些平均值仅来自 $countString 循环；当您记录更多时，它们会变得锐利。';
   }
 
   @override
   String regularityInfoInsufficient(int count) {
-    return '在规律性产生任何意义之前，至少需要 $count 循环间隙。对较少的判断会产生误导。';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '在规律性产生任何意义之前，至少需要 $countString 循环间隙。对较少的判断会产生误导。';
   }
 
   @override
@@ -1744,12 +1935,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String pillBreakIn(int days) {
-    return '休息时间从 $days 天开始';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '休息时间从 $daysString 天开始';
   }
 
   @override
   String pillNewPackIn(int days) {
-    return '$days天的新包';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '$daysString天的新包';
   }
 
   @override
@@ -1757,22 +1956,38 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String healthImportConfirm(int count) {
-    return '在 Health Connect 中发现 $count 周期跨度不在应用程序中。将它们添加到您的记录中？您现有的记录未受影响。';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '在 Health Connect 中发现 $countString 周期跨度不在应用程序中。将它们添加到您的记录中？您现有的记录未受影响。';
   }
 
   @override
   String healthImportDone(int count) {
-    return '$count时期进口';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString时期进口';
   }
 
   @override
   String monthPeriodDays(int count) {
-    return '$count 期间天数';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 期间天数';
   }
 
   @override
   String monthLoggedDays(int count) {
-    return '$count 记录天数';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 记录天数';
   }
 
   @override
@@ -1781,7 +1996,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String lockAfterMinutes(int minutes) {
-    return '$minutes 分钟后';
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$minutesString 分钟后';
   }
 
   @override
@@ -1825,12 +2044,26 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String storySymptomsMore(int recent, int previous) {
-    return '过去 30 天比之前的时期更加艰难（$recent 条目 vs $previous）。';
+    final intl.NumberFormat recentNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String recentString = recentNumberFormat.format(recent);
+    final intl.NumberFormat previousNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String previousString = previousNumberFormat.format(previous);
+
+    return '过去 30 天比之前的时期更加艰难（$recentString 条目 vs $previousString）。';
   }
 
   @override
   String storySymptomsLess(int recent, int previous) {
-    return '过去 30 天比之前的时期更容易（$recent 条目 vs $previous）。';
+    final intl.NumberFormat recentNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String recentString = recentNumberFormat.format(recent);
+    final intl.NumberFormat previousNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String previousString = previousNumberFormat.format(previous);
+
+    return '过去 30 天比之前的时期更容易（$recentString 条目 vs $previousString）。';
   }
 
   @override
@@ -1859,7 +2092,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String dataCoverageValue(int logged, int total, int percent) {
-    return '$total 天数中 $logged 的数据 ($percent%)';
+    final intl.NumberFormat loggedNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String loggedString = loggedNumberFormat.format(logged);
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+    final intl.NumberFormat percentNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String percentString = percentNumberFormat.format(percent);
+
+    return '$totalString 天数中 $loggedString 的数据 ($percentString%)';
   }
 
   @override
@@ -1882,12 +2125,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String trackingStreak(int count) {
-    return '连续记录 $count 天';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '连续记录 $countString 天';
   }
 
   @override
   String weeklyTracking(int count) {
-    return '$count/7 天记录';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString/7 天记录';
   }
 
   @override
@@ -1971,7 +2222,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String sleepDurationShort(int hours, int minutes) {
-    return '$hours小时$minutes分钟';
+    final intl.NumberFormat hoursNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String hoursString = hoursNumberFormat.format(hours);
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$hoursString小时$minutesString分钟';
   }
 
   @override
@@ -2051,4 +2309,60 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get screenProtectionDescription => '阻止截屏和最近使用的应用预览。';
+
+  @override
+  String get predictionUncertain => '周期阶段不确定';
+
+  @override
+  String get startupRecoveryBody =>
+      '无法安全打开您的数据。它已被保存下来。重试，或关闭应用程序并联系支持人员。在恢复备份之前请勿重新安装。';
+
+  @override
+  String get retry => '重试';
+
+  @override
+  String get adPrivacyOptions => '广告隐私选择';
+
+  @override
+  String get policyAvailableEnglish => '该政策有英文版本。原始政策文本如下。';
+
+  @override
+  String get purchasePending => '等待付款确认';
+
+  @override
+  String get purchaseVerifying => '验证您的购买';
+
+  @override
+  String get purchaseFailed => '无法验证您的购买。请重试或恢复购买。';
+
+  @override
+  String get pillSchedule => '服药时间表';
+
+  @override
+  String get pillContinuous => '连续（无间断）';
+
+  @override
+  String get predictionRange => '预计日期范围';
+
+  @override
+  String get analyticsChoice => '使用情况统计（可选）';
+
+  @override
+  String get analyticsChoiceDescription =>
+      '可选。仅计算此设备上的应用操作。健康数据、注释、日期和身份不包括在内。如果没有配置服务，则不会上传任何内容。';
+
+  @override
+  String get reportRange => '报告日期范围';
+
+  @override
+  String get allHistory => '所有历史';
+
+  @override
+  String get pillActiveDaysTitle => '有效服药天数 (1–120)';
+
+  @override
+  String get pillBreakDaysTitle => '休息日或安慰剂日 (0–14)';
+
+  @override
+  String get pillPrescriptionNote => '仅使用您的处方或临床医生说明中的时间表。此设置不建议更换药物。';
 }

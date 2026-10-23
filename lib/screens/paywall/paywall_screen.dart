@@ -7,6 +7,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/adaptive_layout.dart';
 import '../../providers/providers.dart';
 import '../../services/premium_service.dart';
+import '../../services/usage_metrics.dart';
 
 /// Premium teklif ekranı. Deneme sürerken üst bilgi kalan günü söyler;
 /// deneme bittiyse ücretsiz katmanın kapsamını açıklar. Fiyatlar yalnız
@@ -21,6 +22,22 @@ class PaywallScreen extends ConsumerStatefulWidget {
 
 class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   bool _busy = false;
+  @override
+  void initState() {
+    super.initState();
+    UsageMetrics.record(UsageEvent.paywallView);
+    PremiumService().purchaseState.addListener(_onPurchaseState);
+  }
+
+  void _onPurchaseState() {
+    if (mounted) setState(() => _busy = PremiumService().purchaseBusy);
+  }
+
+  @override
+  void dispose() {
+    PremiumService().purchaseState.removeListener(_onPurchaseState);
+    super.dispose();
+  }
 
   Future<void> _buy(Future<bool> Function() action) async {
     if (_busy) return;
@@ -37,7 +54,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       // Sonuç purchaseStream'den gelir; isPremiumProvider köprüyle döner —
       // build'deki dinleyici ekranı kendiliğinden kapatır
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted && !PremiumService().purchaseBusy) {
+        setState(() => _busy = false);
+      }
     }
   }
 
@@ -53,8 +72,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       final restored = await PremiumService().restore();
       if (!mounted) return;
       if (!restored) {
-        messenger.showSnackBar(
-            SnackBar(content: Text(l10n.noPurchasesToRestore)));
+        messenger
+            .showSnackBar(SnackBar(content: Text(l10n.noPurchasesToRestore)));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -98,6 +117,12 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              if (service.purchaseState.value == PurchaseFlowState.pending)
+                Text(l10n.purchasePending, textAlign: TextAlign.center),
+              if (service.purchaseState.value == PurchaseFlowState.verifying)
+                Text(l10n.purchaseVerifying, textAlign: TextAlign.center),
+              if (service.purchaseState.value == PurchaseFlowState.error)
+                Text(l10n.purchaseFailed, textAlign: TextAlign.center),
               Text(
                 l10n.paywallTitle,
                 textAlign: TextAlign.center,
@@ -135,8 +160,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                         Expanded(
                           child: Text(f.$2,
                               style: TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.tp(context))),
+                                  fontSize: 14, color: AppColors.tp(context))),
                         ),
                       ],
                     ),
@@ -158,18 +182,15 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                       monthly != null &&
                       monthly.rawPrice > 0) {
                     final monthlyEquivalent = yearly.rawPrice / 12;
-                    final saving = ((1 -
-                                yearly.rawPrice /
-                                    (monthly.rawPrice * 12)) *
-                            100)
-                        .round()
-                        .clamp(0, 99);
+                    final saving =
+                        ((1 - yearly.rawPrice / (monthly.rawPrice * 12)) * 100)
+                            .round()
+                            .clamp(0, 99);
                     final formatted = NumberFormat.simpleCurrency(
                       locale: Localizations.localeOf(context).toString(),
                       name: yearly.currencyCode,
                     ).format(monthlyEquivalent);
-                    yearlyComparison =
-                        '$formatted${l10n.perMonth} · −$saving%';
+                    yearlyComparison = '$formatted${l10n.perMonth} · −$saving%';
                   }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -351,8 +372,7 @@ class _PlanCard extends StatelessWidget {
                 )),
             if (badge != null)
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -400,21 +420,17 @@ class _PlanCard extends StatelessWidget {
       enabled: ready && !busy,
       label: ready ? '$title, $price$suffix' : title,
       child: Material(
-        color: highlighted
-            ? AppColors.primaryStrong
-            : AppColors.sf(context),
+        color: highlighted ? AppColors.primaryStrong : AppColors.sf(context),
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: (busy || !ready) ? null : onTap,
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              border: highlighted
-                  ? null
-                  : Border.all(color: AppColors.dv(context)),
+              border:
+                  highlighted ? null : Border.all(color: AppColors.dv(context)),
             ),
             child: largeText
                 ? Column(

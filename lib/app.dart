@@ -9,6 +9,7 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/app_colors.dart';
 import 'core/router/app_router.dart';
 import 'core/utils/access.dart';
+import 'core/utils/notification_action.dart';
 import 'core/utils/language_utils.dart';
 import 'core/utils/medication_plan.dart';
 import 'providers/providers.dart';
@@ -111,7 +112,17 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   Future<void> _onNotificationAction() async {
     final action = NotificationService().pendingAction.value;
     if (action == null || !mounted) return;
+    final profile = ref.read(userProfileProvider);
+    final gate = notificationGate(
+        resolved: _decoyResolved,
+        locked: _isLocked && _needsLock,
+        resumed:
+            WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed,
+        onboarded: profile?.onboardingCompleted == true,
+        disguised: _isDisguisedCached || _decoyActive);
+    if (gate == NotificationGate.wait) return;
     NotificationService().pendingAction.value = null;
+    if (gate == NotificationGate.discard) return;
 
     switch (action.id) {
       case NotificationService.actionPeriodStarted:
@@ -129,11 +140,37 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
           ref.read(routerProvider).push('/paywall');
           break;
         }
-        final name = action.payload;
-        if (name == null || name.isEmpty) break;
+        var target = parseMedicationNotification(action.payload);
+        if (target == null) {
+          final id = parseRecurringMedicationId(action.payload);
+          final context = rootNavigatorKey.currentContext;
+          if (id == null || context == null) break;
+          final l10n = AppLocalizations.of(context)!;
+          final now = DateTime.now();
+          final day = await showDatePicker(
+              context: context,
+              helpText: '${l10n.medication}: ${l10n.dateLabel}',
+              initialDate: now,
+              firstDate: now.subtract(const Duration(days: 7)),
+              lastDate: now);
+          if (day == null ||
+              !mounted ||
+              _isLocked ||
+              _decoyActive ||
+              _isDisguisedCached ||
+              WidgetsBinding.instance.lifecycleState !=
+                  AppLifecycleState.resumed) {
+            break;
+          }
+          target = (id: id, day: day);
+        }
+        final now = DateTime.now();
+        if (target.day.isAfter(now) || now.difference(target.day).inDays > 7) {
+          break;
+        }
         final plan = ref.read(userProfileProvider)?.medicationPlan ?? const [];
         if (plan.isEmpty) break;
-        final today = DateTime.now();
+        final today = target.day;
         final logs = ref.read(dailyLogProvider.notifier);
         final log = logs.getDailyLog(today);
         final meds = medicationEntriesForDay(
@@ -143,7 +180,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
         // Aynı adlı ilaç birden fazla olabilir: hepsi işaretlenir
         var changed = false;
         for (final med in meds) {
-          if (med.name == name && !med.taken) {
+          if (medicationIdentity(med) == target.id && !med.taken) {
             med.taken = true;
             changed = true;
           }
@@ -251,8 +288,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
             return DateTime(start.year, start.month, start.day) == today;
           }),
           locked: _isLocked && _needsLock,
-          appResumed:
-              WidgetsBinding.instance.lifecycleState ==
+          appResumed: WidgetsBinding.instance.lifecycleState ==
               AppLifecycleState.resumed,
           navigatorReady: rootNavigatorKey.currentContext != null,
         );
@@ -315,14 +351,14 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
 
   void _refreshAccess() {
     if (!mounted) return;
+    unawaited(PremiumService().refreshCachedEntitlement());
     ref.invalidate(accessProvider);
     ref.invalidate(trialDaysLeftProvider);
   }
 
   void _onPremiumChanged() {
     if (!mounted) return;
-    ref.read(isPremiumProvider.notifier).state =
-        PremiumService().isPremium;
+    ref.read(isPremiumProvider.notifier).state = PremiumService().isPremium;
   }
 
   void _onScreenProtectionChanged() => _applySecureScreen();
@@ -343,6 +379,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
       _decoyResolved = true;
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _onNotificationAction();
       _onQuickAction();
       _onWidgetAction();
     });
@@ -447,6 +484,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   void _onUnlocked() {
     setState(() => _isLocked = false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _onNotificationAction();
       _onQuickAction();
       _onWidgetAction();
     });
@@ -467,7 +505,8 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
 
   void _checkLockNeeded() {
     final profile = ref.read(userProfileProvider);
-    final needs = (profile?.pinEnabled == true) || (profile?.biometricEnabled == true);
+    final needs =
+        (profile?.pinEnabled == true) || (profile?.biometricEnabled == true);
     setState(() {
       _needsLock = needs;
       _isLocked = needs;
@@ -477,17 +516,43 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
     _applySecureScreen(needsLock: needs);
   }
 
+  bool _refreshingEnvironment = false;
+  @override
+  void didChangeLocales(List<Locale>? locales) {
+    _refreshEnvironment();
+  }
+
+  Future<void> _refreshEnvironment() async {
+    if (_refreshingEnvironment) return;
+    _refreshingEnvironment = true;
+    try {
+      final profile = ref.read(userProfileProvider);
+      if (profile == null) return;
+      await NotificationService().refreshTimeZone();
+      await NotificationService().rescheduleAll(profile,
+          records: ref.read(periodRecordsProvider),
+          medications: profile.medicationPlan,
+          logs: ref.read(dailyLogProvider).values.toList());
+      await WidgetService.update(profile, ref.read(periodRecordsProvider));
+    } catch (_) {
+      /* Optional platform service; keep the app usable. */
+    } finally {
+      _refreshingEnvironment = false;
+    }
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      _refreshEnvironment();
       // Arka planda geçen süre denemeyi bitirmiş olabilir
       _refreshAccess();
       // Kilit kararı burada: gecikme dolmadıysa PIN sorulmaz. Bildirime
       // bakıp dönmek, fotoğraf seçiciden çıkmak, bir bağlantı açıp kapatmak
       // her seferinde PIN istiyordu — kilidi kapattıran türden sürtünme.
       final profile = ref.read(userProfileProvider);
-      final needs = (profile?.pinEnabled == true) ||
-          (profile?.biometricEnabled == true);
+      final needs =
+          (profile?.pinEnabled == true) || (profile?.biometricEnabled == true);
       if (needs &&
           !_isLocked &&
           LockTimeout.shouldLock(
@@ -500,6 +565,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
       }
       _backgroundedAt = null;
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        _onNotificationAction();
         _onQuickAction();
         _onWidgetAction();
       });
@@ -548,7 +614,8 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
         if (mounted) {
           _pendingLockUpdate = false;
           final p = ref.read(userProfileProvider);
-          final needs = (p?.pinEnabled == true) || (p?.biometricEnabled == true);
+          final needs =
+              (p?.pinEnabled == true) || (p?.biometricEnabled == true);
           if (needs != _needsLock) {
             setState(() {
               _needsLock = needs;
@@ -578,7 +645,8 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
       // sistemi koyu kullanan kullanıcı ilk açılışta kör edilmez
       themeMode: themeMode,
       locale: locale,
-      localeListResolutionCallback: (preferred, _) => resolveAppLocale(preferred),
+      localeListResolutionCallback: (preferred, _) =>
+          resolveAppLocale(preferred),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -613,12 +681,10 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
         return Stack(
           children: [
             child ?? const SizedBox.shrink(),
-            if (_isLocked && _needsLock)
-              LockScreen(onUnlocked: _onUnlocked),
+            if (_isLocked && _needsLock) LockScreen(onUnlocked: _onUnlocked),
             if (_decoyActive)
               DecoyNotesScreen(
-                onExitRequested: () =>
-                    setState(() => _decoyActive = false),
+                onExitRequested: () => setState(() => _decoyActive = false),
               ),
           ],
         );

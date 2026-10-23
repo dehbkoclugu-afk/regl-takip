@@ -42,11 +42,12 @@
   "today": "今天",
   "cycleDay": "月经周期日",
   "periodIn": "距离下次月经",
-  "daysLeft": "还剩 {count} 天",
+  "daysLeft": "{count, plural, other {还剩 {count} 天}}",
   "@daysLeft": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -188,7 +189,8 @@
   "@severityLevel": {
     "placeholders": {
       "level": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -207,11 +209,12 @@
   "howAreYouFeeling": "你今天感觉怎么样？",
   "logMoodAndSymptoms": "记录您的情绪和症状",
   "addRecord": "添加记录",
-  "nSymptoms": "{count} 症状",
+  "nSymptoms": "{count, plural, other {{count} 症状}}",
   "@nSymptoms": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -231,7 +234,8 @@
   "@nGlassesWater": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -240,19 +244,21 @@
   "dailyMeasurements": "每日测量",
   "flow": "经血量",
   "recorded": "已录制",
-  "nMedications": "{count} 药物",
+  "nMedications": "{count, plural, other {{count} 药物}}",
   "@nMedications": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
-  "nGlasses": "{count} 杯",
+  "nGlasses": "{count, plural, other {{count} 杯}}",
   "@nGlasses": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -277,7 +283,8 @@
   "@saveNSymptoms": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -285,7 +292,8 @@
   "@nSymptomsSaved": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -340,22 +348,24 @@
   "noMoodData": "还没有情绪数据",
   "noCycleData": "尚无周期数据",
   "ongoing": "正在进行的",
-  "nDays": "{count} 天",
+  "nDays": "{count, plural, other {{count} 天}}",
   "@nDays": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
   "profileSection": "个人资料",
   "preferences": "偏好设置",
   "age": "年龄",
-  "nYearsOld": "{count}岁",
+  "nYearsOld": "{count, plural, other {{count}岁}}",
   "@nYearsOld": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -377,10 +387,12 @@
   "@stepOfSteps": {
     "placeholders": {
       "current": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "total": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -412,7 +424,8 @@
   "@daysLater": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -428,24 +441,25 @@
   "@tooManyAttempts": {
     "placeholders": {
       "seconds": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
-  "coachMenstrual0": "出血天意味着铁质流失——红肉、扁豆和深色绿叶蔬菜有帮助。",
-  "coachMenstrual1": "对于痉挛，热敷和温和的伸展运动与大多数止痛药一样有效。",
-  "coachMenstrual2": "如今，精力不足是很正常的事情——散步胜过剧烈的锻炼。",
-  "coachFollicular0": "雌激素正在上升：精力和注意力通常在这个阶段达到顶峰。现在安排艰巨的任务。",
-  "coachFollicular1": "皮肤通常在这个阶段处于最佳状态——这是尝试新产品的好时机。",
-  "coachFollicular2": "您的身体现在已经做好了进行高强度锻炼的准备。",
-  "coachOvulation0": "您正处于受孕期——按照您的计划行事，无论是避孕还是受孕。",
-  "coachOvulation1": "有些女性在排卵时会感到轻微的一侧疼痛 (mittelschmerz) — 这是正常现象。",
-  "coachOvulation2": "这些天社交能量往往很高——这是进行重要对话的好时机。",
-  "coachLuteal0": "经前综合症症状可能会在这个阶段开始——镁和规律的睡眠可以缓解这些症状。",
-  "coachLuteal1": "对糖的渴望可能会激增：尝试富含蛋白质的零食来保持血糖稳定。",
-  "coachLuteal2": "情绪敏感度可能会上升——对自己放松点，这是荷尔蒙的影响，也是暂时的。",
-  "ovulationConfirmed": "排卵 ✓",
-  "ovulationConfirmedInfo": "该日期不是估计值：它是根据您的基础体温读数的升高而确认的（3-over-6 规则）。",
+  "coachMenstrual0": "您可以记录出血、疼痛以及您的感受。针对您担心的症状寻求医疗建议。",
+  "coachMenstrual1": "如果舒服的话，轻柔的动作或温暖可能会帮助您感觉更好。个人经历各有不同。",
+  "coachMenstrual2": "根据您今天的感受选择休息或活动。",
+  "coachFollicular0": "能量和症状因人和周期而异。使用您自己的记录来注意模式。",
+  "coachFollicular1": "您的皮肤可能会在周期中发生变化。记录变化而不是假设固定模式。",
+  "coachFollicular2": "根据您的健康和舒适度而不是预测的周期阶段来选择运动。",
+  "coachOvulation0": "受孕日是估计值。这个应用程序不是避孕方法。",
+  "coachOvulation1": "如果出现新的、严重的或持续性的疼痛，请寻求医疗建议，而不是将其归因于排卵。",
+  "coachOvulation2": "情绪和社交能量各不相同。预测的阶段无法确定您的感受。",
+  "coachLuteal0": "睡眠、压力和许多其他因素都会影响症状。记录你注意到的事情。",
+  "coachLuteal1": "选择适合您需求的膳食和活动。预测阶段并不规定饮食。",
+  "coachLuteal2": "情绪变化有很多可能的原因。针对持续存在或令您担心的症状寻求支持。",
+  "ovulationConfirmed": "可能排卵",
+  "ovulationConfirmedInfo": "体温模式或 LH 测试表明可能排卵。疾病、睡眠和测量时间都会影响结果。这不是临床证实，不得用于避孕。",
   "premiumSection": "高级版",
   "removeAds": "删除广告",
   "restorePurchases": "恢复购买",
@@ -472,7 +486,8 @@
   "@pregnancyWeekLabel": {
     "placeholders": {
       "week": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -491,7 +506,8 @@
   "@pillDayLabel": {
     "placeholders": {
       "day": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -499,7 +515,8 @@
   "@pillBreakLabel": {
     "placeholders": {
       "day": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -509,7 +526,8 @@
   "@learnedCycleLength": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -525,7 +543,8 @@
         "type": "String"
       },
       "percent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -562,7 +581,8 @@
   "@restoreConfirmBody": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -581,7 +601,8 @@
   "@paywallTrialSubtitle": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -603,7 +624,8 @@
   "@trialBadge": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -618,7 +640,8 @@
   "@yearRingSummary": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -627,7 +650,8 @@
   "@lastCycleLength": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -635,7 +659,8 @@
   "@lastPeriodLength": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -643,7 +668,8 @@
   "@vsAverageMore": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -651,7 +677,8 @@
   "@vsAverageLess": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -663,7 +690,8 @@
         "type": "String"
       },
       "percent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -683,7 +711,8 @@
   "@notificationPeriodTimingInDays": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -718,7 +747,8 @@
   "@headlinePeriodInDays": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -726,7 +756,8 @@
   "@headlinePeriodDay": {
     "placeholders": {
       "day": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -741,7 +772,8 @@
   "@headlineDelay": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -749,7 +781,8 @@
   "@delayDays": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -759,7 +792,8 @@
   "@nCyclesRecorded": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -767,7 +801,8 @@
   "@nLogsRecorded": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -797,7 +832,8 @@
   "@leadNDaysBefore": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -808,13 +844,16 @@
   "@typicalRangeNote": {
     "placeholders": {
       "min": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "max": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "pmax": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -822,7 +861,8 @@
   "@lowConfidenceNote": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -830,7 +870,8 @@
   "@regularityInfoInsufficient": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -882,7 +923,8 @@
   "@pillBreakIn": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -890,7 +932,8 @@
   "@pillNewPackIn": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -899,7 +942,8 @@
   "@healthImportConfirm": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -907,7 +951,8 @@
   "@healthImportDone": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -915,7 +960,8 @@
   "@monthPeriodDays": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -923,7 +969,8 @@
   "@monthLoggedDays": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -932,7 +979,8 @@
   "@lockAfterMinutes": {
     "placeholders": {
       "minutes": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -953,10 +1001,12 @@
   "@storySymptomsMore": {
     "placeholders": {
       "recent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "previous": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -964,10 +1014,12 @@
   "@storySymptomsLess": {
     "placeholders": {
       "recent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "previous": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -1008,13 +1060,16 @@
   "@dataCoverageValue": {
     "placeholders": {
       "logged": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "total": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "percent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -1028,7 +1083,8 @@
   "@trackingStreak": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -1036,7 +1092,8 @@
   "@weeklyTracking": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -1070,10 +1127,12 @@
   "@sleepDurationShort": {
     "placeholders": {
       "hours": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "minutes": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -1102,5 +1161,23 @@
   "notificationFrequencyDetailed": "详细",
   "readOnlyHistoryNotice": "您可以查看您过去的条目；新的每日条目和更改需要高级版。",
   "screenProtectionTitle": "屏幕保护",
-  "screenProtectionDescription": "阻止截屏和最近使用的应用预览。"
+  "screenProtectionDescription": "阻止截屏和最近使用的应用预览。",
+  "predictionUncertain": "周期阶段不确定",
+  "startupRecoveryBody": "无法安全打开您的数据。它已被保存下来。重试，或关闭应用程序并联系支持人员。在恢复备份之前请勿重新安装。",
+  "retry": "重试",
+  "adPrivacyOptions": "广告隐私选择",
+  "policyAvailableEnglish": "该政策有英文版本。原始政策文本如下。",
+  "purchasePending": "等待付款确认",
+  "purchaseVerifying": "验证您的购买",
+  "purchaseFailed": "无法验证您的购买。请重试或恢复购买。",
+  "pillSchedule": "服药时间表",
+  "pillContinuous": "连续（无间断）",
+  "predictionRange": "预计日期范围",
+  "analyticsChoice": "使用情况统计（可选）",
+  "analyticsChoiceDescription": "可选。仅计算此设备上的应用操作。健康数据、注释、日期和身份不包括在内。如果没有配置服务，则不会上传任何内容。",
+  "reportRange": "报告日期范围",
+  "allHistory": "所有历史",
+  "pillActiveDaysTitle": "有效服药天数 (1–120)",
+  "pillBreakDaysTitle": "休息日或安慰剂日 (0–14)",
+  "pillPrescriptionNote": "仅使用您的处方或临床医生说明中的时间表。此设置不建议更换药物。"
 }

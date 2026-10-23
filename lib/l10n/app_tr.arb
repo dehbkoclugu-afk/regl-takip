@@ -42,10 +42,13 @@
   "today": "Bugün",
   "cycleDay": "Döngü Günü",
   "periodIn": "Adet başlamasına",
-  "daysLeft": "{count} gün kaldı",
+  "daysLeft": "{count, plural, other {{count} gün kaldı}}",
   "@daysLeft": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "periodToday": "Adetiniz bugün başlayabilir",
@@ -168,7 +171,6 @@
   "letsStart": "Haydi Başlayalım",
   "bmi": "BMI",
   "goalReached": "Hedefe ulaşıldı!",
-
   "helloGeneric": "Merhaba!",
   "dayHasRecord": "kayıt var",
   "increase": "Artır",
@@ -186,14 +188,19 @@
   "severityLevel": "şiddet {level}/5",
   "@severityLevel": {
     "placeholders": {
-      "level": {"type": "int"}
+      "level": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "pregnancySetStartPrompt": "Gebelik başlangıcını girmek için dokun",
   "helloName": "Merhaba, {name}!",
   "@helloName": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "ovulationPhase": "Ovülasyon Fazı",
@@ -202,10 +209,13 @@
   "howAreYouFeeling": "Bugün nasıl hissediyorsun?",
   "logMoodAndSymptoms": "Ruh halini ve belirtilerini kaydet",
   "addRecord": "Kayıt Ekle",
-  "nSymptoms": "{count} belirti",
+  "nSymptoms": "{count, plural, other {{count} belirti}}",
   "@nSymptoms": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "periodDayLabel": "Adet günü",
@@ -215,13 +225,18 @@
   "moodLabel": "Ruh hali: {mood}",
   "@moodLabel": {
     "placeholders": {
-      "mood": {"type": "String"}
+      "mood": {
+        "type": "String"
+      }
     }
   },
   "nGlassesWater": "{count} bardak su",
   "@nGlassesWater": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "noRecordForDay": "Bu gün için kayıt bulunmuyor.",
@@ -229,16 +244,22 @@
   "dailyMeasurements": "Günlük Ölçümler",
   "flow": "Akış",
   "recorded": "Kaydedildi",
-  "nMedications": "{count} ilaç",
+  "nMedications": "{count, plural, other {{count} ilaç}}",
   "@nMedications": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
-  "nGlasses": "{count} bardak",
+  "nGlasses": "{count, plural, other {{count} bardak}}",
   "@nGlasses": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "flowTracking": "Akış Takibi",
@@ -261,13 +282,19 @@
   "saveNSymptoms": "Kaydet ({count} belirti)",
   "@saveNSymptoms": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "nSymptomsSaved": "{count} belirti kaydedildi",
   "@nSymptomsSaved": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "addNoteOptional": "Not ekle (opsiyonel)",
@@ -321,19 +348,25 @@
   "noMoodData": "Henüz ruh hali verisi yok",
   "noCycleData": "Henüz döngü verisi yok",
   "ongoing": "devam ediyor",
-  "nDays": "{count} gün",
+  "nDays": "{count, plural, other {{count} gün}}",
   "@nDays": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "profileSection": "Profil",
   "preferences": "Tercihler",
   "age": "Yaş",
-  "nYearsOld": "{count} yaş",
+  "nYearsOld": "{count, plural, other {{count} yaş}}",
   "@nYearsOld": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "cycleDuration": "Döngü Süresi",
@@ -353,8 +386,14 @@
   "stepOfSteps": "Adım {current} / {total}",
   "@stepOfSteps": {
     "placeholders": {
-      "current": {"type": "int"},
-      "total": {"type": "int"}
+      "current": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "lastPeriodTitle": "Son Regl Tarihin",
@@ -369,7 +408,9 @@
   "errorOccurred": "Bir hata oluştu: {error}",
   "@errorOccurred": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "welcomeInfoTitle": "Hoş Geldin!",
@@ -382,7 +423,10 @@
   "daysLater": "{count} gün sonra",
   "@daysLater": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "todayExclamation": "Bugün!",
@@ -397,24 +441,25 @@
   "@tooManyAttempts": {
     "placeholders": {
       "seconds": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
-  "coachMenstrual0": "Kanama günlerinde demir kaybı olur — kırmızı et, mercimek ve koyu yeşil yapraklılar iyi gelir.",
-  "coachMenstrual1": "Kramplar için sıcak uygulama ve hafif esneme, çoğu ağrı kesici kadar etkili olabilir.",
-  "coachMenstrual2": "Enerjin düşükse bu normal — bugün yoğun antrenman yerine yürüyüş yeterli.",
-  "coachFollicular0": "Östrojen yükselişte: enerji ve odak genelde bu fazda zirve yapar. Zor işleri bugünlere planla.",
-  "coachFollicular1": "Cilt bu fazda genelde en iyi halinde — yeni ürün denemek için uygun dönem.",
-  "coachFollicular2": "Yüksek tempolu egzersizler için vücudun en hazır olduğu dönemdesin.",
-  "coachOvulation0": "Doğurgan penceredesin — korunma ya da gebelik planı ne ise ona göre davran.",
-  "coachOvulation1": "Bazı kadınlar ovülasyonda tek taraflı hafif ağrı hisseder (mittelschmerz) — normaldir.",
-  "coachOvulation2": "Sosyal enerji bu günlerde genelde yüksek — önemli görüşmeler için iyi zamanlama.",
-  "coachLuteal0": "PMS belirtileri bu fazda başlayabilir — magnezyum ve düzenli uyku belirtileri hafifletebilir.",
-  "coachLuteal1": "Tatlı isteği artabilir: kan şekerini dengede tutmak için protein ağırlıklı ara öğün dene.",
-  "coachLuteal2": "Duygusal hassasiyet artabilir — kendine yüklenme, bu hormonal ve geçici.",
-  "ovulationConfirmed": "Ovülasyon ✓",
-  "ovulationConfirmedInfo": "Bu tarih tahmini değil: bazal vücut sıcaklığı ölçümlerinizdeki yükselişten teyit edildi (3-üstü-6 kuralı).",
+  "coachMenstrual0": "Kanamayı, acıyı ve nasıl hissettiğinizi kaydedebilirsiniz. Sizi ilgilendiren belirtiler için tıbbi yardım alın.",
+  "coachMenstrual1": "Rahatsanız, hafif hareket veya sıcaklık kendinizi daha iyi hissetmenize yardımcı olabilir. Bireysel deneyimler farklılık gösterir.",
+  "coachMenstrual2": "Bugün nasıl hissettiğinize göre dinlenmeyi veya aktiviteyi seçin.",
+  "coachFollicular0": "Enerji ve semptomlar insanlar ve döngüler arasında farklılık gösterir. Kalıpları fark etmek için kendi kayıtlarınızı kullanın.",
+  "coachFollicular1": "Döngü sırasında cildiniz değişebilir. Sabit bir model varsaymak yerine değişiklikleri kaydedin.",
+  "coachFollicular2": "Egzersizi tahmini bir döngü aşamasına değil, sağlığınıza ve rahatınıza göre seçin.",
+  "coachOvulation0": "Bereketli günler tahminidir. Bu uygulama bir doğum kontrol yöntemi değildir.",
+  "coachOvulation1": "Yeni, şiddetli veya inatçı ağrıyı yumurtlamaya bağlamak yerine tıbbi yardım alın.",
+  "coachOvulation2": "Ruh hali ve sosyal enerji farklılık gösterir. Tahmin edilen bir aşama nasıl hissedeceğinizi belirleyemez.",
+  "coachLuteal0": "Uyku, stres ve diğer birçok faktör semptomları etkileyebilir. Fark ettiğiniz şeyi kaydedin.",
+  "coachLuteal1": "İhtiyaçlarınıza uygun yemek ve aktiviteyi seçin. Tahmin edilen bir aşama bir diyet önermez.",
+  "coachLuteal2": "Ruh hali değişikliklerinin birçok olası nedeni vardır. Devam eden veya sizi endişelendiren belirtiler için destek arayın.",
+  "ovulationConfirmed": "Olası ovülasyon",
+  "ovulationConfirmedInfo": "Sıcaklık örüntüsü veya LH testi olası ovülasyona işaret eder. Hastalık, uyku ve ölçüm saati sonucu etkiler. Klinik doğrulama değildir; korunma amacıyla kullanılmamalıdır.",
   "premiumSection": "Premium",
   "removeAds": "Reklamları Kaldır",
   "restorePurchases": "Satın Alımları Geri Yükle",
@@ -441,7 +486,8 @@
   "@pregnancyWeekLabel": {
     "placeholders": {
       "week": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -460,7 +506,8 @@
   "@pillDayLabel": {
     "placeholders": {
       "day": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -468,7 +515,8 @@
   "@pillBreakLabel": {
     "placeholders": {
       "day": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -478,11 +526,11 @@
   "@learnedCycleLength": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
-  "irregular": "Düzensiz",
   "phaseInsights": "Faz İçgörüleri",
   "noInsightsYet": "İçgörü için henüz yeterli veri yok. Semptom kaydettikçe burada faz bazlı desenler görünecek.",
   "insightLine": "{symptom} en çok {phase} fazında görülüyor (%{percent})",
@@ -495,7 +543,8 @@
         "type": "String"
       },
       "percent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -509,7 +558,6 @@
   "shortcutQuickLog": "Hızlı Kayıt",
   "shortcutToday": "Bugünü Gör",
   "allTrackers": "Tüm kayıt türleri",
-  "savedGeneric": "Kaydedildi",
   "disguiseTitle": "Gizli Mod",
   "disguiseDesc": "Uygulama \"Notlar\" kılığına girer: ad, ikon, widget, bildirimler ve açılış nötrleşir. Dönüş: Notlar başlığına uzun basın.",
   "decoyTitle": "Notlar",
@@ -533,7 +581,8 @@
   "@restoreConfirmBody": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -549,7 +598,14 @@
   "modeTtcDesc": "Doğurganlık odaklı takip",
   "paywallTitle": "Premium'a Geç",
   "paywallTrialSubtitle": "Deneme süren devam ediyor: {days} gün kaldı. Premium'la her şey açık kalır.",
-  "@paywallTrialSubtitle": {"placeholders": {"days": {"type": "int"}}},
+  "@paywallTrialSubtitle": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "paywallFreeSubtitle": "Deneme süren bitti. Ücretsiz sürümde regl takibi ve takvim açık; günlük takipler ve içgörüler Premium'da.",
   "paywallFeatureTrackers": "Tüm günlük takipler: semptom, ruh hali, su, uyku, kilo, sıcaklık, ilaç, not",
   "paywallFeatureStats": "İstatistikler, trendler ve Yılım halkası",
@@ -565,7 +621,14 @@
   "bestValue": "En avantajlı",
   "continueFreeBtn": "Şimdilik ücretsiz devam et",
   "trialBadge": "Deneme: {days} gün kaldı",
-  "@trialBadge": {"placeholders": {"days": {"type": "int"}}},
+  "@trialBadge": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "freeBadge": "Ücretsiz sürüm",
   "freeExplain": "Ücretsiz sürümde regl takibi, takvim ve tahminler açıktır. Günlük takipler, istatistikler, dışa aktarma, Health Connect, gizli mod ve modlar Premium'dadır.",
   "seePlans": "Planları Gör",
@@ -574,29 +637,71 @@
   "yearRingTitle": "Yılım",
   "yearRingCycles": "DÖNGÜ",
   "yearRingSummary": "Son 12 ay: {count} döngü",
-  "@yearRingSummary": {"placeholders": {"count": {"type": "int"}}},
+  "@yearRingSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "cycleComparison": "Son Döngün",
   "lastCycleLength": "Son döngü: {days} gün",
-  "@lastCycleLength": {"placeholders": {"days": {"type": "int"}}},
+  "@lastCycleLength": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "lastPeriodLength": "Son regl: {days} gün",
-  "@lastPeriodLength": {"placeholders": {"days": {"type": "int"}}},
+  "@lastPeriodLength": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "vsAverageMore": "ortalamandan {days} gün uzun",
-  "@vsAverageMore": {"placeholders": {"days": {"type": "int"}}},
+  "@vsAverageMore": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "vsAverageLess": "ortalamandan {days} gün kısa",
-  "@vsAverageLess": {"placeholders": {"days": {"type": "int"}}},
+  "@vsAverageLess": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "vsAverageSame": "ortalamanla aynı",
   "coachPersonalInsight": "Kayıtlarına göre bu fazda en sık: {symptom} (%{percent})",
   "@coachPersonalInsight": {
     "placeholders": {
-      "symptom": {"type": "String"},
-      "percent": {"type": "int"}
+      "symptom": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "notificationInsightTitle": "Faz ipucu",
   "notificationInsightBody": "Luteal faz başlıyor. Kayıtlarına göre bu fazda en sık: {symptom}.",
   "@notificationInsightBody": {
     "placeholders": {
-      "symptom": {"type": "String"}
+      "symptom": {
+        "type": "String"
+      }
     }
   },
   "notificationPeriodTitle": "Adet Hatırlatması",
@@ -605,7 +710,10 @@
   "notificationPeriodTimingInDays": "Adetin {days} gün sonra başlayabilir.",
   "@notificationPeriodTimingInDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "notificationPeriodTip1": "Yanına bir ped ya da tampon almayı unutma.",
@@ -638,13 +746,19 @@
   "headlinePeriodInDays": "Reglin {days} gün sonra",
   "@headlinePeriodInDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "headlinePeriodDay": "Reglinin {day}. günü",
   "@headlinePeriodDay": {
     "placeholders": {
-      "day": {"type": "int"}
+      "day": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "headlineDelaySubtitle": "Sapma olağan olabilir. Başladıysa kaydet.",
@@ -657,13 +771,19 @@
   "headlineDelay": "Reglin {days} gün gecikti",
   "@headlineDelay": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "delayDays": "{days} gün gecikme",
   "@delayDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "yourDataStays": "Deneme bitse de kayıtların cihazında kalır.",
@@ -671,13 +791,19 @@
   "nCyclesRecorded": "{count} döngü kaydı",
   "@nCyclesRecorded": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "nLogsRecorded": "{count} günlük kayıt",
   "@nLogsRecorded": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "notifPermissionTitle": "Hatırlatmaları açalım mı?",
@@ -705,7 +831,10 @@
   "leadNDaysBefore": "{days} gün önce",
   "@leadNDaysBefore": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "regularityInfoIrregular": "En kısa ve en uzun döngün arasında 9 gün veya daha fazla fark var. Döngü uzunluğunun değişmesi çok yaygındır; stres, uyku, hastalık ve yaşam değişiklikleri etkiler. Bu bir tanı değildir.",
@@ -714,21 +843,36 @@
   "typicalRangeNote": "Yaygın kabul edilen aralık: döngü {min}–{max} gün, regl {pmax} güne kadar. Tanı ölçütü değildir.",
   "@typicalRangeNote": {
     "placeholders": {
-      "min": {"type": "int"},
-      "max": {"type": "int"},
-      "pmax": {"type": "int"}
+      "min": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "max": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "pmax": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "lowConfidenceNote": "Bu ortalamalar yalnız {count} döngüden hesaplandı; kayıt geldikçe netleşecek.",
   "@lowConfidenceNote": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "regularityInfoInsufficient": "Düzenlilikten söz edebilmek için en az {count} döngü aralığı gerekiyor. Daha az kayıtla yapılan yorum yanıltıcı olur.",
   "@regularityInfoInsufficient": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "backupNever": "Henüz hiç yedek almadın.",
@@ -736,7 +880,9 @@
   "backupLastAt": "Son yedek: {date}",
   "@backupLastAt": {
     "placeholders": {
-      "date": {"type": "String"}
+      "date": {
+        "type": "String"
+      }
     }
   },
   "durationsStepTitle": "Döngü bilgilerin",
@@ -760,57 +906,82 @@
   "notLoggedToday": "Bugün {what} girilmemiş",
   "@notLoggedToday": {
     "placeholders": {
-      "what": {"type": "String"}
+      "what": {
+        "type": "String"
+      }
     }
   },
   "pregnancyTestFrom": "Gebelik testi için en erken: {date}",
   "@pregnancyTestFrom": {
     "placeholders": {
-      "date": {"type": "String"}
+      "date": {
+        "type": "String"
+      }
     }
   },
   "pillBreakIn": "Ara dönem {days} gün sonra",
   "@pillBreakIn": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "pillNewPackIn": "Yeni paket {days} gün sonra",
   "@pillNewPackIn": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "healthImportNothingNew": "İçe aktarılacak yeni kayıt bulunamadı",
   "healthImportConfirm": "Health Connect’te uygulamada olmayan {count} adet dönemi bulundu. Kayıtlarına eklensin mi? Mevcut kayıtların değişmez.",
   "@healthImportConfirm": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "healthImportDone": "{count} dönem içe aktarıldı",
   "@healthImportDone": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "monthPeriodDays": "{count} regl günü",
   "@monthPeriodDays": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "monthLoggedDays": "{count} günde kayıt",
   "@monthLoggedDays": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "pinNoRecoveryWarning": "PIN’ini unutursan kurtarma yolu yok; tek çıkış tüm verini silmek olur. Hatırlayacağın bir sayı seç.",
   "lockAfterMinutes": "{minutes} dk sonra",
   "@lockAfterMinutes": {
     "placeholders": {
-      "minutes": {"type": "int"}
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "reportTitle": "Döngü Sağlık Raporu",
@@ -827,20 +998,81 @@
   "statsSectionCharts": "GRAFİKLER",
   "statsSectionHistory": "GEÇMİŞ VE TRENDLER",
   "storySymptomsMore": "Son 30 gün önceki döneme göre daha yoğun geçti ({recent} kayıt, önceki {previous}).",
-  "@storySymptomsMore": {"placeholders": {"recent": {"type": "int"}, "previous": {"type": "int"}}},
+  "@storySymptomsMore": {
+    "placeholders": {
+      "recent": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "previous": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "storySymptomsLess": "Son 30 gün önceki döneme göre daha rahat geçti ({recent} kayıt, önceki {previous}).",
-  "@storySymptomsLess": {"placeholders": {"recent": {"type": "int"}, "previous": {"type": "int"}}},
+  "@storySymptomsLess": {
+    "placeholders": {
+      "recent": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "previous": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "storySymptomsSame": "Belirti yoğunluğu son iki dönemde benzer seyretti.",
   "storyTrendUp": "Bu dönemde toplam {delta} {unit} artış var.",
-  "@storyTrendUp": {"placeholders": {"delta": {"type": "String"}, "unit": {"type": "String"}}},
+  "@storyTrendUp": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
   "storyTrendDown": "Bu dönemde toplam {delta} {unit} azalma var.",
-  "@storyTrendDown": {"placeholders": {"delta": {"type": "String"}, "unit": {"type": "String"}}},
+  "@storyTrendDown": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
   "storyTrendFlat": "Bu dönemde belirgin bir değişim yok — seyir yatay.",
   "averageSeverity": "Ort. {value}/5",
-  "@averageSeverity": {"placeholders": {"value": {"type": "String"}}},
+  "@averageSeverity": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "dataCoverage": "Kayıt yoğunluğu",
   "dataCoverageValue": "{total} günün {logged} gününde kayıt var (%{percent})",
-  "@dataCoverageValue": {"placeholders": {"logged": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@dataCoverageValue": {
+    "placeholders": {
+      "logged": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "percent": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "tapChartPointHint": "O günü açmak için bir noktaya dokun.",
   "shareCalendarMonth": "Takvim ayını paylaş",
   "longPressDayHint": "Hızlı önizleme için bir güne basılı tut.",
@@ -848,9 +1080,23 @@
   "periodRangeOverlap": "Bu aralık mevcut bir regl kaydıyla çakışıyor.",
   "periodRangeSaved": "Regl tarih aralığı kaydedildi",
   "trackingStreak": "{count} günlük seri",
-  "@trackingStreak": {"placeholders": {"count": {"type": "int"}}},
+  "@trackingStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "weeklyTracking": "Son 7 günde {count} kayıt",
-  "@weeklyTracking": {"placeholders": {"count": {"type": "int"}}},
+  "@weeklyTracking": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "exportCalendarFile": "Takvim dışa aktar (.ics)",
   "ovulationMarkerHint": "Kesikli çizgi: tahmini veya teyitli ovülasyon",
   "addPastCycles": "Geçmiş döngüleri ekle",
@@ -880,8 +1126,14 @@
   "sleepDurationShort": "{hours}s {minutes}dk",
   "@sleepDurationShort": {
     "placeholders": {
-      "hours": {"type": "int"},
-      "minutes": {"type": "int"}
+      "hours": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "deleteAllDataConfirm": "Tüm verileri silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
@@ -909,5 +1161,23 @@
   "notificationFrequencyDetailed": "Ayrıntılı",
   "readOnlyHistoryNotice": "Geçmiş kayıtlarını görüntüleyebilirsin; yeni günlük kayıt ve değişiklikler Premium'da.",
   "screenProtectionTitle": "Ekran görüntüsü koruması",
-  "screenProtectionDescription": "Ekran görüntülerini ve son uygulamalar önizlemesini engeller."
+  "screenProtectionDescription": "Ekran görüntülerini ve son uygulamalar önizlemesini engeller.",
+  "predictionUncertain": "Döngü fazı belirsiz",
+  "startupRecoveryBody": "Verilerin güvenle açılamadı ve korundu. Yeniden dene veya uygulamayı kapatıp destek al. Yedeğini kurtarmadan uygulamayı yeniden yükleme.",
+  "retry": "Yeniden dene",
+  "adPrivacyOptions": "Reklam gizlilik tercihleri",
+  "policyAvailableEnglish": "Bu politika İngilizce olarak sunulmaktadır. Aşağıda özgün politika metni yer alır.",
+  "purchasePending": "Ödeme onayı bekleniyor",
+  "purchaseVerifying": "Satın alım doğrulanıyor",
+  "purchaseFailed": "Satın alım doğrulanamadı. Yeniden dene veya satın alımları geri yükle.",
+  "pillSchedule": "Hap kullanım planı",
+  "pillContinuous": "Kesintisiz (ara yok)",
+  "predictionRange": "Tahmini tarih aralığı",
+  "analyticsChoice": "Kullanım ölçümü (isteğe bağlı)",
+  "analyticsChoiceDescription": "İsteğe bağlıdır. Yalnızca bu cihazdaki uygulama eylemleri sayılır. Sağlık verileri, notlar, tarihler ve kimlik bilgileri dahil edilmez. Yapılandırılmış bir hizmet olmadan hiçbir şey gönderilmez.",
+  "reportRange": "Rapor tarih aralığı",
+  "allHistory": "Tüm geçmiş",
+  "pillActiveDaysTitle": "Aktif hap günleri (1–120)",
+  "pillBreakDaysTitle": "Ara veya plasebo günleri (0-14)",
+  "pillPrescriptionNote": "Yalnızca reçetenizdeki veya klinisyen talimatlarınızdaki programı kullanın. Bu ayar ilacın değiştirilmesini önermez."
 }

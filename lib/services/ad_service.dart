@@ -78,8 +78,7 @@ class AdService {
 
   static Future<void> markOpenAdShown() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(
-        _lastOpenAdKey, DateTime.now().millisecondsSinceEpoch);
+    await prefs.setInt(_lastOpenAdKey, DateTime.now().millisecondsSinceEpoch);
   }
 
   static Future<void> initialize() async {
@@ -88,6 +87,7 @@ class AdService {
       // kişiselleştirilmiş reklam için Google'ın şartı, aksi halde uygulama
       // politika ihlali sayılıyor. Bölge dışında form gösterilmez.
       await _requestConsent();
+      if (!await ConsentInformation.instance.canRequestAds()) return;
       await MobileAds.instance.initialize();
       debugPrint('[AD] AdMob initialized successfully');
     } catch (e) {
@@ -130,10 +130,12 @@ class AdService {
   }
 
   static Future<void> loadOpenAd() async {
+    if (!await ConsentInformation.instance.canRequestAds()) return;
     // Debug'da test ID (gerçek ID'ye test tıklaması AdMob ban riski),
     // release'te gerçek ID
     final adUnitId = kDebugMode ? _testInterstitialId : _openAdUnitId;
-    debugPrint('[AD] Loading ad with ID: $adUnitId (debug=$kDebugMode, iOS=$_isIOS)');
+    debugPrint(
+        '[AD] Loading ad with ID: $adUnitId (debug=$kDebugMode, iOS=$_isIOS)');
 
     final completer = Completer<void>();
 
@@ -147,7 +149,8 @@ class AdService {
           if (!completer.isCompleted) completer.complete();
         },
         onAdFailedToLoad: (error) {
-          debugPrint('[AD] Ad FAILED to load: code=${error.code} domain=${error.domain} message=${error.message}');
+          debugPrint(
+              '[AD] Ad FAILED to load: code=${error.code} domain=${error.domain} message=${error.message}');
           if (!completer.isCompleted) completer.complete();
         },
       ),
@@ -162,6 +165,11 @@ class AdService {
   }
 
   static Future<void> showOpenAd() async {
+    if (!await ConsentInformation.instance.canRequestAds()) {
+      _openAd?.dispose();
+      _openAd = null;
+      return;
+    }
     if (PremiumService().isPremium) {
       debugPrint('[AD] Premium active, skipping ad');
       return;
@@ -195,6 +203,22 @@ class AdService {
     } else {
       debugPrint('[AD] Ad could not be loaded, skipping');
     }
+  }
+
+  static Future<bool> privacyOptionsRequired() async {
+    try {
+      return await ConsentInformation.instance
+              .getPrivacyOptionsRequirementStatus() ==
+          PrivacyOptionsRequirementStatus.required;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  static Future<void> showPrivacyOptions() async {
+    _openAd?.dispose();
+    _openAd = null;
+    await ConsentForm.showPrivacyOptionsForm((error) {});
   }
 
   static void dispose() {

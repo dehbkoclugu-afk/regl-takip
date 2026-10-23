@@ -1,4 +1,5 @@
 import 'dart:ui' show Locale;
+import '../core/utils/notification_action.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -46,7 +47,6 @@ class NotificationService {
   static const int _ovulationReminderBaseId = 20;
   static const int _medicationReminderId = 3;
   // İlaç başına ayrı hatırlatma: ID çakışmasın diye ayrı aralık
-  static const int _medicationReminderBaseId = 40;
   static const int _maxMedicationReminders = 10;
   // Faz ipucu (kişisel semptom tahmini): luteal başlangıcında
   static const int _insightReminderBaseId = 30;
@@ -77,8 +77,7 @@ class NotificationService {
   /// true olduğu için aksiyon her zaman uygulamayı açar ve iş ana
   /// isolate'te yapılır — arka plan isolate'inde şifreli kutulara yazmak
   /// gibi bir yola hiç girilmiyor.
-  final ValueNotifier<NotificationAction?> pendingAction =
-      ValueNotifier(null);
+  final ValueNotifier<NotificationAction?> pendingAction = ValueNotifier(null);
 
   void _onNotificationResponse(NotificationResponse response) {
     final actionId = response.actionId;
@@ -175,9 +174,7 @@ class NotificationService {
       ];
 
   /// "Aldım" aksiyonu; hangi ilaç olduğu payload'da taşınır.
-  List<AndroidNotificationAction> _medicationActions(
-          AppLocalizations l10n) =>
-      [
+  List<AndroidNotificationAction> _medicationActions(AppLocalizations l10n) => [
         AndroidNotificationAction(
           actionMedicationTaken,
           l10n.actionMedicationTaken,
@@ -345,7 +342,9 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       id,
-      discreet ? l10n.notificationDiscreetTitle : l10n.notificationOvulationTitle,
+      discreet
+          ? l10n.notificationDiscreetTitle
+          : l10n.notificationOvulationTitle,
       discreet ? l10n.notificationDiscreetBody : l10n.notificationOvulationBody,
       scheduledDate,
       _details(
@@ -465,9 +464,7 @@ class NotificationService {
     await _plugin.zonedSchedule(
       id,
       discreet ? l10n.notificationDiscreetTitle : l10n.notificationDelayTitle,
-      discreet
-          ? l10n.notificationDiscreetBody
-          : _delayBody(l10n, variant),
+      discreet ? l10n.notificationDiscreetBody : _delayBody(l10n, variant),
       scheduledDate,
       _details(
         channelId: 'period_delay',
@@ -510,8 +507,12 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       _medicationReminderId,
-      discreet ? l10n.notificationDiscreetTitle : l10n.notificationMedicationTitle,
-      discreet ? l10n.notificationDiscreetBody : l10n.notificationMedicationBody,
+      discreet
+          ? l10n.notificationDiscreetTitle
+          : l10n.notificationMedicationTitle,
+      discreet
+          ? l10n.notificationDiscreetBody
+          : l10n.notificationMedicationBody,
       scheduledDate,
       _details(
         channelId: 'medication_reminder',
@@ -542,8 +543,7 @@ class NotificationService {
     bool quiet = false,
   }) async {
     final l10n = _l10n(locale);
-    final named =
-        medications.where((m) => m.name.trim().isNotEmpty).toList();
+    final named = medications.where((m) => m.name.trim().isNotEmpty).toList();
     final withTime = named
         .where((m) => m.reminderTime != null)
         .take(_maxMedicationReminders)
@@ -566,33 +566,32 @@ class NotificationService {
       final minute = parts.length > 1 ? int.tryParse(parts[1]) : null;
       if (hour == null || minute == null) continue;
 
-      final now = DateTime.now();
+      final now = tz.TZDateTime.now(tz.local);
       var scheduledDate =
           tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
-      if (scheduledDate.isBefore(tz.TZDateTime.now(tz.local))) {
-        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      if (!scheduledDate.isAfter(now)) {
+        scheduledDate = tz.TZDateTime(
+            tz.local, now.year, now.month, now.day + 1, hour, minute);
       }
-
-      // Gizli modda ilaç adı da kilit ekranına düşmemeli
-      final body = discreet
-          ? l10n.notificationDiscreetBody
-          : (med.dose.isEmpty ? med.name : '${med.name} — ${med.dose}');
-
+      // Recurring notifications cannot carry their delivery date. The action
+      // asks for the target day after unlock instead of guessing "today".
       await _plugin.zonedSchedule(
-        _medicationReminderBaseId + i,
-        discreet ? l10n.notificationDiscreetTitle : l10n.notificationMedicationTitle,
-        body,
+        4000 + i,
+        discreet
+            ? l10n.notificationDiscreetTitle
+            : l10n.notificationMedicationTitle,
+        discreet
+            ? l10n.notificationDiscreetBody
+            : (med.dose.isEmpty ? med.name : '${med.name} - ${med.dose}'),
         scheduledDate,
         _details(
-          channelId: 'medication_reminder',
-          channelName: l10n.notificationMedicationChannel,
-          channelDescription: l10n.notificationMedicationChannelDesc,
-          l10n: l10n,
-          quiet: quiet,
-          actions: discreet ? const [] : _medicationActions(l10n),
-        ),
-        // Hangi ilacın işaretleneceği aksiyonla birlikte taşınmalı
-        payload: med.name,
+            channelId: 'medication_reminder',
+            channelName: l10n.notificationMedicationChannel,
+            channelDescription: l10n.notificationMedicationChannelDesc,
+            l10n: l10n,
+            quiet: quiet,
+            actions: discreet ? const [] : _medicationActions(l10n)),
+        payload: recurringMedicationPayload(med),
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
@@ -608,7 +607,25 @@ class NotificationService {
 
   /// Reschedules all notifications based on profile preferences and cycle data.
   /// [records] verilirse akıllı tahminle öğrenilen döngü uzunluğu kullanılır.
+  Future<void> _scheduleQueue = Future.value();
   Future<void> rescheduleAll(
+    UserProfile profile, {
+    List<PeriodRecord> records = const [],
+    List<MedicationEntry> medications = const [],
+    List<DailyLog> logs = const [],
+  }) {
+    final next = _scheduleQueue.then((_) => _rescheduleAllNow(profile,
+        records: records, medications: medications, logs: logs));
+    _scheduleQueue = next.catchError((Object _) {});
+    return next;
+  }
+
+  Future<void> refreshTimeZone() async {
+    final zone = await FlutterTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation(zone.identifier));
+  }
+
+  Future<void> _rescheduleAllNow(
     UserProfile profile, {
     List<PeriodRecord> records = const [],
     List<MedicationEntry> medications = const [],
@@ -634,8 +651,7 @@ class NotificationService {
       final cycleMinute = profile.effectiveCycleMinute;
       final medHour = profile.effectiveMedicationHour;
       final medMinute = profile.effectiveMedicationMinute;
-      final cycleFrequency =
-          profile.cycleNotificationFrequency.clamp(1, 3);
+      final cycleFrequency = profile.cycleNotificationFrequency.clamp(1, 3);
       // 'system' tercihi somut dile çözülür (bildirim metinleri için)
       final locale = resolveLanguageCode(profile.language);
 
@@ -753,19 +769,17 @@ class NotificationService {
             cycleLength: cycleLen,
             periodLength: profile.averagePeriodLength,
           );
-          final lutealInsight =
-              topInsightForPhase(insights, CyclePhase.luteal);
+          final lutealInsight = topInsightForPhase(insights, CyclePhase.luteal);
           if (lutealInsight != null) {
             final l10n = _l10n(locale);
-            final symptomName =
-                EnumLabels.symptom(lutealInsight.symptom, l10n);
+            final symptomName = EnumLabels.symptom(lutealInsight.symptom, l10n);
             // Luteal başlangıcı ~ ovülasyon + 2 gün = adet - 12 gün
             for (int i = 0; i < _cyclesToSchedule; i++) {
-              final periodDate =
-                  nextPeriod.add(Duration(days: cycleLen * i));
+              final periodDate = nextPeriod.add(Duration(days: cycleLen * i));
               final lutealStart = periodDate.subtract(const Duration(
                   days: AppConstants.ovulationDayBeforePeriod - 2));
-              final scheduled = _scheduleFor(lutealStart, cycleHour, cycleMinute);
+              final scheduled =
+                  _scheduleFor(lutealStart, cycleHour, cycleMinute);
               if (scheduled == null) continue;
               await _plugin.zonedSchedule(
                 _insightReminderBaseId + i,

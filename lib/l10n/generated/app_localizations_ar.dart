@@ -138,7 +138,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String daysLeft(int count) {
-    return 'باقي $count أيام';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'باقي $countString يوم',
+      many: 'باقي $countString يومًا',
+      few: 'باقي $countString أيام',
+      two: 'باقي يومان',
+      one: 'باقي يوم واحد',
+      zero: 'باقي $countString أيام',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -546,7 +560,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String severityLevel(int level) {
-    return 'خطورة $level/5';
+    final intl.NumberFormat levelNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String levelString = levelNumberFormat.format(level);
+
+    return 'خطورة $levelString/5';
   }
 
   @override
@@ -577,7 +595,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String nSymptoms(int count) {
-    return 'أعراض $count';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString عرض',
+      many: '$countString عرضًا',
+      few: '$countString أعراض',
+      two: 'عرضان',
+      one: 'عرض واحد',
+      zero: 'أعراض $countString',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -599,7 +631,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String nGlassesWater(int count) {
-    return '$count أكواب ماء';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString أكواب ماء';
   }
 
   @override
@@ -619,12 +655,40 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String nMedications(int count) {
-    return 'أدوية $count';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString دواء',
+      many: '$countString دواءً',
+      few: '$countString أدوية',
+      two: 'دواءان',
+      one: 'دواء واحد',
+      zero: 'أدوية $countString',
+    );
+    return '$_temp0';
   }
 
   @override
   String nGlasses(int count) {
-    return '$count أكواب';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString كوب',
+      many: '$countString كوبًا',
+      few: '$countString أكواب',
+      two: 'كوبان',
+      one: 'كوب واحد',
+      zero: '$countString أكواب',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -680,12 +744,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String saveNSymptoms(int count) {
-    return 'حفظ (أعراض $count)';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'حفظ (أعراض $countString)';
   }
 
   @override
   String nSymptomsSaved(int count) {
-    return 'تم حفظ أعراض $count';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'تم حفظ أعراض $countString';
   }
 
   @override
@@ -844,7 +916,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String nDays(int count) {
-    return 'أيام $count';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString يوم',
+      many: '$countString يومًا',
+      few: '$countString أيام',
+      two: 'يومان',
+      one: 'يوم واحد',
+      zero: 'أيام $countString',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -858,7 +944,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String nYearsOld(int count) {
-    return '$count سنة';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString سنة',
+      many: '$countString سنة',
+      few: '$countString سنوات',
+      two: 'سنتان',
+      one: 'سنة واحدة',
+      zero: '$countString سنة',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -905,7 +1005,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String stepOfSteps(int current, int total) {
-    return 'الخطوة $current من $total';
+    final intl.NumberFormat currentNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String currentString = currentNumberFormat.format(current);
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    return 'الخطوة $currentString من $totalString';
   }
 
   @override
@@ -967,7 +1074,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String daysLater(int count) {
-    return 'في أيام $count';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'في أيام $countString';
   }
 
   @override
@@ -996,63 +1107,67 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String tooManyAttempts(int seconds) {
-    return 'الكثير من المحاولات الخاطئة. انتظر ثواني $seconds';
+    final intl.NumberFormat secondsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String secondsString = secondsNumberFormat.format(seconds);
+
+    return 'الكثير من المحاولات الخاطئة. انتظر ثواني $secondsString';
   }
 
   @override
   String get coachMenstrual0 =>
-      'أيام النزيف تعني فقدان الحديد، وتساعد اللحوم الحمراء والعدس والخضر الورقية الداكنة.';
+      'يمكنك تسجيل النزيف والألم وما تشعر به. اطلب المشورة الطبية بشأن الأعراض التي تقلقك.';
 
   @override
   String get coachMenstrual1 =>
-      'بالنسبة للتشنجات، يمكن أن تعمل الحرارة والتمدد اللطيف مثل معظم مسكنات الألم.';
+      'إذا كنت تشعر بالراحة، فقد تساعدك الحركة اللطيفة أو الدفء على الشعور بالتحسن. تختلف التجارب الفردية.';
 
   @override
   String get coachMenstrual2 =>
-      'يعد انخفاض الطاقة أمرًا طبيعيًا اليوم - فالمشي يتفوق على التمرين المكثف.';
+      'اختر الراحة أو النشاط وفقًا لما تشعر به اليوم.';
 
   @override
   String get coachFollicular0 =>
-      'يرتفع هرمون الاستروجين: عادةً ما تصل الطاقة والتركيز إلى ذروتهما في هذه المرحلة. جدولة المهام الصعبة الآن.';
+      'تختلف الطاقة والأعراض بين الأشخاص والدورات. استخدم سجلاتك الخاصة لملاحظة الأنماط.';
 
   @override
   String get coachFollicular1 =>
-      'عادة ما تكون البشرة في أفضل حالاتها في هذه المرحلة، وهي فرصة جيدة لتجربة منتجات جديدة.';
+      'قد تتغير بشرتك خلال الدورة. قم بتسجيل التغييرات بدلاً من افتراض نمط ثابت.';
 
   @override
   String get coachFollicular2 =>
-      'جسمك جاهز الآن لممارسة التمارين عالية الكثافة.';
+      'اختر التمرين بناءً على صحتك وراحتك، وليس على مرحلة الدورة المتوقعة.';
 
   @override
   String get coachOvulation0 =>
-      'أنت في فترة الخصوبة — تصرفي وفقًا لخطتك، سواء وسائل منع الحمل أو الحمل.';
+      'أيام الخصوبة هي تقديرات. هذا التطبيق ليس وسيلة لمنع الحمل.';
 
   @override
   String get coachOvulation1 =>
-      'تشعر بعض النساء بألم خفيف في جانب واحد أثناء الإباضة (mittelschmerz) — وهذا أمر طبيعي.';
+      'اطلبي المشورة الطبية في حالة الألم الجديد أو الشديد أو المستمر بدلاً من نسبته إلى الإباضة.';
 
   @override
   String get coachOvulation2 =>
-      'تميل الطاقة الاجتماعية إلى الارتفاع هذه الأيام، وهو توقيت جيد للمحادثات المهمة.';
+      'يختلف المزاج والطاقة الاجتماعية. لا يمكن للمرحلة المتوقعة أن تحدد ما ستشعر به.';
 
   @override
   String get coachLuteal0 =>
-      'قد تبدأ أعراض الدورة الشهرية في هذه المرحلة، حيث يمكن أن يخففها المغنيسيوم والنوم المنتظم.';
+      'النوم والتوتر والعديد من العوامل الأخرى يمكن أن تؤثر على الأعراض. سجل ما لاحظته.';
 
   @override
   String get coachLuteal1 =>
-      'يمكن أن ترتفع الرغبة الشديدة في تناول السكر: جرب الوجبات الخفيفة الغنية بالبروتين للحفاظ على استقرار نسبة السكر في الدم.';
+      'اختر الوجبات والأنشطة التي تناسب احتياجاتك. المرحلة المتوقعة لا تصف نظامًا غذائيًا.';
 
   @override
   String get coachLuteal2 =>
-      'قد ترتفع الحساسية العاطفية، تهاني على نفسك، فهي هرمونية ومؤقتة.';
+      'التغيرات المزاجية لها العديد من الأسباب المحتملة. اطلب الدعم للأعراض المستمرة أو التي تقلقك.';
 
   @override
-  String get ovulationConfirmed => 'التبويض✓';
+  String get ovulationConfirmed => 'احتمالية التبويض';
 
   @override
   String get ovulationConfirmedInfo =>
-      'هذا التاريخ ليس تقديريًا: لقد تم تأكيده من خلال ارتفاع قراءات درجة حرارة الجسم الأساسية (قاعدة 3 على 6).';
+      'يشير نمط درجة الحرارة أو اختبار LH إلى إمكانية الإباضة. يؤثر المرض والنوم وتوقيت القياس على النتائج. هذا ليس تأكيدًا سريريًا ويجب عدم استخدامه لمنع الحمل.';
 
   @override
   String get premiumSection => 'قسط';
@@ -1122,7 +1237,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String pregnancyWeekLabel(int week) {
-    return 'الأسبوع $week';
+    final intl.NumberFormat weekNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String weekString = weekNumberFormat.format(week);
+
+    return 'الأسبوع $weekString';
   }
 
   @override
@@ -1165,12 +1284,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String pillDayLabel(int day) {
-    return 'يوم حبوب منع الحمل $day/21';
+    final intl.NumberFormat dayNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String dayString = dayNumberFormat.format(day);
+
+    return 'يوم حبوب منع الحمل $dayString/21';
   }
 
   @override
   String pillBreakLabel(int day) {
-    return 'استراحة الأسبوع • اليوم $day';
+    final intl.NumberFormat dayNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String dayString = dayNumberFormat.format(day);
+
+    return 'استراحة الأسبوع • اليوم $dayString';
   }
 
   @override
@@ -1182,7 +1309,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String learnedCycleLength(int days) {
-    return 'تعلمت: أيام $days';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return 'تعلمت: أيام $daysString';
   }
 
   @override
@@ -1194,7 +1325,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String insightLine(String symptom, String phase, int percent) {
-    return 'يحدث $symptom غالبًا في الطور $phase ($percent%)';
+    final intl.NumberFormat percentNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String percentString = percentNumberFormat.format(percent);
+
+    return 'يحدث $symptom غالبًا في الطور $phase ($percentString%)';
   }
 
   @override
@@ -1294,7 +1429,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String restoreConfirmBody(int count) {
-    return 'سيتم حذف جميع البيانات الحالية وستتم استعادة سجلات $count من النسخة الاحتياطية. لا يمكن التراجع عن هذا.';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'سيتم حذف جميع البيانات الحالية وستتم استعادة سجلات $countString من النسخة الاحتياطية. لا يمكن التراجع عن هذا.';
   }
 
   @override
@@ -1332,7 +1471,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String paywallTrialSubtitle(int days) {
-    return 'الإصدار التجريبي الخاص بك نشط: $days من الأيام المتبقية. Premium يبقي كل شيء مفتوحًا.';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return 'الإصدار التجريبي الخاص بك نشط: $daysString من الأيام المتبقية. Premium يبقي كل شيء مفتوحًا.';
   }
 
   @override
@@ -1381,7 +1524,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String trialBadge(int days) {
-    return 'المحاكمة: $days أيام متبقية';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return 'المحاكمة: $daysString أيام متبقية';
   }
 
   @override
@@ -1409,7 +1556,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String yearRingSummary(int count) {
-    return 'آخر 12 شهرًا: دورات $count';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'آخر 12 شهرًا: دورات $countString';
   }
 
   @override
@@ -1417,22 +1568,38 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String lastCycleLength(int days) {
-    return 'الدورة الأخيرة: أيام $days';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return 'الدورة الأخيرة: أيام $daysString';
   }
 
   @override
   String lastPeriodLength(int days) {
-    return 'الفترة الأخيرة: أيام $days';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return 'الفترة الأخيرة: أيام $daysString';
   }
 
   @override
   String vsAverageMore(int days) {
-    return '$days أيام أطول من المتوسط الخاص بك';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '$daysString أيام أطول من المتوسط الخاص بك';
   }
 
   @override
   String vsAverageLess(int days) {
-    return 'أيام $days أقصر من المتوسط';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return 'أيام $daysString أقصر من المتوسط';
   }
 
   @override
@@ -1440,7 +1607,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String coachPersonalInsight(String symptom, int percent) {
-    return 'بناءً على سجلاتك، الأكثر شيوعًا في هذه المرحلة: $symptom ($percent%)';
+    final intl.NumberFormat percentNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String percentString = percentNumberFormat.format(percent);
+
+    return 'بناءً على سجلاتك، الأكثر شيوعًا في هذه المرحلة: $symptom ($percentString%)';
   }
 
   @override
@@ -1462,7 +1633,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String notificationPeriodTimingInDays(int days) {
-    return 'قد تبدأ الدورة الشهرية بعد أيام $days.';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return 'قد تبدأ الدورة الشهرية بعد أيام $daysString.';
   }
 
   @override
@@ -1551,12 +1726,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String headlinePeriodInDays(int days) {
-    return 'دورتك الشهرية بالأيام $days';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return 'دورتك الشهرية بالأيام $daysString';
   }
 
   @override
   String headlinePeriodDay(int day) {
-    return 'اليوم $day من الدورة الشهرية';
+    final intl.NumberFormat dayNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String dayString = dayNumberFormat.format(day);
+
+    return 'اليوم $dayString من الدورة الشهرية';
   }
 
   @override
@@ -1586,12 +1769,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String headlineDelay(int days) {
-    return 'تأخرت الدورة الشهرية $days أيامًا';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return 'تأخرت الدورة الشهرية $daysString أيامًا';
   }
 
   @override
   String delayDays(int days) {
-    return '$days متأخرا بأيام';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '$daysString متأخرا بأيام';
   }
 
   @override
@@ -1603,12 +1794,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String nCyclesRecorded(int count) {
-    return 'دورات $count المسجلة';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'دورات $countString المسجلة';
   }
 
   @override
   String nLogsRecorded(int count) {
-    return '$count السجلات اليومية';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString السجلات اليومية';
   }
 
   @override
@@ -1683,7 +1882,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String leadNDaysBefore(int days) {
-    return '$days قبل أيام';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '$daysString قبل أيام';
   }
 
   @override
@@ -1700,17 +1903,35 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String typicalRangeNote(int min, int max, int pmax) {
-    return 'النطاق المقبول عمومًا: دورة $min – $max أيام، فترة تصل إلى $pmax أيام. ليس عتبة التشخيص.';
+    final intl.NumberFormat minNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minString = minNumberFormat.format(min);
+    final intl.NumberFormat maxNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String maxString = maxNumberFormat.format(max);
+    final intl.NumberFormat pmaxNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String pmaxString = pmaxNumberFormat.format(pmax);
+
+    return 'النطاق المقبول عمومًا: دورة $minString – $maxString أيام، فترة تصل إلى $pmaxString أيام. ليس عتبة التشخيص.';
   }
 
   @override
   String lowConfidenceNote(int count) {
-    return 'تأتي هذه المتوسطات من دورات $count فقط؛ سوف تزداد حدة كلما قمت بتسجيل المزيد.';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'تأتي هذه المتوسطات من دورات $countString فقط؛ سوف تزداد حدة كلما قمت بتسجيل المزيد.';
   }
 
   @override
   String regularityInfoInsufficient(int count) {
-    return 'هناك حاجة على الأقل إلى فجوات دورة $count قبل أن يعني الانتظام أي شيء. الحكم على أقل من شأنه أن يكون مضللاً.';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'هناك حاجة على الأقل إلى فجوات دورة $countString قبل أن يعني الانتظام أي شيء. الحكم على أقل من شأنه أن يكون مضللاً.';
   }
 
   @override
@@ -1792,12 +2013,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String pillBreakIn(int days) {
-    return 'تبدأ الاستراحة خلال أيام $days';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return 'تبدأ الاستراحة خلال أيام $daysString';
   }
 
   @override
   String pillNewPackIn(int days) {
-    return 'حزمة جديدة في أيام $days';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return 'حزمة جديدة في أيام $daysString';
   }
 
   @override
@@ -1806,22 +2035,38 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String healthImportConfirm(int count) {
-    return 'تم العثور على فترات زمنية $count في Health Connect غير موجودة في التطبيق. إضافتها إلى السجلات الخاصة بك؟ السجلات الموجودة لديك لم تمس.';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'تم العثور على فترات زمنية $countString في Health Connect غير موجودة في التطبيق. إضافتها إلى السجلات الخاصة بك؟ السجلات الموجودة لديك لم تمس.';
   }
 
   @override
   String healthImportDone(int count) {
-    return 'تم استيراد فترات $count';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'تم استيراد فترات $countString';
   }
 
   @override
   String monthPeriodDays(int count) {
-    return 'أيام الفترة $count';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'أيام الفترة $countString';
   }
 
   @override
   String monthLoggedDays(int count) {
-    return 'تم تسجيل أيام $count';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'تم تسجيل أيام $countString';
   }
 
   @override
@@ -1830,7 +2075,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String lockAfterMinutes(int minutes) {
-    return 'بعد $minutes دقيقة';
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'بعد $minutesString دقيقة';
   }
 
   @override
@@ -1874,12 +2123,26 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String storySymptomsMore(int recent, int previous) {
-    return 'كانت آخر 30 يومًا أكثر قسوة من الفترة السابقة (إدخالات $recent مقابل $previous).';
+    final intl.NumberFormat recentNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String recentString = recentNumberFormat.format(recent);
+    final intl.NumberFormat previousNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String previousString = previousNumberFormat.format(previous);
+
+    return 'كانت آخر 30 يومًا أكثر قسوة من الفترة السابقة (إدخالات $recentString مقابل $previousString).';
   }
 
   @override
   String storySymptomsLess(int recent, int previous) {
-    return 'كانت آخر 30 يومًا أسهل من الفترة السابقة (إدخالات $recent مقابل $previous).';
+    final intl.NumberFormat recentNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String recentString = recentNumberFormat.format(recent);
+    final intl.NumberFormat previousNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String previousString = previousNumberFormat.format(previous);
+
+    return 'كانت آخر 30 يومًا أسهل من الفترة السابقة (إدخالات $recentString مقابل $previousString).';
   }
 
   @override
@@ -1910,7 +2173,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String dataCoverageValue(int logged, int total, int percent) {
-    return 'بيانات عن $logged لأيام $total ($percent%)';
+    final intl.NumberFormat loggedNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String loggedString = loggedNumberFormat.format(logged);
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+    final intl.NumberFormat percentNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String percentString = percentNumberFormat.format(percent);
+
+    return 'بيانات عن $loggedString لأيام $totalString ($percentString%)';
   }
 
   @override
@@ -1934,12 +2207,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String trackingStreak(int count) {
-    return '$count أيام متتالية من التسجيل';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString أيام متتالية من التسجيل';
   }
 
   @override
   String weeklyTracking(int count) {
-    return '$count/7 أيام مسجلة';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString/7 أيام مسجلة';
   }
 
   @override
@@ -2027,7 +2308,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String sleepDurationShort(int hours, int minutes) {
-    return '$hours س $minutes د';
+    final intl.NumberFormat hoursNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String hoursString = hoursNumberFormat.format(hours);
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$hoursString س $minutesString د';
   }
 
   @override
@@ -2118,4 +2406,63 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get screenProtectionDescription =>
       'تمنع لقطات الشاشة ومعاينة التطبيق في قائمة التطبيقات الأخيرة.';
+
+  @override
+  String get predictionUncertain => 'مرحلة الدورة غير مؤكدة';
+
+  @override
+  String get startupRecoveryBody =>
+      'لا يمكن فتح بياناتك بأمان. لقد تم الحفاظ عليه. أعد المحاولة، أو أغلق التطبيق واتصل بالدعم. لا تقم بإعادة التثبيت قبل استعادة النسخة الاحتياطية الخاصة بك.';
+
+  @override
+  String get retry => 'أعد المحاولة';
+
+  @override
+  String get adPrivacyOptions => 'خيارات خصوصية الإعلان';
+
+  @override
+  String get policyAvailableEnglish =>
+      'هذه السياسة متاحة باللغة الإنجليزية. فيما يلي نص السياسة الأصلي.';
+
+  @override
+  String get purchasePending => 'في انتظار تأكيد الدفع';
+
+  @override
+  String get purchaseVerifying => 'التحقق من عملية الشراء';
+
+  @override
+  String get purchaseFailed =>
+      'لا يمكن التحقق من عملية الشراء الخاصة بك. الرجاء إعادة المحاولة أو استعادة المشتريات.';
+
+  @override
+  String get pillSchedule => 'جدول حبوب منع الحمل';
+
+  @override
+  String get pillContinuous => 'مستمر (بدون انقطاع)';
+
+  @override
+  String get predictionRange => 'النطاق الزمني المقدر';
+
+  @override
+  String get analyticsChoice => 'قياس الاستخدام (اختياري)';
+
+  @override
+  String get analyticsChoiceDescription =>
+      'اختياري. يتم احتساب إجراءات التطبيق فقط على هذا الجهاز. يتم استبعاد البيانات الصحية والملاحظات والتواريخ والهوية. لا يتم تحميل أي شيء بدون خدمة مكونة.';
+
+  @override
+  String get reportRange => 'تقرير النطاق الزمني';
+
+  @override
+  String get allHistory => 'كل التاريخ';
+
+  @override
+  String get pillActiveDaysTitle => 'أيام حبوب منع الحمل النشطة (1-120)';
+
+  @override
+  String get pillBreakDaysTitle => 'أيام الراحة أو العلاج الوهمي (0-14)';
+
+  @override
+  String get pillPrescriptionNote =>
+      'استخدم فقط الجدول الزمني في وصفتك الطبية أو تعليمات الطبيب. لا ينصح هذا الإعداد بتغيير الدواء.';
 }

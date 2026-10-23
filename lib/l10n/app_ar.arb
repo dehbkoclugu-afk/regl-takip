@@ -42,11 +42,12 @@
   "today": "اليوم",
   "cycleDay": "يوم الدورة",
   "periodIn": "موعد الحيض بعد",
-  "daysLeft": "باقي {count} أيام",
+  "daysLeft": "{count, plural, =0 {باقي {count} أيام} one {باقي يوم واحد} two {باقي يومان} few {باقي {count} أيام} many {باقي {count} يومًا} other {باقي {count} يوم}}",
   "@daysLeft": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -188,7 +189,8 @@
   "@severityLevel": {
     "placeholders": {
       "level": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -207,11 +209,12 @@
   "howAreYouFeeling": "كيف تشعر اليوم؟",
   "logMoodAndSymptoms": "سجل حالتك المزاجية والأعراض",
   "addRecord": "إضافة سجل",
-  "nSymptoms": "أعراض {count}",
+  "nSymptoms": "{count, plural, =0 {أعراض {count}} one {عرض واحد} two {عرضان} few {{count} أعراض} many {{count} عرضًا} other {{count} عرض}}",
   "@nSymptoms": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -231,7 +234,8 @@
   "@nGlassesWater": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -240,19 +244,21 @@
   "dailyMeasurements": "القياسات اليومية",
   "flow": "تدفق الحيض",
   "recorded": "مسجلة",
-  "nMedications": "أدوية {count}",
+  "nMedications": "{count, plural, =0 {أدوية {count}} one {دواء واحد} two {دواءان} few {{count} أدوية} many {{count} دواءً} other {{count} دواء}}",
   "@nMedications": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
-  "nGlasses": "{count} أكواب",
+  "nGlasses": "{count, plural, =0 {{count} أكواب} one {كوب واحد} two {كوبان} few {{count} أكواب} many {{count} كوبًا} other {{count} كوب}}",
   "@nGlasses": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -277,7 +283,8 @@
   "@saveNSymptoms": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -285,7 +292,8 @@
   "@nSymptomsSaved": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -340,22 +348,24 @@
   "noMoodData": "لا توجد بيانات الحالة المزاجية حتى الآن",
   "noCycleData": "لا توجد بيانات دورة حتى الآن",
   "ongoing": "مستمر",
-  "nDays": "أيام {count}",
+  "nDays": "{count, plural, =0 {أيام {count}} one {يوم واحد} two {يومان} few {{count} أيام} many {{count} يومًا} other {{count} يوم}}",
   "@nDays": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
   "profileSection": "الملف الشخصي",
   "preferences": "التفضيلات",
   "age": "العمر",
-  "nYearsOld": "{count} سنة",
+  "nYearsOld": "{count, plural, =0 {{count} سنة} one {سنة واحدة} two {سنتان} few {{count} سنوات} many {{count} سنة} other {{count} سنة}}",
   "@nYearsOld": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -377,10 +387,12 @@
   "@stepOfSteps": {
     "placeholders": {
       "current": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "total": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -412,7 +424,8 @@
   "@daysLater": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -428,24 +441,25 @@
   "@tooManyAttempts": {
     "placeholders": {
       "seconds": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
-  "coachMenstrual0": "أيام النزيف تعني فقدان الحديد، وتساعد اللحوم الحمراء والعدس والخضر الورقية الداكنة.",
-  "coachMenstrual1": "بالنسبة للتشنجات، يمكن أن تعمل الحرارة والتمدد اللطيف مثل معظم مسكنات الألم.",
-  "coachMenstrual2": "يعد انخفاض الطاقة أمرًا طبيعيًا اليوم - فالمشي يتفوق على التمرين المكثف.",
-  "coachFollicular0": "يرتفع هرمون الاستروجين: عادةً ما تصل الطاقة والتركيز إلى ذروتهما في هذه المرحلة. جدولة المهام الصعبة الآن.",
-  "coachFollicular1": "عادة ما تكون البشرة في أفضل حالاتها في هذه المرحلة، وهي فرصة جيدة لتجربة منتجات جديدة.",
-  "coachFollicular2": "جسمك جاهز الآن لممارسة التمارين عالية الكثافة.",
-  "coachOvulation0": "أنت في فترة الخصوبة — تصرفي وفقًا لخطتك، سواء وسائل منع الحمل أو الحمل.",
-  "coachOvulation1": "تشعر بعض النساء بألم خفيف في جانب واحد أثناء الإباضة (mittelschmerz) — وهذا أمر طبيعي.",
-  "coachOvulation2": "تميل الطاقة الاجتماعية إلى الارتفاع هذه الأيام، وهو توقيت جيد للمحادثات المهمة.",
-  "coachLuteal0": "قد تبدأ أعراض الدورة الشهرية في هذه المرحلة، حيث يمكن أن يخففها المغنيسيوم والنوم المنتظم.",
-  "coachLuteal1": "يمكن أن ترتفع الرغبة الشديدة في تناول السكر: جرب الوجبات الخفيفة الغنية بالبروتين للحفاظ على استقرار نسبة السكر في الدم.",
-  "coachLuteal2": "قد ترتفع الحساسية العاطفية، تهاني على نفسك، فهي هرمونية ومؤقتة.",
-  "ovulationConfirmed": "التبويض✓",
-  "ovulationConfirmedInfo": "هذا التاريخ ليس تقديريًا: لقد تم تأكيده من خلال ارتفاع قراءات درجة حرارة الجسم الأساسية (قاعدة 3 على 6).",
+  "coachMenstrual0": "يمكنك تسجيل النزيف والألم وما تشعر به. اطلب المشورة الطبية بشأن الأعراض التي تقلقك.",
+  "coachMenstrual1": "إذا كنت تشعر بالراحة، فقد تساعدك الحركة اللطيفة أو الدفء على الشعور بالتحسن. تختلف التجارب الفردية.",
+  "coachMenstrual2": "اختر الراحة أو النشاط وفقًا لما تشعر به اليوم.",
+  "coachFollicular0": "تختلف الطاقة والأعراض بين الأشخاص والدورات. استخدم سجلاتك الخاصة لملاحظة الأنماط.",
+  "coachFollicular1": "قد تتغير بشرتك خلال الدورة. قم بتسجيل التغييرات بدلاً من افتراض نمط ثابت.",
+  "coachFollicular2": "اختر التمرين بناءً على صحتك وراحتك، وليس على مرحلة الدورة المتوقعة.",
+  "coachOvulation0": "أيام الخصوبة هي تقديرات. هذا التطبيق ليس وسيلة لمنع الحمل.",
+  "coachOvulation1": "اطلبي المشورة الطبية في حالة الألم الجديد أو الشديد أو المستمر بدلاً من نسبته إلى الإباضة.",
+  "coachOvulation2": "يختلف المزاج والطاقة الاجتماعية. لا يمكن للمرحلة المتوقعة أن تحدد ما ستشعر به.",
+  "coachLuteal0": "النوم والتوتر والعديد من العوامل الأخرى يمكن أن تؤثر على الأعراض. سجل ما لاحظته.",
+  "coachLuteal1": "اختر الوجبات والأنشطة التي تناسب احتياجاتك. المرحلة المتوقعة لا تصف نظامًا غذائيًا.",
+  "coachLuteal2": "التغيرات المزاجية لها العديد من الأسباب المحتملة. اطلب الدعم للأعراض المستمرة أو التي تقلقك.",
+  "ovulationConfirmed": "احتمالية التبويض",
+  "ovulationConfirmedInfo": "يشير نمط درجة الحرارة أو اختبار LH إلى إمكانية الإباضة. يؤثر المرض والنوم وتوقيت القياس على النتائج. هذا ليس تأكيدًا سريريًا ويجب عدم استخدامه لمنع الحمل.",
   "premiumSection": "قسط",
   "removeAds": "إزالة الإعلانات",
   "restorePurchases": "استعادة المشتريات",
@@ -472,7 +486,8 @@
   "@pregnancyWeekLabel": {
     "placeholders": {
       "week": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -491,7 +506,8 @@
   "@pillDayLabel": {
     "placeholders": {
       "day": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -499,7 +515,8 @@
   "@pillBreakLabel": {
     "placeholders": {
       "day": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -509,7 +526,8 @@
   "@learnedCycleLength": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -525,7 +543,8 @@
         "type": "String"
       },
       "percent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -562,7 +581,8 @@
   "@restoreConfirmBody": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -581,7 +601,8 @@
   "@paywallTrialSubtitle": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -603,7 +624,8 @@
   "@trialBadge": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -618,7 +640,8 @@
   "@yearRingSummary": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -627,7 +650,8 @@
   "@lastCycleLength": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -635,7 +659,8 @@
   "@lastPeriodLength": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -643,7 +668,8 @@
   "@vsAverageMore": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -651,7 +677,8 @@
   "@vsAverageLess": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -663,7 +690,8 @@
         "type": "String"
       },
       "percent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -683,7 +711,8 @@
   "@notificationPeriodTimingInDays": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -718,7 +747,8 @@
   "@headlinePeriodInDays": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -726,7 +756,8 @@
   "@headlinePeriodDay": {
     "placeholders": {
       "day": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -741,7 +772,8 @@
   "@headlineDelay": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -749,7 +781,8 @@
   "@delayDays": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -759,7 +792,8 @@
   "@nCyclesRecorded": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -767,7 +801,8 @@
   "@nLogsRecorded": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -797,7 +832,8 @@
   "@leadNDaysBefore": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -808,13 +844,16 @@
   "@typicalRangeNote": {
     "placeholders": {
       "min": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "max": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "pmax": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -822,7 +861,8 @@
   "@lowConfidenceNote": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -830,7 +870,8 @@
   "@regularityInfoInsufficient": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -882,7 +923,8 @@
   "@pillBreakIn": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -890,7 +932,8 @@
   "@pillNewPackIn": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -899,7 +942,8 @@
   "@healthImportConfirm": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -907,7 +951,8 @@
   "@healthImportDone": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -915,7 +960,8 @@
   "@monthPeriodDays": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -923,7 +969,8 @@
   "@monthLoggedDays": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -932,7 +979,8 @@
   "@lockAfterMinutes": {
     "placeholders": {
       "minutes": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -953,10 +1001,12 @@
   "@storySymptomsMore": {
     "placeholders": {
       "recent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "previous": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -964,10 +1014,12 @@
   "@storySymptomsLess": {
     "placeholders": {
       "recent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "previous": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -1008,13 +1060,16 @@
   "@dataCoverageValue": {
     "placeholders": {
       "logged": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "total": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "percent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -1028,7 +1083,8 @@
   "@trackingStreak": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -1036,7 +1092,8 @@
   "@weeklyTracking": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -1070,10 +1127,12 @@
   "@sleepDurationShort": {
     "placeholders": {
       "hours": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "minutes": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -1102,5 +1161,23 @@
   "notificationFrequencyDetailed": "مفصلة",
   "readOnlyHistoryNotice": "يمكنك عرض إدخالاتك السابقة. الإدخالات والتغييرات اليومية الجديدة تتطلب Premium.",
   "screenProtectionTitle": "حماية الشاشة",
-  "screenProtectionDescription": "تمنع لقطات الشاشة ومعاينة التطبيق في قائمة التطبيقات الأخيرة."
+  "screenProtectionDescription": "تمنع لقطات الشاشة ومعاينة التطبيق في قائمة التطبيقات الأخيرة.",
+  "predictionUncertain": "مرحلة الدورة غير مؤكدة",
+  "startupRecoveryBody": "لا يمكن فتح بياناتك بأمان. لقد تم الحفاظ عليه. أعد المحاولة، أو أغلق التطبيق واتصل بالدعم. لا تقم بإعادة التثبيت قبل استعادة النسخة الاحتياطية الخاصة بك.",
+  "retry": "أعد المحاولة",
+  "adPrivacyOptions": "خيارات خصوصية الإعلان",
+  "policyAvailableEnglish": "هذه السياسة متاحة باللغة الإنجليزية. فيما يلي نص السياسة الأصلي.",
+  "purchasePending": "في انتظار تأكيد الدفع",
+  "purchaseVerifying": "التحقق من عملية الشراء",
+  "purchaseFailed": "لا يمكن التحقق من عملية الشراء الخاصة بك. الرجاء إعادة المحاولة أو استعادة المشتريات.",
+  "pillSchedule": "جدول حبوب منع الحمل",
+  "pillContinuous": "مستمر (بدون انقطاع)",
+  "predictionRange": "النطاق الزمني المقدر",
+  "analyticsChoice": "قياس الاستخدام (اختياري)",
+  "analyticsChoiceDescription": "اختياري. يتم احتساب إجراءات التطبيق فقط على هذا الجهاز. يتم استبعاد البيانات الصحية والملاحظات والتواريخ والهوية. لا يتم تحميل أي شيء بدون خدمة مكونة.",
+  "reportRange": "تقرير النطاق الزمني",
+  "allHistory": "كل التاريخ",
+  "pillActiveDaysTitle": "أيام حبوب منع الحمل النشطة (1-120)",
+  "pillBreakDaysTitle": "أيام الراحة أو العلاج الوهمي (0-14)",
+  "pillPrescriptionNote": "استخدم فقط الجدول الزمني في وصفتك الطبية أو تعليمات الطبيب. لا ينصح هذا الإعداد بتغيير الدواء."
 }

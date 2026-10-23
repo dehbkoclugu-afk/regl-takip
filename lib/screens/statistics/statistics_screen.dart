@@ -62,8 +62,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final meaningfulLogs = dailyLogs.values
-        .where((log) =>
-            hasMeaningfulDailyData(log) && !log.date.isAfter(today))
+        .where((log) => hasMeaningfulDailyData(log) && !log.date.isAfter(today))
         .toList();
     final coverageStart = _filterMonths == 0
         ? (meaningfulLogs.isEmpty
@@ -94,103 +93,110 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         filteredRecords, profile?.averagePeriodLength ?? 5);
 
     final content = SingleChildScrollView(
-        // Kilitliyken kaydırma kapalı: bulanık içerik gezilecek bir şey değil
-        physics: locked ? const NeverScrollableScrollPhysics() : null,
-        padding: EdgeInsets.fromLTRB(16, 16, 16, bottomNavInset(context)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Hiç kayıt yoksa: tek seferlik yönlendirme metni
-            // (kart içi boşlukların üstünde, tekrarı önler)
-            if (records.isEmpty) ...[
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: EmptyState(
-                    icon: Icons.insights_outlined,
-                    title: l10n.statistics,
-                    message: l10n.noDataYet,
-                  ),
+      // Kilitliyken kaydırma kapalı: bulanık içerik gezilecek bir şey değil
+      physics: locked ? const NeverScrollableScrollPhysics() : null,
+      padding: EdgeInsets.fromLTRB(16, 16, 16, bottomNavInset(context)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Hiç kayıt yoksa: tek seferlik yönlendirme metni
+          // (kart içi boşlukların üstünde, tekrarı önler)
+          if (records.isEmpty) ...[
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: EmptyState(
+                  icon: Icons.insights_outlined,
+                  title: l10n.statistics,
+                  message: l10n.noDataYet,
                 ),
               ),
-              const SizedBox(height: 20),
-            ],
-            // Doktora götürülecek özet uygulamanın en somut faydası ama
-            // ayarların derinliğinde duruyordu — istatistiğin başında olmalı
-            _buildDoctorExportButton(l10n, records, dailyLogs, profile)
-                .animateSafe(context)
-                .fadeIn(duration: 400.ms),
+            ),
             const SizedBox(height: 20),
-            // Tek parça segmentli filtre: üç ayrı baloncuk yerine
-            // birleşik seçici — daha derli toplu, daha "ürün" his
-            _buildFilterBar(l10n).animateSafe(context).fadeIn(duration: 400.ms),
-            const SizedBox(height: 24),
-            _sectionHeader(l10n.statsSectionOverview),
-            _buildOverviewCard(l10n, avgCycle, avgPeriod, filteredRecords),
-            const SizedBox(height: 16),
-            // "Son döngün normaline göre nasıldı?" — filtreden bağımsız:
-            // "son" ve "ortalaman" kişisel normun tamamından hesaplanır
-            _buildComparisonCard(l10n, records, profile),
-            const SizedBox(height: 16),
-            // "Yılım": son 12 ay tek halka — düzenlilik bir bakışta.
-            // Ring/faz şeridiyle aynı görsel aile (imza dili üçüncü yüzeyde)
-            _buildYearRing(l10n, records, profile),
-            const SizedBox(height: 16),
-            _buildDataCoverageCard(l10n, coverage, monthlyCoverage),
-            const SizedBox(height: 28),
-            _sectionHeader(l10n.statsSectionCharts),
-            _buildSymptomChart(l10n, filteredLogs),
-            const SizedBox(height: 16),
-            _buildMoodChart(l10n, filteredLogs),
-            const SizedBox(height: 16),
-            _buildPhaseInsights(l10n, filteredLogs, records, profile),
-            const SizedBox(height: 16),
-            _buildCycleSymptomComparison(
-              l10n,
-              dailyLogs.values.toList(),
-              records,
-            ),
-            const SizedBox(height: 28),
-            _sectionHeader(l10n.statsSectionHistory),
-            _buildCycleHistory(l10n, filteredRecords),
-            const SizedBox(height: 16),
-            _buildTrendChart(
-              l10n.temperatureTrend, filteredLogs,
-              (log) => log.temperature, AppColors.temperature, '°C',
-              records, profile,
-            ),
-            const SizedBox(height: 16),
-            _buildTrendChart(
-              l10n.weightTrend, filteredLogs,
-              (log) => log.weight, AppColors.weightColor, 'kg',
-              records, profile,
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline_rounded,
-                      size: 14,
-                      color: AppColors.ts(context)),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      l10n.healthDisclaimer,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.ts(context),
-                        height: 1.4,
-                      ),
+          ],
+          // Doktora götürülecek özet uygulamanın en somut faydası ama
+          // ayarların derinliğinde duruyordu — istatistiğin başında olmalı
+          _buildDoctorExportButton(l10n, records, dailyLogs, profile)
+              .animateSafe(context)
+              .fadeIn(duration: 400.ms),
+          const SizedBox(height: 20),
+          // Tek parça segmentli filtre: üç ayrı baloncuk yerine
+          // birleşik seçici — daha derli toplu, daha "ürün" his
+          _buildFilterBar(l10n).animateSafe(context).fadeIn(duration: 400.ms),
+          const SizedBox(height: 24),
+          _sectionHeader(l10n.statsSectionOverview),
+          _buildOverviewCard(l10n, avgCycle, avgPeriod, filteredRecords),
+          const SizedBox(height: 16),
+          // "Son döngün normaline göre nasıldı?" — filtreden bağımsız:
+          // "son" ve "ortalaman" kişisel normun tamamından hesaplanır
+          _buildComparisonCard(l10n, records, profile),
+          const SizedBox(height: 16),
+          // "Yılım": son 12 ay tek halka — düzenlilik bir bakışta.
+          // Ring/faz şeridiyle aynı görsel aile (imza dili üçüncü yüzeyde)
+          _buildYearRing(l10n, records, profile),
+          const SizedBox(height: 16),
+          _buildDataCoverageCard(l10n, coverage, monthlyCoverage),
+          const SizedBox(height: 28),
+          _sectionHeader(l10n.statsSectionCharts),
+          _buildSymptomChart(l10n, filteredLogs),
+          const SizedBox(height: 16),
+          _buildMoodChart(l10n, filteredLogs),
+          const SizedBox(height: 16),
+          _buildPhaseInsights(l10n, filteredLogs, records, profile),
+          const SizedBox(height: 16),
+          _buildCycleSymptomComparison(
+            l10n,
+            dailyLogs.values.toList(),
+            records,
+          ),
+          const SizedBox(height: 28),
+          _sectionHeader(l10n.statsSectionHistory),
+          _buildCycleHistory(l10n, filteredRecords),
+          const SizedBox(height: 16),
+          _buildTrendChart(
+            l10n.temperatureTrend,
+            filteredLogs,
+            (log) => log.temperature,
+            AppColors.temperature,
+            '°C',
+            records,
+            profile,
+          ),
+          const SizedBox(height: 16),
+          _buildTrendChart(
+            l10n.weightTrend,
+            filteredLogs,
+            (log) => log.weight,
+            AppColors.weightColor,
+            'kg',
+            records,
+            profile,
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline_rounded,
+                    size: 14, color: AppColors.ts(context)),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    l10n.healthDisclaimer,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AppColors.ts(context),
+                      height: 1.4,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(height: 24),
-          ],
-        ),
-      );
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
 
     return Scaffold(
       backgroundColor: AppColors.bg(context),
@@ -209,8 +215,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 // uydurma bir örnek değil, bulanıklaştırılmış gerçek.
                 Positioned.fill(
                   child: ImageFiltered(
-                    imageFilter:
-                        ui.ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                    imageFilter: ui.ImageFilter.blur(sigmaX: 6, sigmaY: 6),
                     child: IgnorePointer(child: content),
                   ),
                 ),
@@ -245,7 +250,12 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 try {
                   final service = ExportService();
                   final path = await service.exportPdf(
-                      profile, records, dailyLogs, l10n);
+                      profile, records, dailyLogs, l10n,
+                      includeAllLogs: _filterMonths == 0,
+                      rangeStart: _filterMonths == 0
+                          ? null
+                          : DateTime.now()
+                              .subtract(Duration(days: _filterMonths * 30)));
                   await service.shareFile(path);
                 } catch (e) {
                   messenger.showSnackBar(SnackBar(
@@ -260,8 +270,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           foregroundColor: AppColors.primaryDeep,
           side: BorderSide(color: AppColors.dv(context)),
           padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
       ),
     );
@@ -300,9 +310,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             Text(l10n.premiumLockedBody,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    fontSize: 14,
-                    height: 1.45,
-                    color: AppColors.ts(context))),
+                    fontSize: 14, height: 1.45, color: AppColors.ts(context))),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
@@ -343,8 +351,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   borderRadius: BorderRadius.circular(12),
                   onTap: () => setState(() => _filterMonths = months),
                   child: AnimatedContainer(
-                    duration: context.motionDuration(
-                        const Duration(milliseconds: 200)),
+                    duration: context
+                        .motionDuration(const Duration(milliseconds: 200)),
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
                       gradient: _filterMonths == months
@@ -715,8 +723,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   String _moodName(MoodType mood, AppLocalizations l10n) =>
       EnumLabels.mood(mood, l10n);
 
-  Widget _buildOverviewCard(
-      AppLocalizations l10n, double avgCycle, double avgPeriod, List<PeriodRecord> records) {
+  Widget _buildOverviewCard(AppLocalizations l10n, double avgCycle,
+      double avgPeriod, List<PeriodRecord> records) {
     // null = veri yetersiz; aksi halde en uzun/en kısa döngü farkı >= 9 gün
     // düzensiz sayılır (CycleUtils.isIrregular)
     final irregular = CycleUtils.isIrregular(records);
@@ -807,7 +815,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           ],
         ],
       ),
-    ).animateSafe(context).fadeIn(delay: 60.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+    )
+        .animateSafe(context)
+        .fadeIn(delay: 60.ms, duration: 400.ms)
+        .slideY(begin: 0.1, end: 0);
   }
 
   /// Düzenlilik yargısının ne demek olduğunu açıklar. Ölçütü saklamak
@@ -822,19 +833,16 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         backgroundColor: AppColors.sf(ctx),
         title: Text(l10n.regularity,
-            style: const TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold)),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(body,
-                  style: const TextStyle(fontSize: 14, height: 1.5)),
+              Text(body, style: const TextStyle(fontSize: 14, height: 1.5)),
               const SizedBox(height: 12),
               Text(l10n.regularityInfoSeeDoctor,
                   style: TextStyle(
@@ -866,7 +874,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           height: 40,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [color.withValues(alpha: 0.22), color.withValues(alpha: 0.08)],
+              colors: [
+                color.withValues(alpha: 0.22),
+                color.withValues(alpha: 0.08)
+              ],
             ),
             shape: BoxShape.circle,
           ),
@@ -877,9 +888,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           Text(value,
               textAlign: TextAlign.center,
               style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: color))
+                  fontSize: 14, fontWeight: FontWeight.w800, color: color))
         else
           Text.rich(
             TextSpan(
@@ -960,102 +969,104 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           // Ekran okuyucu için grafik verisi metin özeti olarak sunulur
           Semantics(
             label: top5
-                .map((e) =>
-                    '${_symptomName(e.type, l10n)}: ${e.count}, '
+                .map((e) => '${_symptomName(e.type, l10n)}: ${e.count}, '
                     '${l10n.averageSeverity(e.averageSeverity.toStringAsFixed(1))}')
                 .join(', '),
             child: ExcludeSemantics(
               child: SizedBox(
-            height: 180,
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceAround,
-                maxY: (top5.first.count + 2).toDouble(),
-                // Değer çubuğun üstünde kalıcı yazılır: dokunma kapalıyken
-                // gören kullanıcı yalnız göreli yükseklik görüyordu (ekran
-                // okuyucu özeti sayı alırken görene sayı yoktu)
-                barTouchData: BarTouchData(
-                  enabled: false,
-                  touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (_) => Colors.transparent,
-                    tooltipPadding: EdgeInsets.zero,
-                    tooltipMargin: 2,
-                    getTooltipItem: (group, groupIndex, rod, rodIndex) =>
-                        BarTooltipItem(
-                      rod.toY.round().toString(),
-                      TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.tp(context),
-                      ),
-                    ),
-                  ),
-                ),
-                titlesData: FlTitlesData(
-                  show: true,
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      // İki satırlık tam ad için yer; 4 harfe kırpma
-                      // ("Baş ", "Kram") TR'de hiçbir şey ayırt etmiyordu
-                      reservedSize: 40,
-                      getTitlesWidget: (value, meta) {
-                        final idx = value.toInt();
-                        if (idx >= 0 && idx < top5.length) {
-                          final name = _symptomName(top5[idx].type, l10n);
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 6),
-                            child: SizedBox(
-                              // 60 px etiketler 5 çubuklu dar grafikte
-                              // birbirine değiyordu
-                              width: 50,
-                              child: Text(
-                                name,
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    fontSize: 8.5,
-                                    height: 1.15,
-                                    color: AppColors.ts(context)),
-                              ),
-                            ),
-                          );
-                        }
-                        return const SizedBox();
-                      },
-                    ),
-                  ),
-                  leftTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
-                ),
-                borderData: FlBorderData(show: false),
-                gridData: const FlGridData(show: false),
-                barGroups: top5.asMap().entries.map((entry) {
-                  return BarChartGroupData(
-                    x: entry.key,
-                    barRods: [
-                      BarChartRodData(
-                        toY: entry.value.count.toDouble(),
-                        gradient: const LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [AppColors.primaryLight, AppColors.primary],
+                height: 180,
+                child: BarChart(
+                  BarChartData(
+                    alignment: BarChartAlignment.spaceAround,
+                    maxY: (top5.first.count + 2).toDouble(),
+                    // Değer çubuğun üstünde kalıcı yazılır: dokunma kapalıyken
+                    // gören kullanıcı yalnız göreli yükseklik görüyordu (ekran
+                    // okuyucu özeti sayı alırken görene sayı yoktu)
+                    barTouchData: BarTouchData(
+                      enabled: false,
+                      touchTooltipData: BarTouchTooltipData(
+                        getTooltipColor: (_) => Colors.transparent,
+                        tooltipPadding: EdgeInsets.zero,
+                        tooltipMargin: 2,
+                        getTooltipItem: (group, groupIndex, rod, rodIndex) =>
+                            BarTooltipItem(
+                          rod.toY.round().toString(),
+                          TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.tp(context),
+                          ),
                         ),
-                        width: 24,
-                        borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(10)),
                       ),
-                    ],
-                  );
-                }).toList(),
+                    ),
+                    titlesData: FlTitlesData(
+                      show: true,
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          // İki satırlık tam ad için yer; 4 harfe kırpma
+                          // ("Baş ", "Kram") TR'de hiçbir şey ayırt etmiyordu
+                          reservedSize: 40,
+                          getTitlesWidget: (value, meta) {
+                            final idx = value.toInt();
+                            if (idx >= 0 && idx < top5.length) {
+                              final name = _symptomName(top5[idx].type, l10n);
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 6),
+                                child: SizedBox(
+                                  // 60 px etiketler 5 çubuklu dar grafikte
+                                  // birbirine değiyordu
+                                  width: 50,
+                                  child: Text(
+                                    name,
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: 8.5,
+                                        height: 1.15,
+                                        color: AppColors.ts(context)),
+                                  ),
+                                ),
+                              );
+                            }
+                            return const SizedBox();
+                          },
+                        ),
+                      ),
+                      leftTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
+                      topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
+                      rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
+                    ),
+                    borderData: FlBorderData(show: false),
+                    gridData: const FlGridData(show: false),
+                    barGroups: top5.asMap().entries.map((entry) {
+                      return BarChartGroupData(
+                        x: entry.key,
+                        barRods: [
+                          BarChartRodData(
+                            toY: entry.value.count.toDouble(),
+                            gradient: const LinearGradient(
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                              colors: [
+                                AppColors.primaryLight,
+                                AppColors.primary
+                              ],
+                            ),
+                            width: 24,
+                            borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(10)),
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
-            ),
-          ),
             ),
           ),
           const SizedBox(height: 12),
@@ -1086,7 +1097,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           ),
         ],
       ),
-    ).animateSafe(context).fadeIn(delay: 120.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+    )
+        .animateSafe(context)
+        .fadeIn(delay: 120.ms, duration: 400.ms)
+        .slideY(begin: 0.1, end: 0);
   }
 
   Widget _buildMoodChart(AppLocalizations l10n, List<DailyLog> logs) {
@@ -1198,7 +1212,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           ),
         ],
       ),
-    ).animateSafe(context).fadeIn(delay: 180.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+    )
+        .animateSafe(context)
+        .fadeIn(delay: 180.ms, duration: 400.ms)
+        .slideY(begin: 0.1, end: 0);
   }
 
   /// Semptom kayıtlarını döngü fazlarına eşler; her semptomun en sık
@@ -1268,7 +1285,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           }),
         ],
       ),
-    ).animateSafe(context).fadeIn(delay: 220.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+    )
+        .animateSafe(context)
+        .fadeIn(delay: 220.ms, duration: 400.ms)
+        .slideY(begin: 0.1, end: 0);
   }
 
   Widget _buildCycleSymptomComparison(
@@ -1296,12 +1316,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final currentSpots = spots(comparison.current);
     final previousSpots = spots(comparison.previous);
     final allSpots = [...currentSpots, ...previousSpots];
-    final maxX = allSpots
-        .map((spot) => spot.x)
-        .reduce((a, b) => a > b ? a : b);
-    final maxY = allSpots
-        .map((spot) => spot.y)
-        .reduce((a, b) => a > b ? a : b);
+    final maxX = allSpots.map((spot) => spot.x).reduce((a, b) => a > b ? a : b);
+    final maxY = allSpots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b);
     final currentTotal = comparison.current.values
         .fold<double>(0, (total, value) => total + value);
     final previousTotal = comparison.previous.values
@@ -1329,8 +1345,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             ),
             const SizedBox(width: 6),
             Text(label,
-                style:
-                    TextStyle(fontSize: 11, color: AppColors.ts(context))),
+                style: TextStyle(fontSize: 11, color: AppColors.ts(context))),
           ],
         );
 
@@ -1402,10 +1417,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                       bottomTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
-                          interval: (maxX / 4)
-                              .ceilToDouble()
-                              .clamp(1, 30)
-                              .toDouble(),
+                          interval:
+                              (maxX / 4).ceilToDouble().clamp(1, 30).toDouble(),
                           getTitlesWidget: (value, _) => Text(
                             value.round().toString(),
                             style: TextStyle(
@@ -1516,8 +1529,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                               children: [
                                 if (r.endDate != null)
                                   TextSpan(
-                                    text:
-                                        ' - ${dateFormat.format(r.endDate!)}',
+                                    text: ' - ${dateFormat.format(r.endDate!)}',
                                     style: TextStyle(
                                         fontWeight: FontWeight.w400,
                                         color: AppColors.ts(context)),
@@ -1532,14 +1544,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                                   ),
                               ],
                             ),
-                            maxLines: usesLargeText(
-                                    MediaQuery.textScalerOf(context))
-                                ? null
-                                : 1,
-                            overflow: usesLargeText(
-                                    MediaQuery.textScalerOf(context))
-                                ? null
-                                : TextOverflow.ellipsis,
+                            maxLines:
+                                usesLargeText(MediaQuery.textScalerOf(context))
+                                    ? null
+                                    : 1,
+                            overflow:
+                                usesLargeText(MediaQuery.textScalerOf(context))
+                                    ? null
+                                    : TextOverflow.ellipsis,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -1558,7 +1570,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               )),
         ],
       ),
-    ).animateSafe(context).fadeIn(delay: 260.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+    )
+        .animateSafe(context)
+        .fadeIn(delay: 260.ms, duration: 400.ms)
+        .slideY(begin: 0.1, end: 0);
   }
 
   /// Kayıt düzenleyici artık ortak: aynı sayfa ücretsiz katmandaki
@@ -1599,7 +1614,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
 
     final cycleLength = ref.watch(effectiveCycleLengthProvider);
     final periodLength = profile?.averagePeriodLength ?? 5;
-    final starts = records.map((record) => DateUtils.dateOnly(record.startDate))
+    final starts = records
+        .map((record) => DateUtils.dateOnly(record.startDate))
         .toList()
       ..sort();
     CyclePhase? phaseOf(DateTime date) {
@@ -1631,9 +1647,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             confirmedLatest: confirmedOvulation,
           );
 
-    final spots = dataPoints
-        .map((e) => FlSpot(dayOf(e.key), e.value))
-        .toList();
+    final spots = dataPoints.map((e) => FlSpot(dayOf(e.key), e.value)).toList();
     final totalDays = spots.last.x;
 
     final minY = spots.map((s) => s.y).reduce((a, b) => a < b ? a : b);
@@ -1678,139 +1692,140 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           const SizedBox(height: 16),
           // Ekran okuyucu için trend özeti: son / en düşük / en yüksek
           Semantics(
-            label:
-                '$title: ${spots.last.y.toStringAsFixed(1)} $unit. '
+            label: '$title: ${spots.last.y.toStringAsFixed(1)} $unit. '
                 'Min ${minY.toStringAsFixed(1)}, Max ${maxY.toStringAsFixed(1)} $unit.'
                 '${ovulationDates.isEmpty ? '' : ' ${l10nStory.ovulationMarkerHint}.'}',
             child: ExcludeSemantics(
               child: SizedBox(
-            height: 180,
-            child: LineChart(
-              LineChartData(
-                minY: minY - padding.clamp(0.5, 5),
-                maxY: maxY + padding.clamp(0.5, 5),
-                extraLinesData: ExtraLinesData(
-                  verticalLines: ovulationDates
-                      .map(
-                        (date) => VerticalLine(
-                          x: dayOf(date),
-                          color: AppColors.ringOvulation
-                              .withValues(alpha: 0.75),
-                          strokeWidth: 1.5,
-                          dashArray: const [5, 4],
-                        ),
-                      )
-                      .toList(),
-                ),
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                  horizontalInterval: (maxY - minY) > 0 ? (maxY - minY) / 4 : 1,
-                  getDrawingHorizontalLine: (value) => FlLine(
-                    color: AppColors.dv(context),
-                    strokeWidth: 1,
-                  ),
-                ),
-                titlesData: FlTitlesData(
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 42,
-                      getTitlesWidget: (value, meta) {
-                        return Text(value.toStringAsFixed(1),
-                            style: TextStyle(
-                                fontSize: 10, color: AppColors.ts(context)));
-                      },
+                height: 180,
+                child: LineChart(
+                  LineChartData(
+                    minY: minY - padding.clamp(0.5, 5),
+                    maxY: maxY + padding.clamp(0.5, 5),
+                    extraLinesData: ExtraLinesData(
+                      verticalLines: ovulationDates
+                          .map(
+                            (date) => VerticalLine(
+                              x: dayOf(date),
+                              color: AppColors.ringOvulation
+                                  .withValues(alpha: 0.75),
+                              strokeWidth: 1.5,
+                              dashArray: const [5, 4],
+                            ),
+                          )
+                          .toList(),
                     ),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      interval:
-                          (totalDays / 4).ceilToDouble().clamp(1, 3650),
-                      getTitlesWidget: (value, meta) {
-                        if (value < 0 || value > totalDays) {
-                          return const SizedBox();
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            dateFormat.format(dateOf(value)),
-                            style: TextStyle(
-                                fontSize: 9, color: AppColors.ts(context)),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
-                ),
-                borderData: FlBorderData(show: false),
-                lineTouchData: LineTouchData(
-                  touchCallback: (event, response) {
-                    if (event is! FlTapUpEvent) return;
-                    final touchedSpots = response?.lineBarSpots;
-                    if (touchedSpots == null || touchedSpots.isEmpty) {
-                      return;
-                    }
-                    ref.read(selectedDateProvider.notifier).state =
-                        dateOf(touchedSpots.first.x);
-                    context.push('/log');
-                  },
-                  touchTooltipData: LineTouchTooltipData(
-                    getTooltipItems: (spots) {
-                      return spots.map((spot) {
-                        final phase = phaseOf(dateOf(spot.x));
-                        return LineTooltipItem(
-                          '${dateFormat.format(dateOf(spot.x))}\n'
-                          '${spot.y.toStringAsFixed(1)} $unit'
-                          '${phase == null ? '' : '\n${EnumLabels.phase(phase, l10nStory)}'}',
-                          TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                        );
-                      }).toList();
-                    },
-                  ),
-                ),
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: spots,
-                    isCurved: true,
-                    curveSmoothness: 0.3,
-                    color: color,
-                    barWidth: 3,
-                    isStrokeCapRound: true,
-                    dotData: FlDotData(
-                      show: spots.length <= 15,
-                      getDotPainter: (spot, percent, bar, index) =>
-                          FlDotCirclePainter(
-                        radius: 3,
-                        color: color,
-                        strokeWidth: 1.5,
-                        strokeColor: Colors.white,
-                      ),
-                    ),
-                    belowBarData: BarAreaData(
+                    gridData: FlGridData(
                       show: true,
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          color.withValues(alpha: 0.2),
-                          color.withValues(alpha: 0.02),
-                        ],
+                      drawVerticalLine: false,
+                      horizontalInterval:
+                          (maxY - minY) > 0 ? (maxY - minY) / 4 : 1,
+                      getDrawingHorizontalLine: (value) => FlLine(
+                        color: AppColors.dv(context),
+                        strokeWidth: 1,
                       ),
                     ),
+                    titlesData: FlTitlesData(
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 42,
+                          getTitlesWidget: (value, meta) {
+                            return Text(value.toStringAsFixed(1),
+                                style: TextStyle(
+                                    fontSize: 10,
+                                    color: AppColors.ts(context)));
+                          },
+                        ),
+                      ),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          interval:
+                              (totalDays / 4).ceilToDouble().clamp(1, 3650),
+                          getTitlesWidget: (value, meta) {
+                            if (value < 0 || value > totalDays) {
+                              return const SizedBox();
+                            }
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(
+                                dateFormat.format(dateOf(value)),
+                                style: TextStyle(
+                                    fontSize: 9, color: AppColors.ts(context)),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
+                      rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
+                    ),
+                    borderData: FlBorderData(show: false),
+                    lineTouchData: LineTouchData(
+                      touchCallback: (event, response) {
+                        if (event is! FlTapUpEvent) return;
+                        final touchedSpots = response?.lineBarSpots;
+                        if (touchedSpots == null || touchedSpots.isEmpty) {
+                          return;
+                        }
+                        ref.read(selectedDateProvider.notifier).state =
+                            dateOf(touchedSpots.first.x);
+                        context.push('/log');
+                      },
+                      touchTooltipData: LineTouchTooltipData(
+                        getTooltipItems: (spots) {
+                          return spots.map((spot) {
+                            final phase = phaseOf(dateOf(spot.x));
+                            return LineTooltipItem(
+                              '${dateFormat.format(dateOf(spot.x))}\n'
+                              '${spot.y.toStringAsFixed(1)} $unit'
+                              '${phase == null ? '' : '\n${EnumLabels.phase(phase, l10nStory)}'}',
+                              TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            );
+                          }).toList();
+                        },
+                      ),
+                    ),
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: spots,
+                        isCurved: true,
+                        curveSmoothness: 0.3,
+                        color: color,
+                        barWidth: 3,
+                        isStrokeCapRound: true,
+                        dotData: FlDotData(
+                          show: spots.length <= 15,
+                          getDotPainter: (spot, percent, bar, index) =>
+                              FlDotCirclePainter(
+                            radius: 3,
+                            color: color,
+                            strokeWidth: 1.5,
+                            strokeColor: Colors.white,
+                          ),
+                        ),
+                        belowBarData: BarAreaData(
+                          show: true,
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              color.withValues(alpha: 0.2),
+                              color.withValues(alpha: 0.02),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
             ),
           ),
           const SizedBox(height: 10),
@@ -1856,7 +1871,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           ],
         ],
       ),
-    ).animateSafe(context).fadeIn(delay: 300.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+    )
+        .animateSafe(context)
+        .fadeIn(delay: 300.ms, duration: 400.ms)
+        .slideY(begin: 0.1, end: 0);
   }
 
   /// Grafik kartının başlığı altına veriden türetilmiş tek cümle:

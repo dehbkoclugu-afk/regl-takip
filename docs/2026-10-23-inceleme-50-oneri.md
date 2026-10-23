@@ -1,5 +1,7 @@
 # Regl Takip — ayrıntılı inceleme ve 50 öneri
 
+> Sonraki uygulama çalışmasının madde madde durumu: [50 önerinin düzeltme durumu](2026-10-23-duzeltme-durumu.md). Aşağıdaki ilk inceleme, başlangıç bulgularını ve o aşamadaki dil çalışmasını tarihsel olarak korur.
+
 23 Ekim 2026. İncelenen başlangıç sürümü: `ba87786cce2f256604180e009d846fdbbfab90d1` (`main`).
 
 Bu rapor kaynak kodu, veri modelleri, Android/iOS yapılandırmaları ve otomatik testler üzerinden hazırlanmıştır. “Bulgu” mevcut kodda görülen davranışı, “geliştirme” ürün fırsatını, “doğrulama” gerçek cihaz veya mağaza ortamında sınanması gereken durumu belirtir. Bunların tamamı cihazda yeniden üretilmiş 50 hata değildir. Gerçek Play/App Store satın alımı, OEM pil yönetimi, Health Connect/HealthKit izin ekranları ve iOS görsel davranışları burada uçtan uca doğrulanmadı.
