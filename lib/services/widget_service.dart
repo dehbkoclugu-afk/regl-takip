@@ -151,6 +151,54 @@ class WidgetService {
       'fertile': 'Фертильное окно',
       'periodStarted': 'Месячные начались',
     },
+    'pt': {
+      'day': 'Dia',
+      'daysLeft': 'dias restantes',
+      'today': 'Hoje!',
+      'week': 'Semana',
+      'pill': 'Pílula',
+      'breakWeek': 'Semana de pausa',
+      'nextPeriod': 'Próxima menstruação',
+      'ovulation': 'Ovulação',
+      'fertile': 'Janela fértil',
+      'periodStarted': 'Minha menstruação começou',
+    },
+    'ar': {
+      'day': 'اليوم',
+      'daysLeft': 'أيام متبقية',
+      'today': 'اليوم!',
+      'week': 'الأسبوع',
+      'pill': 'الحبة',
+      'breakWeek': 'أسبوع التوقف',
+      'nextPeriod': 'الدورة القادمة',
+      'ovulation': 'الإباضة',
+      'fertile': 'فترة الخصوبة',
+      'periodStarted': 'بدأت دورتي الشهرية',
+    },
+    'hi': {
+      'day': 'दिन',
+      'daysLeft': 'दिन बाकी',
+      'today': 'आज!',
+      'week': 'सप्ताह',
+      'pill': 'गोली',
+      'breakWeek': 'विराम सप्ताह',
+      'nextPeriod': 'अगला मासिक धर्म',
+      'ovulation': 'अंडोत्सर्जन',
+      'fertile': 'प्रजनन अवधि',
+      'periodStarted': 'मेरा मासिक धर्म शुरू हुआ',
+    },
+    'zh': {
+      'day': '天',
+      'daysLeft': '天后',
+      'today': '今天！',
+      'week': '周',
+      'pill': '药片',
+      'breakWeek': '停药周',
+      'nextPeriod': '下次月经',
+      'ovulation': '排卵',
+      'fertile': '易孕期',
+      'periodStarted': '月经开始了',
+    },
   };
 
   static String _t(String locale, String key) =>
@@ -189,8 +237,7 @@ class WidgetService {
         await HomeWidget.saveWidgetData<String>('line1', 'Notlar');
         await HomeWidget.saveWidgetData<String>('line2', '');
         await HomeWidget.saveWidgetData<String>('ring_path', null);
-        await HomeWidget.saveWidgetData<bool>(
-            'period_action_visible', false);
+        await HomeWidget.saveWidgetData<bool>('period_action_visible', false);
         await HomeWidget.saveWidgetData<String>('period_action_label', '');
         await _savePredictions(null, null, null, null);
         await HomeWidget.updateWidget(androidName: _androidProvider);
@@ -220,11 +267,12 @@ class WidgetService {
             break;
           case TrackingMode.pill:
             if (profile.pillPackStartDate != null) {
-              final day =
-                  CycleUtils.pillDayInPack(profile.pillPackStartDate!);
-              line1 = day > 21
-                  ? '${_t(locale, 'breakWeek')} ${day - 21}/7'
-                  : '${_t(locale, 'pill')} $day/21';
+              final day = CycleUtils.pillDayInPack(profile.pillPackStartDate!,
+                  activeDays: profile.pillActiveDays,
+                  breakDays: profile.pillBreakDays);
+              line1 = day > profile.pillActiveDays
+                  ? '${_t(locale, 'breakWeek')} ${day - profile.pillActiveDays}/${profile.pillBreakDays}'
+                  : '${_t(locale, 'pill')} $day/${profile.pillActiveDays}';
             }
             break;
           case TrackingMode.ttc:

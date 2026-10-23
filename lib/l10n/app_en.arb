@@ -42,10 +42,13 @@
   "today": "Today",
   "cycleDay": "Cycle Day",
   "periodIn": "Period in",
-  "daysLeft": "{count} days left",
+  "daysLeft": "{count, plural, one {{count} day left} other {{count} days left}}",
   "@daysLeft": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "periodToday": "Your period may start today",
@@ -168,7 +171,6 @@
   "letsStart": "Let's Start",
   "bmi": "BMI",
   "goalReached": "Goal reached!",
-
   "helloGeneric": "Hello!",
   "dayHasRecord": "has a record",
   "increase": "Increase",
@@ -186,14 +188,19 @@
   "severityLevel": "severity {level}/5",
   "@severityLevel": {
     "placeholders": {
-      "level": {"type": "int"}
+      "level": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "pregnancySetStartPrompt": "Tap to set your pregnancy start",
   "helloName": "Hello, {name}!",
   "@helloName": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "ovulationPhase": "Ovulation Phase",
@@ -202,10 +209,13 @@
   "howAreYouFeeling": "How are you feeling today?",
   "logMoodAndSymptoms": "Log your mood and symptoms",
   "addRecord": "Add Record",
-  "nSymptoms": "{count} symptoms",
+  "nSymptoms": "{count, plural, one {{count} symptom} other {{count} symptoms}}",
   "@nSymptoms": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "periodDayLabel": "Period day",
@@ -215,13 +225,18 @@
   "moodLabel": "Mood: {mood}",
   "@moodLabel": {
     "placeholders": {
-      "mood": {"type": "String"}
+      "mood": {
+        "type": "String"
+      }
     }
   },
   "nGlassesWater": "{count} glasses of water",
   "@nGlassesWater": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "noRecordForDay": "No record for this day.",
@@ -229,16 +244,22 @@
   "dailyMeasurements": "Daily Measurements",
   "flow": "Flow",
   "recorded": "Recorded",
-  "nMedications": "{count} medications",
+  "nMedications": "{count, plural, one {{count} medication} other {{count} medications}}",
   "@nMedications": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
-  "nGlasses": "{count} glasses",
+  "nGlasses": "{count, plural, one {{count} glass} other {{count} glasses}}",
   "@nGlasses": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "flowTracking": "Flow Tracking",
@@ -261,13 +282,19 @@
   "saveNSymptoms": "Save ({count} symptoms)",
   "@saveNSymptoms": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "nSymptomsSaved": "{count} symptoms saved",
   "@nSymptomsSaved": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "addNoteOptional": "Add note (optional)",
@@ -321,19 +348,25 @@
   "noMoodData": "No mood data yet",
   "noCycleData": "No cycle data yet",
   "ongoing": "ongoing",
-  "nDays": "{count} days",
+  "nDays": "{count, plural, one {{count} day} other {{count} days}}",
   "@nDays": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "profileSection": "Profile",
   "preferences": "Preferences",
   "age": "Age",
-  "nYearsOld": "{count} years old",
+  "nYearsOld": "{count, plural, one {{count} year old} other {{count} years old}}",
   "@nYearsOld": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "cycleDuration": "Cycle Duration",
@@ -353,8 +386,14 @@
   "stepOfSteps": "Step {current} of {total}",
   "@stepOfSteps": {
     "placeholders": {
-      "current": {"type": "int"},
-      "total": {"type": "int"}
+      "current": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "lastPeriodTitle": "Your Last Period",
@@ -369,7 +408,9 @@
   "errorOccurred": "An error occurred: {error}",
   "@errorOccurred": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "welcomeInfoTitle": "Welcome!",
@@ -382,7 +423,10 @@
   "daysLater": "in {count} days",
   "@daysLater": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "todayExclamation": "Today!",
@@ -397,24 +441,25 @@
   "@tooManyAttempts": {
     "placeholders": {
       "seconds": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
-  "coachMenstrual0": "Bleeding days mean iron loss — red meat, lentils and dark leafy greens help.",
-  "coachMenstrual1": "For cramps, heat and gentle stretching can work as well as most painkillers.",
-  "coachMenstrual2": "Low energy is normal today — a walk beats an intense workout.",
-  "coachFollicular0": "Estrogen is rising: energy and focus usually peak in this phase. Schedule hard tasks now.",
-  "coachFollicular1": "Skin is usually at its best in this phase — a good window to try new products.",
-  "coachFollicular2": "Your body is most ready for high-intensity exercise right now.",
-  "coachOvulation0": "You're in the fertile window — act according to your plan, whether contraception or conception.",
-  "coachOvulation1": "Some women feel mild one-sided pain at ovulation (mittelschmerz) — it's normal.",
-  "coachOvulation2": "Social energy tends to be high these days — good timing for important conversations.",
-  "coachLuteal0": "PMS symptoms may start in this phase — magnesium and regular sleep can ease them.",
-  "coachLuteal1": "Sugar cravings can spike: try protein-heavy snacks to keep blood sugar steady.",
-  "coachLuteal2": "Emotional sensitivity may rise — go easy on yourself, it's hormonal and temporary.",
-  "ovulationConfirmed": "Ovulation ✓",
-  "ovulationConfirmedInfo": "This date is not an estimate: it was confirmed from the rise in your basal body temperature readings (3-over-6 rule).",
+  "coachMenstrual0": "You can record bleeding, pain and how you feel. Seek medical advice for symptoms that concern you.",
+  "coachMenstrual1": "If comfortable, gentle movement or warmth may help you feel better. Individual experiences vary.",
+  "coachMenstrual2": "Choose rest or activity according to how you feel today.",
+  "coachFollicular0": "Energy and symptoms vary between people and cycles. Use your own records to notice patterns.",
+  "coachFollicular1": "Your skin may change during the cycle. Record changes rather than assuming a fixed pattern.",
+  "coachFollicular2": "Choose exercise based on your health and comfort, not a predicted cycle phase.",
+  "coachOvulation0": "Fertile days are estimates. This app is not a contraceptive method.",
+  "coachOvulation1": "Seek medical advice for new, severe or persistent pain instead of attributing it to ovulation.",
+  "coachOvulation2": "Mood and social energy vary. A predicted phase cannot determine how you will feel.",
+  "coachLuteal0": "Sleep, stress and many other factors can affect symptoms. Record what you notice.",
+  "coachLuteal1": "Choose meals and activity that suit your needs. A predicted phase does not prescribe a diet.",
+  "coachLuteal2": "Mood changes have many possible causes. Seek support for symptoms that persist or concern you.",
+  "ovulationConfirmed": "Possible ovulation",
+  "ovulationConfirmedInfo": "A temperature pattern or LH test suggests possible ovulation. Illness, sleep and measurement timing affect results. This is not clinical confirmation and must not be used for contraception.",
   "premiumSection": "Premium",
   "removeAds": "Remove Ads",
   "restorePurchases": "Restore Purchases",
@@ -441,7 +486,8 @@
   "@pregnancyWeekLabel": {
     "placeholders": {
       "week": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -460,7 +506,8 @@
   "@pillDayLabel": {
     "placeholders": {
       "day": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -468,7 +515,8 @@
   "@pillBreakLabel": {
     "placeholders": {
       "day": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -478,11 +526,11 @@
   "@learnedCycleLength": {
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
-  "irregular": "Irregular",
   "phaseInsights": "Phase Insights",
   "noInsightsYet": "Not enough data for insights yet. As you log symptoms, phase-based patterns will appear here.",
   "insightLine": "{symptom} occurs mostly in the {phase} phase ({percent}%)",
@@ -495,7 +543,8 @@
         "type": "String"
       },
       "percent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -509,7 +558,6 @@
   "shortcutQuickLog": "Quick Log",
   "shortcutToday": "View Today",
   "allTrackers": "All tracker types",
-  "savedGeneric": "Saved",
   "disguiseTitle": "Disguise Mode",
   "disguiseDesc": "The app takes on a \"Notes\" identity: name, icon, widget, notifications, and launch screen go neutral. Return: long-press the Notes title.",
   "decoyTitle": "Notes",
@@ -533,7 +581,8 @@
   "@restoreConfirmBody": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -549,7 +598,14 @@
   "modeTtcDesc": "Fertility-focused tracking",
   "paywallTitle": "Go Premium",
   "paywallTrialSubtitle": "Your trial is active: {days} days left. Premium keeps everything unlocked.",
-  "@paywallTrialSubtitle": {"placeholders": {"days": {"type": "int"}}},
+  "@paywallTrialSubtitle": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "paywallFreeSubtitle": "Your trial has ended. The free version keeps period tracking and the calendar; daily tracking and insights are Premium.",
   "paywallFeatureTrackers": "All daily trackers: symptoms, mood, water, sleep, weight, temperature, medication, notes",
   "paywallFeatureStats": "Statistics, trends, and the My Year ring",
@@ -565,7 +621,14 @@
   "bestValue": "Best value",
   "continueFreeBtn": "Continue with free for now",
   "trialBadge": "Trial: {days} days left",
-  "@trialBadge": {"placeholders": {"days": {"type": "int"}}},
+  "@trialBadge": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "freeBadge": "Free version",
   "freeExplain": "The free version keeps period tracking, the calendar, and predictions. Daily trackers, statistics, export, Health Connect, disguise mode, and modes are Premium.",
   "seePlans": "See Plans",
@@ -574,29 +637,71 @@
   "yearRingTitle": "My Year",
   "yearRingCycles": "CYCLES",
   "yearRingSummary": "Last 12 months: {count} cycles",
-  "@yearRingSummary": {"placeholders": {"count": {"type": "int"}}},
+  "@yearRingSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "cycleComparison": "Your Last Cycle",
   "lastCycleLength": "Last cycle: {days} days",
-  "@lastCycleLength": {"placeholders": {"days": {"type": "int"}}},
+  "@lastCycleLength": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "lastPeriodLength": "Last period: {days} days",
-  "@lastPeriodLength": {"placeholders": {"days": {"type": "int"}}},
+  "@lastPeriodLength": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "vsAverageMore": "{days} days longer than your average",
-  "@vsAverageMore": {"placeholders": {"days": {"type": "int"}}},
+  "@vsAverageMore": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "vsAverageLess": "{days} days shorter than your average",
-  "@vsAverageLess": {"placeholders": {"days": {"type": "int"}}},
+  "@vsAverageLess": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "vsAverageSame": "same as your average",
   "coachPersonalInsight": "Based on your logs, most common in this phase: {symptom} ({percent}%)",
   "@coachPersonalInsight": {
     "placeholders": {
-      "symptom": {"type": "String"},
-      "percent": {"type": "int"}
+      "symptom": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "notificationInsightTitle": "Phase tip",
   "notificationInsightBody": "Luteal phase is starting. Based on your logs, your most common symptom in this phase: {symptom}.",
   "@notificationInsightBody": {
     "placeholders": {
-      "symptom": {"type": "String"}
+      "symptom": {
+        "type": "String"
+      }
     }
   },
   "notificationPeriodTitle": "Period Reminder",
@@ -605,7 +710,10 @@
   "notificationPeriodTimingInDays": "Your period may start in {days} days.",
   "@notificationPeriodTimingInDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "notificationPeriodTip1": "Remember to pack a pad or tampon.",
@@ -638,13 +746,19 @@
   "headlinePeriodInDays": "Your period in {days} days",
   "@headlinePeriodInDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "headlinePeriodDay": "Day {day} of your period",
   "@headlinePeriodDay": {
     "placeholders": {
-      "day": {"type": "int"}
+      "day": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "headlineDelaySubtitle": "Some variation is normal. Log it if it has started.",
@@ -657,13 +771,19 @@
   "headlineDelay": "Your period is {days} days late",
   "@headlineDelay": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "delayDays": "{days} days late",
   "@delayDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "yourDataStays": "Your records stay on your device when the trial ends.",
@@ -671,13 +791,19 @@
   "nCyclesRecorded": "{count} cycles recorded",
   "@nCyclesRecorded": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "nLogsRecorded": "{count} daily logs",
   "@nLogsRecorded": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "notifPermissionTitle": "Turn on reminders?",
@@ -705,7 +831,10 @@
   "leadNDaysBefore": "{days} days before",
   "@leadNDaysBefore": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "regularityInfoIrregular": "There are 9 or more days between your shortest and longest cycle. Cycle length varying is very common; stress, sleep, illness and life changes all affect it. This is not a diagnosis.",
@@ -714,21 +843,36 @@
   "typicalRangeNote": "Commonly accepted range: cycle {min}–{max} days, period up to {pmax} days. Not a diagnostic threshold.",
   "@typicalRangeNote": {
     "placeholders": {
-      "min": {"type": "int"},
-      "max": {"type": "int"},
-      "pmax": {"type": "int"}
+      "min": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "max": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "pmax": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "lowConfidenceNote": "These averages come from only {count} cycles; they will sharpen as you log more.",
   "@lowConfidenceNote": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "regularityInfoInsufficient": "At least {count} cycle gaps are needed before regularity means anything. A judgement on less would mislead.",
   "@regularityInfoInsufficient": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "backupNever": "You have never made a backup.",
@@ -736,7 +880,9 @@
   "backupLastAt": "Last backup: {date}",
   "@backupLastAt": {
     "placeholders": {
-      "date": {"type": "String"}
+      "date": {
+        "type": "String"
+      }
     }
   },
   "durationsStepTitle": "Your cycle details",
@@ -760,57 +906,82 @@
   "notLoggedToday": "No {what} logged today",
   "@notLoggedToday": {
     "placeholders": {
-      "what": {"type": "String"}
+      "what": {
+        "type": "String"
+      }
     }
   },
   "pregnancyTestFrom": "Earliest useful test: {date}",
   "@pregnancyTestFrom": {
     "placeholders": {
-      "date": {"type": "String"}
+      "date": {
+        "type": "String"
+      }
     }
   },
   "pillBreakIn": "Break starts in {days} days",
   "@pillBreakIn": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "pillNewPackIn": "New pack in {days} days",
   "@pillNewPackIn": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "healthImportNothingNew": "No new records found to import",
   "healthImportConfirm": "Found {count} period spans in Health Connect that are not in the app. Add them to your records? Your existing records are untouched.",
   "@healthImportConfirm": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "healthImportDone": "{count} periods imported",
   "@healthImportDone": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "monthPeriodDays": "{count} period days",
   "@monthPeriodDays": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "monthLoggedDays": "{count} days logged",
   "@monthLoggedDays": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "pinNoRecoveryWarning": "If you forget your PIN there is no way to recover it; the only way back in is deleting all your data. Choose something you will remember.",
   "lockAfterMinutes": "After {minutes} min",
   "@lockAfterMinutes": {
     "placeholders": {
-      "minutes": {"type": "int"}
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "reportTitle": "Cycle Health Report",
@@ -827,20 +998,81 @@
   "statsSectionCharts": "CHARTS",
   "statsSectionHistory": "HISTORY & TRENDS",
   "storySymptomsMore": "The last 30 days were rougher than the period before ({recent} entries vs {previous}).",
-  "@storySymptomsMore": {"placeholders": {"recent": {"type": "int"}, "previous": {"type": "int"}}},
+  "@storySymptomsMore": {
+    "placeholders": {
+      "recent": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "previous": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "storySymptomsLess": "The last 30 days were easier than the period before ({recent} entries vs {previous}).",
-  "@storySymptomsLess": {"placeholders": {"recent": {"type": "int"}, "previous": {"type": "int"}}},
+  "@storySymptomsLess": {
+    "placeholders": {
+      "recent": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "previous": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "storySymptomsSame": "Symptom intensity stayed similar across the last two periods.",
   "storyTrendUp": "Up {delta} {unit} over this period.",
-  "@storyTrendUp": {"placeholders": {"delta": {"type": "String"}, "unit": {"type": "String"}}},
+  "@storyTrendUp": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
   "storyTrendDown": "Down {delta} {unit} over this period.",
-  "@storyTrendDown": {"placeholders": {"delta": {"type": "String"}, "unit": {"type": "String"}}},
+  "@storyTrendDown": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
   "storyTrendFlat": "No meaningful change over this period — the trend is flat.",
   "averageSeverity": "Avg. {value}/5",
-  "@averageSeverity": {"placeholders": {"value": {"type": "String"}}},
+  "@averageSeverity": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "dataCoverage": "Data coverage",
   "dataCoverageValue": "Data on {logged} of {total} days ({percent}%)",
-  "@dataCoverageValue": {"placeholders": {"logged": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@dataCoverageValue": {
+    "placeholders": {
+      "logged": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "percent": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "tapChartPointHint": "Tap a point to open that day.",
   "shareCalendarMonth": "Share calendar month",
   "longPressDayHint": "Press and hold a day for a quick preview.",
@@ -848,9 +1080,23 @@
   "periodRangeOverlap": "This range overlaps an existing period record.",
   "periodRangeSaved": "Period date range saved",
   "trackingStreak": "{count}-day streak",
-  "@trackingStreak": {"placeholders": {"count": {"type": "int"}}},
+  "@trackingStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "weeklyTracking": "{count}/7 days logged",
-  "@weeklyTracking": {"placeholders": {"count": {"type": "int"}}},
+  "@weeklyTracking": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "exportCalendarFile": "Export calendar (.ics)",
   "ovulationMarkerHint": "Dashed line: estimated or confirmed ovulation",
   "addPastCycles": "Add past cycles",
@@ -880,8 +1126,14 @@
   "sleepDurationShort": "{hours}h {minutes}m",
   "@sleepDurationShort": {
     "placeholders": {
-      "hours": {"type": "int"},
-      "minutes": {"type": "int"}
+      "hours": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "deleteAllDataConfirm": "Are you sure you want to delete all data? This action cannot be undone.",
@@ -907,5 +1159,25 @@
   "notificationFrequencyEssential": "Essential",
   "notificationFrequencyBalanced": "Balanced",
   "notificationFrequencyDetailed": "Detailed",
-  "readOnlyHistoryNotice": "You can view your past entries; new daily entries and changes require Premium."
+  "readOnlyHistoryNotice": "You can view your past entries; new daily entries and changes require Premium.",
+  "screenProtectionTitle": "Screen protection",
+  "screenProtectionDescription": "Blocks screenshots and the recent-apps preview.",
+  "predictionUncertain": "Cycle phase uncertain",
+  "startupRecoveryBody": "Your data could not be opened safely. It has been preserved. Retry, or close the app and contact support. Do not reinstall before recovering your backup.",
+  "retry": "Retry",
+  "adPrivacyOptions": "Advertising privacy choices",
+  "policyAvailableEnglish": "This policy is available in English. The original policy text follows.",
+  "purchasePending": "Waiting for payment confirmation",
+  "purchaseVerifying": "Verifying your purchase",
+  "purchaseFailed": "Your purchase could not be verified. Please retry or restore purchases.",
+  "pillSchedule": "Pill schedule",
+  "pillContinuous": "Continuous (no break)",
+  "predictionRange": "Estimated date range",
+  "analyticsChoice": "Usage measurement (optional)",
+  "analyticsChoiceDescription": "Optional. Counts only app actions on this device. Health data, notes, dates and identity are excluded. Nothing is uploaded without a configured service.",
+  "reportRange": "Report date range",
+  "allHistory": "All history",
+  "pillActiveDaysTitle": "Active pill days (1–120)",
+  "pillBreakDaysTitle": "Break or placebo days (0–14)",
+  "pillPrescriptionNote": "Use only the schedule in your prescription or clinician instructions. This setting does not recommend changing medication."
 }

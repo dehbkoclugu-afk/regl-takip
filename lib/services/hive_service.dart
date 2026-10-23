@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:uuid/uuid.dart';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -26,10 +27,28 @@ class HiveService {
   late Box<PeriodRecord> _periodRecordsBox;
   late Box<DailyLog> _dailyLogsBox;
 
+  Box<String>? _catalog;
+  HiveAesCipher? _cipher;
+  String _generation = '';
+  Future<void> _replacement = Future.value();
+  @visibleForTesting
+  Future<void> Function(String stage)? transactionCheckpoint;
+
+  String _name(String base) =>
+      _generation.isEmpty ? base : '${base}_$_generation';
   bool _isInitialized = false;
   bool _dataResetPerformed = false;
 
   bool get isInitialized => _isInitialized;
+  String? readMetadata(String key) => _catalog?.get(key);
+  Future<void> writeMetadata(String key, String value) async {
+    if (_catalog == null) throw StateError('Storage not initialized');
+    await _catalog!.put(key, value);
+    await _catalog!.flush();
+  }
+
+  @visibleForTesting
+  String? get profileStoragePath => _userProfileBox.path;
 
   /// Açılışta kutular çözülemeyip karantinaya alındıysa ve sıfırdan
   /// başlandıysa true — UI tek seferlik açıklama göstermek için okur.
@@ -72,69 +91,38 @@ class HiveService {
     }
 
     final cipher = HiveAesCipher(key);
-    var encryptionSucceeded = true;
-
-    try {
-      if (!alreadyEncrypted && await _plainBoxesExistOnDisk()) {
-        // Eski kurulum: şifresiz kutular var — verileri şifreli kutulara taşı.
-        // Migrasyon patlarsa uygulama açılmaz olur; düz kutulara düşüp
-        // veriyi erişilebilir tutmak şifrelemeden daha öncelikli.
-        try {
-          await _migrateToEncrypted(cipher);
-        } catch (e) {
-          debugPrint('[HIVE] encryption migration failed, '
-              'falling back to plain boxes: $e');
-          encryptionSucceeded = false;
-          await _openPlainBoxes();
-        }
-      } else {
-        await _openEncryptedBoxes(cipher);
-      }
-    } catch (e) {
-      debugPrint('[HIVE] boxes unreadable on first attempt: $e');
-      await Hive.close();
+    _cipher = cipher;
+    // A single flushed catalog record commits a complete generation. Original
+    // boxes remain untouched until all replacement boxes are durable.
+    _catalog = await Hive.openBox<String>('storage_catalog',
+        encryptionCipher: cipher, crashRecovery: false);
+    _generation = _catalog!.get('active') ?? '';
+    if (_generation.isNotEmpty ||
+        alreadyEncrypted ||
+        !await _plainBoxesExistOnDisk()) {
+      await _openEncryptedBoxes(cipher);
+    } else {
+      var openedPlain = false;
       try {
-        // Önce şifreli açılışı dene: yalnız secure-storage BAYRAĞI
-        // kaybolduysa (anahtar sağlam, kutular şifreli) migrasyon yolu
-        // düz açmayı deneyip patlar — ama veri aslında yerli yerindedir.
-        // Karantina bu durumda veri kaybı olurdu.
-        await _openEncryptedBoxes(cipher);
+        await _openPlainBoxes();
+        openedPlain = true;
       } catch (_) {
-        // Kutular gerçekten çözülemiyor. En yaygın senaryo cihaz/yedek
-        // geçişi: Hive dosyaları geri gelir ama AES anahtarı Keystore'a
-        // bağlıdır ve taşınmaz. Çökme döngüsü yerine kutular karantinaya
-        // alınır, temiz başlanır ve UI'a tek seferlik açıklama bayrağı
-        // bırakılır.
-        debugPrint('[HIVE] boxes undecryptable, quarantining and '
-            'starting fresh');
-        _dataResetPerformed = true;
-        await Hive.close();
-        await _quarantineBoxes();
-        try {
-          await _openEncryptedBoxes(cipher);
-        } catch (e2) {
-          // Karantina dosyayı taşıyamadıysa (ör. açık dosya tanıtıcısı) son
-          // çare Hive'ın yerinde budayarak açması: dosya zaten çözülemiyordu,
-          // önemli olan uygulamanın açılması ve kullanıcının bilgilenmesi.
-          debugPrint('[HIVE] fresh open failed, forcing crash recovery: $e2');
-          await _openEncryptedBoxes(cipher, crashRecovery: true);
-        }
+        await _closeDataBoxes();
+        // A lost legacy flag must not cause destructive recovery.
+        await _openEncryptedBoxes(cipher);
       }
-      encryptionSucceeded = true;
+      if (openedPlain) {
+        await replaceAll(
+          profile: getUserProfile(),
+          records: getAllPeriodRecords(),
+          logs: getAllDailyLogs(),
+        );
+      }
     }
-
-    // Bayrak yalnız şifreli açılış gerçekten başarılıysa yazılır;
-    // yoksa sonraki açılışta migrasyon yeniden denenir
-    if (encryptionKey == null && encryptionSucceeded) {
+    if (encryptionKey == null) {
       await storage.write(key: _encryptedFlagKey, value: 'true');
     }
-
-    // Migrasyonun düz metin güvenlik anlık görüntüsü yalnız migrasyon
-    // açılışında gereklidir; bir SONRAKİ başarılı şifreli açılışta artık
-    // sigorta değil sızıntıdır (tüm sağlık verisi şifresiz diskte) — sil.
-    if (alreadyEncrypted && encryptionSucceeded && manageHivePath) {
-      unawaited(deleteLegacyPlaintextSnapshot());
-    }
+    if (manageHivePath) await deleteLegacyPlaintextSnapshot();
 
     await ensureMedicationPlanMigrated();
     _isInitialized = true;
@@ -216,40 +204,6 @@ class HiveService {
     }
   }
 
-  /// Açılamayan kutu dosyalarını silmek yerine yeniden adlandırır:
-  /// içerik anahtarsız çözülemez ama en azından yok edilmemiş olur.
-  /// Yol bilinmiyorsa (test ortamı) Hive'ın kendi silme yoluna düşer.
-  Future<void> _quarantineBoxes() async {
-    const names = [
-      AppConstants.userProfileBox,
-      AppConstants.periodRecordsBox,
-      AppConstants.dailyLogsBox,
-    ];
-    final stamp = DateTime.now().millisecondsSinceEpoch;
-    for (final name in names) {
-      var renamed = false;
-      try {
-        final dir = await getApplicationDocumentsDirectory();
-        final file = File('${dir.path}/$name.hive');
-        if (await file.exists()) {
-          await file.rename('${file.path}.corrupt-$stamp');
-          renamed = true;
-        }
-        final lock = File('${dir.path}/$name.lock');
-        if (await lock.exists()) await lock.delete();
-      } catch (e) {
-        debugPrint('[HIVE] quarantine failed for $name: $e');
-      }
-      if (!renamed) {
-        try {
-          await Hive.deleteBoxFromDisk(name);
-        } catch (e) {
-          debugPrint('[HIVE] deleteBoxFromDisk failed for $name: $e');
-        }
-      }
-    }
-  }
-
   Future<bool> _plainBoxesExistOnDisk() async {
     // Şifreli açılış bayrağı yoksa ve diskte kutu varsa eski kurulumdur.
     // Kutu hiç yoksa temiz kurulum: doğrudan şifreli açılır.
@@ -261,86 +215,107 @@ class HiveService {
   Future<void> _openEncryptedBoxes(HiveAesCipher cipher,
       {bool crashRecovery = false}) async {
     _userProfileBox = await Hive.openBox<UserProfile>(
-        AppConstants.userProfileBox,
+        _name(AppConstants.userProfileBox),
         encryptionCipher: cipher,
         crashRecovery: crashRecovery);
     _periodRecordsBox = await Hive.openBox<PeriodRecord>(
-        AppConstants.periodRecordsBox,
+        _name(AppConstants.periodRecordsBox),
         encryptionCipher: cipher,
         crashRecovery: crashRecovery);
-    _dailyLogsBox = await Hive.openBox<DailyLog>(AppConstants.dailyLogsBox,
+    _dailyLogsBox = await Hive.openBox<DailyLog>(
+        _name(AppConstants.dailyLogsBox),
         encryptionCipher: cipher,
         crashRecovery: crashRecovery);
   }
 
-  /// Şifresiz kutulardaki veriyi JSON üzerinden şifreli kutulara taşır.
-  /// JSON ara katmanı HiveObject'lerin eski kutuya bağlılığı sorununu
-  /// ortadan kaldırır (aynı nesne iki kutuya konamaz).
-  Future<void> _migrateToEncrypted(HiveAesCipher cipher) async {
-    // crashRecovery: false — bkz. _openPlainBoxes. Yedekten dönen şifreli
-    // dosyayı düz sanıp "kurtarmak" veriyi sessizce boşaltır.
-    final plainProfileBox = await Hive.openBox<UserProfile>(
-        AppConstants.userProfileBox,
-        crashRecovery: false);
-    final plainRecordsBox = await Hive.openBox<PeriodRecord>(
-        AppConstants.periodRecordsBox,
-        crashRecovery: false);
-    final plainLogsBox = await Hive.openBox<DailyLog>(
-        AppConstants.dailyLogsBox,
-        crashRecovery: false);
-
-    final profileJson =
-        plainProfileBox.get(AppConstants.currentUserKey)?.toJson();
-    final recordsJson =
-        plainRecordsBox.values.map((r) => r.toJson()).toList();
-    final logsJson = plainLogsBox.values.map((l) => l.toJson()).toList();
-
-    // Güvenlik anlık görüntüsü: migrasyon yarıda kalırsa veri kurtarılabilir
-    await _writeSafetySnapshot(profileJson, recordsJson, logsJson);
-
-    await plainProfileBox.close();
-    await plainRecordsBox.close();
-    await plainLogsBox.close();
-    await Hive.deleteBoxFromDisk(AppConstants.userProfileBox);
-    await Hive.deleteBoxFromDisk(AppConstants.periodRecordsBox);
-    await Hive.deleteBoxFromDisk(AppConstants.dailyLogsBox);
-
-    await _openEncryptedBoxes(cipher);
-
-    if (profileJson != null) {
-      await _userProfileBox.put(
-          AppConstants.currentUserKey, UserProfile.fromJson(profileJson));
-    }
-    for (final json in recordsJson) {
-      final record = PeriodRecord.fromJson(json);
-      await _periodRecordsBox.put(record.id, record);
-    }
-    for (final json in logsJson) {
-      final log = DailyLog.fromJson(json);
-      await _dailyLogsBox.put(log.dateKey, log);
+  Future<void> _closeDataBoxes() async {
+    for (final base in [
+      AppConstants.userProfileBox,
+      AppConstants.periodRecordsBox,
+      AppConstants.dailyLogsBox
+    ]) {
+      if (Hive.isBoxOpen(_name(base))) await Hive.box(_name(base)).close();
     }
   }
 
-  Future<void> _writeSafetySnapshot(
-    Map<String, dynamic>? profileJson,
-    List<Map<String, dynamic>> recordsJson,
-    List<Map<String, dynamic>> logsJson,
-  ) async {
+  /// Atomic generation replacement for migration and backup restore. Failed
+  /// staging never changes the catalog; process death reopens the old or fully
+  /// committed generation, never a partly restored mixture.
+  Future<void> replaceAll(
+      {required UserProfile? profile,
+      required List<PeriodRecord> records,
+      required List<DailyLog> logs}) {
+    return _write(() => _replaceAll(profile, records, logs));
+  }
+
+  Future<void> _write(Future<void> Function() action) {
+    final operation = _replacement.then((_) => action());
+    _replacement = operation.catchError((Object _) {});
+    return operation;
+  }
+
+  Future<void> _replaceAll(UserProfile? profile, List<PeriodRecord> records,
+      List<DailyLog> logs) async {
+    final generation = const Uuid().v4().replaceAll('-', '');
+    final bases = [
+      AppConstants.userProfileBox,
+      AppConstants.periodRecordsBox,
+      AppConstants.dailyLogsBox
+    ];
+    String staged(String base) => '${base}_$generation';
+    Box<UserProfile>? profiles;
+    Box<PeriodRecord>? periods;
+    Box<DailyLog>? daily;
+    var committed = false;
     try {
-      final dir = await getApplicationDocumentsDirectory();
-      final file = File('${dir.path}/pre_encryption_backup.json');
-      await file.writeAsString(jsonEncode({
-        'app': 'regl_takip',
-        'version': 1,
-        'exportedAt': DateTime.now().toIso8601String(),
-        'profile': profileJson,
-        'periodRecords': recordsJson,
-        'dailyLogs': logsJson,
-      }));
-    } catch (e) {
-      // Snapshot best-effort: testte path_provider yok, prod'da disk dolu
-      // olabilir — migrasyonu engellemesin
-      debugPrint('[HIVE] safety snapshot failed: $e');
+      profiles = await Hive.openBox<UserProfile>(staged(bases[0]),
+          encryptionCipher: _cipher!, crashRecovery: false);
+      periods = await Hive.openBox<PeriodRecord>(staged(bases[1]),
+          encryptionCipher: _cipher!, crashRecovery: false);
+      daily = await Hive.openBox<DailyLog>(staged(bases[2]),
+          encryptionCipher: _cipher!, crashRecovery: false);
+      if (profile != null) {
+        await profiles.put(AppConstants.currentUserKey,
+            UserProfile.fromJson(profile.toJson()));
+      }
+      await transactionCheckpoint?.call('profile');
+      for (final record in records) {
+        await periods.put(record.id, PeriodRecord.fromJson(record.toJson()));
+      }
+      await transactionCheckpoint?.call('periods');
+      for (final log in logs) {
+        await daily.put(log.dateKey, DailyLog.fromJson(log.toJson()));
+      }
+      await Future.wait([profiles.flush(), periods.flush(), daily.flush()]);
+      if (periods.length != records.length || daily.length != logs.length) {
+        throw StateError('Duplicate keys in replacement data');
+      }
+      await transactionCheckpoint?.call('beforeCommit');
+      final oldNames = bases.map(_name).toList();
+      final oldBoxes = [_userProfileBox, _periodRecordsBox, _dailyLogsBox];
+      await _catalog!.put('active', generation);
+      await _catalog!.flush();
+      committed = true;
+      _generation = generation;
+      _userProfileBox = profiles;
+      _periodRecordsBox = periods;
+      _dailyLogsBox = daily;
+      // Cleanup is post-commit only. Never roll back a published generation.
+      for (var i = 0; i < oldBoxes.length; i++) {
+        try {
+          await oldBoxes[i].close();
+          await Hive.deleteBoxFromDisk(oldNames[i]);
+        } catch (e) {
+          debugPrint('[HIVE] old generation cleanup deferred: $e');
+        }
+      }
+    } finally {
+      if (!committed) {
+        await profiles?.close();
+        await periods?.close();
+        await daily?.close();
+        // Preserve staged ciphertext if commit durability is uncertain.
+      }
     }
   }
 
@@ -349,6 +324,11 @@ class HiveService {
   void resetForTesting() {
     _isInitialized = false;
     _dataResetPerformed = false;
+    _catalog = null;
+    _cipher = null;
+    _generation = '';
+    _replacement = Future.value();
+    transactionCheckpoint = null;
   }
 
   // ─── UserProfile CRUD ───────────────────────────────────────────────
@@ -358,7 +338,8 @@ class HiveService {
   }
 
   Future<void> saveUserProfile(UserProfile profile) async {
-    await _userProfileBox.put(AppConstants.currentUserKey, profile);
+    await _write(
+        () => _userProfileBox.put(AppConstants.currentUserKey, profile));
   }
 
   /// Eski sürümde ilaç tanımları günlük kayıttaydı. En yeni listeyi profile
@@ -398,11 +379,11 @@ class HiveService {
   }
 
   Future<void> savePeriodRecord(PeriodRecord record) async {
-    await _periodRecordsBox.put(record.id, record);
+    await _write(() => _periodRecordsBox.put(record.id, record));
   }
 
   Future<void> deletePeriodRecord(String id) async {
-    await _periodRecordsBox.delete(id);
+    await _write(() => _periodRecordsBox.delete(id));
   }
 
   // ─── DailyLog CRUD ─────────────────────────────────────────────────
@@ -430,18 +411,20 @@ class HiveService {
   }
 
   Future<void> saveDailyLog(DailyLog log) async {
-    await _dailyLogsBox.put(log.dateKey, log);
+    await _write(() => _dailyLogsBox.put(log.dateKey, log));
   }
 
   Future<void> deleteDailyLog(String dateKey) async {
-    await _dailyLogsBox.delete(dateKey);
+    await _write(() => _dailyLogsBox.delete(dateKey));
   }
 
   // ─── Clear all data ─────────────────────────────────────────────────
 
   Future<void> clearAll() async {
-    await _userProfileBox.clear();
-    await _periodRecordsBox.clear();
-    await _dailyLogsBox.clear();
+    await _write(() async {
+      await _userProfileBox.clear();
+      await _periodRecordsBox.clear();
+      await _dailyLogsBox.clear();
+    });
   }
 }

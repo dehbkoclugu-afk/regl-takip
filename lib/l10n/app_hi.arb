@@ -1,0 +1,1183 @@
+{
+  "@@locale": "hi",
+  "appTitle": "मासिक धर्म ट्रैकर",
+  "home": "होम",
+  "calendar": "कैलेंडर",
+  "log": "दर्ज करें",
+  "statistics": "सांख्यिकी",
+  "settings": "सेटिंग्स",
+  "profile": "प्रोफ़ाइल",
+  "onboardingWelcome": "स्वागत है!",
+  "onboardingWelcomeDesc": "अपने स्वास्थ्य पर नज़र रखने का सबसे आसान तरीका",
+  "onboardingTitle1": "अपने मासिक चक्र पर नज़र रखें",
+  "onboardingDesc1": "मासिक धर्म दर्ज करें और अगले मासिक धर्म का अनुमान देखें।",
+  "onboardingTitle2": "अपने स्वास्थ्य की निगरानी करें",
+  "onboardingDesc2": "लक्षण, मनोदशा, तापमान और बहुत कुछ ट्रैक करें।",
+  "onboardingTitle3": "अपना विश्लेषण देखें",
+  "onboardingDesc3": "विस्तृत चार्ट और आँकड़ों से अपने चक्र को समझें।",
+  "onboardingTitle4": "सूचनाएं प्राप्त करें",
+  "onboardingDesc4": "अपने मासिक धर्म और ओव्यूलेशन दिनों के लिए अनुस्मारक प्राप्त करें।",
+  "getStarted": "आरंभ करें",
+  "next": "अगला",
+  "skip": "छोड़ें",
+  "back": "वापस",
+  "save": "सहेजें",
+  "cancel": "रद्द करें",
+  "delete": "हटाएँ",
+  "edit": "संपादित करें",
+  "done": "हो गया",
+  "maybeLater": "बाद में सेट करें",
+  "enableBiometric": "फ़िंगरप्रिंट/चेहरा पहचान",
+  "enablePin": "पिन से लॉक करें",
+  "securitySetup": "सुरक्षा सेटअप",
+  "securitySetupDesc": "क्या आप ऐप को लॉक करना चाहेंगे?",
+  "enterName": "अपना नाम दर्ज करें",
+  "name": "नाम",
+  "birthDate": "जन्मतिथि",
+  "lastPeriodDate": "पिछले मासिक धर्म की तारीख",
+  "averageCycleLength": "औसत चक्र लंबाई",
+  "averagePeriodLength": "मासिक धर्म की औसत अवधि",
+  "days": "दिन",
+  "day": "दिन",
+  "today": "आज",
+  "cycleDay": "मासिक चक्र का दिन",
+  "periodIn": "अगला मासिक धर्म",
+  "daysLeft": "{count, plural, other {{count} दिन बाकी}}",
+  "@daysLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "periodToday": "आपका मासिक धर्म आज से शुरू हो सकता है",
+  "periodOngoing": "आप अपने मासिक धर्म पर हैं",
+  "ovulationDay": "ओव्यूलेशन दिवस",
+  "fertileWindow": "गर्भधारण की संभावित अवधि",
+  "lutealPhase": "ल्यूटियल चरण",
+  "follicularPhase": "कूपिक चरण",
+  "periodPhase": "मासिक धर्म चरण",
+  "logPeriod": "मासिक धर्म दर्ज करें",
+  "periodStarted": "मासिक धर्म शुरू हुआ",
+  "periodEnded": "मासिक धर्म समाप्त हुआ",
+  "flowIntensity": "मासिक रक्तस्राव की तीव्रता",
+  "light": "हल्का",
+  "medium": "मध्यम",
+  "heavy": "अधिक",
+  "veryHeavy": "बहुत अधिक",
+  "spotting": "हल्का धब्बेदार रक्तस्राव",
+  "symptoms": "लक्षण",
+  "mood": "मनोदशा",
+  "temperature": "शरीर का तापमान",
+  "weight": "वज़न",
+  "waterIntake": "पानी का सेवन",
+  "sleep": "नींद",
+  "sexualActivity": "यौन गतिविधि",
+  "medication": "दवा",
+  "notes": "नोट्स",
+  "cramps": "ऐंठन",
+  "headache": "सिरदर्द",
+  "bloating": "सूजन",
+  "breastTenderness": "स्तनों में दर्द या संवेदनशीलता",
+  "backPain": "पीठ दर्द",
+  "fatigue": "थकान",
+  "nausea": "मतली",
+  "dizziness": "चक्कर आना",
+  "stress": "तनाव",
+  "anxiety": "चिंता",
+  "irritability": "चिड़चिड़ापन",
+  "crying": "रोना",
+  "sensitivity": "संवेदनशीलता",
+  "acne": "मुँहासा",
+  "oilySkin": "तैलीय त्वचा",
+  "drySkin": "शुष्क त्वचा",
+  "constipation": "कब्ज",
+  "diarrhea": "दस्त",
+  "gas": "पेट में गैस",
+  "increasedAppetite": "भूख में वृद्धि",
+  "decreasedAppetite": "भूख कम होना",
+  "insomnia": "अनिद्रा",
+  "hotFlash": "अचानक गर्मी लगना",
+  "swelling": "सूजन",
+  "hairLoss": "बालों का झड़ना",
+  "happy": "खुश",
+  "sad": "दुखद",
+  "angry": "क्रोधित",
+  "anxious": "चिंतित",
+  "calm": "शांत",
+  "energetic": "ऊर्जावान",
+  "tired": "थका हुआ",
+  "romantic": "रोमांटिक",
+  "confused": "भ्रमित",
+  "confident": "आश्वस्त",
+  "avgCycleLength": "मासिक चक्र की औसत अवधि",
+  "avgPeriodLength": "मासिक धर्म की औसत अवधि",
+  "cycleHistory": "मासिक चक्र का इतिहास",
+  "symptomFrequency": "लक्षण आवृत्ति",
+  "moodDistribution": "मूड वितरण",
+  "temperatureTrend": "तापमान की प्रवृत्ति",
+  "weightTrend": "वजन की प्रवृत्ति",
+  "last3Months": "पिछले 3 महीने",
+  "last6Months": "पिछले 6 महीने",
+  "last12Months": "पिछले 12 महीने",
+  "exportData": "डेटा निर्यात करें",
+  "exportPdf": "पीडीएफ रिपोर्ट",
+  "exportCsv": "सीएसवी फ़ाइल",
+  "language": "भाषा",
+  "theme": "थीम",
+  "lightTheme": "हल्की थीम",
+  "darkTheme": "गहरी थीम",
+  "notifications": "सूचनाएं",
+  "periodReminder": "मासिक धर्म का अनुस्मारक",
+  "ovulationReminder": "ओव्यूलेशन अनुस्मारक",
+  "medicationReminder": "दवा अनुस्मारक",
+  "waterReminder": "जल अनुस्मारक",
+  "security": "सुरक्षा",
+  "pinLock": "पिन लॉक",
+  "biometricLock": "बायोमेट्रिक लॉक",
+  "dataBackup": "डेटा बैकअप",
+  "deleteAllData": "सभी डेटा हटाएँ",
+  "about": "के बारे में",
+  "version": "संस्करण",
+  "glasses": "गिलास",
+  "dailyGoal": "दैनिक लक्ष्य",
+  "sleepQuality": "नींद की गुणवत्ता",
+  "bedTime": "सोने का समय",
+  "wakeTime": "जागने का समय",
+  "totalSleep": "पूरी नींद",
+  "hours": "घंटे",
+  "protection": "सुरक्षा",
+  "condom": "कंडोम",
+  "pill": "गर्भनिरोधक गोली",
+  "iud": "आईयूडी",
+  "none": "कोई नहीं",
+  "other": "अन्य",
+  "medicationName": "दवा का नाम",
+  "dose": "खुराक",
+  "reminderTime": "अनुस्मारक समय",
+  "taken": "ले ली",
+  "notTaken": "नहीं ली",
+  "addNote": "नोट जोड़ें",
+  "selectDate": "दिनांक चुनें",
+  "noDataYet": "अभी तक कोई डेटा नहीं",
+  "predictions": "भविष्यवाणियाँ",
+  "nextPeriod": "अगला मासिक धर्म",
+  "nextOvulation": "अगला ओव्यूलेशन",
+  "cycleRegularity": "चक्र नियमितता",
+  "regular": "नियमित",
+  "irregular": "अनियमित",
+  "setupComplete": "सेटअप पूर्ण!",
+  "letsStart": "आइए शुरू करें",
+  "bmi": "बीएमआई",
+  "goalReached": "लक्ष्य पूरा हो गया!",
+  "helloGeneric": "नमस्कार!",
+  "dayHasRecord": "एक रिकॉर्ड है",
+  "increase": "वृद्धि",
+  "decrease": "कमी",
+  "bbtHint": "सटीक रीडिंग के लिए, जागने के ठीक बाद, बिस्तर से उठने से पहले, हर दिन एक ही समय पर मापें। ओव्यूलेशन की पुष्टि इन रीडिंग पर निर्भर करती है।",
+  "deleteMeasurement": "माप हटाएं",
+  "measurementDeleted": "मापन हटा दिया गया",
+  "deleteRecord": "रिकॉर्ड हटाएँ",
+  "recordDeleted": "रिकॉर्ड हटा दिया गया",
+  "invalidWeight": "वैध वजन दर्ज करें (20-300 किग्रा)",
+  "invalidTemperature": "मान्य तापमान दर्ज करें (35-40 डिग्री सेल्सियस)",
+  "discardChangesTitle": "सहेजे न गए परिवर्तन",
+  "discardChangesBody": "आपका नोट सहेजा नहीं गया है. अब छोड़ना इसे त्याग देता है।",
+  "discard": "त्यागें",
+  "severityLevel": "गंभीरता {level}/5",
+  "@severityLevel": {
+    "placeholders": {
+      "level": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "pregnancySetStartPrompt": "अपनी गर्भावस्था की शुरुआत निर्धारित करने के लिए टैप करें",
+  "helloName": "नमस्ते, {name}!",
+  "@helloName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ovulationPhase": "ओव्यूलेशन चरण",
+  "menstrualPhase": "मासिक धर्म चरण",
+  "todaySummary": "आज का सारांश",
+  "howAreYouFeeling": "आज आप कैसा महसूस कर रहे हैं?",
+  "logMoodAndSymptoms": "अपना मूड और लक्षण लॉग करें",
+  "addRecord": "रिकॉर्ड जोड़ें",
+  "nSymptoms": "{count, plural, other {{count} लक्षण}}",
+  "@nSymptoms": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "periodDayLabel": "मासिक धर्म का दिन",
+  "predicted": "भविष्यवाणी की गई",
+  "fertile": "गर्भधारण की संभावना",
+  "ovulation": "ओव्यूलेशन",
+  "moodLabel": "मूड: {mood}",
+  "@moodLabel": {
+    "placeholders": {
+      "mood": {
+        "type": "String"
+      }
+    }
+  },
+  "nGlassesWater": "{count} गिलास पानी",
+  "@nGlassesWater": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "noRecordForDay": "इस दिन का कोई रिकॉर्ड नहीं.",
+  "dailyLog": "दैनिक लॉग",
+  "dailyMeasurements": "दैनिक माप",
+  "flow": "मासिक रक्तस्राव",
+  "recorded": "रिकार्ड किया गया",
+  "nMedications": "{count, plural, other {{count} दवाएं}}",
+  "@nMedications": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "nGlasses": "{count, plural, other {{count} गिलास}}",
+  "@nGlasses": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "flowTracking": "मासिक रक्तस्राव दर्ज करें",
+  "color": "रंग",
+  "lightRed": "हल्का लाल",
+  "red": "लाल",
+  "darkRed": "गहरा लाल",
+  "brown": "भूरा",
+  "clots": "खून के थक्के",
+  "clotsQuestion": "कोई थक्के?",
+  "padChange": "पैड बदलना",
+  "flowSaved": "मासिक रक्तस्राव सहेजा गया",
+  "symptomTracking": "लक्षण ट्रैकिंग",
+  "physical": "शारीरिक",
+  "emotional": "भावुक",
+  "skinCategory": "त्वचा",
+  "digestive": "पाचन",
+  "otherCategory": "अन्य",
+  "glowingSkin": "चमकती त्वचा",
+  "saveNSymptoms": "सहेजें ({count} लक्षण)",
+  "@saveNSymptoms": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "nSymptomsSaved": "{count} लक्षण सहेजे गए",
+  "@nSymptomsSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "addNoteOptional": "नोट जोड़ें (वैकल्पिक)",
+  "writeAboutToday": "आज के बारे में कुछ लिखें...",
+  "moodSaved": "मूड बच गया",
+  "sensitiveM": "संवेदनशील",
+  "irritableM": "चिड़चिड़ा",
+  "neutralM": "तटस्थ",
+  "lowTemp": "नीचा",
+  "normalTemp": "सामान्य",
+  "highTemp": "ऊँचा",
+  "fever": "बुखार",
+  "measurementTime": "मापन समय",
+  "temperatureSaved": "तापमान बचाया गया",
+  "quickAdjust": "त्वरित समायोजन",
+  "manualEntry": "मैन्युअल प्रविष्टि",
+  "weightSaved": "वजन बचाया",
+  "waterTracking": "जल ट्रैकिंग",
+  "waterSaved": "पानी बचाया",
+  "sleepTracking": "नींद की ट्रैकिंग",
+  "bedTimeLabel": "सोने का समय",
+  "wakeTimeLabel": "जागने का समय",
+  "veryBad": "बहुत बुरा",
+  "bad": "ख़राब",
+  "moderate": "मध्यम",
+  "good": "अच्छा",
+  "great": "बढ़िया",
+  "sleepSaved": "नींद का रिकॉर्ड सहेजा गया",
+  "protectionMethod": "सुरक्षा विधि",
+  "orgasm": "कामोन्माद",
+  "noteOptional": "नोट (वैकल्पिक)",
+  "addNoteHint": "नोट जोड़ें...",
+  "savedGeneric": "सहेजा गया",
+  "medicationTracking": "दवा ट्रैकिंग",
+  "addMedication": "दवा जोड़ें",
+  "noMedicationsYet": "अभी तक कोई दवा नहीं जोड़ी गई",
+  "medicationPlanHint": "यह योजना हर दिन लागू होती है. चेकबॉक्स केवल चयनित दिन को रिकॉर्ड करता है।",
+  "medicationAlreadyInPlan": "यह दवा पहले से ही योजना में है",
+  "tapToAdd": "जोड़ने के लिए + टैप करें",
+  "add": "जोड़ें",
+  "dailyNote": "दैनिक नोट",
+  "myNotes": "मेरे नोट्स",
+  "notesHint": "आप कैसा महसूस कर रहे हैं? अपने नोट्स यहां लिखें...",
+  "noteSaved": "नोट सहेजा गया",
+  "cycleOverview": "मासिक चक्र का अवलोकन",
+  "avgCycle": "औसत मासिक चक्र",
+  "avgPeriod": "औसत मासिक धर्म अवधि",
+  "regularity": "नियमितता",
+  "insufficientData": "अपर्याप्त डेटा",
+  "noSymptomData": "अभी तक कोई लक्षण डेटा नहीं",
+  "noMoodData": "अभी तक कोई मूड डेटा नहीं",
+  "noCycleData": "अभी तक कोई चक्र डेटा नहीं",
+  "ongoing": "जारी है",
+  "nDays": "{count, plural, other {{count} दिन}}",
+  "@nDays": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "profileSection": "प्रोफाइल",
+  "preferences": "प्राथमिकताएँ",
+  "age": "उम्र",
+  "nYearsOld": "{count, plural, other {{count} वर्ष पुराना}}",
+  "@nYearsOld": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "cycleDuration": "मासिक चक्र की अवधि",
+  "periodDuration": "मासिक धर्म की अवधि",
+  "dataSection": "डेटा",
+  "exportPdfReport": "पीडीएफ रिपोर्ट निर्यात करें",
+  "exportCsvFile": "सीएसवी निर्यात करें",
+  "pdfExportSoon": "पीडीएफ निर्यात जल्द ही आ रहा है!",
+  "csvExportSoon": "सीएसवी निर्यात जल्द ही आ रहा है!",
+  "letsKnowYou": "आइये आपको जानते हैं",
+  "whatShouldWeCallYou": "हमें आपको क्या कहकर पुकारना चाहिए?",
+  "yourName": "आपका नाम",
+  "yourBirthDate": "आपकी जन्मतिथि",
+  "birthDateHelp": "हमें आयु-उपयुक्त सुझाव प्रदान करने में सहायता करता है।",
+  "selectDateHint": "दिनांक चुनें",
+  "selectDateToContinue": "जारी रखने के लिए एक तारीख चुनें",
+  "stepOfSteps": "{total} का चरण {current}",
+  "@stepOfSteps": {
+    "placeholders": {
+      "current": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "lastPeriodTitle": "आपका पिछला मासिक धर्म",
+  "lastPeriodHelp": "अपनी अंतिम अवधि की आरंभ तिथि चुनें।",
+  "cycleLengthTitle": "चक्र की लंबाई",
+  "cycleLengthHelp": "आपका औसत चक्र कितने दिनों का है?\n(एक पीरियड के पहले दिन से अगले पीरियड के पहले दिन तक)",
+  "periodLengthTitle": "मासिक धर्म की अवधि",
+  "periodLengthHelp": "आपका मासिक धर्म आमतौर पर कितने दिनों तक चलता है?",
+  "averageLabel": "औसत",
+  "completeBtn": "पूर्ण",
+  "continueBtn": "जारी रखें",
+  "errorOccurred": "एक त्रुटि उत्पन्न हुई: {error}",
+  "@errorOccurred": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "welcomeInfoTitle": "स्वागत है!",
+  "welcomeInfoDesc": "अपने स्वास्थ्य पर नज़र रखने का सबसे आसान और सुंदर तरीका। हम आपके चक्र के हर कदम पर आपके साथ हैं।",
+  "trackCycleTitle": "अपने मासिक चक्र पर नज़र रखें",
+  "trackCycleDesc": "आसानी से अपनी माहवारी की तारीखें, लक्षण और मनोदशा लॉग करें। आपका सारा डेटा सुरक्षित है.",
+  "getPredictionsTitle": "पूर्वानुमान प्राप्त करें",
+  "getPredictionsDesc": "स्मार्ट भविष्यवाणियों के साथ अपने अगले चक्र और उपजाऊ दिनों के बारे में जानें।",
+  "startBtn": "प्रारंभ करें",
+  "daysLater": "{count} दिनों में",
+  "@daysLater": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "todayExclamation": "आज!",
+  "spiral": "आईयूडी",
+  "enterPin": "पिन दर्ज करें",
+  "createPin": "पिन बनाएं",
+  "confirmPin": "पिन की पुष्टि करें",
+  "pinMismatch": "पिन मेल नहीं खाते, पुनः प्रयास करें",
+  "verifyPinTitle": "अपना वर्तमान पिन दर्ज करें",
+  "wrongPin": "ग़लत पिन",
+  "tooManyAttempts": "बहुत सारे ग़लत प्रयास. {seconds} सेकंड प्रतीक्षा करें",
+  "@tooManyAttempts": {
+    "placeholders": {
+      "seconds": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "coachMenstrual0": "आप रक्तस्राव, दर्द और आप कैसा महसूस करते हैं, इसे रिकॉर्ड कर सकते हैं। जिन लक्षणों से आप चिंतित हैं, उनके लिए चिकित्सीय सलाह लें।",
+  "coachMenstrual1": "यदि आरामदायक हो, तो कोमल हलचल या गर्माहट आपको बेहतर महसूस करने में मदद कर सकती है। व्यक्तिगत अनुभव अलग-अलग होते हैं।",
+  "coachMenstrual2": "आज आप कैसा महसूस करते हैं उसके अनुसार आराम या गतिविधि चुनें।",
+  "coachFollicular0": "लोगों और चक्रों के बीच ऊर्जा और लक्षण भिन्न-भिन्न होते हैं। पैटर्न पर ध्यान देने के लिए अपने स्वयं के रिकॉर्ड का उपयोग करें।",
+  "coachFollicular1": "चक्र के दौरान आपकी त्वचा बदल सकती है। एक निश्चित पैटर्न मानने के बजाय परिवर्तन रिकॉर्ड करें।",
+  "coachFollicular2": "अपने स्वास्थ्य और आराम के आधार पर व्यायाम चुनें, न कि अनुमानित चक्र चरण के आधार पर।",
+  "coachOvulation0": "उपजाऊ दिन अनुमानित हैं। यह ऐप कोई गर्भनिरोधक तरीका नहीं है.",
+  "coachOvulation1": "नए, गंभीर या लगातार दर्द के लिए ओव्यूलेशन को जिम्मेदार ठहराने के बजाय चिकित्सकीय सलाह लें।",
+  "coachOvulation2": "मनोदशा और सामाजिक ऊर्जा भिन्न-भिन्न होती है। एक पूर्वानुमानित चरण यह निर्धारित नहीं कर सकता कि आप कैसा महसूस करेंगे।",
+  "coachLuteal0": "नींद, तनाव और कई अन्य कारक लक्षणों को प्रभावित कर सकते हैं। आप जो नोटिस करते हैं उसे रिकॉर्ड करें.",
+  "coachLuteal1": "ऐसा भोजन और गतिविधि चुनें जो आपकी आवश्यकताओं के अनुरूप हो। एक पूर्वानुमानित चरण आहार निर्धारित नहीं करता है।",
+  "coachLuteal2": "मूड में बदलाव के कई संभावित कारण होते हैं। उन लक्षणों के लिए सहायता लें जो लगातार बने रहते हैं या आपको चिंतित करते हैं।",
+  "ovulationConfirmed": "संभव ओव्यूलेशन",
+  "ovulationConfirmedInfo": "तापमान पैटर्न या एलएच परीक्षण संभावित ओव्यूलेशन का सुझाव देता है। बीमारी, नींद और माप का समय परिणामों को प्रभावित करते हैं। यह नैदानिक ​​पुष्टि नहीं है और इसका उपयोग गर्भनिरोधक के लिए नहीं किया जाना चाहिए।",
+  "premiumSection": "प्रीमियम",
+  "removeAds": "विज्ञापन हटाएँ",
+  "restorePurchases": "खरीदारी पुनर्स्थापित करें",
+  "premiumActive": "प्रीमियम सक्रिय - विज्ञापन बंद हैं",
+  "storeUnavailable": "स्टोर फिलहाल अनुपलब्ध है",
+  "healthSync": "हेल्थ कनेक्ट से सिंक करें",
+  "healthSyncSuccess": "अवधि डेटा सिंक किया गया",
+  "healthSyncDenied": "स्वास्थ्य डेटा अनुमति अस्वीकृत",
+  "healthSyncUnavailable": "इस उपकरण पर कोई स्वास्थ्य सेवा नहीं",
+  "healthSyncFailed": "समन्वयन विफल",
+  "trackingModeTitle": "ट्रैकिंग मोड",
+  "modePeriod": "मासिक धर्म",
+  "modePregnancy": "गर्भावस्था",
+  "modePill": "गर्भनिरोधक गोली",
+  "modeTtc": "गर्भधारण की कोशिश",
+  "lhTestTitle": "ओव्यूलेशन (एलएच) टेस्ट",
+  "lhPositive": "सकारात्मक",
+  "lhNegative": "नकारात्मक",
+  "fertilityToday": "आज की प्रजनन क्षमता",
+  "fertilityHigh": "ऊँचा",
+  "fertilityMedium": "मध्यम",
+  "fertilityLow": "नीचा",
+  "pregnancyWeekLabel": "सप्ताह {week}",
+  "@pregnancyWeekLabel": {
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "trimester1": "पहली तिमाही",
+  "trimester2": "दूसरी तिमाही",
+  "trimester3": "तीसरी तिमाही",
+  "pregnancyDevelopmentTitle": "इस सप्ताह विकास",
+  "pregnancyDevelopment1": "आपके शिशु के प्रमुख अंगों और शारीरिक प्रणालियों के निर्माण के साथ-साथ तेजी से विकास की अवधि जारी रहती है।",
+  "pregnancyDevelopment2": "आपके शिशु की गतिविधियां अधिक समन्वित होती जा रही हैं; जब आपको लगता है कि वे एक व्यक्ति से दूसरे व्यक्ति में भिन्न हो सकते हैं।",
+  "pregnancyDevelopment3": "जैसे-जैसे जन्म की तैयारी अधिक महत्वपूर्ण होती जाती है, आपका शिशु बढ़ता रहता है।",
+  "pregnancyCheckupReminder": "अपने स्वास्थ्य देखभाल पेशेवर द्वारा सुझाए गए चेकअप शेड्यूल का पालन करें।",
+  "pregnancyStartLabel": "अंतिम मासिक धर्म की तारीख (गर्भावस्था प्रारंभ)",
+  "pregnancyModeInfo": "गर्भावस्था मोड में पूर्वानुमान और अवधि अनुस्मारक बंद हैं",
+  "pillPackStartLabel": "गोली पैक प्रारंभ",
+  "pillDayLabel": "गोली दिन {day}/21",
+  "@pillDayLabel": {
+    "placeholders": {
+      "day": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "pillBreakLabel": "ब्रेक सप्ताह • दिन {day}",
+  "@pillBreakLabel": {
+    "placeholders": {
+      "day": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "smartPrediction": "स्मार्ट भविष्यवाणी",
+  "smartPredictionDesc": "भविष्यवाणियाँ आपके पिछले चक्रों से सीखे गए औसत का उपयोग करती हैं",
+  "learnedCycleLength": "सीखा: {days} दिन",
+  "@learnedCycleLength": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "phaseInsights": "चरण अंतर्दृष्टि",
+  "noInsightsYet": "अंतर्दृष्टि के लिए अभी तक पर्याप्त डेटा नहीं है. जैसे ही आप लक्षण लॉग करेंगे, चरण-आधारित पैटर्न यहां दिखाई देंगे।",
+  "insightLine": "{symptom} अधिकतर {phase} चरण ({percent}%) में होता है",
+  "@insightLine": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      },
+      "phase": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "notContraceptionWarning": "भविष्यवाणियाँ केवल सूचनात्मक उद्देश्यों के लिए हैं। यह ऐप गर्भनिरोधक विधि नहीं है और गर्भावस्था को रोकने के लिए इसका उपयोग नहीं किया जाना चाहिए।",
+  "privacyPolicy": "गोपनीयता नीति",
+  "aboutSection": "के बारे में",
+  "consentTitle": "आपका डेटा और गोपनीयता",
+  "consentBody": "आपका सारा डेटा केवल इस डिवाइस पर एन्क्रिप्टेड संग्रहीत है; किसी भी सर्वर पर कुछ भी नहीं भेजा जाता है. आप गोपनीयता नीति को सेटिंग्स > अबाउट के अंतर्गत पढ़ सकते हैं। जारी रखकर आप स्वीकार करते हैं कि आपका डेटा आपके डिवाइस पर इस प्रकार संसाधित होता है।",
+  "consentAccept": "मैं स्वीकार करता हूँ",
+  "quickLog": "त्वरित लॉग",
+  "shortcutQuickLog": "त्वरित लॉग",
+  "shortcutToday": "आज देखें",
+  "allTrackers": "सभी ट्रैकर प्रकार",
+  "disguiseTitle": "भेस मोड",
+  "disguiseDesc": "ऐप एक \"नोट्स\" पहचान लेता है: नाम, आइकन, विजेट, सूचनाएं और लॉन्च स्क्रीन तटस्थ हो जाते हैं। वापसी: नोट्स शीर्षक को लंबे समय तक दबाकर रखें।",
+  "decoyTitle": "टिप्पणियाँ",
+  "decoyEmpty": "अभी तक कोई नोट नहीं",
+  "decoyHint": "कुछ लिखो...",
+  "backupData": "पासवर्ड बैकअप बनाएं",
+  "backupPassword": "बैकअप पासवर्ड",
+  "backupPasswordConfirm": "पासवर्ड दोबारा दर्ज करें",
+  "backupPasswordLength": "पासवर्ड 10-128 अक्षर का होना चाहिए",
+  "backupPasswordsDoNotMatch": "पासवर्ड मेल नहीं खाते",
+  "backupNoRecovery": "यह पासवर्ड डिवाइस पर संग्रहीत नहीं है और इसे पुनर्प्राप्त नहीं किया जा सकता है। यदि आप इसे भूल जाते हैं, तो आप बैकअप नहीं खोल सकते।",
+  "unlockBackupTitle": "बैकअप पासवर्ड दर्ज करें",
+  "unlockBackupBody": "यह बैकअप केवल उस पासवर्ड से खोला जा सकता है जिसका उपयोग इसे बनाते समय किया गया था।",
+  "backupPasswordOrFileInvalid": "पासवर्ड ग़लत है या बैकअप फ़ाइल क्षतिग्रस्त है.",
+  "legacyBackupWarning": "यह पुराना बैकअप एन्क्रिप्टेड नहीं है. इसे पुनर्स्थापित करने के बाद, नए बैकअप को पासवर्ड से सुरक्षित किया जाएगा।",
+  "showPassword": "पासवर्ड दिखाएँ",
+  "hidePassword": "पासवर्ड छिपाएँ",
+  "restoreData": "बैकअप से पुनर्स्थापित करें",
+  "restoreConfirmTitle": "बैकअप पुनर्स्थापित करें?",
+  "restoreConfirmBody": "सभी मौजूदा डेटा हटा दिए जाएंगे और बैकअप से {count} रिकॉर्ड बहाल कर दिए जाएंगे। इसे असंपादित नहीं किया जा सकता है।",
+  "@restoreConfirmBody": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "restore": "पुनर्स्थापित करें",
+  "backupRestored": "बैकअप पुनर्स्थापित किया गया",
+  "invalidBackupFile": "अमान्य बैकअप फ़ाइल",
+  "dateLabel": "दिनांक",
+  "modeStepTitle": "आप इसका उपयोग किस लिए करेंगे?",
+  "modeStepSubtitle": "आप इसे बाद में सेटिंग में बदल सकते हैं",
+  "modePeriodDesc": "मासिक चक्र की निगरानी और अनुमान",
+  "modePregnancyDesc": "सप्ताह-दर-सप्ताह गर्भावस्था",
+  "modePillDesc": "21+7 गोली अनुसूची",
+  "modeTtcDesc": "प्रजनन-केंद्रित ट्रैकिंग",
+  "paywallTitle": "प्रीमियम जाओ",
+  "paywallTrialSubtitle": "आपका परीक्षण सक्रिय है: {days} दिन शेष हैं। प्रीमियम सब कुछ अनलॉक रखता है।",
+  "@paywallTrialSubtitle": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "paywallFreeSubtitle": "आपका परीक्षण समाप्त हो गया है. मुफ़्त संस्करण अवधि ट्रैकिंग और कैलेंडर रखता है; दैनिक ट्रैकिंग और अंतर्दृष्टि प्रीमियम हैं।",
+  "paywallFeatureTrackers": "सभी दैनिक ट्रैकर: लक्षण, मनोदशा, पानी, नींद, वजन, तापमान, दवा, नोट्स",
+  "paywallFeatureStats": "सांख्यिकी, रुझान, और मेरा वर्ष रिंग",
+  "paywallFeatureInsights": "व्यक्तिगत अंतर्दृष्टि और चरण-टिप सूचनाएं",
+  "paywallFeatureExport": "पीडीएफ/सीएसवी निर्यात",
+  "paywallFeatureHealth": "हेल्थ कनेक्ट सिंक",
+  "paywallFeatureDisguise": "नोट्स डिकॉय के साथ भेस मोड",
+  "paywallFeatureNoAds": "विज्ञापन-मुक्त अनुभव",
+  "planMonthly": "मासिक",
+  "planYearly": "वार्षिक",
+  "perMonth": "/मो",
+  "perYear": "/वर्ष",
+  "bestValue": "सर्वोत्तम मूल्य",
+  "continueFreeBtn": "अभी निःशुल्क जारी रखें",
+  "trialBadge": "परीक्षण: {days} दिन शेष हैं",
+  "@trialBadge": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "freeBadge": "निःशुल्क संस्करण",
+  "freeExplain": "मुफ़्त संस्करण अवधि ट्रैकिंग, कैलेंडर और भविष्यवाणियाँ रखता है। दैनिक ट्रैकर, सांख्यिकी, निर्यात, हेल्थ कनेक्ट, भेस मोड और मोड प्रीमियम हैं।",
+  "seePlans": "योजनाएं देखें",
+  "premiumLockedTitle": "सांख्यिकी प्रीमियम है",
+  "premiumLockedBody": "प्रीमियम के साथ चार्ट, रुझान, चरण अंतर्दृष्टि और माई ईयर रिंग अनलॉक। परीक्षण के दौरान आपके द्वारा लॉग की गई सभी चीजें सुरक्षित रखी जाती हैं।",
+  "yearRingTitle": "मेरा साल",
+  "yearRingCycles": "चक्र",
+  "yearRingSummary": "पिछले 12 महीने: {count} चक्र",
+  "@yearRingSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "cycleComparison": "आपका अंतिम चक्र",
+  "lastCycleLength": "अंतिम चक्र: {days} दिन",
+  "@lastCycleLength": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "lastPeriodLength": "अंतिम अवधि: {days} दिन",
+  "@lastPeriodLength": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "vsAverageMore": "{days} दिन आपके औसत से अधिक लंबे हैं",
+  "@vsAverageMore": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "vsAverageLess": "{days} दिन आपके औसत से कम हैं",
+  "@vsAverageLess": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "vsAverageSame": "आपके औसत के समान",
+  "coachPersonalInsight": "आपके लॉग के आधार पर, इस चरण में सबसे आम: {symptom} ({percent}%)",
+  "@coachPersonalInsight": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "notificationInsightTitle": "चरण टिप",
+  "notificationInsightBody": "ल्यूटियल चरण शुरू हो रहा है। आपके लॉग के आधार पर, इस चरण में आपका सबसे आम लक्षण: {symptom}।",
+  "@notificationInsightBody": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationPeriodTitle": "अवधि अनुस्मारक",
+  "notificationPeriodTimingToday": "आपका मासिक धर्म आज से शुरू हो सकता है.",
+  "notificationPeriodTimingTomorrow": "आपकी अवधि कल से शुरू हो सकती है.",
+  "notificationPeriodTimingInDays": "आपकी माहवारी {days} दिनों में शुरू हो सकती है।",
+  "@notificationPeriodTimingInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "notificationPeriodTip1": "पैड या टैम्पोन पैक करना याद रखें।",
+  "notificationPeriodTip2": "थोड़ी सी तैयारी इसे आसान बना देती है।",
+  "notificationPeriodTip3": "प्रारंभ को लॉग करने से आपकी भविष्यवाणियों में सुधार होता है।",
+  "notificationPeriodChannel": "अवधि अनुस्मारक",
+  "notificationPeriodChannelDesc": "अवधि चक्र अनुस्मारक",
+  "notificationOvulationTitle": "ओव्यूलेशन अनुस्मारक",
+  "notificationOvulationBody": "आज अंडोत्सर्जन का अनुमानित दिन है। यह गर्भधारण की संभावित अवधि हो सकती है।",
+  "notificationOvulationChannel": "ओव्यूलेशन अनुस्मारक",
+  "notificationOvulationChannelDesc": "ओव्यूलेशन अनुस्मारक",
+  "notificationMedicationTitle": "दवा अनुस्मारक",
+  "notificationMedicationBody": "अपनी दवा लेना न भूलें!",
+  "notificationMedicationChannel": "दवा अनुस्मारक",
+  "notificationMedicationChannelDesc": "दवा अनुस्मारक",
+  "notificationDiscreetTitle": "अनुस्मारक",
+  "notificationDiscreetBody": "आज के लिए आपके पास एक अनुस्मारक है",
+  "notificationFertileTitle": "गर्भधारण की संभावित अवधि शुरू होती है",
+  "notificationFertileBody": "आज से आप गर्भधारण की सबसे अधिक संभावना वाले दिनों में हैं।",
+  "notificationChainEndTitle": "अनुस्मारक रुक रहे हैं",
+  "notificationChainEndBody": "निर्धारित अनुस्मारक समाप्त हो गए हैं. नए सेट अप करने के लिए ऐप खोलें.",
+  "noPurchasesToRestore": "पुनर्स्थापित करने के लिए कोई खरीदारी नहीं मिली",
+  "restoringPurchases": "खरीदारी बहाल की जा रही है...",
+  "backdateHint": "किसी भिन्न दिन के लिए देर तक दबाकर रखें",
+  "periodStartDateHelp": "आपका मासिक धर्म कब शुरू हुआ?",
+  "periodEndDateHelp": "आपकी अवधि कब समाप्त हुई?",
+  "headlinePeriodToday": "आपका मासिक धर्म आज से शुरू हो सकता है",
+  "headlinePeriodTomorrow": "आपकी अवधि कल से शुरू हो सकती है",
+  "headlineNoData": "अपनी अंतिम अवधि की तारीख जोड़ें",
+  "headlinePeriodInDays": "आपकी अवधि {days} दिनों में",
+  "@headlinePeriodInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "headlinePeriodDay": "आपके मासिक धर्म का दिन {day}",
+  "@headlinePeriodDay": {
+    "placeholders": {
+      "day": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "headlineDelaySubtitle": "कुछ भिन्नता सामान्य है. यदि यह प्रारंभ हो गया है तो इसे लॉग करें.",
+  "notificationDelayTitle": "अनुमानित तिथि बीत चुकी है",
+  "notificationDelayBody": "यदि आपकी अवधि शुरू हो गई है, तो इसे लॉग इन करना याद रखें। कुछ भिन्नता सामान्य है.",
+  "notificationDelayBodyAlt1": "अभी तक कोई प्रवेश नहीं. यदि यह प्रारंभ हो गया है, तो लॉगिंग में एक टैप लगता है।",
+  "notificationDelayBodyAlt2": "कुछ दिनों का बदलाव आम बात है. क्या आपका लॉग अप टू डेट है?",
+  "notificationDelayChannel": "विलंब अनुस्मारक",
+  "notificationDelayChannelDesc": "अनुमानित तिथि बीत जाने पर अनुस्मारक",
+  "headlineDelay": "आपकी माहवारी {days} दिन देर से हुई है",
+  "@headlineDelay": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "delayDays": "{days} दिन देर से",
+  "@delayDays": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "yourDataStays": "परीक्षण समाप्त होने पर आपके रिकॉर्ड आपके डिवाइस पर रहते हैं।",
+  "periodStartedOnThisDay": "इसी दिन मेरा मासिक धर्म शुरू हुआ था",
+  "nCyclesRecorded": "{count} चक्र रिकॉर्ड किया गया",
+  "@nCyclesRecorded": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "nLogsRecorded": "{count} दैनिक लॉग",
+  "@nLogsRecorded": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "notifPermissionTitle": "अनुस्मारक चालू करें?",
+  "notifPermissionBody": "हम आपको बताते हैं कि आपकी अवधि कब करीब है, आपके ओव्यूलेशन का दिन क्या है, और अनुमानित तारीख कब बीत चुकी है। सूचनाएं आपके डिवाइस को कभी नहीं छोड़तीं। आप उन्हें बाद में सेटिंग में भी चालू कर सकते हैं.",
+  "enableNotifications": "चालू करो",
+  "notNow": "अभी नहीं",
+  "optionalField": "वैकल्पिक",
+  "privacyAssurance": "आपका डेटा केवल इसी डिवाइस पर एन्क्रिप्टेड रहता है",
+  "privacySummary": "आपका मुख्य डेटा इस डिवाइस पर एन्क्रिप्ट किया गया है; यह तभी निकलता है जब आप इसे निर्यात करते हैं या हेल्थ कनेक्ट सक्षम करते हैं।",
+  "dontRememberExactly": "मुझे ठीक से याद नहीं है",
+  "approxTitle": "मोटे तौर पर यह कब था?",
+  "approxSubtitle": "एक कठिन तारीख ही काफी है. जैसे ही आप लॉग इन करते हैं पूर्वानुमान स्वयं सही हो जाते हैं।",
+  "approxThisWeek": "इस सप्ताह",
+  "approxLastWeek": "पिछले सप्ताह",
+  "approxTwoWeeks": "लगभग 2 सप्ताह पहले",
+  "approxThreeWeeks": "लगभग 3 सप्ताह पहले",
+  "approxMonthOrMore": "एक महीने या उससे अधिक पहले",
+  "cycleReminderTime": "चक्र अनुस्मारक समय",
+  "medicationReminderTime": "दवा अनुस्मारक समय",
+  "periodReminderLead": "अवधि अनुस्मारक",
+  "notificationQuietChannelSuffix": "शांत",
+  "quietNotifications": "शांत सूचनाएं",
+  "quietNotificationsDesc": "कोई आवाज़ या पॉप-अप नहीं - वे अधिसूचना शेड में चुपचाप प्रतीक्षा करते हैं",
+  "leadSameDay": "उसी दिन",
+  "leadNDaysBefore": "{days} दिन पहले",
+  "@leadNDaysBefore": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "regularityInfoIrregular": "आपके सबसे छोटे और सबसे लंबे चक्र के बीच 9 या अधिक दिन होते हैं। मासिक चक्र की लंबाई में भिन्नता बहुत आम है; तनाव, नींद, बीमारी और जीवन में बदलाव सभी इसे प्रभावित करते हैं। यह कोई निदान नहीं है.",
+  "regularityInfoRegular": "आपके सबसे छोटे और सबसे लंबे चक्र के बीच का अंतर 9 दिनों से कम है। इस स्थिरता के साथ भविष्यवाणियाँ अधिक सटीक होती हैं।",
+  "regularityInfoSeeDoctor": "यदि आपका चक्र लगातार 21 दिनों से छोटा या 35 दिनों से अधिक लंबा है, यदि आपको तीन महीने से अधिक समय तक कोई मासिक धर्म नहीं हुआ है, या यदि रक्तस्राव असामान्य रूप से भारी है, तो किसी स्वास्थ्य देखभाल पेशेवर से बात करना उचित है।",
+  "typicalRangeNote": "आम तौर पर स्वीकृत सीमा: चक्र {min}–{max} दिन, {pmax} दिनों तक की अवधि। निदान सीमा नहीं.",
+  "@typicalRangeNote": {
+    "placeholders": {
+      "min": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "max": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "pmax": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "lowConfidenceNote": "ये औसत केवल {count} चक्रों से आते हैं; जैसे-जैसे आप अधिक लॉग करेंगे, वे तेज़ होते जाएंगे।",
+  "@lowConfidenceNote": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "regularityInfoInsufficient": "नियमितता का कोई मतलब निकलने से पहले कम से कम {count} चक्र अंतराल की आवश्यकता होती है। कम पर निर्णय गुमराह करने वाला होगा।",
+  "@regularityInfoInsufficient": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "backupNever": "आपने कभी बैकअप नहीं बनाया है.",
+  "backupStaleHint": "यदि आप अपना फोन खो देते हैं, तो रिकॉर्ड पुनर्प्राप्त नहीं किया जा सकता है।",
+  "backupLastAt": "अंतिम बैकअप: {date}",
+  "@backupLastAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "durationsStepTitle": "आपके चक्र का विवरण",
+  "durationsStepHelp": "निश्चित नहीं? उन्हें वैसे ही छोड़ दें जैसे वे हैं - आप इन्हें बाद में सेटिंग्स में बदल सकते हैं।",
+  "lockTimeoutTitle": "लॉक में देरी",
+  "lockTimeoutDesc": "थोड़ी देर बाद वापस आने पर पिन छोड़ दें",
+  "lockImmediately": "तुरंत",
+  "previousDay": "पिछला दिन",
+  "nextDay": "अगले दिन",
+  "showLegend": "रंग कुंजी",
+  "hideLegend": "रंग कुंजी छिपाएँ",
+  "backToToday": "आज पर वापस जाएँ",
+  "monthNoRecords": "इस महीने कोई रिकॉर्ड नहीं",
+  "doctorSummary": "मेरे डॉक्टर के लिए एक सारांश निर्यात करें",
+  "healthImport": "हेल्थ कनेक्ट से आयात करें",
+  "healthImportAction": "आयात करें",
+  "allTime": "हर समय",
+  "actionPeriodStarted": "मेरा मासिक धर्म शुरू हो गया",
+  "actionMedicationTaken": "लिया गया",
+  "pregnancyTestReady": "गर्भावस्था परीक्षण अब सार्थक हो सकता है",
+  "notLoggedToday": "आज कोई {what} लॉग नहीं किया गया",
+  "@notLoggedToday": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "pregnancyTestFrom": "प्रारंभिक उपयोगी परीक्षण: {date}",
+  "@pregnancyTestFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "pillBreakIn": "ब्रेक {days} दिनों में शुरू होता है",
+  "@pillBreakIn": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "pillNewPackIn": "{days} दिनों में नया पैक",
+  "@pillNewPackIn": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "healthImportNothingNew": "आयात करने के लिए कोई नया रिकॉर्ड नहीं मिला",
+  "healthImportConfirm": "हेल्थ कनेक्ट में {count} अवधि अवधि पाई गई जो ऐप में नहीं है। उन्हें अपने रिकॉर्ड में जोड़ें? आपके मौजूदा रिकॉर्ड अछूते हैं.",
+  "@healthImportConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "healthImportDone": "{count} अवधि आयातित",
+  "@healthImportDone": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "monthPeriodDays": "{count} अवधि के दिन",
+  "@monthPeriodDays": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "monthLoggedDays": "{count} दिन लॉग किए गए",
+  "@monthLoggedDays": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "pinNoRecoveryWarning": "यदि आप अपना पिन भूल जाते हैं तो इसे पुनर्प्राप्त करने का कोई तरीका नहीं है; वापस आने का एकमात्र तरीका आपके सभी डेटा को हटाना है। कुछ ऐसा चुनें जो आपको याद रहे.",
+  "lockAfterMinutes": "{minutes} मिनट के बाद",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "reportTitle": "मासिक चक्र स्वास्थ्य रिपोर्ट",
+  "reportGenerated": "उत्पन्न",
+  "profileSummary": "प्रोफ़ाइल सारांश",
+  "periodHistory": "काल इतिहास",
+  "last30DaysSummary": "पिछले 30 दिनों का सारांश",
+  "durationDaysHeader": "अवधि (दिन)",
+  "themeSystem": "सिस्टम",
+  "themeLight": "रोशनी",
+  "themeDark": "अंधेरा",
+  "languageSystem": "सिस्टम",
+  "statsSectionOverview": "सिंहावलोकन",
+  "statsSectionCharts": "चार्ट",
+  "statsSectionHistory": "इतिहास और रुझान",
+  "storySymptomsMore": "पिछले 30 दिन पहले की अवधि ({recent} प्रविष्टियाँ बनाम {previous}) की तुलना में अधिक कठिन थे।",
+  "@storySymptomsMore": {
+    "placeholders": {
+      "recent": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "previous": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "storySymptomsLess": "पिछले 30 दिन पहले की अवधि ({recent} प्रविष्टियाँ बनाम {previous}) की तुलना में आसान थे।",
+  "@storySymptomsLess": {
+    "placeholders": {
+      "recent": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "previous": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "storySymptomsSame": "पिछली दो अवधियों में लक्षण की तीव्रता समान रही।",
+  "storyTrendUp": "इस अवधि में {delta} {unit} बढ़ गया।",
+  "@storyTrendUp": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "storyTrendDown": "इस अवधि में {delta} {unit} नीचे।",
+  "@storyTrendDown": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "storyTrendFlat": "इस अवधि में कोई सार्थक परिवर्तन नहीं - प्रवृत्ति सपाट है।",
+  "averageSeverity": "औसत {value}/5",
+  "@averageSeverity": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "dataCoverage": "डेटा कवरेज",
+  "dataCoverageValue": "{total} दिनों का {logged} पर डेटा ({percent}%)",
+  "@dataCoverageValue": {
+    "placeholders": {
+      "logged": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "percent": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "tapChartPointHint": "उस दिन खोलने के लिए किसी बिंदु पर टैप करें.",
+  "shareCalendarMonth": "कैलेंडर माह साझा करें",
+  "longPressDayHint": "त्वरित पूर्वावलोकन के लिए एक दिन दबाकर रखें।",
+  "markPeriodRange": "मासिक धर्म की तारीखें चुनें",
+  "periodRangeOverlap": "ये तारीखें पहले से दर्ज मासिक धर्म से मेल खाती हैं।",
+  "periodRangeSaved": "मासिक धर्म की तारीखें सहेजी गईं",
+  "trackingStreak": "लगातार {count} दिन दर्ज किए",
+  "@trackingStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "weeklyTracking": "{count}/7 दिन लॉग किया गया",
+  "@weeklyTracking": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "exportCalendarFile": "निर्यात कैलेंडर (.ics)",
+  "ovulationMarkerHint": "धराशायी रेखा: अनुमानित या पुष्टि की गई ओव्यूलेशन",
+  "addPastCycles": "पिछले चक्र जोड़ें",
+  "addPastCyclesHint": "अधिकतम 3 अवधि दिनांक सीमाएँ चुनें और उन्हें एक साथ सहेजें।",
+  "addPeriodRange": "मासिक धर्म की तारीखें जोड़ें",
+  "cycleOverlayTitle": "चक्र तुलना",
+  "symptomLoadComparison": "दैनिक लक्षण गंभीरता चक्र दिवस के अनुसार संरेखित होती है",
+  "currentCycleLabel": "यह चक्र",
+  "previousCycleLabel": "पिछला मासिक चक्र",
+  "colorBlindPattern": "पैटर्नयुक्त चरण रंग",
+  "colorBlindPatternDesc": "चरण बैंड में बनावट जोड़ता है - जब रंगों को अलग करना मुश्किल हो तो सहायक होता है",
+  "undo": "पूर्ववत करें",
+  "periodMarkedStarted": "मासिक धर्म की शुरुआत सहेजी गई",
+  "periodMarkedEnded": "मासिक धर्म की समाप्ति सहेजी गई",
+  "editPeriodRecord": "मासिक धर्म का रिकॉर्ड बदलें",
+  "startDateLabel": "प्रारंभ करें",
+  "endDateLabel": "ख़त्म",
+  "recordUpdated": "रिकॉर्ड अपडेट किया गया",
+  "dataResetTitle": "आपका डेटा पढ़ा नहीं जा सका",
+  "dataResetBody": "इस डिवाइस पर ऐप डेटा डिक्रिप्ट नहीं किया जा सका. यह आमतौर पर फोन स्विच करने या सिस्टम बैकअप बहाल करने के बाद होता है: डेटा को एक डिवाइस-विशिष्ट कुंजी के साथ एन्क्रिप्ट किया जाता है जो किसी नए डिवाइस पर नहीं जा सकता है। ऐप नए सिरे से शुरू हुआ है.\n\nअपने डेटा को डिवाइसों के बीच स्थानांतरित करने के लिए, सेटिंग्स > डेटा का बैकअप लें के माध्यम से नियमित रूप से JSON बैकअप निर्यात करें।",
+  "pinSet": "पिन सफलतापूर्वक सेट हो गया",
+  "pinRemoved": "पिन हटा दिया गया",
+  "unlockWithBiometric": "फ़िंगरप्रिंट या चेहरे से अनलॉक करें",
+  "biometricNotAvailable": "इस डिवाइस पर बायोमेट्रिक प्रमाणीकरण उपलब्ध नहीं है",
+  "editProfile": "प्रोफ़ाइल संपादित करें",
+  "profileSaved": "प्रोफ़ाइल सहेजी गई",
+  "sleepDurationShort": "{hours} घंटे {minutes} मिनट",
+  "@sleepDurationShort": {
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "deleteAllDataConfirm": "क्या आप वाकई सारा डेटा हटाना चाहते हैं? इस एक्शन को वापस नहीं किया जा सकता।",
+  "dataDeleted": "सारा डेटा मिटा दिया गया",
+  "doseHint": "जैसे 500 मि.ग्रा",
+  "menstrualPhaseInfo": "वह अवधि जब मासिक धर्म में रक्तस्राव होता है। आमतौर पर 3-7 दिनों तक रहता है. शरीर गर्भाशय की परत को त्याग देता है।",
+  "follicularPhaseInfo": "आपके मासिक धर्म के बाद, अंडाशय एक नया अंडा तैयार करते हैं। एस्ट्रोजन बढ़ता है और ऊर्जा का स्तर बढ़ता है।",
+  "ovulationPhaseInfo": "वह चरण जब अंडाशय से अंडा निकलता है। गर्भधारण की संभावना अपने उच्चतम स्तर पर है।",
+  "lutealPhaseInfo": "ओव्यूलेशन से अगली अवधि तक का चरण। प्रोजेस्टेरोन बढ़ता है, पीएमएस के लक्षण हो सकते हैं।",
+  "fertileWindowInfo": "वह अवधि जिसमें गर्भधारण की संभावना सबसे अधिक होती है। ओव्यूलेशन से 5 दिन पहले शुरू होता है और 1 दिन बाद समाप्त होता है।",
+  "ovulationCardInfo": "अनुमानित दिन जब अंडाशय से अंडा निकलता है। चक्र के मध्य के आसपास घटित होता है।",
+  "nextPeriodInfo": "आपकी अगली माहवारी की अनुमानित आरंभ तिथि. आपके चक्र की लंबाई के आधार पर गणना की गई।",
+  "phaseInfoTitle": "यह चरण क्या है?",
+  "learnMore": "जानकारी",
+  "healthDisclaimer": "यह ऐप चिकित्सीय सलाह का विकल्प नहीं है। कृपया स्वास्थ्य संबंधी चिंताओं के लिए किसी स्वास्थ्य देखभाल पेशेवर से परामर्श लें।",
+  "homePriority": "होम स्क्रीन प्राथमिकता",
+  "cycleFirst": "मासिक चक्र पहले",
+  "todayFirst": "आज सबसे पहले",
+  "planLifetime": "जीवनकाल",
+  "planLifetimeDetail": "एक बार भुगतान, हमेशा के लिए प्रीमियम",
+  "cycleNotificationFrequency": "चक्र अधिसूचना स्तर",
+  "cycleNotificationFrequencyDesc": "दवा अनुस्मारक प्रभावित नहीं होते हैं",
+  "notificationFrequencyEssential": "आवश्यक",
+  "notificationFrequencyBalanced": "संतुलित",
+  "notificationFrequencyDetailed": "विस्तृत",
+  "readOnlyHistoryNotice": "आप अपनी पिछली प्रविष्टियाँ देख सकते हैं; नई दैनिक प्रविष्टियों और परिवर्तनों के लिए प्रीमियम की आवश्यकता होती है।",
+  "screenProtectionTitle": "स्क्रीन सुरक्षा",
+  "screenProtectionDescription": "स्क्रीनशॉट और हाल के ऐप्स में पूर्वावलोकन को रोकती है।",
+  "predictionUncertain": "चक्र चरण अनिश्चित",
+  "startupRecoveryBody": "आपका डेटा सुरक्षित रूप से नहीं खोला जा सका. इसे संरक्षित कर लिया गया है. पुनः प्रयास करें, या ऐप बंद करें और सहायता से संपर्क करें। अपना बैकअप पुनर्प्राप्त करने से पहले पुनः इंस्टॉल न करें.",
+  "retry": "पुनः प्रयास करें",
+  "adPrivacyOptions": "विज्ञापन गोपनीयता विकल्प",
+  "policyAvailableEnglish": "यह नीति अंग्रेजी में उपलब्ध है. मूल नीति पाठ इस प्रकार है।",
+  "purchasePending": "भुगतान की पुष्टि की प्रतीक्षा की जा रही है",
+  "purchaseVerifying": "आपकी खरीदारी का सत्यापन किया जा रहा है",
+  "purchaseFailed": "आपकी खरीदारी सत्यापित नहीं की जा सकी. कृपया पुनः प्रयास करें या खरीदारी पुनर्स्थापित करें।",
+  "pillSchedule": "गोली अनुसूची",
+  "pillContinuous": "निरंतर (कोई विराम नहीं)",
+  "predictionRange": "अनुमानित तिथि सीमा",
+  "analyticsChoice": "उपयोग मापन (वैकल्पिक)",
+  "analyticsChoiceDescription": "वैकल्पिक. इस डिवाइस पर केवल ऐप क्रियाओं की गणना करता है। स्वास्थ्य डेटा, नोट्स, दिनांक और पहचान को बाहर रखा गया है। कॉन्फ़िगर की गई सेवा के बिना कुछ भी अपलोड नहीं किया जाता है.",
+  "reportRange": "रिपोर्ट दिनांक सीमा",
+  "allHistory": "सारा इतिहास",
+  "pillActiveDaysTitle": "सक्रिय गोली दिन (1-120)",
+  "pillBreakDaysTitle": "ब्रेक या प्लेसीबो दिन (0-14)",
+  "pillPrescriptionNote": "अपने नुस्खे या चिकित्सक के निर्देशों में केवल शेड्यूल का उपयोग करें। यह सेटिंग दवा बदलने की अनुशंसा नहीं करती है।"
+}

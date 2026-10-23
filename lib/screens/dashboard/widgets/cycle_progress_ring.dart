@@ -15,7 +15,8 @@ import '../../../core/utils/phase_pattern.dart';
 import '../../../core/utils/ring_segments.dart';
 import '../../../core/widgets/phase_glyph.dart';
 
-export '../../../core/utils/ring_segments.dart' show RingSegment, ringSegmentsFor;
+export '../../../core/utils/ring_segments.dart'
+    show RingSegment, ringSegmentsFor;
 
 class CycleProgressRing extends StatefulWidget {
   final int cycleDay;
@@ -128,10 +129,8 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
     // Açı -> döngü günü: gün 1 saat 12'den başlar, saat yönünde
     var angle = math.atan2(d.dy, d.dx) + math.pi / 2;
     if (angle < 0) angle += 2 * math.pi;
-    final day =
-        (angle / (2 * math.pi) * widget.cycleLength).floor() + 1;
-    final hit = segments.where(
-        (s) => day >= s.startDay && day <= s.endDay);
+    final day = (angle / (2 * math.pi) * widget.cycleLength).floor() + 1;
+    final hit = segments.where((s) => day >= s.startDay && day <= s.endDay);
     if (hit.isEmpty) return;
     _toggleSelection(hit.first);
   }
@@ -167,8 +166,7 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
     final l10n = AppLocalizations.of(context)!;
     final isDark = AppColors.isDark(context);
     final motion = context.motionEnabled;
-    final segments =
-        ringSegmentsFor(widget.cycleLength, widget.periodLength);
+    final segments = ringSegmentsFor(widget.cycleLength, widget.periodLength);
 
     // Faz değişiminde (ör. "Reglim başladı") ışıma ve merkez renkleri
     // atlamaz, yeni faza yumuşakça akar — motion bütçesi asıl bu ana
@@ -217,8 +215,7 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
         ),
         child: Center(
           child: AnimatedSwitcher(
-            duration:
-                context.motionDuration(const Duration(milliseconds: 200)),
+            duration: context.motionDuration(const Duration(milliseconds: 200)),
             child: _selected == null
                 ? _buildCenterContent(l10n, context)
                 : _buildSegmentDetail(l10n, context, _selected!, isDark),
@@ -265,7 +262,8 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
     final labeled = Semantics(
       button: true,
       onTap: () => _toggleCurrentSelection(segments),
-      label: '${EnumLabels.phase(widget.phase, l10n)}. '
+      label:
+          '${widget.delayDays > 0 ? l10n.predictionUncertain : "${l10n.predicted}: ${EnumLabels.phase(widget.phase, l10n)}"}. '
           '${l10n.cycleDay}: ${widget.cycleDay} / ${widget.cycleLength}. '
           '$status',
       child: ExcludeSemantics(child: tappable),
@@ -285,8 +283,8 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
 
   /// Segment dokunuş detayı: faz adı + takvimdeki karşılığı.
   /// Görsel imzanın etkileşim imzasına dönüşen hali.
-  Widget _buildSegmentDetail(AppLocalizations l10n, BuildContext context,
-      RingSegment s, bool isDark) {
+  Widget _buildSegmentDetail(
+      AppLocalizations l10n, BuildContext context, RingSegment s, bool isDark) {
     final textColor = _segmentTextColor(s, isDark);
     String range;
     final start = widget.lastPeriodStart;
@@ -493,19 +491,17 @@ class _SegmentedRingPainter extends CustomPainter {
     }
 
     // Ovülasyon işareti: bandın içinde koyu mor nokta
-    final ovAngle = _dayStartAngle(ovulationDay) +
-        math.pi / cycleLength; // gün ortası
+    final ovAngle =
+        _dayStartAngle(ovulationDay) + math.pi / cycleLength; // gün ortası
     final ovCenter = Offset(
       center.dx + radius * math.cos(ovAngle),
       center.dy + radius * math.sin(ovAngle),
     );
-    canvas.drawCircle(
-        ovCenter, 5, Paint()..color = AppColors.ringOvulation);
+    canvas.drawCircle(ovCenter, 5, Paint()..color = AppColors.ringOvulation);
 
     // Bugün işareti: beyaz halkalı nokta — haritada "buradasın"
     final todayAngle =
-        _dayStartAngle(todayDay.clamp(1, cycleLength)) +
-            math.pi / cycleLength;
+        _dayStartAngle(todayDay.clamp(1, cycleLength)) + math.pi / cycleLength;
     final todayCenter = Offset(
       center.dx + radius * math.cos(todayAngle),
       center.dy + radius * math.sin(todayAngle),

@@ -1,0 +1,1183 @@
+{
+  "@@locale": "zh",
+  "appTitle": "经期追踪",
+  "home": "首页",
+  "calendar": "日历",
+  "log": "记录",
+  "statistics": "统计数据",
+  "settings": "设置",
+  "profile": "个人资料",
+  "onboardingWelcome": "欢迎！",
+  "onboardingWelcomeDesc": "追踪您健康状况的最简单方法",
+  "onboardingTitle1": "追踪月经周期",
+  "onboardingDesc1": "轻松记录月经并查看下次经期预测。",
+  "onboardingTitle2": "监测您的健康状况",
+  "onboardingDesc2": "跟踪症状、情绪、体温等。",
+  "onboardingTitle3": "查看您的分析",
+  "onboardingDesc3": "通过详细的图表和统计数据了解您的周期。",
+  "onboardingTitle4": "获取通知",
+  "onboardingDesc4": "接收有关您的经期和排卵日的提醒。",
+  "getStarted": "开始使用",
+  "next": "下一步",
+  "skip": "跳过",
+  "back": "返回",
+  "save": "保存",
+  "cancel": "取消",
+  "delete": "删除",
+  "edit": "编辑",
+  "done": "完成",
+  "maybeLater": "稍后设置",
+  "enableBiometric": "指纹/人脸识别",
+  "enablePin": "使用 PIN 码锁定",
+  "securitySetup": "安全设置",
+  "securitySetupDesc": "您想锁定该应用程序吗？",
+  "enterName": "输入你的名字",
+  "name": "姓名",
+  "birthDate": "出生日期",
+  "lastPeriodDate": "上次月经日期",
+  "averageCycleLength": "平均周期长度",
+  "averagePeriodLength": "平均经期天数",
+  "days": "天",
+  "day": "日",
+  "today": "今天",
+  "cycleDay": "月经周期日",
+  "periodIn": "距离下次月经",
+  "daysLeft": "{count, plural, other {还剩 {count} 天}}",
+  "@daysLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "periodToday": "您的月经可能从今天开始",
+  "periodOngoing": "您正值经期",
+  "ovulationDay": "排卵日",
+  "fertileWindow": "易孕期",
+  "lutealPhase": "黄体期",
+  "follicularPhase": "卵泡期",
+  "periodPhase": "月经期",
+  "logPeriod": "记录月经",
+  "periodStarted": "月经开始",
+  "periodEnded": "月经结束",
+  "flowIntensity": "经血量",
+  "light": "少量",
+  "medium": "中等",
+  "heavy": "量多",
+  "veryHeavy": "量很多",
+  "spotting": "点滴出血",
+  "symptoms": "症状",
+  "mood": "心情",
+  "temperature": "体温",
+  "weight": "体重",
+  "waterIntake": "饮水量",
+  "sleep": "睡眠",
+  "sexualActivity": "性活动",
+  "medication": "药物治疗",
+  "notes": "笔记",
+  "cramps": "抽筋",
+  "headache": "头痛",
+  "bloating": "腹胀",
+  "breastTenderness": "乳房胀痛",
+  "backPain": "背痛",
+  "fatigue": "疲劳",
+  "nausea": "恶心",
+  "dizziness": "头晕",
+  "stress": "压力",
+  "anxiety": "焦虑",
+  "irritability": "烦躁",
+  "crying": "哭泣",
+  "sensitivity": "灵敏度",
+  "acne": "痤疮",
+  "oilySkin": "油性皮肤",
+  "drySkin": "干性皮肤",
+  "constipation": "便秘",
+  "diarrhea": "腹泻",
+  "gas": "肠胃胀气",
+  "increasedAppetite": "食欲增加",
+  "decreasedAppetite": "食欲减退",
+  "insomnia": "失眠",
+  "hotFlash": "潮热",
+  "swelling": "肿胀",
+  "hairLoss": "脱发",
+  "happy": "快乐",
+  "sad": "悲伤",
+  "angry": "生气",
+  "anxious": "着急",
+  "calm": "冷静",
+  "energetic": "精力充沛",
+  "tired": "累了",
+  "romantic": "浪漫",
+  "confused": "困惑",
+  "confident": "自信",
+  "avgCycleLength": "平均周期天数",
+  "avgPeriodLength": "平均经期天数",
+  "cycleHistory": "月经周期历史",
+  "symptomFrequency": "症状频率",
+  "moodDistribution": "情绪分布",
+  "temperatureTrend": "温度趋势",
+  "weightTrend": "体重趋势",
+  "last3Months": "过去 3 个月",
+  "last6Months": "过去 6 个月",
+  "last12Months": "过去 12 个月",
+  "exportData": "导出数据",
+  "exportPdf": "PDF报告",
+  "exportCsv": "CSV 文件",
+  "language": "语言",
+  "theme": "主题",
+  "lightTheme": "浅色主题",
+  "darkTheme": "深色主题",
+  "notifications": "通知",
+  "periodReminder": "经期提醒",
+  "ovulationReminder": "排卵提醒",
+  "medicationReminder": "服药提醒",
+  "waterReminder": "喝水提醒",
+  "security": "安全",
+  "pinLock": "密码锁",
+  "biometricLock": "生物识别锁",
+  "dataBackup": "数据备份",
+  "deleteAllData": "删除所有数据",
+  "about": "关于",
+  "version": "版本",
+  "glasses": "杯",
+  "dailyGoal": "每日目标",
+  "sleepQuality": "睡眠质量",
+  "bedTime": "就寝时间",
+  "wakeTime": "起床时间",
+  "totalSleep": "总睡眠时间",
+  "hours": "小时",
+  "protection": "保护",
+  "condom": "避孕套",
+  "pill": "避孕药",
+  "iud": "宫内节育器",
+  "none": "无",
+  "other": "其他",
+  "medicationName": "药品名称",
+  "dose": "剂量",
+  "reminderTime": "提醒时间",
+  "taken": "已服用",
+  "notTaken": "未服用",
+  "addNote": "添加注释",
+  "selectDate": "选择日期",
+  "noDataYet": "还没有数据",
+  "predictions": "预测",
+  "nextPeriod": "下次月经",
+  "nextOvulation": "下次排卵",
+  "cycleRegularity": "周期规律性",
+  "regular": "常规",
+  "irregular": "不规则",
+  "setupComplete": "设置完成！",
+  "letsStart": "让我们开始吧",
+  "bmi": "体重指数",
+  "goalReached": "目标达到了！",
+  "helloGeneric": "你好！",
+  "dayHasRecord": "有记录",
+  "increase": "增加",
+  "decrease": "减少",
+  "bbtHint": "为了获得准确的读数，请在每天起床后、起床前的同一时间进行测量。排卵确认依赖于这些读数。",
+  "deleteMeasurement": "删除测量",
+  "measurementDeleted": "测量值已删除",
+  "deleteRecord": "删除记录",
+  "recordDeleted": "记录已删除",
+  "invalidWeight": "输入有效体重（20-300 公斤）",
+  "invalidTemperature": "输入有效温度 (35-40 °C)",
+  "discardChangesTitle": "未保存的更改",
+  "discardChangesBody": "您的笔记未保存。现在离开就丢弃它。",
+  "discard": "丢弃",
+  "severityLevel": "严重性 {level}/5",
+  "@severityLevel": {
+    "placeholders": {
+      "level": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "pregnancySetStartPrompt": "点击以设置您的怀孕开始时间",
+  "helloName": "你好，{name}！",
+  "@helloName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ovulationPhase": "排卵期",
+  "menstrualPhase": "月经期",
+  "todaySummary": "今日总结",
+  "howAreYouFeeling": "你今天感觉怎么样？",
+  "logMoodAndSymptoms": "记录您的情绪和症状",
+  "addRecord": "添加记录",
+  "nSymptoms": "{count, plural, other {{count} 症状}}",
+  "@nSymptoms": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "periodDayLabel": "经期日",
+  "predicted": "预测",
+  "fertile": "易孕期",
+  "ovulation": "排卵",
+  "moodLabel": "心情：{mood}",
+  "@moodLabel": {
+    "placeholders": {
+      "mood": {
+        "type": "String"
+      }
+    }
+  },
+  "nGlassesWater": "{count} 杯水",
+  "@nGlassesWater": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "noRecordForDay": "这一天没有记录。",
+  "dailyLog": "每日日志",
+  "dailyMeasurements": "每日测量",
+  "flow": "经血量",
+  "recorded": "已录制",
+  "nMedications": "{count, plural, other {{count} 药物}}",
+  "@nMedications": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "nGlasses": "{count, plural, other {{count} 杯}}",
+  "@nGlasses": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "flowTracking": "经血量记录",
+  "color": "颜色",
+  "lightRed": "浅红色",
+  "red": "红色",
+  "darkRed": "深红色",
+  "brown": "棕色",
+  "clots": "血块",
+  "clotsQuestion": "有血栓吗？",
+  "padChange": "卫生巾更换次数",
+  "flowSaved": "经血量已保存",
+  "symptomTracking": "症状追踪",
+  "physical": "身体素质",
+  "emotional": "情绪化",
+  "skinCategory": "皮肤",
+  "digestive": "消化",
+  "otherCategory": "其他",
+  "glowingSkin": "容光焕发的肌肤",
+  "saveNSymptoms": "保存（{count}症状）",
+  "@saveNSymptoms": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "nSymptomsSaved": "{count} 症状已保存",
+  "@nSymptomsSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "addNoteOptional": "添加注释（可选）",
+  "writeAboutToday": "今天写点东西...",
+  "moodSaved": "心情得到拯救",
+  "sensitiveM": "敏感",
+  "irritableM": "烦躁",
+  "neutralM": "中性",
+  "lowTemp": "低",
+  "normalTemp": "正常",
+  "highTemp": "高",
+  "fever": "发烧",
+  "measurementTime": "测量时间",
+  "temperatureSaved": "保存温度",
+  "quickAdjust": "快速调整",
+  "manualEntry": "手动输入",
+  "weightSaved": "减轻重量",
+  "waterTracking": "水追踪",
+  "waterSaved": "节约用水",
+  "sleepTracking": "睡眠追踪",
+  "bedTimeLabel": "就寝时间",
+  "wakeTimeLabel": "起床时间",
+  "veryBad": "非常糟糕",
+  "bad": "不好",
+  "moderate": "中等",
+  "good": "好",
+  "great": "太棒了",
+  "sleepSaved": "睡眠已保存",
+  "protectionMethod": "保护方式",
+  "orgasm": "性高潮",
+  "noteOptional": "注意（可选）",
+  "addNoteHint": "添加注释...",
+  "savedGeneric": "已保存",
+  "medicationTracking": "药物追踪",
+  "addMedication": "添加药物",
+  "noMedicationsYet": "尚未添加任何药物",
+  "medicationPlanHint": "这个计划每天都适用。该复选框仅记录所选日期。",
+  "medicationAlreadyInPlan": "这种药物已经在计划中了",
+  "tapToAdd": "点击 + 添加",
+  "add": "添加",
+  "dailyNote": "每日笔记",
+  "myNotes": "我的笔记",
+  "notesHint": "你感觉怎么样？在这里写下你的笔记...",
+  "noteSaved": "注释已保存",
+  "cycleOverview": "月经周期概览",
+  "avgCycle": "平均周期",
+  "avgPeriod": "平均经期",
+  "regularity": "规律性",
+  "insufficientData": "数据不足",
+  "noSymptomData": "尚无症状数据",
+  "noMoodData": "还没有情绪数据",
+  "noCycleData": "尚无周期数据",
+  "ongoing": "正在进行的",
+  "nDays": "{count, plural, other {{count} 天}}",
+  "@nDays": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "profileSection": "个人资料",
+  "preferences": "偏好设置",
+  "age": "年龄",
+  "nYearsOld": "{count, plural, other {{count}岁}}",
+  "@nYearsOld": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "cycleDuration": "月经周期天数",
+  "periodDuration": "经期天数",
+  "dataSection": "数据",
+  "exportPdfReport": "导出 PDF 报告",
+  "exportCsvFile": "导出 CSV",
+  "pdfExportSoon": "PDF 导出即将推出！",
+  "csvExportSoon": "CSV 导出即将推出！",
+  "letsKnowYou": "让我们来认识一下你",
+  "whatShouldWeCallYou": "我们应该怎么称呼你？",
+  "yourName": "你的名字",
+  "yourBirthDate": "你的出生日期",
+  "birthDateHelp": "帮助我们提供适合年龄的建议。",
+  "selectDateHint": "选择日期",
+  "selectDateToContinue": "选择继续的日期",
+  "stepOfSteps": "{total} 的步骤 {current}",
+  "@stepOfSteps": {
+    "placeholders": {
+      "current": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "lastPeriodTitle": "上次月经",
+  "lastPeriodHelp": "选择您上次经期的开始日期。",
+  "cycleLengthTitle": "周期长度",
+  "cycleLengthHelp": "您的平均周期是多少天？\n（从一个周期的第一天到下一个周期的第一天）",
+  "periodLengthTitle": "经期天数",
+  "periodLengthHelp": "您的经期通常持续几天？",
+  "averageLabel": "平均",
+  "completeBtn": "完成",
+  "continueBtn": "继续",
+  "errorOccurred": "发生错误：{error}",
+  "@errorOccurred": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "welcomeInfoTitle": "欢迎！",
+  "welcomeInfoDesc": "追踪您健康状况的最简单、最美观的方式。我们会陪伴您度过周期的每一步。",
+  "trackCycleTitle": "追踪月经周期",
+  "trackCycleDesc": "轻松记录您的经期日期、症状和情绪。您的所有数据都是安全的。",
+  "getPredictionsTitle": "获取预测",
+  "getPredictionsDesc": "通过智能预测了解您的下一个周期和受孕日。",
+  "startBtn": "开始",
+  "daysLater": "在 {count} 天内",
+  "@daysLater": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "todayExclamation": "今天！",
+  "spiral": "宫内节育器",
+  "enterPin": "输入密码",
+  "createPin": "创建 PIN 码",
+  "confirmPin": "确认密码",
+  "pinMismatch": "PIN 码不匹配，请重试",
+  "verifyPinTitle": "输入您当前的 PIN 码",
+  "wrongPin": "PIN 码错误",
+  "tooManyAttempts": "错误的尝试太多了。等待 {seconds} 秒",
+  "@tooManyAttempts": {
+    "placeholders": {
+      "seconds": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "coachMenstrual0": "您可以记录出血、疼痛以及您的感受。针对您担心的症状寻求医疗建议。",
+  "coachMenstrual1": "如果舒服的话，轻柔的动作或温暖可能会帮助您感觉更好。个人经历各有不同。",
+  "coachMenstrual2": "根据您今天的感受选择休息或活动。",
+  "coachFollicular0": "能量和症状因人和周期而异。使用您自己的记录来注意模式。",
+  "coachFollicular1": "您的皮肤可能会在周期中发生变化。记录变化而不是假设固定模式。",
+  "coachFollicular2": "根据您的健康和舒适度而不是预测的周期阶段来选择运动。",
+  "coachOvulation0": "受孕日是估计值。这个应用程序不是避孕方法。",
+  "coachOvulation1": "如果出现新的、严重的或持续性的疼痛，请寻求医疗建议，而不是将其归因于排卵。",
+  "coachOvulation2": "情绪和社交能量各不相同。预测的阶段无法确定您的感受。",
+  "coachLuteal0": "睡眠、压力和许多其他因素都会影响症状。记录你注意到的事情。",
+  "coachLuteal1": "选择适合您需求的膳食和活动。预测阶段并不规定饮食。",
+  "coachLuteal2": "情绪变化有很多可能的原因。针对持续存在或令您担心的症状寻求支持。",
+  "ovulationConfirmed": "可能排卵",
+  "ovulationConfirmedInfo": "体温模式或 LH 测试表明可能排卵。疾病、睡眠和测量时间都会影响结果。这不是临床证实，不得用于避孕。",
+  "premiumSection": "高级版",
+  "removeAds": "删除广告",
+  "restorePurchases": "恢复购买",
+  "premiumActive": "高级活动 - 广告已关闭",
+  "storeUnavailable": "商店目前无法使用",
+  "healthSync": "同步到 Health Connect",
+  "healthSyncSuccess": "经期数据已同步",
+  "healthSyncDenied": "健康数据许可被拒绝",
+  "healthSyncUnavailable": "此设备上没有健康服务",
+  "healthSyncFailed": "同步失败",
+  "trackingModeTitle": "追踪模式",
+  "modePeriod": "经期",
+  "modePregnancy": "怀孕",
+  "modePill": "避孕药",
+  "modeTtc": "备孕",
+  "lhTestTitle": "排卵 (LH) 测试",
+  "lhPositive": "积极",
+  "lhNegative": "阴性",
+  "fertilityToday": "今天的生育能力",
+  "fertilityHigh": "高",
+  "fertilityMedium": "中等",
+  "fertilityLow": "低",
+  "pregnancyWeekLabel": "周 {week}",
+  "@pregnancyWeekLabel": {
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "trimester1": "第一三个月",
+  "trimester2": "第二个三个月",
+  "trimester3": "第三个学期",
+  "pregnancyDevelopmentTitle": "本周发展",
+  "pregnancyDevelopment1": "随着宝宝主要器官和身体系统的形成，快速发育期仍在继续。",
+  "pregnancyDevelopment2": "宝宝的动作变得更加协调；当你觉得它们因人而异时。",
+  "pregnancyDevelopment3": "随着分娩准备工作变得更加重要，您的宝宝会继续成长。",
+  "pregnancyCheckupReminder": "遵循您的医疗保健专业人员建议的检查时间表。",
+  "pregnancyStartLabel": "末次月经日期（怀孕开始）",
+  "pregnancyModeInfo": "怀孕模式下预测和经期提醒关闭",
+  "pillPackStartLabel": "药包开始",
+  "pillDayLabel": "丸日 {day}/21",
+  "@pillDayLabel": {
+    "placeholders": {
+      "day": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "pillBreakLabel": "休息周•日 {day}",
+  "@pillBreakLabel": {
+    "placeholders": {
+      "day": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "smartPrediction": "智能预测",
+  "smartPredictionDesc": "预测使用从过去的周期中学到的平均值",
+  "learnedCycleLength": "学到：{days}天",
+  "@learnedCycleLength": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "phaseInsights": "阶段见解",
+  "noInsightsYet": "还没有足够的数据来进行洞察。当您记录症状时，此处将出现基于阶段的模式。",
+  "insightLine": "{symptom}主要发生在{phase}阶段({percent}%)",
+  "@insightLine": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      },
+      "phase": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "notContraceptionWarning": "预测仅供参考。此应用程序不是避孕方法，不得用于避孕。",
+  "privacyPolicy": "隐私政策",
+  "aboutSection": "关于",
+  "consentTitle": "您的数据和隐私",
+  "consentBody": "您的所有数据仅加密存储在此设备上；没有任何内容发送到任何服务器。您可以在“设置”>“关于”下阅读隐私政策。继续操作即表示您接受您的数据以这种方式在您的设备上处理。",
+  "consentAccept": "我接受",
+  "quickLog": "快速记录",
+  "shortcutQuickLog": "快速记录",
+  "shortcutToday": "查看今日",
+  "allTrackers": "所有追踪器类型",
+  "disguiseTitle": "伪装模式",
+  "disguiseDesc": "该应用程序采用“Notes”身份：名称、图标、小部件、通知和启动屏幕保持中性。返回：长按笔记标题。",
+  "decoyTitle": "注释",
+  "decoyEmpty": "还没有笔记",
+  "decoyHint": "写点东西……",
+  "backupData": "创建密码备份",
+  "backupPassword": "备份密码",
+  "backupPasswordConfirm": "再次输入密码",
+  "backupPasswordLength": "密码必须为 10–128 个字符",
+  "backupPasswordsDoNotMatch": "密码不匹配",
+  "backupNoRecovery": "该密码不会存储在设备上且无法恢复。如果您忘记了，则无法打开备份。",
+  "unlockBackupTitle": "输入备份密码",
+  "unlockBackupBody": "该备份只能使用创建时使用的密码打开。",
+  "backupPasswordOrFileInvalid": "密码不正确或备份文件损坏。",
+  "legacyBackupWarning": "此较旧的备份未加密。恢复后，新的备份将受到密码保护。",
+  "showPassword": "显示密码",
+  "hidePassword": "隐藏密码",
+  "restoreData": "从备份恢复",
+  "restoreConfirmTitle": "恢复备份？",
+  "restoreConfirmBody": "所有当前数据将被删除，并且备份中的 {count} 记录将被恢复。此操作无法撤消。",
+  "@restoreConfirmBody": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "restore": "恢复",
+  "backupRestored": "备份已恢复",
+  "invalidBackupFile": "备份文件无效",
+  "dateLabel": "日期",
+  "modeStepTitle": "你会用它做什么？",
+  "modeStepSubtitle": "您可以稍后在“设置”中更改此设置",
+  "modePeriodDesc": "周期跟踪和预测",
+  "modePregnancyDesc": "每周怀孕",
+  "modePillDesc": "21+7 服药时间表",
+  "modeTtcDesc": "以生育力为重点的追踪",
+  "paywallTitle": "升级至高级版",
+  "paywallTrialSubtitle": "您的试用期已生效：还剩 {days} 天。高级版可让一切解锁。",
+  "@paywallTrialSubtitle": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "paywallFreeSubtitle": "您的审判已经结束。免费版本可以跟踪经期和日历；每日跟踪和见解都是高级的。",
+  "paywallFeatureTrackers": "所有日常追踪器：症状、情绪、饮水、睡眠、体重、体温、药物、笔记",
+  "paywallFeatureStats": "统计数据、趋势和“我的年份”戒指",
+  "paywallFeatureInsights": "个人见解和阶段提示通知",
+  "paywallFeatureExport": "PDF/CSV 导出",
+  "paywallFeatureHealth": "Health Connect 同步",
+  "paywallFeatureDisguise": "使用 Notes 诱饵进行伪装模式",
+  "paywallFeatureNoAds": "无广告体验",
+  "planMonthly": "每月",
+  "planYearly": "每年",
+  "perMonth": "/月",
+  "perYear": "/年",
+  "bestValue": "最超值",
+  "continueFreeBtn": "暂时继续免费",
+  "trialBadge": "试用：{days} 还剩几天",
+  "@trialBadge": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "freeBadge": "免费版",
+  "freeExplain": "免费版本保留经期跟踪、日历和预测。每日追踪器、统计、导出、Health Connect、伪装模式和模式均为高级。",
+  "seePlans": "查看计划",
+  "premiumLockedTitle": "统计数据是优质的",
+  "premiumLockedBody": "图表、趋势、阶段见解和“我的一年”戒指可通过 Premium 解锁。您在试用期间记录的所有内容都会得到安全保存。",
+  "yearRingTitle": "我的一年",
+  "yearRingCycles": "循环",
+  "yearRingSummary": "过去 12 个月：{count} 周期",
+  "@yearRingSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "cycleComparison": "你的最后一个周期",
+  "lastCycleLength": "最后一个周期：{days} 天",
+  "@lastCycleLength": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "lastPeriodLength": "末期：{days} 天",
+  "@lastPeriodLength": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "vsAverageMore": "{days} 天数比您的平均天数长",
+  "@vsAverageMore": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "vsAverageLess": "{days} 天数比您的平均天数短",
+  "@vsAverageLess": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "vsAverageSame": "与你的平均水平相同",
+  "coachPersonalInsight": "根据您的日志，此阶段最常见的是：{symptom} ({percent}%)",
+  "@coachPersonalInsight": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "notificationInsightTitle": "相尖",
+  "notificationInsightBody": "黄体期开始。根据您的日志，您在此阶段最常见的症状：{symptom}。",
+  "@notificationInsightBody": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationPeriodTitle": "经期提醒",
+  "notificationPeriodTimingToday": "您的月经可能从今天开始。",
+  "notificationPeriodTimingTomorrow": "您的月经可能明天开始。",
+  "notificationPeriodTimingInDays": "您的月经可能会在 {days} 天后开始。",
+  "@notificationPeriodTimingInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "notificationPeriodTip1": "记得带上卫生巾或卫生棉条。",
+  "notificationPeriodTip2": "做一点准备会让事情变得更容易。",
+  "notificationPeriodTip3": "记录开始可以改善您的预测。",
+  "notificationPeriodChannel": "经期提醒",
+  "notificationPeriodChannelDesc": "经期周期提醒",
+  "notificationOvulationTitle": "排卵提醒",
+  "notificationOvulationBody": "今天是预计排卵日，可能处于易孕期。",
+  "notificationOvulationChannel": "排卵提醒",
+  "notificationOvulationChannelDesc": "排卵提醒",
+  "notificationMedicationTitle": "服药提醒",
+  "notificationMedicationBody": "别忘了吃药！",
+  "notificationMedicationChannel": "服药提醒",
+  "notificationMedicationChannelDesc": "服药提醒",
+  "notificationDiscreetTitle": "提醒",
+  "notificationDiscreetBody": "今天有一个提醒",
+  "notificationFertileTitle": "您的受孕窗口开始了",
+  "notificationFertileBody": "从今天开始，您就进入了受孕机会最高的日子。",
+  "notificationChainEndTitle": "提醒已暂停",
+  "notificationChainEndBody": "预定的提醒已用完。打开应用程序以设置新的。",
+  "noPurchasesToRestore": "未找到可恢复的购买",
+  "restoringPurchases": "正在恢复购买...",
+  "backdateHint": "长按选择不同的一天",
+  "periodStartDateHelp": "你的月经是什么时候开始的？",
+  "periodEndDateHelp": "你的月经什么时候结束？",
+  "headlinePeriodToday": "您的月经可能从今天开始",
+  "headlinePeriodTomorrow": "您的月经可能明天开始",
+  "headlineNoData": "添加您的末次月经日期",
+  "headlinePeriodInDays": "您的经期（{days} 天）",
+  "@headlinePeriodInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "headlinePeriodDay": "您的月经日 {day}",
+  "@headlinePeriodDay": {
+    "placeholders": {
+      "day": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "headlineDelaySubtitle": "有些变化是正常的。如果已启动，则将其记录下来。",
+  "notificationDelayTitle": "预计日期已过",
+  "notificationDelayBody": "如果您的经期已经开始，请记得记录下来。有些变化是正常的。",
+  "notificationDelayBodyAlt1": "还没有条目。如果已启动，只需轻轻一按即可进行记录。",
+  "notificationDelayBodyAlt2": "几天的轮班是很常见的。您的日志是最新的吗？",
+  "notificationDelayChannel": "延误提醒",
+  "notificationDelayChannelDesc": "预计日期已过时提醒",
+  "headlineDelay": "您的月经推迟了 {days} 天",
+  "@headlineDelay": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "delayDays": "{days} 晚了几天",
+  "@delayDays": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "yourDataStays": "试用结束后，您的记录仍保留在您的设备上。",
+  "periodStartedOnThisDay": "我的月经从这一天开始",
+  "nCyclesRecorded": "记录 {count} 循环",
+  "@nCyclesRecorded": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "nLogsRecorded": "{count}每日日志",
+  "@nLogsRecorded": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "notifPermissionTitle": "打开提醒？",
+  "notifPermissionBody": "当您的经期临近、排卵日以及预计日期已过时，我们会通知您。通知永远不会离开您的设备。您也可以稍后在设置中将其打开。",
+  "enableNotifications": "打开",
+  "notNow": "现在不行",
+  "optionalField": "可选",
+  "privacyAssurance": "您的数据仅在此设备上保持加密状态",
+  "privacySummary": "您的核心数据在此设备上已加密；仅当您导出或启用 Health Connect 时，它才会离开。",
+  "dontRememberExactly": "我记不太清楚了",
+  "approxTitle": "大概是什么时候的事？",
+  "approxSubtitle": "一个粗略的日期就足够了。当您记录时，预测会自行纠正。",
+  "approxThisWeek": "本周",
+  "approxLastWeek": "上周",
+  "approxTwoWeeks": "大约 2 周前",
+  "approxThreeWeeks": "大约 3 周前",
+  "approxMonthOrMore": "一个月或更长时间前",
+  "cycleReminderTime": "循环提醒时间",
+  "medicationReminderTime": "服药提醒时间",
+  "periodReminderLead": "经期提醒",
+  "notificationQuietChannelSuffix": "安静",
+  "quietNotifications": "安静的通知",
+  "quietNotificationsDesc": "没有声音或弹出窗口 - 他们在通知栏中默默等待",
+  "leadSameDay": "同一天",
+  "leadNDaysBefore": "{days} 天前",
+  "@leadNDaysBefore": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "regularityInfoIrregular": "您的最短周期和最长周期之间有 9 天或更多天。周期长度变化很常见；压力、睡眠、疾病和生活变化都会影响它。这不是诊断。",
+  "regularityInfoRegular": "您的最短周期和最长周期之间的差异不到 9 天。通过这种一致性，预测会更加准确。",
+  "regularityInfoSeeDoctor": "如果您的周期持续短于 21 天或长于 35 天，如果您没有月经超过三个月，或者出血异常严重，则值得咨询医疗保健专业人士。",
+  "typicalRangeNote": "常见参考范围：月经周期为 {min}–{max} 天，经期最多 {pmax} 天。这不是诊断标准。",
+  "@typicalRangeNote": {
+    "placeholders": {
+      "min": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "max": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "pmax": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "lowConfidenceNote": "这些平均值仅来自 {count} 循环；当您记录更多时，它们会变得锐利。",
+  "@lowConfidenceNote": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "regularityInfoInsufficient": "在规律性产生任何意义之前，至少需要 {count} 循环间隙。对较少的判断会产生误导。",
+  "@regularityInfoInsufficient": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "backupNever": "您从未进行过备份。",
+  "backupStaleHint": "如果您丢失了手机，记录将无法恢复。",
+  "backupLastAt": "最后备份：{date}",
+  "@backupLastAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "durationsStepTitle": "您的周期详细信息",
+  "durationsStepHelp": "不确定？让它们保持原样 - 您可以稍后在设置中更改它们。",
+  "lockTimeoutTitle": "锁定延迟",
+  "lockTimeoutDesc": "当您离开片刻后回来时，请跳过 PIN 码",
+  "lockImmediately": "立即",
+  "previousDay": "前一天",
+  "nextDay": "第二天",
+  "showLegend": "色键",
+  "hideLegend": "隐藏颜色键",
+  "backToToday": "回到今天",
+  "monthNoRecords": "本月无记录",
+  "doctorSummary": "为我的医生导出摘要",
+  "healthImport": "从 Health Connect 导入",
+  "healthImportAction": "进口",
+  "allTime": "所有时间",
+  "actionPeriodStarted": "我的经期开始了",
+  "actionMedicationTaken": "采取",
+  "pregnancyTestReady": "妊娠测试现在变得有意义",
+  "notLoggedToday": "今天没有记录 {what}",
+  "@notLoggedToday": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "pregnancyTestFrom": "最早有用的测试：{date}",
+  "@pregnancyTestFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "pillBreakIn": "休息时间从 {days} 天开始",
+  "@pillBreakIn": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "pillNewPackIn": "{days}天的新包",
+  "@pillNewPackIn": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "healthImportNothingNew": "未找到可导入的新记录",
+  "healthImportConfirm": "在 Health Connect 中发现 {count} 周期跨度不在应用程序中。将它们添加到您的记录中？您现有的记录未受影响。",
+  "@healthImportConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "healthImportDone": "{count}时期进口",
+  "@healthImportDone": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "monthPeriodDays": "{count} 期间天数",
+  "@monthPeriodDays": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "monthLoggedDays": "{count} 记录天数",
+  "@monthLoggedDays": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "pinNoRecoveryWarning": "如果您忘记了 PIN 码，则无法恢复；恢复的唯一方法是删除所有数据。选择一些你会记住的东西。",
+  "lockAfterMinutes": "{minutes} 分钟后",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "reportTitle": "周期健康报告",
+  "reportGenerated": "生成",
+  "profileSummary": "简介摘要",
+  "periodHistory": "时期历史",
+  "last30DaysSummary": "过去 30 天摘要",
+  "durationDaysHeader": "持续时间（天）",
+  "themeSystem": "系统",
+  "themeLight": "光",
+  "themeDark": "黑暗",
+  "languageSystem": "系统",
+  "statsSectionOverview": "概述",
+  "statsSectionCharts": "图表",
+  "statsSectionHistory": "历史与趋势",
+  "storySymptomsMore": "过去 30 天比之前的时期更加艰难（{recent} 条目 vs {previous}）。",
+  "@storySymptomsMore": {
+    "placeholders": {
+      "recent": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "previous": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "storySymptomsLess": "过去 30 天比之前的时期更容易（{recent} 条目 vs {previous}）。",
+  "@storySymptomsLess": {
+    "placeholders": {
+      "recent": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "previous": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "storySymptomsSame": "过去两个时期的症状强度保持相似。",
+  "storyTrendUp": "在此期间上涨{delta} {unit}。",
+  "@storyTrendUp": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "storyTrendDown": "在此期间下调{delta} {unit}。",
+  "@storyTrendDown": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "storyTrendFlat": "在此期间没有发生有意义的变化——趋势持平。",
+  "averageSeverity": "平均。 {value}/5",
+  "@averageSeverity": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "dataCoverage": "数据覆盖范围",
+  "dataCoverageValue": "{total} 天数中 {logged} 的数据 ({percent}%)",
+  "@dataCoverageValue": {
+    "placeholders": {
+      "logged": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "percent": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "tapChartPointHint": "点击一个点即可在当天打开。",
+  "shareCalendarMonth": "共享日历月份",
+  "longPressDayHint": "按住一天可快速预览。",
+  "markPeriodRange": "标记经期日期范围",
+  "periodRangeOverlap": "此日期范围与已有月经记录重叠。",
+  "periodRangeSaved": "经期日期已保存",
+  "trackingStreak": "连续记录 {count} 天",
+  "@trackingStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "weeklyTracking": "{count}/7 天记录",
+  "@weeklyTracking": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "exportCalendarFile": "导出日历 (.ics)",
+  "ovulationMarkerHint": "虚线：估计或确认排卵",
+  "addPastCycles": "添加过去的周期",
+  "addPastCyclesHint": "最多选择 3 个期间日期范围并将它们保存在一起。",
+  "addPeriodRange": "添加经期日期",
+  "cycleOverlayTitle": "周期比较",
+  "symptomLoadComparison": "每日症状严重程度按周期日排列",
+  "currentCycleLabel": "本周期",
+  "previousCycleLabel": "上一个周期",
+  "colorBlindPattern": "图案相色",
+  "colorBlindPatternDesc": "为相带添加纹理 - 当颜色难以区分时很有用",
+  "undo": "撤消",
+  "periodMarkedStarted": "月经开始日期已保存",
+  "periodMarkedEnded": "月经结束日期已保存",
+  "editPeriodRecord": "编辑月经记录",
+  "startDateLabel": "开始",
+  "endDateLabel": "结束",
+  "recordUpdated": "记录已更新",
+  "dataResetTitle": "无法读取您的数据",
+  "dataResetBody": "无法在此设备上解密应用数据。这通常发生在更换手机或恢复系统备份后：数据使用设备特定密钥加密，无法移动到新设备。该应用程序已重新启动。\n\n要在设备之间移动数据，请通过“设置”>“备份数据”定期导出 JSON 备份。",
+  "pinSet": "PIN 设置成功",
+  "pinRemoved": "PIN 码已删除",
+  "unlockWithBiometric": "通过指纹或人脸解锁",
+  "biometricNotAvailable": "此设备不支持生物识别身份验证",
+  "editProfile": "编辑个人资料",
+  "profileSaved": "个人资料已保存",
+  "sleepDurationShort": "{hours}小时{minutes}分钟",
+  "@sleepDurationShort": {
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "deleteAllDataConfirm": "您确定要删除所有数据吗？此操作无法撤消。",
+  "dataDeleted": "所有数据已删除",
+  "doseHint": "例如500毫克",
+  "menstrualPhaseInfo": "月经出血的时期。通常持续3-7天。身体脱落子宫内膜。",
+  "follicularPhaseInfo": "月经结束后，卵巢会准备一个新的卵子。雌激素上升，能量水平增加。",
+  "ovulationPhaseInfo": "卵子从卵巢释放的阶段。怀孕的可能性最高。",
+  "lutealPhaseInfo": "从排卵到下一次月经的阶段。黄体酮升高，可能会出现经前综合症症状。",
+  "fertileWindowInfo": "怀孕机会最高的时期。排卵前 5 天开始，排卵后 1 天结束。",
+  "ovulationCardInfo": "卵子从卵巢排出的预计日期。发生在周期的中间。",
+  "nextPeriodInfo": "您下一个月经周期的预计开始日期。根据您的周期长度计算。",
+  "phaseInfoTitle": "这个阶段是什么？",
+  "learnMore": "信息",
+  "healthDisclaimer": "此应用程序不能替代医疗建议。如有健康问题，请咨询医疗保健专业人士。",
+  "homePriority": "主屏幕优先",
+  "cycleFirst": "优先显示月经周期",
+  "todayFirst": "今天先",
+  "planLifetime": "终身",
+  "planLifetimeDetail": "一次付款，永久享用高级版",
+  "cycleNotificationFrequency": "循环通知级别",
+  "cycleNotificationFrequencyDesc": "服药提醒不受影响",
+  "notificationFrequencyEssential": "必备",
+  "notificationFrequencyBalanced": "平衡",
+  "notificationFrequencyDetailed": "详细",
+  "readOnlyHistoryNotice": "您可以查看您过去的条目；新的每日条目和更改需要高级版。",
+  "screenProtectionTitle": "屏幕保护",
+  "screenProtectionDescription": "阻止截屏和最近使用的应用预览。",
+  "predictionUncertain": "周期阶段不确定",
+  "startupRecoveryBody": "无法安全打开您的数据。它已被保存下来。重试，或关闭应用程序并联系支持人员。在恢复备份之前请勿重新安装。",
+  "retry": "重试",
+  "adPrivacyOptions": "广告隐私选择",
+  "policyAvailableEnglish": "该政策有英文版本。原始政策文本如下。",
+  "purchasePending": "等待付款确认",
+  "purchaseVerifying": "验证您的购买",
+  "purchaseFailed": "无法验证您的购买。请重试或恢复购买。",
+  "pillSchedule": "服药时间表",
+  "pillContinuous": "连续（无间断）",
+  "predictionRange": "预计日期范围",
+  "analyticsChoice": "使用情况统计（可选）",
+  "analyticsChoiceDescription": "可选。仅计算此设备上的应用操作。健康数据、注释、日期和身份不包括在内。如果没有配置服务，则不会上传任何内容。",
+  "reportRange": "报告日期范围",
+  "allHistory": "所有历史",
+  "pillActiveDaysTitle": "有效服药天数 (1–120)",
+  "pillBreakDaysTitle": "休息日或安慰剂日 (0–14)",
+  "pillPrescriptionNote": "仅使用您的处方或临床医生说明中的时间表。此设置不建议更换药物。"
+}

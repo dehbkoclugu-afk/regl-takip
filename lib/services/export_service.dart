@@ -34,12 +34,15 @@ class ExportService {
     final dateFormat = DateFormat('yyyy-MM-dd');
 
     final headers = [
+      l10n.log,
       l10n.dateLabel,
+      l10n.endDateLabel,
+      l10n.durationDaysHeader,
       l10n.flow,
       l10n.mood,
       l10n.symptoms,
-      l10n.temperature,
-      l10n.weight,
+      '${l10n.temperature} (°C)',
+      '${l10n.weight} (kg)',
       l10n.waterIntake,
       l10n.sleepQuality,
       l10n.medication,
@@ -52,13 +55,29 @@ class ExportService {
 
     final rows = <List<dynamic>>[headers];
 
+    for (final period in periods) {
+      rows.add([
+        l10n.periodDayLabel,
+        dateFormat.format(period.startDate),
+        period.endDate == null
+            ? l10n.ongoing
+            : dateFormat.format(period.endDate!),
+        period.durationDays,
+        ...List.filled(9, '')
+      ]);
+    }
     for (final log in sortedLogs) {
       final symptomNames =
           log.symptoms.map((s) => EnumLabels.symptom(s.type, l10n)).join('; ');
-      final medicationNames =
-          log.medications.map((m) => m.name).where((n) => n.isNotEmpty).join('; ');
+      final medicationNames = log.medications
+          .map((m) => m.name)
+          .where((n) => n.isNotEmpty)
+          .join('; ');
       rows.add([
+        l10n.dailyLog,
         dateFormat.format(log.date),
+        '',
+        '',
         log.flowIntensity != null
             ? EnumLabels.flow(log.flowIntensity!, l10n)
             : '',
@@ -78,7 +97,7 @@ class ExportService {
     final dir = await getTemporaryDirectory();
     final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
     final file = File('${dir.path}/period_tracker_$timestamp.csv');
-    await file.writeAsString(csv);
+    await file.writeAsString('\uFEFF$csv');
 
     return file.path;
   }
@@ -109,9 +128,7 @@ class ExportService {
     ];
     for (final period in sorted) {
       final rawEnd = period.endDate ?? now;
-      final end = rawEnd.isBefore(period.startDate)
-          ? period.startDate
-          : rawEnd;
+      final end = rawEnd.isBefore(period.startDate) ? period.startDate : rawEnd;
       lines.addAll([
         'BEGIN:VEVENT',
         'UID:${period.id}@regl-takip',
@@ -149,38 +166,60 @@ class ExportService {
     UserProfile profile,
     List<PeriodRecord> periods,
     Map<String, DailyLog> dailyLogs,
-    AppLocalizations l10n,
-  ) async {
+    AppLocalizations l10n, {
+    DateTime? rangeStart,
+    DateTime? rangeEnd,
+    bool includeAllLogs = false,
+  }) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
 
     // Default Helvetica'da Türkçe glifler (ğ, ş, İ, ı) yok — Nunito göm
-    final fontData =
-        await rootBundle.load('assets/fonts/Nunito-Variable.ttf');
+    final fontData = await rootBundle.load('assets/fonts/Nunito-Variable.ttf');
     final nunito = pw.Font.ttf(fontData);
+    // Bundle fonts for offline reports; Nunito lacks these script glyphs.
+    final fallbackFonts = await Future.wait(
+      ['NotoSansArabic', 'NotoSansDevanagari', 'NotoSansSC'].map((name) async {
+        final data = await rootBundle.load('assets/fonts/$name.ttf');
+        return pw.Font.ttf(data);
+      }),
+    );
     final pdf = pw.Document(
       theme: pw.ThemeData.withFont(
         base: nunito,
         bold: nunito,
         italic: nunito,
         boldItalic: nunito,
+        fontFallback: fallbackFonts,
       ),
     );
 
     // Sort periods by start date descending
-    final sortedPeriods = List<PeriodRecord>.from(periods)
+    final sortedPeriods = periods
+        .where((r) =>
+            (rangeStart == null ||
+                !(r.endDate ?? DateTime.now()).isBefore(rangeStart)) &&
+            (rangeEnd == null || !r.startDate.isAfter(rangeEnd)))
+        .toList()
       ..sort((a, b) => b.startDate.compareTo(a.startDate));
 
     // Last 30 days logs
     final now = DateTime.now();
     final thirtyDaysAgo = now.subtract(const Duration(days: 30));
     final recentLogs = dailyLogs.values
-        .where((log) => log.date.isAfter(thirtyDaysAgo))
+        .where((log) =>
+            (includeAllLogs && rangeStart == null ||
+                !log.date.isBefore(rangeStart ?? thirtyDaysAgo)) &&
+            !log.date.isAfter(rangeEnd ?? now))
         .toList()
       ..sort((a, b) => a.date.compareTo(b.date));
 
     pdf.addPage(
       pw.MultiPage(
+        textDirection: l10n.localeName == 'ar'
+            ? pw.TextDirection.rtl
+            : pw.TextDirection.ltr,
         pageFormat: PdfPageFormat.a4,
+        maxPages: 2000,
         margin: const pw.EdgeInsets.all(32),
         build: (context) => [
           // Header
@@ -211,11 +250,15 @@ class ExportService {
           pw.SizedBox(height: 20),
 
           // Last 30 days
-          pw.Header(level: 1, text: l10n.last30DaysSummary),
+          pw.Header(level: 1, text: l10n.dailyLog),
+          if (rangeStart != null)
+            pw.Text(
+                "${l10n.reportRange}: ${dateFormat.format(rangeStart)} – ${dateFormat.format(rangeEnd ?? now)}"),
           if (recentLogs.isEmpty)
             pw.Text(l10n.noDataYet)
           else
             _buildDailyLogTable(recentLogs, dateFormat, l10n),
+          ..._fullNotes(recentLogs, dateFormat, l10n),
         ],
       ),
     );
@@ -257,7 +300,11 @@ class ExportService {
       headerAlignment: pw.Alignment.centerLeft,
       cellAlignment: pw.Alignment.centerLeft,
       cellPadding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      headers: [l10n.startDateLabel, l10n.endDateLabel, l10n.durationDaysHeader],
+      headers: [
+        l10n.startDateLabel,
+        l10n.endDateLabel,
+        l10n.durationDaysHeader
+      ],
       data: periods.map((p) {
         return [
           dateFormat.format(p.startDate),
@@ -284,8 +331,7 @@ class ExportService {
         l10n.flow,
         l10n.mood,
         l10n.symptoms,
-        l10n.temperature,
-        l10n.notes,
+        '${l10n.temperature} (°C)',
       ],
       data: logs.map((log) {
         // Semptomlar ad olarak: "3" doktora hiçbir şey söylemiyordu.
@@ -301,11 +347,25 @@ class ExportService {
           log.mood != null ? EnumLabels.mood(log.mood!.type, l10n) : '-',
           symptomNames.isEmpty ? '-' : symptomNames,
           log.temperature?.toStringAsFixed(1) ?? '-',
-          (log.notes ?? '-').length > 30
-              ? '${log.notes!.substring(0, 30)}...'
-              : (log.notes ?? '-'),
         ];
       }).toList(),
     );
+  }
+
+  List<pw.Widget> _fullNotes(
+      List<DailyLog> logs, DateFormat format, AppLocalizations l10n) {
+    final widgets = <pw.Widget>[];
+    for (final log in logs.where((l) => l.notes?.isNotEmpty ?? false)) {
+      widgets.add(pw.Header(
+          level: 2, text: '${l10n.notes} · ${format.format(log.date)}'));
+      final runes = log.notes!.runes.toList();
+      for (var offset = 0; offset < runes.length; offset += 500) {
+        final end = offset + 500 < runes.length ? offset + 500 : runes.length;
+        widgets.add(pw.Padding(
+            padding: const pw.EdgeInsets.only(bottom: 6),
+            child: pw.Text(String.fromCharCodes(runes.sublist(offset, end)))));
+      }
+    }
+    return widgets;
   }
 }

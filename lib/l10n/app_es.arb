@@ -42,7 +42,7 @@
   "today": "Hoy",
   "cycleDay": "Día del ciclo",
   "periodIn": "Regla en",
-  "daysLeft": "Faltan {count} días",
+  "daysLeft": "{count, plural, other {Faltan {count} días}}",
   "periodToday": "Tu regla puede empezar hoy",
   "periodOngoing": "Estás con la regla",
   "ovulationDay": "Día de ovulación",
@@ -186,7 +186,7 @@
   "howAreYouFeeling": "¿Cómo te sientes hoy?",
   "logMoodAndSymptoms": "Registra tu ánimo y síntomas",
   "addRecord": "Añadir registro",
-  "nSymptoms": "{count} síntomas",
+  "nSymptoms": "{count, plural, other {{count} síntomas}}",
   "periodDayLabel": "Día de regla",
   "predicted": "Previsto",
   "fertile": "Fértil",
@@ -198,8 +198,8 @@
   "dailyMeasurements": "Mediciones diarias",
   "flow": "Flujo",
   "recorded": "Registrado",
-  "nMedications": "{count} medicamentos",
-  "nGlasses": "{count} vasos",
+  "nMedications": "{count, plural, other {{count} medicamentos}}",
+  "nGlasses": "{count, plural, other {{count} vasos}}",
   "flowTracking": "Seguimiento del flujo",
   "color": "Color",
   "lightRed": "Rojo claro",
@@ -270,11 +270,11 @@
   "noMoodData": "Aún no hay datos de ánimo",
   "noCycleData": "Aún no hay datos de ciclos",
   "ongoing": "en curso",
-  "nDays": "{count} días",
+  "nDays": "{count, plural, other {{count} días}}",
   "profileSection": "Perfil",
   "preferences": "Preferencias",
   "age": "Edad",
-  "nYearsOld": "{count} años",
+  "nYearsOld": "{count, plural, other {{count} años}}",
   "cycleDuration": "Duración del ciclo",
   "periodDuration": "Duración de la regla",
   "dataSection": "Datos",
@@ -317,20 +317,20 @@
   "verifyPinTitle": "Introduce tu PIN actual",
   "wrongPin": "PIN incorrecto",
   "tooManyAttempts": "Demasiados intentos. Espera {seconds} segundos",
-  "coachMenstrual0": "Los días de sangrado suponen pérdida de hierro: carne roja, lentejas y verduras de hoja verde ayudan.",
-  "coachMenstrual1": "Para los cólicos, el calor y los estiramientos suaves pueden funcionar tan bien como muchos analgésicos.",
-  "coachMenstrual2": "Es normal tener poca energía hoy: mejor un paseo que un entrenamiento intenso.",
-  "coachFollicular0": "El estrógeno sube: la energía y la concentración suelen estar al máximo en esta fase. Programa ahora las tareas difíciles.",
-  "coachFollicular1": "La piel suele estar en su mejor momento en esta fase: buen momento para probar productos nuevos.",
-  "coachFollicular2": "Tu cuerpo está más preparado que nunca para el ejercicio de alta intensidad.",
-  "coachOvulation0": "Estás en la ventana fértil: actúa según tu plan, ya sea anticoncepción o embarazo.",
-  "coachOvulation1": "Algunas mujeres sienten un dolor leve en un lado durante la ovulación (mittelschmerz): es normal.",
-  "coachOvulation2": "La energía social suele estar alta estos días: buen momento para conversaciones importantes.",
-  "coachLuteal0": "En esta fase pueden empezar los síntomas del SPM: el magnesio y dormir bien los alivian.",
-  "coachLuteal1": "Los antojos de azúcar pueden dispararse: prueba tentempiés ricos en proteína para estabilizar la glucosa.",
-  "coachLuteal2": "La sensibilidad emocional puede aumentar: sé amable contigo, es hormonal y pasajero.",
-  "ovulationConfirmed": "Ovulación ✓",
-  "ovulationConfirmedInfo": "Esta fecha no es una estimación: se confirmó por la subida de tu temperatura basal (regla 3 sobre 6).",
+  "coachMenstrual0": "Puede registrar el sangrado, el dolor y cómo se siente. Busque consejo médico si presenta síntomas que le preocupen.",
+  "coachMenstrual1": "Si se siente cómodo, un movimiento suave o calidez pueden ayudarlo a sentirse mejor. Las experiencias individuales varían.",
+  "coachMenstrual2": "Elige descanso o actividad según cómo te sientas hoy.",
+  "coachFollicular0": "La energía y los síntomas varían entre personas y ciclos. Utilice sus propios registros para notar patrones.",
+  "coachFollicular1": "Su piel puede cambiar durante el ciclo. Registre los cambios en lugar de asumir un patrón fijo.",
+  "coachFollicular2": "Elija ejercicio en función de su salud y comodidad, no de una fase prevista del ciclo.",
+  "coachOvulation0": "Los días fértiles son estimaciones. Esta aplicación no es un método anticonceptivo.",
+  "coachOvulation1": "Busque consejo médico ante un dolor nuevo, intenso o persistente en lugar de atribuirlo a la ovulación.",
+  "coachOvulation2": "El estado de ánimo y la energía social varían. Una fase prevista no puede determinar cómo se sentirá.",
+  "coachLuteal0": "El sueño, el estrés y muchos otros factores pueden afectar los síntomas. Registre lo que observe.",
+  "coachLuteal1": "Elija comidas y actividades que se adapten a sus necesidades. Una fase prevista no prescribe una dieta.",
+  "coachLuteal2": "Los cambios de humor tienen muchas causas posibles. Busque apoyo para los síntomas que persisten o le preocupan.",
+  "ovulationConfirmed": "Posible ovulación",
+  "ovulationConfirmedInfo": "Un patrón de temperatura o una prueba de LH sugiere una posible ovulación. La enfermedad, el sueño y el momento de las mediciones afectan los resultados. Esto no es una confirmación clínica y no debe usarse como anticonceptivo.",
   "premiumSection": "Premium",
   "removeAds": "Quitar anuncios",
   "restorePurchases": "Restaurar compras",
@@ -453,7 +453,10 @@
   "notificationPeriodTimingInDays": "Tu regla podría empezar en {days} días.",
   "@notificationPeriodTimingInDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "notificationPeriodTip1": "Recuerda llevar una compresa o un tampón.",
@@ -486,13 +489,19 @@
   "headlinePeriodInDays": "Tu regla en {days} días",
   "@headlinePeriodInDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "headlinePeriodDay": "Día {day} de tu regla",
   "@headlinePeriodDay": {
     "placeholders": {
-      "day": {"type": "int"}
+      "day": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "headlineDelaySubtitle": "Cierta variación es normal. Regístrala si ya empezó.",
@@ -505,13 +514,19 @@
   "headlineDelay": "Tu regla lleva {days} días de retraso",
   "@headlineDelay": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "delayDays": "{days} días de retraso",
   "@delayDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "yourDataStays": "Tus registros permanecen en tu dispositivo al terminar la prueba.",
@@ -519,13 +534,19 @@
   "nCyclesRecorded": "{count} ciclos registrados",
   "@nCyclesRecorded": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "nLogsRecorded": "{count} registros diarios",
   "@nLogsRecorded": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "notifPermissionTitle": "¿Activar recordatorios?",
@@ -553,7 +574,10 @@
   "leadNDaysBefore": "{days} días antes",
   "@leadNDaysBefore": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "regularityInfoIrregular": "Hay 9 días o más entre tu ciclo más corto y el más largo. Que la duración del ciclo varíe es muy común; el estrés, el sueño, las enfermedades y los cambios de vida influyen. Esto no es un diagnóstico.",
@@ -562,21 +586,36 @@
   "typicalRangeNote": "Rango habitual: ciclo {min}–{max} días, regla hasta {pmax} días. No es un criterio diagnóstico.",
   "@typicalRangeNote": {
     "placeholders": {
-      "min": {"type": "int"},
-      "max": {"type": "int"},
-      "pmax": {"type": "int"}
+      "min": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "max": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "pmax": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "lowConfidenceNote": "Estas medias salen de solo {count} ciclos; se afinarán a medida que registres más.",
   "@lowConfidenceNote": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "regularityInfoInsufficient": "Hacen falta al menos {count} intervalos de ciclo para hablar de regularidad. Con menos, el juicio induciría a error.",
   "@regularityInfoInsufficient": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "backupNever": "Aún no has hecho ninguna copia.",
@@ -584,7 +623,9 @@
   "backupLastAt": "Última copia: {date}",
   "@backupLastAt": {
     "placeholders": {
-      "date": {"type": "String"}
+      "date": {
+        "type": "String"
+      }
     }
   },
   "durationsStepTitle": "Los datos de tu ciclo",
@@ -608,57 +649,82 @@
   "notLoggedToday": "Hoy sin registro de {what}",
   "@notLoggedToday": {
     "placeholders": {
-      "what": {"type": "String"}
+      "what": {
+        "type": "String"
+      }
     }
   },
   "pregnancyTestFrom": "Prueba fiable a partir del {date}",
   "@pregnancyTestFrom": {
     "placeholders": {
-      "date": {"type": "String"}
+      "date": {
+        "type": "String"
+      }
     }
   },
   "pillBreakIn": "El descanso empieza en {days} días",
   "@pillBreakIn": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "pillNewPackIn": "Nueva caja en {days} días",
   "@pillNewPackIn": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "healthImportNothingNew": "No se encontraron registros nuevos para importar",
   "healthImportConfirm": "Se encontraron {count} periodos en Health Connect que no están en la app. ¿Añadirlos a tus registros? Tus registros actuales no cambian.",
   "@healthImportConfirm": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "healthImportDone": "{count} periodos importados",
   "@healthImportDone": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "monthPeriodDays": "{count} días de regla",
   "@monthPeriodDays": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "monthLoggedDays": "{count} días registrados",
   "@monthLoggedDays": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "pinNoRecoveryWarning": "Si olvidas tu PIN no hay forma de recuperarlo; la única salida es borrar todos tus datos. Elige algo que recuerdes.",
   "lockAfterMinutes": "Tras {minutes} min",
   "@lockAfterMinutes": {
     "placeholders": {
-      "minutes": {"type": "int"}
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "reportTitle": "Informe de salud del ciclo",
@@ -681,10 +747,31 @@
   "storyTrendDown": "Bajada de {delta} {unit} en este período.",
   "storyTrendFlat": "Sin cambios relevantes en este período: la tendencia es plana.",
   "averageSeverity": "Prom. {value}/5",
-  "@averageSeverity": {"placeholders": {"value": {"type": "String"}}},
+  "@averageSeverity": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "dataCoverage": "Cobertura de datos",
   "dataCoverageValue": "Datos en {logged} de {total} días ({percent} %)",
-  "@dataCoverageValue": {"placeholders": {"logged": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@dataCoverageValue": {
+    "placeholders": {
+      "logged": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "percent": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "tapChartPointHint": "Toca un punto para abrir ese día.",
   "shareCalendarMonth": "Compartir mes del calendario",
   "longPressDayHint": "Mantén pulsado un día para ver una vista rápida.",
@@ -692,9 +779,23 @@
   "periodRangeOverlap": "Este intervalo se solapa con un registro existente.",
   "periodRangeSaved": "Intervalo de la regla guardado",
   "trackingStreak": "Racha de {count} días",
-  "@trackingStreak": {"placeholders": {"count": {"type": "int"}}},
+  "@trackingStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "weeklyTracking": "{count}/7 días registrados",
-  "@weeklyTracking": {"placeholders": {"count": {"type": "int"}}},
+  "@weeklyTracking": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "exportCalendarFile": "Exportar calendario (.ics)",
   "ovulationMarkerHint": "Línea discontinua: ovulación estimada o confirmada",
   "addPastCycles": "Añadir ciclos anteriores",
@@ -745,5 +846,25 @@
   "notificationFrequencyEssential": "Esencial",
   "notificationFrequencyBalanced": "Equilibrado",
   "notificationFrequencyDetailed": "Detallado",
-  "readOnlyHistoryNotice": "Puedes ver tus registros anteriores; los registros nuevos y los cambios requieren Premium."
+  "readOnlyHistoryNotice": "Puedes ver tus registros anteriores; los registros nuevos y los cambios requieren Premium.",
+  "screenProtectionTitle": "Protección de pantalla",
+  "screenProtectionDescription": "Bloquea capturas y la vista previa de aplicaciones recientes.",
+  "predictionUncertain": "Fase del ciclo incierta",
+  "startupRecoveryBody": "Sus datos no se pudieron abrir de forma segura. Se ha conservado. Vuelva a intentarlo o cierre la aplicación y comuníquese con el soporte. No reinstale antes de recuperar su copia de seguridad.",
+  "retry": "Reintentar",
+  "adPrivacyOptions": "Opciones de privacidad publicitaria",
+  "policyAvailableEnglish": "Esta política está disponible en inglés. A continuación se presenta el texto original de la política.",
+  "purchasePending": "Esperando confirmación de pago",
+  "purchaseVerifying": "Verificando tu compra",
+  "purchaseFailed": "Su compra no pudo ser verificada. Vuelva a intentarlo o restablezca las compras.",
+  "pillSchedule": "horario de pastillas",
+  "pillContinuous": "Continuo (sin pausa)",
+  "predictionRange": "Intervalo de fechas estimado",
+  "analyticsChoice": "Medición de uso (opcional)",
+  "analyticsChoiceDescription": "Opcional. Solo cuenta las acciones de la aplicación en este dispositivo. Se excluyen datos de salud, notas, fechas e identidad. No se carga nada sin un servicio configurado.",
+  "reportRange": "Intervalo de fechas del informe",
+  "allHistory": "toda la historia",
+  "pillActiveDaysTitle": "Días de píldora activa (1 a 120)",
+  "pillBreakDaysTitle": "Días de descanso o placebo (0-14)",
+  "pillPrescriptionNote": "Utilice únicamente el cronograma que figura en su receta o en las instrucciones del médico. Esta configuración no recomienda cambiar la medicación."
 }

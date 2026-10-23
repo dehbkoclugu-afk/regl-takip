@@ -951,7 +951,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         // kullanıcı sıkışıp kalıyordu. Yaklaşık seçim, uydurma bir kesinlik
         // girmekten iyi: tahminler zaten kayıt geldikçe kendini düzeltiyor.
         Align(
-          alignment: Alignment.centerLeft,
+          alignment: AlignmentDirectional.centerStart,
           child: TextButton.icon(
             onPressed: _pickApproximateLastPeriod,
             icon: const Icon(Icons.help_outline_rounded, size: 18),

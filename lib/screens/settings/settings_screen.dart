@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'audit_settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -54,6 +55,7 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: EdgeInsets.fromLTRB(16, 16, 16, bottomNavInset(context)),
         children: [
+          const AuditSettings(),
           GlassCard(
             borderRadius: 16,
             blur: 0,
@@ -176,8 +178,8 @@ class SettingsScreen extends ConsumerWidget {
                               for (final (mode, icon, label) in pair) ...[
                                 SizedBox(
                                   width: double.infinity,
-                                  child: _modeCard(context, ref, profile, mode,
-                                      icon, label),
+                                  child: _modeCard(
+                                      context, ref, profile, mode, icon, label),
                                 ),
                                 if (mode != pair.last.$1)
                                   const SizedBox(height: 10),
@@ -189,8 +191,8 @@ class SettingsScreen extends ConsumerWidget {
                             children: [
                               for (final (mode, icon, label) in pair) ...[
                                 Expanded(
-                                  child: _modeCard(context, ref, profile, mode,
-                                      icon, label),
+                                  child: _modeCard(
+                                      context, ref, profile, mode, icon, label),
                                 ),
                                 if (mode != pair.last.$1)
                                   const SizedBox(width: 10),
@@ -244,38 +246,53 @@ class SettingsScreen extends ConsumerWidget {
                 l10n.language,
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
-              // 6 dil + sistem: varsayılan cihaz dilini izler
-              trailing: DropdownButton<String>(
-                value: profile?.language ?? 'system',
-                underline: const SizedBox.shrink(),
-                borderRadius: BorderRadius.circular(14),
-                items: [
-                  DropdownMenuItem(
-                    value: 'system',
-                    child: Text(l10n.languageSystem),
-                  ),
-                  const DropdownMenuItem(value: 'tr', child: Text('Türkçe')),
-                  const DropdownMenuItem(value: 'en', child: Text('English')),
-                  const DropdownMenuItem(value: 'es', child: Text('Español')),
-                  const DropdownMenuItem(value: 'de', child: Text('Deutsch')),
-                  const DropdownMenuItem(value: 'fr', child: Text('Français')),
-                  const DropdownMenuItem(value: 'ru', child: Text('Русский')),
-                ],
-                onChanged: (value) {
-                  if (value == null) return;
-                  ref.read(localeProvider.notifier).state = value == 'system'
-                      ? null
-                      : Locale(value);
-                  ref
-                      .read(userProfileProvider.notifier)
-                      .saveProfile(language: value);
-                },
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.tp(context),
-                ),
-              ),
+              // 10 dil + sistem: varsayılan cihaz dilini izler
+              trailing: SizedBox(
+                  width: 120,
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: profile?.language ?? 'system',
+                    underline: const SizedBox.shrink(),
+                    borderRadius: BorderRadius.circular(14),
+                    items: [
+                      DropdownMenuItem(
+                        value: 'system',
+                        child: Text(l10n.languageSystem),
+                      ),
+                      const DropdownMenuItem(
+                          value: 'tr', child: Text('Türkçe')),
+                      const DropdownMenuItem(
+                          value: 'en', child: Text('English')),
+                      const DropdownMenuItem(
+                          value: 'es', child: Text('Español')),
+                      const DropdownMenuItem(
+                          value: 'de', child: Text('Deutsch')),
+                      const DropdownMenuItem(
+                          value: 'fr', child: Text('Français')),
+                      const DropdownMenuItem(
+                          value: 'ru', child: Text('Русский')),
+                      const DropdownMenuItem(
+                          value: 'pt', child: Text('Português')),
+                      const DropdownMenuItem(
+                          value: 'ar', child: Text('العربية')),
+                      const DropdownMenuItem(
+                          value: 'hi', child: Text('हिन्दी')),
+                      const DropdownMenuItem(value: 'zh', child: Text('简体中文')),
+                    ],
+                    onChanged: (value) {
+                      if (value == null) return;
+                      ref.read(localeProvider.notifier).state =
+                          value == 'system' ? null : Locale(value);
+                      ref
+                          .read(userProfileProvider.notifier)
+                          .saveProfile(language: value);
+                    },
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.tp(context),
+                    ),
+                  )),
             ),
             _divider(context),
             ListTile(
@@ -407,9 +424,8 @@ class SettingsScreen extends ConsumerWidget {
                   },
                   onSelectionChanged: (selected) {
                     final value = selected.first;
-                    ref
-                        .read(themeModeProvider.notifier)
-                        .state = switch (value) {
+                    ref.read(themeModeProvider.notifier).state =
+                        switch (value) {
                       'dark' => ThemeMode.dark,
                       'light' => ThemeMode.light,
                       _ => ThemeMode.system,
@@ -463,13 +479,11 @@ class SettingsScreen extends ConsumerWidget {
                               ? l10n.cycleFirst
                               : l10n.todayFirst,
                         ),
-                        selected:
-                            ref.watch(homePriorityProvider) == option,
+                        selected: ref.watch(homePriorityProvider) == option,
                         onSelected: (_) async {
                           ref.read(homePriorityProvider.notifier).state =
                               option;
-                          final prefs =
-                              await SharedPreferences.getInstance();
+                          final prefs = await SharedPreferences.getInstance();
                           await prefs.setString(
                             homePriorityKey,
                             option.name,
@@ -551,12 +565,11 @@ class SettingsScreen extends ConsumerWidget {
               title: l10n.cycleReminderTime,
               hour: profile?.effectiveCycleHour ?? 9,
               minute: profile?.effectiveCycleMinute ?? 0,
-              onPicked: (t) => ref
-                  .read(userProfileProvider.notifier)
-                  .saveProfile(
-                    cycleReminderHour: t.hour,
-                    cycleReminderMinute: t.minute,
-                  ),
+              onPicked: (t) =>
+                  ref.read(userProfileProvider.notifier).saveProfile(
+                        cycleReminderHour: t.hour,
+                        cycleReminderMinute: t.minute,
+                      ),
             ),
             _divider(context),
             _reminderTimeTile(
@@ -565,12 +578,11 @@ class SettingsScreen extends ConsumerWidget {
               title: l10n.medicationReminderTime,
               hour: profile?.effectiveMedicationHour ?? 9,
               minute: profile?.effectiveMedicationMinute ?? 0,
-              onPicked: (t) => ref
-                  .read(userProfileProvider.notifier)
-                  .saveProfile(
-                    medicationReminderHour: t.hour,
-                    medicationReminderMinute: t.minute,
-                  ),
+              onPicked: (t) =>
+                  ref.read(userProfileProvider.notifier).saveProfile(
+                        medicationReminderHour: t.hour,
+                        medicationReminderMinute: t.minute,
+                      ),
             ),
             _divider(context),
             _leadDaysTile(context, ref, profile, l10n),
@@ -835,25 +847,26 @@ class SettingsScreen extends ConsumerWidget {
                 if (!ensurePremiumAccess(context, ref)) return;
                 final result = await HealthSyncService().syncPeriods(
                   ref.read(periodRecordsProvider),
+                  logs: ref.read(dailyLogProvider).values.toList(),
                 );
                 if (!context.mounted) return;
                 final (message, color) = switch (result) {
                   HealthSyncResult.success => (
-                    l10n.healthSyncSuccess,
-                    AppColors.success,
-                  ),
+                      l10n.healthSyncSuccess,
+                      AppColors.success,
+                    ),
                   HealthSyncResult.permissionDenied => (
-                    l10n.healthSyncDenied,
-                    AppColors.warning,
-                  ),
+                      l10n.healthSyncDenied,
+                      AppColors.warning,
+                    ),
                   HealthSyncResult.unavailable => (
-                    l10n.healthSyncUnavailable,
-                    AppColors.warning,
-                  ),
+                      l10n.healthSyncUnavailable,
+                      AppColors.warning,
+                    ),
                   HealthSyncResult.error => (
-                    l10n.healthSyncFailed,
-                    AppColors.error,
-                  ),
+                      l10n.healthSyncFailed,
+                      AppColors.error,
+                    ),
                 };
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(message), backgroundColor: color),
@@ -1113,9 +1126,7 @@ class SettingsScreen extends ConsumerWidget {
   ) async {
     // Yasal metin arayüz dilini izlemeli; politika dosyası yalnız TR/EN
     // var — diğer diller İngilizce politikayı görür
-    final lang = Localizations.localeOf(context).languageCode == 'tr'
-        ? 'tr'
-        : 'en';
+    final lang = Localizations.localeOf(context).languageCode;
     final text = await DefaultAssetBundle.of(
       context,
     ).loadString('assets/legal/privacy_policy_$lang.md');
@@ -1128,7 +1139,11 @@ class SettingsScreen extends ConsumerWidget {
           width: double.maxFinite,
           child: SingleChildScrollView(
             child: Text(
-              text,
+              (lang == 'en' &&
+                          Localizations.localeOf(context).languageCode != 'en'
+                      ? '${l10n.policyAvailableEnglish}\n\n'
+                      : '') +
+                  text,
               style: TextStyle(
                 fontSize: 13,
                 height: 1.5,
@@ -1166,13 +1181,13 @@ class SettingsScreen extends ConsumerWidget {
     if (result.status != HealthSyncResult.success) {
       final (message, color) = switch (result.status) {
         HealthSyncResult.permissionDenied => (
-          l10n.healthSyncDenied,
-          AppColors.warning,
-        ),
+            l10n.healthSyncDenied,
+            AppColors.warning,
+          ),
         HealthSyncResult.unavailable => (
-          l10n.healthSyncUnavailable,
-          AppColors.warning,
-        ),
+            l10n.healthSyncUnavailable,
+            AppColors.warning,
+          ),
         _ => (l10n.healthSyncFailed, AppColors.error),
       };
       messenger.showSnackBar(
@@ -1277,8 +1292,7 @@ class SettingsScreen extends ConsumerWidget {
       // Gebelik başlangıcı = son adet tarihi; öneri olarak mevcut değer
       final picked = await showDatePicker(
         context: context,
-        initialDate:
-            profile?.pregnancyStartDate ??
+        initialDate: profile?.pregnancyStartDate ??
             profile?.lastPeriodStart ??
             DateTime.now(),
         firstDate: DateTime.now().subtract(const Duration(days: 300)),
@@ -1479,9 +1493,8 @@ class SettingsScreen extends ConsumerWidget {
               Navigator.pop(sheetContext, password);
             }
 
-            final visibilityLabel = obscurePassword
-                ? l10n.showPassword
-                : l10n.hidePassword;
+            final visibilityLabel =
+                obscurePassword ? l10n.showPassword : l10n.hidePassword;
             return SafeArea(
               child: SingleChildScrollView(
                 padding: EdgeInsets.fromLTRB(
@@ -1616,7 +1629,7 @@ class SettingsScreen extends ConsumerWidget {
     // Bölüm başlığı dili: 13/w700 ikincil renk — kart başlıklarından
     // (18/bold birincil) net biçimde ayrışır, ListView ritmini bozmaz
     return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 8, top: 4),
+      padding: const EdgeInsetsDirectional.only(start: 4, bottom: 8, top: 4),
       child: Text(
         title,
         style: TextStyle(
@@ -1633,7 +1646,10 @@ class SettingsScreen extends ConsumerWidget {
       borderRadius: 20,
       blur: 0,
       opacity: 0.15,
-      child: Column(children: children),
+      child: Material(
+        type: MaterialType.transparency,
+        child: Column(children: children),
+      ),
     ).animateSafe(context).fadeIn(duration: 400.ms).slideY(begin: 0.05, end: 0);
   }
 
@@ -1715,9 +1731,8 @@ class SettingsScreen extends ConsumerWidget {
                   : null,
               color: selected ? null : AppColors.bg(context),
               borderRadius: BorderRadius.circular(16),
-              border: selected
-                  ? null
-                  : Border.all(color: AppColors.dv(context)),
+              border:
+                  selected ? null : Border.all(color: AppColors.dv(context)),
             ),
             child: Column(
               children: [
@@ -2145,32 +2160,8 @@ class _ScreenProtectionTileState extends State<_ScreenProtectionTile> {
   }
 
   (String, String) _labels(BuildContext context) {
-    return switch (Localizations.localeOf(context).languageCode) {
-      'tr' => (
-          'Ekran görüntüsü koruması',
-          'Ekran görüntülerini ve son uygulamalar önizlemesini engeller.'
-        ),
-      'de' => (
-          'Bildschirmschutz',
-          'Blockiert Screenshots und die Vorschau der letzten Apps.'
-        ),
-      'es' => (
-          'Protección de pantalla',
-          'Bloquea capturas y la vista previa de aplicaciones recientes.'
-        ),
-      'fr' => (
-          'Protection de l’écran',
-          'Bloque les captures et l’aperçu des applications récentes.'
-        ),
-      'ru' => (
-          'Защита экрана',
-          'Блокирует снимки экрана и предпросмотр недавних приложений.'
-        ),
-      _ => (
-          'Screen protection',
-          'Blocks screenshots and the recent-apps preview.'
-        ),
-    };
+    final l10n = AppLocalizations.of(context)!;
+    return (l10n.screenProtectionTitle, l10n.screenProtectionDescription);
   }
 
   @override
@@ -2228,11 +2219,11 @@ class _LockTimeoutTileState extends State<_LockTimeoutTile> {
   }
 
   String _label(AppLocalizations l10n, int seconds) => switch (seconds) {
-    0 => l10n.lockImmediately,
-    60 => l10n.lockAfterMinutes(1),
-    300 => l10n.lockAfterMinutes(5),
-    _ => l10n.lockAfterMinutes(15),
-  };
+        0 => l10n.lockImmediately,
+        60 => l10n.lockAfterMinutes(1),
+        300 => l10n.lockAfterMinutes(5),
+        _ => l10n.lockAfterMinutes(15),
+      };
 
   @override
   Widget build(BuildContext context) {

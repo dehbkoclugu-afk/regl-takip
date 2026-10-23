@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import '../services/backup_service.dart';
+import '../services/usage_metrics.dart';
 import '../services/hive_service.dart';
 import '../services/notification_service.dart';
 import '../services/premium_service.dart';
@@ -126,9 +127,9 @@ final trialDaysLeftProvider = Provider<int>((ref) {
 
 final userProfileProvider =
     StateNotifierProvider<UserProfileNotifier, UserProfile?>((ref) {
-      final hiveService = ref.watch(hiveServiceProvider);
-      return UserProfileNotifier(hiveService);
-    });
+  final hiveService = ref.watch(hiveServiceProvider);
+  return UserProfileNotifier(hiveService);
+});
 
 class UserProfileNotifier extends StateNotifier<UserProfile?> {
   final HiveService _hiveService;
@@ -147,7 +148,10 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
   }
 
   Future<void> updateProfile(UserProfile profile) async {
+    final firstSetup =
+        state?.onboardingCompleted != true && profile.onboardingCompleted;
     await _hiveService.saveUserProfile(profile);
+    if (firstSetup) await UsageMetrics.record(UsageEvent.onboardingCompleted);
     state = profile;
 
     // Onboarding bu yoldan geliyor: bildirimler ve widget ilk kayıtta da
@@ -198,9 +202,12 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     List<MedicationEntry>? medicationPlan,
     bool? medicationPlanMigrated,
     int? cycleNotificationFrequency,
+    int? pillActiveDays,
+    int? pillBreakDays,
   }) async {
     final current = state ?? UserProfile();
     final updated = current.copyWith(
+      pillActiveDays: pillActiveDays, pillBreakDays: pillBreakDays,
       name: name,
       birthDate: birthDate,
       averageCycleLength: averageCycleLength,
@@ -217,8 +224,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
       reminderMinute: reminderMinute,
       // Tema tercihi değişince eski bool da senkron tutulur: eski sürüme
       // taşınan yedek kullanıcının açık/koyu seçimini kaybetmesin
-      darkModeEnabled:
-          darkModeEnabled ??
+      darkModeEnabled: darkModeEnabled ??
           (themePreference == null ? null : themePreference == 'dark'),
       waterGoal: waterGoal,
       smartPredictionEnabled: smartPredictionEnabled,
@@ -244,6 +250,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
 
     // Reschedule notifications when relevant settings change
     if (periodReminderEnabled != null ||
+        language != null ||
         ovulationReminderEnabled != null ||
         medicationReminderEnabled != null ||
         reminderHour != null ||
@@ -257,7 +264,9 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         averagePeriodLength != null ||
         // Saat ve pencere değişince planlar eski değerlerde kalırdı
         medicationReminderHour != null ||
+        medicationReminderMinute != null ||
         cycleReminderHour != null ||
+        cycleReminderMinute != null ||
         periodReminderLeadDays != null ||
         // Sessizlik tercihi kanal kimliğini değiştiriyor: kurulu
         // bildirimler yeniden planlanmazsa eski kanalda kalır
@@ -269,6 +278,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
           updated,
           records: _hiveService.getAllPeriodRecords(),
           medications: updated.medicationPlan,
+          logs: _hiveService.getAllDailyLogs(),
         );
       } catch (e) {
         debugPrint('[NOTIF] rescheduleAll failed: $e');
@@ -287,9 +297,9 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
 
 final periodRecordsProvider =
     StateNotifierProvider<PeriodRecordsNotifier, List<PeriodRecord>>((ref) {
-      final hiveService = ref.watch(hiveServiceProvider);
-      return PeriodRecordsNotifier(hiveService);
-    });
+  final hiveService = ref.watch(hiveServiceProvider);
+  return PeriodRecordsNotifier(hiveService);
+});
 
 class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
   final HiveService _hiveService;
@@ -319,8 +329,7 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
     DateTime start,
     DateTime end,
   ) async {
-    final records =
-        await addCompletedPeriodRanges([(start: start, end: end)]);
+    final records = await addCompletedPeriodRanges([(start: start, end: end)]);
     return records?.single;
   }
 
@@ -510,9 +519,8 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
     try {
       final record = state.firstWhere((r) => r.id == recordId);
       // Bitiş tarihi başlangıçtan önce olamaz
-      record.endDate = date.isBefore(record.startDate)
-          ? record.startDate
-          : date;
+      record.endDate =
+          date.isBefore(record.startDate) ? record.startDate : date;
       await _hiveService.savePeriodRecord(record);
       _load();
       await WidgetService.update(_hiveService.getUserProfile(), state);
@@ -530,13 +538,24 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
 
 final dailyLogProvider =
     StateNotifierProvider<DailyLogNotifier, Map<String, DailyLog>>((ref) {
-      final hiveService = ref.watch(hiveServiceProvider);
-      return DailyLogNotifier(hiveService);
-    });
+  final hiveService = ref.watch(hiveServiceProvider);
+  return DailyLogNotifier(hiveService);
+});
 
 class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
   final HiveService _hiveService;
   static const _uuid = Uuid();
+  final Map<String, Future<void>> _writes = {};
+  Future<void> _serial(DateTime day, Future<void> Function() write) {
+    final key = DateTime(day.year, day.month, day.day).toIso8601String();
+    final next = (_writes[key] ?? Future.value()).then((_) => write());
+    final barrier = next.catchError((Object _) {});
+    _writes[key] = barrier;
+    barrier.then((_) {
+      if (identical(_writes[key], barrier)) _writes.remove(key);
+    });
+    return next;
+  }
 
   DailyLogNotifier(this._hiveService) : super({}) {
     _load();
@@ -569,45 +588,58 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
   DailyLog _getOrCreateLog(DateTime date) {
     final dateKey =
         '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-    return state[dateKey] ?? DailyLog(id: _uuid.v4(), date: date);
+    final current = state[dateKey];
+    return current == null
+        ? DailyLog(id: _uuid.v4(), date: date)
+        : DailyLog.fromJson(current.toJson());
   }
 
   Future<void> updateSymptoms(
     DateTime date,
     List<SymptomEntry> symptoms,
-  ) async {
-    final log = _getOrCreateLog(date);
-    log.symptoms = symptoms;
-    await saveDailyLog(log);
+  ) {
+    return _serial(date, () async {
+      final log = _getOrCreateLog(date);
+      log.symptoms = symptoms;
+      await saveDailyLog(log);
+    });
   }
 
-  Future<void> updateMood(DateTime date, MoodEntry? mood) async {
-    final log = _getOrCreateLog(date);
-    log.mood = mood;
-    await saveDailyLog(log);
+  Future<void> updateMood(DateTime date, MoodEntry? mood) {
+    return _serial(date, () async {
+      final log = _getOrCreateLog(date);
+      log.mood = mood;
+      await saveDailyLog(log);
+    });
   }
 
-  Future<void> updateWater(DateTime date, int waterIntake) async {
-    final log = _getOrCreateLog(date);
-    log.waterIntake = waterIntake;
-    await saveDailyLog(log);
+  Future<void> updateWater(DateTime date, int waterIntake) {
+    return _serial(date, () async {
+      final log = _getOrCreateLog(date);
+      log.waterIntake = waterIntake;
+      await saveDailyLog(log);
+    });
   }
 
   Future<void> updateTemperature(
     DateTime date,
     double? temperature, {
     String? temperatureTime,
-  }) async {
-    final log = _getOrCreateLog(date);
-    log.temperature = temperature;
-    if (temperatureTime != null) log.temperatureTime = temperatureTime;
-    await saveDailyLog(log);
+  }) {
+    return _serial(date, () async {
+      final log = _getOrCreateLog(date);
+      log.temperature = temperature;
+      if (temperatureTime != null) log.temperatureTime = temperatureTime;
+      await saveDailyLog(log);
+    });
   }
 
-  Future<void> updateWeight(DateTime date, double? weight) async {
-    final log = _getOrCreateLog(date);
-    log.weight = weight;
-    await saveDailyLog(log);
+  Future<void> updateWeight(DateTime date, double? weight) {
+    return _serial(date, () async {
+      final log = _getOrCreateLog(date);
+      log.weight = weight;
+      await saveDailyLog(log);
+    });
   }
 
   Future<void> updateSleep(
@@ -615,12 +647,14 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     String? sleepStart,
     String? sleepEnd,
     int? sleepQuality,
-  }) async {
-    final log = _getOrCreateLog(date);
-    if (sleepStart != null) log.sleepStart = sleepStart;
-    if (sleepEnd != null) log.sleepEnd = sleepEnd;
-    if (sleepQuality != null) log.sleepQuality = sleepQuality;
-    await saveDailyLog(log);
+  }) {
+    return _serial(date, () async {
+      final log = _getOrCreateLog(date);
+      if (sleepStart != null) log.sleepStart = sleepStart;
+      if (sleepEnd != null) log.sleepEnd = sleepEnd;
+      if (sleepQuality != null) log.sleepQuality = sleepQuality;
+      await saveDailyLog(log);
+    });
   }
 
   /// Birleşik günlük ölçümler ekranını tek Hive yazımıyla kaydeder.
@@ -636,51 +670,61 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     required String? sleepStart,
     required String? sleepEnd,
     required int? sleepQuality,
-  }) async {
-    final log = _getOrCreateLog(date);
-    log
-      ..waterIntake = waterIntake
-      ..temperature = temperature
-      ..temperatureTime = temperature == null ? null : temperatureTime
-      ..weight = weight
-      ..sleepStart = sleepStart
-      ..sleepEnd = sleepEnd
-      ..sleepQuality = sleepQuality;
-    if (!hasMeaningfulDailyData(log)) {
-      await deleteDailyLog(log.dateKey);
-      return;
-    }
-    await saveDailyLog(log);
+  }) {
+    return _serial(date, () async {
+      final log = _getOrCreateLog(date);
+      log
+        ..waterIntake = waterIntake
+        ..temperature = temperature
+        ..temperatureTime = temperature == null ? null : temperatureTime
+        ..weight = weight
+        ..sleepStart = sleepStart
+        ..sleepEnd = sleepEnd
+        ..sleepQuality = sleepQuality;
+      if (!hasMeaningfulDailyData(log)) {
+        await deleteDailyLog(log.dateKey);
+        return;
+      }
+      await saveDailyLog(log);
+    });
   }
 
   Future<void> updateSexualActivity(
     DateTime date,
     SexualActivityEntry? entry,
-  ) async {
-    final log = _getOrCreateLog(date);
-    log.sexualActivity = entry;
-    await saveDailyLog(log);
+  ) {
+    return _serial(date, () async {
+      final log = _getOrCreateLog(date);
+      log.sexualActivity = entry;
+      await saveDailyLog(log);
+    });
   }
 
   Future<void> updateMedications(
     DateTime date,
     List<MedicationEntry> medications,
-  ) async {
-    final log = _getOrCreateLog(date);
-    log.medications = medications;
-    await saveDailyLog(log);
+  ) {
+    return _serial(date, () async {
+      final log = _getOrCreateLog(date);
+      log.medications = medications;
+      await saveDailyLog(log);
+    });
   }
 
-  Future<void> updateOvulationTest(DateTime date, bool? positive) async {
-    final log = _getOrCreateLog(date);
-    log.ovulationTestPositive = positive;
-    await saveDailyLog(log);
+  Future<void> updateOvulationTest(DateTime date, bool? positive) {
+    return _serial(date, () async {
+      final log = _getOrCreateLog(date);
+      log.ovulationTestPositive = positive;
+      await saveDailyLog(log);
+    });
   }
 
-  Future<void> updateNotes(DateTime date, String? notes) async {
-    final log = _getOrCreateLog(date);
-    log.notes = notes;
-    await saveDailyLog(log);
+  Future<void> updateNotes(DateTime date, String? notes) {
+    return _serial(date, () async {
+      final log = _getOrCreateLog(date);
+      log.notes = notes;
+      await saveDailyLog(log);
+    });
   }
 
   /// Kısmi güncelleme: null verilen alanlar dokunulmadan kalır.
@@ -690,22 +734,26 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     FlowColor? flowColor,
     bool? hasClots,
     int? padChangeCount,
-  }) async {
-    final log = _getOrCreateLog(date);
-    if (flowIntensity != null) log.flowIntensity = flowIntensity;
-    if (flowColor != null) log.flowColor = flowColor;
-    if (hasClots != null) log.hasClots = hasClots;
-    if (padChangeCount != null) log.padChangeCount = padChangeCount;
-    await saveDailyLog(log);
+  }) {
+    return _serial(date, () async {
+      final log = _getOrCreateLog(date);
+      if (flowIntensity != null) log.flowIntensity = flowIntensity;
+      if (flowColor != null) log.flowColor = flowColor;
+      if (hasClots != null) log.hasClots = hasClots;
+      if (padChangeCount != null) log.padChangeCount = padChangeCount;
+      await saveDailyLog(log);
+    });
   }
 
   /// Akış şiddetini doğrudan atar — null geçmek kaydı **siler**.
   /// [updateFlow] null'ı "dokunma" diye yorumladığı için, kullanıcının
   /// seçimi kaldırdığı akışlarda (hızlı kayıt) bu kullanılmalı.
-  Future<void> setFlowIntensity(DateTime date, FlowIntensity? intensity) async {
-    final log = _getOrCreateLog(date);
-    log.flowIntensity = intensity;
-    await saveDailyLog(log);
+  Future<void> setFlowIntensity(DateTime date, FlowIntensity? intensity) {
+    return _serial(date, () async {
+      final log = _getOrCreateLog(date);
+      log.flowIntensity = intensity;
+      await saveDailyLog(log);
+    });
   }
 
   /// Akış ekranının kaydı: dört alan da olduğu gibi yazılır, null olanlar
@@ -716,13 +764,15 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     required FlowColor? color,
     required bool hasClots,
     required int padChangeCount,
-  }) async {
-    final log = _getOrCreateLog(date);
-    log.flowIntensity = intensity;
-    log.flowColor = color;
-    log.hasClots = hasClots;
-    log.padChangeCount = padChangeCount;
-    await saveDailyLog(log);
+  }) {
+    return _serial(date, () async {
+      final log = _getOrCreateLog(date);
+      log.flowIntensity = intensity;
+      log.flowColor = color;
+      log.hasClots = hasClots;
+      log.padChangeCount = padChangeCount;
+      await saveDailyLog(log);
+    });
   }
 
   Future<void> deleteDailyLog(String dateKey) async {
@@ -756,9 +806,8 @@ final currentCycleDayProvider = Provider<int>((ref) {
   final profile = ref.watch(userProfileProvider);
   if (profile == null || profile.lastPeriodStart == null) return 0;
   final rawDay = CycleUtils.currentCycleDay(profile.lastPeriodStart!);
-  final cycleLength = ref.watch(effectiveCycleLengthProvider);
-  // Döngü uzunluğunu aşarsa yeni döngü başlamış demektir
-  return CycleUtils.wrappedCycleDay(rawDay, cycleLength);
+  // A new cycle requires a recorded period, never elapsed time alone.
+  return rawDay < 1 ? 1 : rawDay;
 });
 
 final currentCyclePhaseProvider = Provider<CyclePhase>((ref) {

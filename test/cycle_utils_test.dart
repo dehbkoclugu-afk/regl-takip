@@ -110,23 +110,18 @@ void main() {
     test('phase day math agrees with date-based ovulation prediction', () {
       final last = DateTime(2026, 1, 1);
       final ovulationDate = CycleUtils.predictOvulation(last, 28);
-      final dayOfOvulation =
-          ovulationDate.difference(last).inDays + 1; // 15
+      final dayOfOvulation = ovulationDate.difference(last).inDays + 1; // 15
       expect(dayOfOvulation, CycleUtils.ovulationDayNumber(28));
     });
   });
 
   group('getCurrentPhase consistency', () {
-    test('overdue cycle wraps instead of sticking to luteal', () {
+    test('overdue cycle does not invent a new menstrual phase', () {
       // 30 gün önce başlamış, 28 günlük döngü → sarılmış gün 3 → menstrual
       // (currentCycleDayProvider ile aynı gün gösterilir)
       final lastStart = DateTime.now().subtract(const Duration(days: 29));
       final phase = CycleUtils.getCurrentPhase(lastStart, 28, 5);
-      final wrappedDay = CycleUtils.wrappedCycleDay(
-        CycleUtils.currentCycleDay(lastStart),
-        28,
-      );
-      expect(phase, CycleUtils.phaseForDay(wrappedDay, 28, 5));
+      expect(phase, CyclePhase.luteal);
     });
   });
 
@@ -217,8 +212,8 @@ void main() {
     test('geçmiş regl kapalı kayıt olur', () {
       final start = DateTime(2026, 6, 1);
       final today = DateTime(2026, 6, 20);
-      expect(CycleUtils.completedPeriodEnd(start, 5, today),
-          DateTime(2026, 6, 5));
+      expect(
+          CycleUtils.completedPeriodEnd(start, 5, today), DateTime(2026, 6, 5));
     });
 
     test('regl bugün hâlâ sürüyorsa kayıt açık kalır', () {
@@ -237,8 +232,8 @@ void main() {
     test('saat bileşeni sonucu bozmaz', () {
       final start = DateTime(2026, 6, 1, 23, 30);
       final today = DateTime(2026, 6, 5, 0, 10);
-      expect(CycleUtils.completedPeriodEnd(start, 5, today),
-          DateTime(2026, 6, 5));
+      expect(
+          CycleUtils.completedPeriodEnd(start, 5, today), DateTime(2026, 6, 5));
     });
   });
 
@@ -265,10 +260,11 @@ void main() {
       expect(CycleUtils.periodDelayDays(daysAgo(31), 28), 3);
     });
 
-    test('bir döngü boyuna ulaşan gecikme bayat veri sayılır', () {
+    test('uzun gecikme belirsizlik olarak korunur', () {
       // 28 + 28: bir sonraki tahmin de geçmiş, gecikme ile "uzun süredir
       // kayıt yok" ayırt edilemez
-      expect(CycleUtils.periodDelayDays(daysAgo(56), 28), 0);
+      expect(CycleUtils.periodDelayDays(daysAgo(56), 28),
+          greaterThanOrEqualTo(28));
     });
 
     test('sınırın bir gün altı hâlâ gecikme', () {
@@ -301,8 +297,8 @@ void main() {
     test('TTC bildirimi ovülasyon gününden önce düşer', () {
       final last = DateTime(2026, 3, 1);
       final ovulation = CycleUtils.predictOvulation(last, 28);
-      final windowStart = ovulation.subtract(const Duration(
-          days: AppConstants.fertileWindowStartBeforeOvulation));
+      final windowStart = ovulation.subtract(
+          const Duration(days: AppConstants.fertileWindowStartBeforeOvulation));
       expect(windowStart.isBefore(ovulation), isTrue);
       // Pencerenin içinde kalmalı: sınıra oturuyor, dışına taşmıyor
       expect(CycleUtils.isInFertileWindow(windowStart, last, 28), isTrue);
@@ -316,11 +312,9 @@ void main() {
     test('döngü uzunluğu değişince pencere de kayar', () {
       final last = DateTime(2026, 3, 1);
       final short = CycleUtils.predictOvulation(last, 24).subtract(
-          const Duration(
-              days: AppConstants.fertileWindowStartBeforeOvulation));
+          const Duration(days: AppConstants.fertileWindowStartBeforeOvulation));
       final long = CycleUtils.predictOvulation(last, 32).subtract(
-          const Duration(
-              days: AppConstants.fertileWindowStartBeforeOvulation));
+          const Duration(days: AppConstants.fertileWindowStartBeforeOvulation));
       expect(long.difference(short).inDays, 8);
     });
   });

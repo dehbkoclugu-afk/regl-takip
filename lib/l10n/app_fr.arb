@@ -42,7 +42,7 @@
   "today": "Aujourd'hui",
   "cycleDay": "Jour du cycle",
   "periodIn": "Règles dans",
-  "daysLeft": "{count} jours restants",
+  "daysLeft": "{count, plural, other {{count} jours restants}}",
   "periodToday": "Vos règles peuvent commencer aujourd'hui",
   "periodOngoing": "Vous avez vos règles",
   "ovulationDay": "Jour d'ovulation",
@@ -186,7 +186,7 @@
   "howAreYouFeeling": "Comment vous sentez-vous aujourd'hui ?",
   "logMoodAndSymptoms": "Notez votre humeur et vos symptômes",
   "addRecord": "Ajouter",
-  "nSymptoms": "{count} symptômes",
+  "nSymptoms": "{count, plural, other {{count} symptômes}}",
   "periodDayLabel": "Jour de règles",
   "predicted": "Prévu",
   "fertile": "Fertile",
@@ -198,8 +198,8 @@
   "dailyMeasurements": "Mesures quotidiennes",
   "flow": "Flux",
   "recorded": "Enregistré",
-  "nMedications": "{count} médicaments",
-  "nGlasses": "{count} verres",
+  "nMedications": "{count, plural, other {{count} médicaments}}",
+  "nGlasses": "{count, plural, other {{count} verres}}",
   "flowTracking": "Suivi du flux",
   "color": "Couleur",
   "lightRed": "Rouge clair",
@@ -270,11 +270,11 @@
   "noMoodData": "Pas encore de données d'humeur",
   "noCycleData": "Pas encore de données de cycle",
   "ongoing": "en cours",
-  "nDays": "{count} jours",
+  "nDays": "{count, plural, other {{count} jours}}",
   "profileSection": "Profil",
   "preferences": "Préférences",
   "age": "Âge",
-  "nYearsOld": "{count} ans",
+  "nYearsOld": "{count, plural, other {{count} ans}}",
   "cycleDuration": "Durée du cycle",
   "periodDuration": "Durée des règles",
   "dataSection": "Données",
@@ -317,20 +317,20 @@
   "verifyPinTitle": "Saisissez votre code PIN actuel",
   "wrongPin": "Code PIN incorrect",
   "tooManyAttempts": "Trop de tentatives. Attendez {seconds} secondes",
-  "coachMenstrual0": "Les jours de règles entraînent une perte de fer — viande rouge, lentilles et légumes à feuilles foncées aident.",
-  "coachMenstrual1": "Contre les crampes, la chaleur et les étirements doux peuvent être aussi efficaces que bien des antidouleurs.",
-  "coachMenstrual2": "Un manque d'énergie est normal aujourd'hui — une marche vaut mieux qu'un entraînement intense.",
-  "coachFollicular0": "Les œstrogènes montent : énergie et concentration sont souvent au sommet dans cette phase. Planifiez maintenant les tâches difficiles.",
-  "coachFollicular1": "La peau est souvent à son meilleur dans cette phase — bon moment pour tester de nouveaux produits.",
-  "coachFollicular2": "Votre corps est au mieux pour un exercice de haute intensité en ce moment.",
-  "coachOvulation0": "Vous êtes dans la fenêtre fertile — agissez selon votre plan, contraception ou conception.",
-  "coachOvulation1": "Certaines femmes ressentent une légère douleur d'un côté à l'ovulation (mittelschmerz) — c'est normal.",
-  "coachOvulation2": "L'énergie sociale est souvent élevée ces jours-ci — bon moment pour les conversations importantes.",
-  "coachLuteal0": "Les symptômes du SPM peuvent commencer dans cette phase — magnésium et sommeil régulier les atténuent.",
-  "coachLuteal1": "Les envies de sucre peuvent augmenter : privilégiez des encas protéinés pour stabiliser la glycémie.",
-  "coachLuteal2": "La sensibilité émotionnelle peut augmenter — soyez indulgente avec vous-même, c'est hormonal et passager.",
-  "ovulationConfirmed": "Ovulation ✓",
-  "ovulationConfirmedInfo": "Cette date n'est pas une estimation : elle a été confirmée par la hausse de votre température basale (règle des 3 sur 6).",
+  "coachMenstrual0": "Vous pouvez enregistrer les saignements, la douleur et ce que vous ressentez. Demandez un avis médical pour les symptômes qui vous préoccupent.",
+  "coachMenstrual1": "Si cela est confortable, un mouvement doux ou de la chaleur peut vous aider à vous sentir mieux. Les expériences individuelles varient.",
+  "coachMenstrual2": "Choisissez le repos ou l’activité en fonction de ce que vous ressentez aujourd’hui.",
+  "coachFollicular0": "L'énergie et les symptômes varient selon les personnes et les cycles. Utilisez vos propres enregistrements pour remarquer des tendances.",
+  "coachFollicular1": "Votre peau peut changer au cours du cycle. Enregistrez les changements plutôt que de supposer un modèle fixe.",
+  "coachFollicular2": "Choisissez l'exercice en fonction de votre santé et de votre confort, et non d'une phase de cycle prévue.",
+  "coachOvulation0": "Les jours fertiles sont des estimations. Cette application n'est pas une méthode contraceptive.",
+  "coachOvulation1": "Consultez un médecin en cas de douleur nouvelle, intense ou persistante au lieu de l'attribuer à l'ovulation.",
+  "coachOvulation2": "L’humeur et l’énergie sociale varient. Une phase prévue ne peut pas déterminer ce que vous ressentirez.",
+  "coachLuteal0": "Le sommeil, le stress et bien d’autres facteurs peuvent affecter les symptômes. Enregistrez ce que vous remarquez.",
+  "coachLuteal1": "Choisissez des repas et des activités adaptés à vos besoins. Une phase prévue ne prescrit pas de régime.",
+  "coachLuteal2": "Les changements d’humeur ont de nombreuses causes possibles. Recherchez de l’aide pour les symptômes qui persistent ou vous préoccupent.",
+  "ovulationConfirmed": "Possibilité d'ovulation",
+  "ovulationConfirmedInfo": "Un profil de température ou un test LH suggère une ovulation possible. La maladie, le sommeil et le moment des mesures affectent les résultats. Ceci n’est pas une confirmation clinique et ne doit pas être utilisé à des fins de contraception.",
   "premiumSection": "Premium",
   "removeAds": "Supprimer les publicités",
   "restorePurchases": "Restaurer les achats",
@@ -453,7 +453,10 @@
   "notificationPeriodTimingInDays": "Vos règles pourraient commencer dans {days} jours.",
   "@notificationPeriodTimingInDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "notificationPeriodTip1": "Pensez à emporter une serviette ou un tampon.",
@@ -486,13 +489,19 @@
   "headlinePeriodInDays": "Vos règles dans {days} jours",
   "@headlinePeriodInDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "headlinePeriodDay": "Jour {day} de vos règles",
   "@headlinePeriodDay": {
     "placeholders": {
-      "day": {"type": "int"}
+      "day": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "headlineDelaySubtitle": "Une variation est normale. Enregistrez-les si elles ont commencé.",
@@ -505,13 +514,19 @@
   "headlineDelay": "Vos règles ont {days} jours de retard",
   "@headlineDelay": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "delayDays": "{days} jours de retard",
   "@delayDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "yourDataStays": "Vos données restent sur votre appareil à la fin de l’essai.",
@@ -519,13 +534,19 @@
   "nCyclesRecorded": "{count} cycles enregistrés",
   "@nCyclesRecorded": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "nLogsRecorded": "{count} journaux quotidiens",
   "@nLogsRecorded": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "notifPermissionTitle": "Activer les rappels ?",
@@ -553,7 +574,10 @@
   "leadNDaysBefore": "{days} jours avant",
   "@leadNDaysBefore": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "regularityInfoIrregular": "Il y a 9 jours ou plus entre votre cycle le plus court et le plus long. Une durée de cycle variable est très courante ; le stress, le sommeil, la maladie et les changements de vie y contribuent. Ceci n’est pas un diagnostic.",
@@ -562,21 +586,36 @@
   "typicalRangeNote": "Plage courante : cycle {min}–{max} jours, règles jusqu’à {pmax} jours. Ce n’est pas un seuil diagnostique.",
   "@typicalRangeNote": {
     "placeholders": {
-      "min": {"type": "int"},
-      "max": {"type": "int"},
-      "pmax": {"type": "int"}
+      "min": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "max": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "pmax": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "lowConfidenceNote": "Ces moyennes proviennent de seulement {count} cycles ; elles s’affineront avec vos saisies.",
   "@lowConfidenceNote": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "regularityInfoInsufficient": "Il faut au moins {count} intervalles de cycle pour parler de régularité. En dessous, le jugement serait trompeur.",
   "@regularityInfoInsufficient": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "backupNever": "Vous n’avez encore jamais fait de sauvegarde.",
@@ -584,7 +623,9 @@
   "backupLastAt": "Dernière sauvegarde : {date}",
   "@backupLastAt": {
     "placeholders": {
-      "date": {"type": "String"}
+      "date": {
+        "type": "String"
+      }
     }
   },
   "durationsStepTitle": "Vos données de cycle",
@@ -608,57 +649,82 @@
   "notLoggedToday": "Aucune saisie aujourd’hui : {what}",
   "@notLoggedToday": {
     "placeholders": {
-      "what": {"type": "String"}
+      "what": {
+        "type": "String"
+      }
     }
   },
   "pregnancyTestFrom": "Test fiable à partir du {date}",
   "@pregnancyTestFrom": {
     "placeholders": {
-      "date": {"type": "String"}
+      "date": {
+        "type": "String"
+      }
     }
   },
   "pillBreakIn": "La pause commence dans {days} jours",
   "@pillBreakIn": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "pillNewPackIn": "Nouvelle plaquette dans {days} jours",
   "@pillNewPackIn": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "healthImportNothingNew": "Aucune nouvelle donnée à importer",
   "healthImportConfirm": "{count} périodes trouvées dans Health Connect et absentes de l’app. Les ajouter à vos données ? Vos données existantes ne changent pas.",
   "@healthImportConfirm": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "healthImportDone": "{count} périodes importées",
   "@healthImportDone": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "monthPeriodDays": "{count} jours de règles",
   "@monthPeriodDays": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "monthLoggedDays": "{count} jours renseignés",
   "@monthLoggedDays": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "pinNoRecoveryWarning": "Si vous oubliez votre code, il n’y a aucun moyen de le récupérer ; la seule issue est de supprimer toutes vos données. Choisissez un code dont vous vous souviendrez.",
   "lockAfterMinutes": "Après {minutes} min",
   "@lockAfterMinutes": {
     "placeholders": {
-      "minutes": {"type": "int"}
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "reportTitle": "Rapport de santé du cycle",
@@ -681,10 +747,31 @@
   "storyTrendDown": "Baisse de {delta} {unit} sur cette période.",
   "storyTrendFlat": "Pas de changement notable sur cette période — la tendance est stable.",
   "averageSeverity": "Moy. {value}/5",
-  "@averageSeverity": {"placeholders": {"value": {"type": "String"}}},
+  "@averageSeverity": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "dataCoverage": "Densité des données",
   "dataCoverageValue": "Données sur {logged} jours sur {total} ({percent} %)",
-  "@dataCoverageValue": {"placeholders": {"logged": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@dataCoverageValue": {
+    "placeholders": {
+      "logged": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "percent": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "tapChartPointHint": "Touchez un point pour ouvrir ce jour.",
   "shareCalendarMonth": "Partager le mois du calendrier",
   "longPressDayHint": "Appuyez longuement sur un jour pour un aperçu rapide.",
@@ -692,9 +779,23 @@
   "periodRangeOverlap": "Cette période chevauche un enregistrement existant.",
   "periodRangeSaved": "Période des règles enregistrée",
   "trackingStreak": "Série de {count} jours",
-  "@trackingStreak": {"placeholders": {"count": {"type": "int"}}},
+  "@trackingStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "weeklyTracking": "{count}/7 jours suivis",
-  "@weeklyTracking": {"placeholders": {"count": {"type": "int"}}},
+  "@weeklyTracking": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "exportCalendarFile": "Exporter le calendrier (.ics)",
   "ovulationMarkerHint": "Ligne pointillée : ovulation estimée ou confirmée",
   "addPastCycles": "Ajouter des cycles passés",
@@ -745,5 +846,25 @@
   "notificationFrequencyEssential": "Essentiel",
   "notificationFrequencyBalanced": "Équilibré",
   "notificationFrequencyDetailed": "Détaillé",
-  "readOnlyHistoryNotice": "Vous pouvez consulter vos anciens suivis ; les nouveaux suivis et modifications nécessitent Premium."
+  "readOnlyHistoryNotice": "Vous pouvez consulter vos anciens suivis ; les nouveaux suivis et modifications nécessitent Premium.",
+  "screenProtectionTitle": "Protection de l’écran",
+  "screenProtectionDescription": "Bloque les captures et l’aperçu des applications récentes.",
+  "predictionUncertain": "Phase de cycle incertaine",
+  "startupRecoveryBody": "Vos données n'ont pas pu être ouvertes en toute sécurité. Il a été préservé. Réessayez ou fermez l'application et contactez l'assistance. Ne réinstallez pas avant d'avoir récupéré votre sauvegarde.",
+  "retry": "Réessayer",
+  "adPrivacyOptions": "Choix de confidentialité en matière de publicité",
+  "policyAvailableEnglish": "Cette politique est disponible en anglais. Le texte original de la politique suit.",
+  "purchasePending": "En attente de confirmation de paiement",
+  "purchaseVerifying": "Vérifier votre achat",
+  "purchaseFailed": "Votre achat n'a pas pu être vérifié. Veuillez réessayer ou restaurer vos achats.",
+  "pillSchedule": "Calendrier des pilules",
+  "pillContinuous": "Continu (pas de pause)",
+  "predictionRange": "Plage de dates estimée",
+  "analyticsChoice": "Mesure d’utilisation (facultative)",
+  "analyticsChoiceDescription": "Facultatif. Ne compte que les actions des applications sur cet appareil. Les données de santé, les notes, les dates et l'identité sont exclues. Rien n'est téléchargé sans un service configuré.",
+  "reportRange": "Plage de dates du rapport",
+  "allHistory": "Toute l'histoire",
+  "pillActiveDaysTitle": "Jours de pilule active (1 à 120)",
+  "pillBreakDaysTitle": "Jours de pause ou de placebo (0 à 14)",
+  "pillPrescriptionNote": "Utilisez uniquement le calendrier indiqué dans votre ordonnance ou dans les instructions du clinicien. Ce paramètre ne recommande pas de changer de médicament."
 }

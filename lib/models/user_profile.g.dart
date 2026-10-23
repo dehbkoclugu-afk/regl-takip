@@ -17,6 +17,8 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return UserProfile(
+      pillActiveDays: fields[32] as int? ?? 21,
+      pillBreakDays: fields[33] as int? ?? 7,
       name: fields[0] as String,
       birthDate: fields[1] as DateTime?,
       averageCycleLength: fields[2] as int,
@@ -34,9 +36,8 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       darkModeEnabled: fields[14] as bool,
       waterGoal: fields[15] == null ? 8 : fields[15] as int,
       smartPredictionEnabled: fields[16] == null ? true : fields[16] as bool,
-      trackingMode: fields[17] == null
-          ? TrackingMode.period
-          : fields[17] as TrackingMode,
+      trackingMode:
+          fields[17] == null ? TrackingMode.period : fields[17] as TrackingMode,
       pregnancyStartDate: fields[18] as DateTime?,
       pillPackStartDate: fields[19] as DateTime?,
       themePreference: fields[20] == null ? '' : fields[20] as String,
@@ -51,17 +52,15 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       medicationPlan: fields[29] == null
           ? <MedicationEntry>[]
           : (fields[29] as List).cast<MedicationEntry>(),
-      medicationPlanMigrated:
-          fields[30] == null ? false : fields[30] as bool,
-      cycleNotificationFrequency:
-          fields[31] == null ? 3 : fields[31] as int,
+      medicationPlanMigrated: fields[30] == null ? false : fields[30] as bool,
+      cycleNotificationFrequency: fields[31] == null ? 3 : fields[31] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(32)
+      ..writeByte(34)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -125,7 +124,11 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(30)
       ..write(obj.medicationPlanMigrated)
       ..writeByte(31)
-      ..write(obj.cycleNotificationFrequency);
+      ..write(obj.cycleNotificationFrequency)
+      ..writeByte(32)
+      ..write(obj.pillActiveDays)
+      ..writeByte(33)
+      ..write(obj.pillBreakDays);
   }
 
   @override

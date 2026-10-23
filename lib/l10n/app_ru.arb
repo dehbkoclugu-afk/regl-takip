@@ -42,7 +42,7 @@
   "today": "Сегодня",
   "cycleDay": "День цикла",
   "periodIn": "Месячные через",
-  "daysLeft": "Осталось {count} дн.",
+  "daysLeft": "{count, plural, other {Осталось {count} дн.}}",
   "periodToday": "Месячные могут начаться сегодня",
   "periodOngoing": "У вас месячные",
   "ovulationDay": "День овуляции",
@@ -186,7 +186,7 @@
   "howAreYouFeeling": "Как вы себя чувствуете сегодня?",
   "logMoodAndSymptoms": "Отметьте настроение и симптомы",
   "addRecord": "Добавить запись",
-  "nSymptoms": "{count} симптомов",
+  "nSymptoms": "{count, plural, other {{count} симптомов}}",
   "periodDayLabel": "День месячных",
   "predicted": "Прогноз",
   "fertile": "Фертильный",
@@ -198,8 +198,8 @@
   "dailyMeasurements": "Ежедневные измерения",
   "flow": "Выделения",
   "recorded": "Записано",
-  "nMedications": "{count} лекарств",
-  "nGlasses": "{count} стаканов",
+  "nMedications": "{count, plural, other {{count} лекарств}}",
+  "nGlasses": "{count, plural, other {{count} стаканов}}",
   "flowTracking": "Отслеживание выделений",
   "color": "Цвет",
   "lightRed": "Светло-красный",
@@ -270,11 +270,11 @@
   "noMoodData": "Данных о настроении пока нет",
   "noCycleData": "Данных о циклах пока нет",
   "ongoing": "идут",
-  "nDays": "{count} дн.",
+  "nDays": "{count, plural, other {{count} дн.}}",
   "profileSection": "Профиль",
   "preferences": "Предпочтения",
   "age": "Возраст",
-  "nYearsOld": "{count} лет",
+  "nYearsOld": "{count, plural, other {{count} лет}}",
   "cycleDuration": "Длина цикла",
   "periodDuration": "Длительность месячных",
   "dataSection": "Данные",
@@ -317,20 +317,20 @@
   "verifyPinTitle": "Введите текущий PIN-код",
   "wrongPin": "Неверный PIN-код",
   "tooManyAttempts": "Слишком много попыток. Подождите {seconds} сек.",
-  "coachMenstrual0": "В дни кровотечения теряется железо — помогут красное мясо, чечевица и тёмная листовая зелень.",
-  "coachMenstrual1": "От спазмов тепло и мягкая растяжка часто работают не хуже обезболивающих.",
-  "coachMenstrual2": "Низкая энергия сегодня — это нормально. Прогулка лучше интенсивной тренировки.",
-  "coachFollicular0": "Эстроген растёт: энергия и концентрация в этой фазе обычно на пике. Планируйте сложные задачи сейчас.",
-  "coachFollicular1": "Кожа в этой фазе обычно в лучшем состоянии — хорошее время пробовать новые средства.",
-  "coachFollicular2": "Сейчас организм лучше всего готов к интенсивным тренировкам.",
-  "coachOvulation0": "Вы в фертильном окне — действуйте по своему плану, будь то контрацепция или зачатие.",
-  "coachOvulation1": "Некоторые женщины чувствуют лёгкую боль с одной стороны при овуляции — это нормально.",
-  "coachOvulation2": "Социальная энергия в эти дни обычно высока — хорошее время для важных разговоров.",
-  "coachLuteal0": "В этой фазе могут начаться симптомы ПМС — магний и регулярный сон облегчают их.",
-  "coachLuteal1": "Тяга к сладкому может усилиться: белковые перекусы помогут держать сахар в норме.",
-  "coachLuteal2": "Эмоциональная чувствительность может вырасти — будьте к себе мягче, это гормонально и временно.",
-  "ovulationConfirmed": "Овуляция ✓",
-  "ovulationConfirmedInfo": "Эта дата не оценка: она подтверждена ростом базальной температуры (правило 3 над 6).",
+  "coachMenstrual0": "Вы можете записывать кровотечение, боль и то, как вы себя чувствуете. Обратитесь за медицинской помощью при симптомах, которые вас беспокоят.",
+  "coachMenstrual1": "Если вам комфортно, легкое движение или тепло могут помочь вам почувствовать себя лучше. Индивидуальный опыт варьируется.",
+  "coachMenstrual2": "Выбирайте отдых или активность в зависимости от того, как вы себя чувствуете сегодня.",
+  "coachFollicular0": "Энергия и симптомы различаются в зависимости от человека и цикла. Используйте свои собственные записи, чтобы заметить закономерности.",
+  "coachFollicular1": "Ваша кожа может измениться во время курса. Записывайте изменения, а не предполагайте фиксированную схему.",
+  "coachFollicular2": "Выбирайте упражнения, исходя из своего здоровья и комфорта, а не прогнозируемой фазы цикла.",
+  "coachOvulation0": "Фертильные дни являются приблизительными. Это приложение не является методом контрацепции.",
+  "coachOvulation1": "Обратитесь за медицинской помощью в случае новой, сильной или постоянной боли, а не связывайте ее с овуляцией.",
+  "coachOvulation2": "Настроение и социальная энергия различаются. Предсказанная фаза не может определить, как вы будете себя чувствовать.",
+  "coachLuteal0": "Сон, стресс и многие другие факторы могут влиять на симптомы. Запишите то, что вы заметили.",
+  "coachLuteal1": "Выбирайте еду и занятия, которые соответствуют вашим потребностям. Прогнозируемая фаза не предписывает диету.",
+  "coachLuteal2": "Изменения настроения имеют множество возможных причин. Обратитесь за помощью в случае симптомов, которые сохраняются или беспокоят вас.",
+  "ovulationConfirmed": "Возможна овуляция",
+  "ovulationConfirmedInfo": "Температурный график или тест на ЛГ позволяют предположить возможную овуляцию. Болезнь, сон и время проведения измерений влияют на результаты. Это не является клиническим подтверждением, и его нельзя использовать в качестве контрацепции.",
   "premiumSection": "Премиум",
   "removeAds": "Убрать рекламу",
   "restorePurchases": "Восстановить покупки",
@@ -453,7 +453,10 @@
   "notificationPeriodTimingInDays": "Месячные могут начаться через {days} дн.",
   "@notificationPeriodTimingInDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "notificationPeriodTip1": "Не забудьте взять с собой прокладку или тампон.",
@@ -486,13 +489,19 @@
   "headlinePeriodInDays": "Месячные через {days} дн.",
   "@headlinePeriodInDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "headlinePeriodDay": "{day}-й день месячных",
   "@headlinePeriodDay": {
     "placeholders": {
-      "day": {"type": "int"}
+      "day": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "headlineDelaySubtitle": "Небольшие отклонения — это нормально. Отметьте, если начались.",
@@ -505,13 +514,19 @@
   "headlineDelay": "Задержка {days} дн.",
   "@headlineDelay": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "delayDays": "задержка {days} дн.",
   "@delayDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "yourDataStays": "Ваши записи останутся на устройстве после окончания пробного периода.",
@@ -519,13 +534,19 @@
   "nCyclesRecorded": "записано циклов: {count}",
   "@nCyclesRecorded": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "nLogsRecorded": "дневных записей: {count}",
   "@nLogsRecorded": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "notifPermissionTitle": "Включить напоминания?",
@@ -553,7 +574,10 @@
   "leadNDaysBefore": "за {days} дн.",
   "@leadNDaysBefore": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "regularityInfoIrregular": "Между самым коротким и самым длинным циклом 9 дней или больше. Колебания длины цикла очень распространены: влияют стресс, сон, болезни и перемены в жизни. Это не диагноз.",
@@ -562,21 +586,36 @@
   "typicalRangeNote": "Обычный диапазон: цикл {min}–{max} дней, месячные до {pmax} дней. Это не диагностический критерий.",
   "@typicalRangeNote": {
     "placeholders": {
-      "min": {"type": "int"},
-      "max": {"type": "int"},
-      "pmax": {"type": "int"}
+      "min": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "max": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "pmax": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "lowConfidenceNote": "Эти средние рассчитаны всего по {count} циклам и уточнятся с новыми записями.",
   "@lowConfidenceNote": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "regularityInfoInsufficient": "Чтобы говорить о регулярности, нужно минимум {count} интервалов цикла. Меньше — вывод будет вводить в заблуждение.",
   "@regularityInfoInsufficient": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "backupNever": "Вы ещё ни разу не делали резервную копию.",
@@ -584,7 +623,9 @@
   "backupLastAt": "Последняя копия: {date}",
   "@backupLastAt": {
     "placeholders": {
-      "date": {"type": "String"}
+      "date": {
+        "type": "String"
+      }
     }
   },
   "durationsStepTitle": "Данные вашего цикла",
@@ -608,57 +649,82 @@
   "notLoggedToday": "Сегодня не отмечено: {what}",
   "@notLoggedToday": {
     "placeholders": {
-      "what": {"type": "String"}
+      "what": {
+        "type": "String"
+      }
     }
   },
   "pregnancyTestFrom": "Тест имеет смысл с {date}",
   "@pregnancyTestFrom": {
     "placeholders": {
-      "date": {"type": "String"}
+      "date": {
+        "type": "String"
+      }
     }
   },
   "pillBreakIn": "Перерыв через {days} дн.",
   "@pillBreakIn": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "pillNewPackIn": "Новая упаковка через {days} дн.",
   "@pillNewPackIn": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "healthImportNothingNew": "Новых записей для импорта не найдено",
   "healthImportConfirm": "В Health Connect найдено периодов, которых нет в приложении: {count}. Добавить их к вашим записям? Существующие записи не изменятся.",
   "@healthImportConfirm": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "healthImportDone": "Импортировано периодов: {count}",
   "@healthImportDone": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "monthPeriodDays": "дней месячных: {count}",
   "@monthPeriodDays": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "monthLoggedDays": "дней с записями: {count}",
   "@monthLoggedDays": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "pinNoRecoveryWarning": "Если вы забудете PIN, восстановить его нельзя — останется только удалить все данные. Выберите то, что запомните.",
   "lockAfterMinutes": "Через {minutes} мин",
   "@lockAfterMinutes": {
     "placeholders": {
-      "minutes": {"type": "int"}
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "reportTitle": "Отчёт о здоровье цикла",
@@ -681,10 +747,31 @@
   "storyTrendDown": "Снижение на {delta} {unit} за этот период.",
   "storyTrendFlat": "Заметных изменений за этот период нет — тренд ровный.",
   "averageSeverity": "Сред. {value}/5",
-  "@averageSeverity": {"placeholders": {"value": {"type": "String"}}},
+  "@averageSeverity": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "dataCoverage": "Плотность данных",
   "dataCoverageValue": "Записи за {logged} из {total} дней ({percent} %)",
-  "@dataCoverageValue": {"placeholders": {"logged": {"type": "int"}, "total": {"type": "int"}, "percent": {"type": "int"}}},
+  "@dataCoverageValue": {
+    "placeholders": {
+      "logged": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "percent": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "tapChartPointHint": "Нажмите на точку, чтобы открыть этот день.",
   "shareCalendarMonth": "Поделиться месяцем календаря",
   "longPressDayHint": "Нажмите и удерживайте день для быстрого просмотра.",
@@ -692,9 +779,23 @@
   "periodRangeOverlap": "Этот диапазон пересекается с существующей записью.",
   "periodRangeSaved": "Диапазон менструации сохранён",
   "trackingStreak": "Серия: {count} дн.",
-  "@trackingStreak": {"placeholders": {"count": {"type": "int"}}},
+  "@trackingStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "weeklyTracking": "Записи за {count} из 7 дней",
-  "@weeklyTracking": {"placeholders": {"count": {"type": "int"}}},
+  "@weeklyTracking": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "exportCalendarFile": "Экспорт календаря (.ics)",
   "ovulationMarkerHint": "Пунктир: предполагаемая или подтверждённая овуляция",
   "addPastCycles": "Добавить прошлые циклы",
@@ -745,5 +846,25 @@
   "notificationFrequencyEssential": "Основные",
   "notificationFrequencyBalanced": "Сбалансированные",
   "notificationFrequencyDetailed": "Подробные",
-  "readOnlyHistoryNotice": "Прошлые записи доступны для просмотра; новые записи и изменения требуют Premium."
+  "readOnlyHistoryNotice": "Прошлые записи доступны для просмотра; новые записи и изменения требуют Premium.",
+  "screenProtectionTitle": "Защита экрана",
+  "screenProtectionDescription": "Блокирует снимки экрана и предпросмотр недавних приложений.",
+  "predictionUncertain": "Фаза цикла неопределенна",
+  "startupRecoveryBody": "Ваши данные не удалось безопасно открыть. Оно сохранилось. Повторите попытку или закройте приложение и обратитесь в службу поддержки. Не переустанавливайте программу до восстановления резервной копии.",
+  "retry": "Повторить попытку",
+  "adPrivacyOptions": "Выбор конфиденциальности рекламы",
+  "policyAvailableEnglish": "Эта политика доступна на английском языке. Ниже следует исходный текст политики.",
+  "purchasePending": "Ожидание подтверждения платежа",
+  "purchaseVerifying": "Подтверждение вашей покупки",
+  "purchaseFailed": "Не удалось подтвердить вашу покупку. Пожалуйста, повторите попытку или восстановите покупки.",
+  "pillSchedule": "График приема таблеток",
+  "pillContinuous": "Непрерывный (без перерыва)",
+  "predictionRange": "Предполагаемый диапазон дат",
+  "analyticsChoice": "Статистика использования (необязательно)",
+  "analyticsChoiceDescription": "Необязательно. Учитываются только действия приложения на этом устройстве. Данные о состоянии здоровья, примечания, даты и личность исключены. Ничего не загружается без настроенного сервиса.",
+  "reportRange": "Диапазон дат отчета",
+  "allHistory": "Вся история",
+  "pillActiveDaysTitle": "Дни приема активных таблеток (1–120)",
+  "pillBreakDaysTitle": "Дни перерыва или плацебо (0–14)",
+  "pillPrescriptionNote": "Используйте только график, указанный в рецепте или инструкциях врача. Эта настройка не рекомендует менять лекарство."
 }

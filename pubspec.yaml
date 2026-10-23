@@ -4,7 +4,8 @@ publish_to: 'none'
 version: 1.1.0+7
 
 environment:
-  sdk: ^3.0.0
+  sdk: ^3.10.0
+  flutter: '>=3.35.0'
 
 dependencies:
   flutter:
@@ -80,10 +81,19 @@ flutter:
   generate: true
 
   assets:
-    - assets/legal/privacy_policy_tr.md
-    - assets/legal/privacy_policy_en.md
+    - assets/fonts/
+    - assets/legal/
 
   fonts:
+    - family: NotoSansArabic
+      fonts:
+        - asset: assets/fonts/NotoSansArabic.ttf
+    - family: NotoSansDevanagari
+      fonts:
+        - asset: assets/fonts/NotoSansDevanagari.ttf
+    - family: NotoSansSC
+      fonts:
+        - asset: assets/fonts/NotoSansSC.ttf
     - family: Nunito
       fonts:
         - asset: assets/fonts/Nunito-Variable.ttf
