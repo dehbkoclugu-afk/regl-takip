@@ -117,16 +117,29 @@ void main() {
   });
 
   group('getCurrentPhase consistency', () {
-    test('overdue cycle wraps instead of sticking to luteal', () {
-      // 30 gün önce başlamış, 28 günlük döngü → sarılmış gün 3 → menstrual
-      // (currentCycleDayProvider ile aynı gün gösterilir)
+    test('overdue cycle stays luteal while the period is late', () {
+      // 29 gün önce başlamış, 28 günlük döngü: tahmini tarih 1 gün geçti.
+      // Eskiden gün başa sarılıp "menstrüel" gösteriliyordu; regl gelmemişken
+      // bu, başlıktaki "1 gün gecikti" ile çelişiyordu.
       final lastStart = DateTime.now().subtract(const Duration(days: 29));
-      final phase = CycleUtils.getCurrentPhase(lastStart, 28, 5);
+      expect(CycleUtils.periodDelayDays(lastStart, 28), 1);
+      expect(CycleUtils.getCurrentPhase(lastStart, 28, 5), CyclePhase.luteal);
+      // Gösterilen gün de sarılmaz: 30. gün
+      expect(CycleUtils.displayCycleDay(lastStart, 28), 30);
+    });
+
+    test('beyond the delay window the cycle wraps again', () {
+      // Bir tam döngüden fazla gecikme: kayıt girilmiyor varsayımı, eski
+      // davranış (sarma) — currentCycleDayProvider ile aynı gün
+      final lastStart = DateTime.now().subtract(const Duration(days: 57));
+      expect(CycleUtils.periodDelayDays(lastStart, 28), 0);
       final wrappedDay = CycleUtils.wrappedCycleDay(
         CycleUtils.currentCycleDay(lastStart),
         28,
       );
-      expect(phase, CycleUtils.phaseForDay(wrappedDay, 28, 5));
+      expect(CycleUtils.displayCycleDay(lastStart, 28), wrappedDay);
+      expect(CycleUtils.getCurrentPhase(lastStart, 28, 5),
+          CycleUtils.phaseForDay(wrappedDay, 28, 5));
     });
   });
 

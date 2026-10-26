@@ -12,6 +12,7 @@ import '../../../core/utils/ring_segments.dart';
 import '../../../models/enums.dart';
 import '../../../providers/providers.dart';
 import '../../log/quick_log_sheet.dart';
+import '../../../core/utils/date_only.dart';
 
 /// Ana ekranda 7 günlük mini şerit: dün/bugün/yarın bağlamı takvime
 /// inmeden okunur. Takvimdeki ay şeridinin küçük kardeşi — imza faz
@@ -47,7 +48,7 @@ class WeekStrip extends ConsumerWidget {
             child: _buildDayCell(
               context,
               ref,
-              date: today.add(Duration(days: offset)),
+              date: addDays(today, offset),
               today: today,
               records: records,
               logs: logs,

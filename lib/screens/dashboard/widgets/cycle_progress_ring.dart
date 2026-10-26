@@ -14,6 +14,7 @@ import '../../../core/utils/motion.dart';
 import '../../../core/utils/phase_pattern.dart';
 import '../../../core/utils/ring_segments.dart';
 import '../../../core/widgets/phase_glyph.dart';
+import '../../../core/utils/date_only.dart';
 
 export '../../../core/utils/ring_segments.dart' show RingSegment, ringSegmentsFor;
 
@@ -293,8 +294,8 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
     if (start != null) {
       final locale = Localizations.localeOf(context).toString();
       final fmt = DateFormat('d MMM', locale);
-      final from = start.add(Duration(days: s.startDay - 1));
-      final to = start.add(Duration(days: s.endDay - 1));
+      final from = addDays(start, s.startDay - 1);
+      final to = addDays(start, s.endDay - 1);
       range = s.startDay == s.endDay
           ? fmt.format(from)
           : '${fmt.format(from)} – ${fmt.format(to)}';

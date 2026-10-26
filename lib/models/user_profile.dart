@@ -185,7 +185,9 @@ class UserProfile extends HiveObject {
   });
 
   /// Yeni bir kopya döndürür; verilen alanlar güncellenir.
-  /// Nullable alanlar (birthDate, lastPeriodStart) null'a çekilemez.
+  /// Nullable alanlar null verilerek temizlenemez; son regl tarihi için
+  /// [clearLastPeriodStart] kullanılır (son kayıt silindiğinde profil
+  /// silinmiş bir tarihe dayanarak tahmin üretmeye devam etmesin).
   UserProfile copyWith({
     String? name,
     DateTime? birthDate,
@@ -219,6 +221,7 @@ class UserProfile extends HiveObject {
     List<MedicationEntry>? medicationPlan,
     bool? medicationPlanMigrated,
     int? cycleNotificationFrequency,
+    bool clearLastPeriodStart = false,
   }) {
     return UserProfile(
       name: name ?? this.name,
@@ -229,7 +232,9 @@ class UserProfile extends HiveObject {
       biometricEnabled: biometricEnabled ?? this.biometricEnabled,
       onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
       language: language ?? this.language,
-      lastPeriodStart: lastPeriodStart ?? this.lastPeriodStart,
+      lastPeriodStart: clearLastPeriodStart
+          ? null
+          : (lastPeriodStart ?? this.lastPeriodStart),
       periodReminderEnabled:
           periodReminderEnabled ?? this.periodReminderEnabled,
       ovulationReminderEnabled:

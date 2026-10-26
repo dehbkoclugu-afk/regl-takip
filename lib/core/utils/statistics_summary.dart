@@ -1,6 +1,7 @@
 import '../../models/daily_log.dart';
 import '../../models/enums.dart';
 import 'cycle_utils.dart';
+import 'date_only.dart';
 
 class SymptomSummary {
   final SymptomType type;
@@ -86,18 +87,18 @@ TrackingConsistency calculateTrackingConsistency(
   var lastSevenDays = 0;
   for (var offset = 0; offset < 7; offset++) {
     if (loggedDays.contains(
-        key(currentDay.subtract(Duration(days: offset))))) {
+        key(addDays(currentDay, -offset)))) {
       lastSevenDays++;
     }
   }
 
   var cursor = loggedDays.contains(key(currentDay))
       ? currentDay
-      : currentDay.subtract(const Duration(days: 1));
+      : addDays(currentDay, -1);
   var streakDays = 0;
   while (loggedDays.contains(key(cursor))) {
     streakDays++;
-    cursor = cursor.subtract(const Duration(days: 1));
+    cursor = addDays(cursor, -1);
   }
 
   return TrackingConsistency(streakDays, lastSevenDays);
@@ -154,7 +155,7 @@ CycleSymptomComparison compareLastTwoCycleSymptoms({
   }
   final currentStart = starts.last;
   final previousStart = starts[starts.length - 2];
-  final currentDay = day(today).difference(currentStart).inDays + 1;
+  final currentDay = daysBetween(currentStart, today) + 1;
   if (currentDay < 1) return const CycleSymptomComparison({}, {});
 
   final current = <int, double>{};
@@ -165,11 +166,11 @@ CycleSymptomComparison compareLastTwoCycleSymptoms({
     final severity = log.symptoms.fold<int>(
         0, (total, symptom) => total + symptom.severity);
     if (!logDay.isBefore(currentStart) && !logDay.isAfter(day(today))) {
-      final cycleDay = logDay.difference(currentStart).inDays + 1;
+      final cycleDay = daysBetween(currentStart, logDay) + 1;
       current[cycleDay] = (current[cycleDay] ?? 0) + severity;
     } else if (!logDay.isBefore(previousStart) &&
         logDay.isBefore(currentStart)) {
-      final cycleDay = logDay.difference(previousStart).inDays + 1;
+      final cycleDay = daysBetween(previousStart, logDay) + 1;
       if (cycleDay <= currentDay) {
         previous[cycleDay] = (previous[cycleDay] ?? 0) + severity;
       }
@@ -210,7 +211,7 @@ DataCoverage calculateDataCoverage(
 
   return DataCoverage(
     loggedDates.length,
-    lastDay.difference(firstDay).inDays + 1,
+    daysBetween(firstDay, lastDay) + 1,
   );
 }
 

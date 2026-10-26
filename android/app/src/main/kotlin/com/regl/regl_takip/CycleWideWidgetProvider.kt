@@ -25,9 +25,10 @@ class CycleWideWidgetProvider : HomeWidgetProvider() {
     ) {
         for (widgetId in appWidgetIds) {
             try {
+                val daily = WidgetDaily(widgetData)
                 val views = RemoteViews(context.packageName, R.layout.cycle_widget_wide).apply {
-                    setTextViewText(R.id.widget_line1, widgetData.getString("line1", "Regl Takip"))
-                    setTextViewText(R.id.widget_line2, widgetData.getString("line2", "") ?: "")
+                    setTextViewText(R.id.widget_line1, daily.string("line1", fallback = "Regl Takip"))
+                    setTextViewText(R.id.widget_line2, daily.string("line2") ?: "")
 
                     setOnClickPendingIntent(
                         R.id.widget_root,
@@ -57,7 +58,7 @@ class CycleWideWidgetProvider : HomeWidgetProvider() {
                         )
                     }
 
-                    val ringPath = widgetData.getString("ring_path", null)
+                    val ringPath = daily.string("ring_path", jsonKey = "ring", fallback = null)
                     val bitmap = try {
                         ringPath?.let { BitmapFactory.decodeFile(it) }
                     } catch (error: Throwable) {
@@ -71,9 +72,9 @@ class CycleWideWidgetProvider : HomeWidgetProvider() {
                         setViewVisibility(R.id.widget_ring, View.GONE)
                     }
 
-                    bindRow(widgetData, "pred1", R.id.widget_row1, R.id.widget_row1_label, R.id.widget_row1_value)
-                    bindRow(widgetData, "pred2", R.id.widget_row2, R.id.widget_row2_label, R.id.widget_row2_value)
-                    bindRow(widgetData, "pred3", R.id.widget_row3, R.id.widget_row3_label, R.id.widget_row3_value)
+                    bindRow(daily, "pred1", R.id.widget_row1, R.id.widget_row1_label, R.id.widget_row1_value)
+                    bindRow(daily, "pred2", R.id.widget_row2, R.id.widget_row2_label, R.id.widget_row2_value)
+                    bindRow(daily, "pred3", R.id.widget_row3, R.id.widget_row3_label, R.id.widget_row3_value)
                 }
                 appWidgetManager.updateAppWidget(widgetId, views)
             } catch (error: Throwable) {
@@ -86,14 +87,14 @@ class CycleWideWidgetProvider : HomeWidgetProvider() {
     }
 
     private fun RemoteViews.bindRow(
-        data: SharedPreferences,
+        data: WidgetDaily,
         key: String,
         rowId: Int,
         labelId: Int,
         valueId: Int
     ) {
-        val label = data.getString("${key}_label", "") ?: ""
-        val value = data.getString("${key}_value", "") ?: ""
+        val label = data.string("${key}_label") ?: ""
+        val value = data.string("${key}_value") ?: ""
         if (label.isEmpty() || value.isEmpty()) {
             setViewVisibility(rowId, View.GONE)
         } else {

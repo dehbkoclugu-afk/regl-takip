@@ -32,6 +32,7 @@ import '../../models/period_record.dart';
 import '../../models/user_profile.dart';
 import '../../core/utils/motion.dart';
 import 'widgets/year_overview.dart';
+import '../../core/utils/date_only.dart' show addDays;
 
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
@@ -151,7 +152,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final l10n = AppLocalizations.of(context)!;
     final today = DateUtils.dateOnly(DateTime.now());
     final initial = DateUtils.dateOnly(initialDay);
-    final suggestedEnd = initial.add(const Duration(days: 4));
+    final suggestedEnd = addDays(initial, 4);
     final picked = await showDateRangePicker(
       context: context,
       firstDate: DateTime(2020),
@@ -1244,10 +1245,18 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         before.where((r) => r.isOngoing).map((r) => r.id).toList();
 
     HapticFeedback.mediumImpact();
-    final record = await recordsNotifier.startPeriod(day);
+    // Geçmiş bir gün seçildiyse kayıt kapalı açılır; daha yeni bir kaydın
+    // öncesindeyse ona taşmaz (startPeriod)
+    final record = await recordsNotifier.startPeriod(
+      day,
+      periodLength: prevProfile?.averagePeriodLength,
+    );
     // Mevcut bir kayıt döndürüldüyse yeni kayıt oluşmamıştır
     final created = !idsBefore.contains(record.id);
-    await profileNotifier.saveProfile(lastPeriodStart: record.startDate);
+    // Son regl tarihi kayıtların türevi: geçmişe eklenen kayıt onu geriye
+    // taşımamalı
+    await profileNotifier
+        .syncLastPeriodStart(ref.read(periodRecordsProvider));
 
     final snackBar = messenger.showSnackBar(SnackBar(
       content: Text(l10n.periodMarkedStarted),

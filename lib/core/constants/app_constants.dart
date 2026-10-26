@@ -1,6 +1,11 @@
 class AppConstants {
   AppConstants._();
 
+  /// Ayarlar ekranındaki sürüm. pubspec.yaml'daki `version`ın ad kısmıyla
+  /// aynı olmalı (test bunu denetler). Eskiden ekranda '1.1.0' elle
+  /// yazılıydı, mağazadaki sürüm ise 1.1.1'di.
+  static const String appVersion = '1.1.2';
+
   // Varsayılan değerler
   static const int defaultCycleLength = 28;
   static const int defaultPeriodLength = 5;

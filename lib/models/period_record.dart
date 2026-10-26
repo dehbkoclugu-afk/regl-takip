@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import '../core/utils/date_only.dart';
 import 'enums.dart';
 
 part 'period_record.g.dart';
@@ -41,8 +42,7 @@ class PeriodRecord extends HiveObject {
       );
 
   int get durationDays {
-    if (endDate == null) return DateTime.now().difference(startDate).inDays + 1;
-    return endDate!.difference(startDate).inDays + 1;
+    return daysBetween(startDate, endDate ?? DateTime.now()) + 1;
   }
 
   bool get isOngoing => endDate == null;

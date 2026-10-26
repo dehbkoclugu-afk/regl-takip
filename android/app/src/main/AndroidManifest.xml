@@ -23,12 +23,15 @@
     <!-- allowBackup=false: Hive kutuları cihaza özel Keystore anahtarıyla
          şifreli. Auto-backup dosyaları yeni cihaza taşır ama anahtar taşınmaz;
          geri yüklenen kutular hiçbir anahtarla açılamaz ve uygulama açılışta
-         çöker. Yedekleme yolu uygulama içi JSON dışa aktarımıdır. -->
+         çöker. Yedekleme yolu uygulama içi şifreli yedektir.
+         Android 12+ allowBackup=false cihazdan cihaza aktarımı (D2D)
+         KAPATMAZ: bunu dataExtractionRules yapar. -->
     <application
         android:label="Regl Takip"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         tools:replace="android:allowBackup"
         android:enableOnBackInvokedCallback="true">
         <activity

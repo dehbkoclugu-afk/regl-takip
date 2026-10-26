@@ -21,22 +21,11 @@ import '../../providers/providers.dart';
 /// Düzenleme/silme sonrası profil tarihi kayıtların türevi olarak
 /// eşitlenir: en yeni kaydın başlangıcı = lastPeriodStart. Elle çift
 /// tutmanın ürettiği ayrışma (B-8) böylece tek yönlü akara bağlanır.
-Future<void> _syncProfileToNewestRecord(WidgetRef ref) async {
-  final records = ref.read(periodRecordsProvider);
-  if (records.isEmpty) return;
-  final newest = records.first; // provider startDate'e göre azalan sıralı
-  final profile = ref.read(userProfileProvider);
-  final current = profile?.lastPeriodStart;
-  final same = current != null &&
-      current.year == newest.startDate.year &&
-      current.month == newest.startDate.month &&
-      current.day == newest.startDate.day;
-  if (!same) {
-    await ref
-        .read(userProfileProvider.notifier)
-        .saveProfile(lastPeriodStart: newest.startDate);
-  }
-}
+/// Son kayıt silindiyse tarih temizlenir — eskiden erken dönülüyordu ve
+/// profil silinmiş kayda dayanarak tahmin üretmeye devam ediyordu.
+Future<void> _syncProfileToNewestRecord(WidgetRef ref) => ref
+    .read(userProfileProvider.notifier)
+    .syncLastPeriodStart(ref.read(periodRecordsProvider));
 
 Future<void> showPeriodRecordEditor(
   BuildContext context,

@@ -61,14 +61,35 @@ class HiveService {
       key = encryptionKey;
       alreadyEncrypted = assumeEncrypted ?? false;
     } else {
-      final storedKey = await storage.read(key: _aesKeyStorageKey);
+      String? storedKey;
+      bool encryptedFlag;
+      try {
+        storedKey = await storage.read(key: _aesKeyStorageKey);
+        encryptedFlag =
+            await storage.read(key: _encryptedFlagKey) == 'true';
+      } catch (e) {
+        // Secure storage çözülemiyor: Keystore anahtarı yok olmuş (cihazdan
+        // cihaza aktarım, Keystore sıfırlanması). Eskiden bu hata main'e
+        // kadar çıkıyor ve uygulama her açılışta çöküyordu. Bozuk depo
+        // temizlenir; kutular bu durumda zaten çözülemez ve aşağıdaki
+        // karantina yolu kullanıcıyı bilgilendirerek temiz başlatır.
+        debugPrint('[HIVE] secure storage unreadable, resetting: $e');
+        try {
+          await storage.deleteAll();
+        } catch (e2) {
+          debugPrint('[HIVE] secure storage reset failed: $e2');
+        }
+        storedKey = null;
+        // Diskte kutu varsa şifreli sayılır: düz açma denemesine gerek yok
+        encryptedFlag = true;
+      }
       if (storedKey != null) {
         key = base64Decode(storedKey);
       } else {
         key = Hive.generateSecureKey();
         await storage.write(key: _aesKeyStorageKey, value: base64Encode(key));
       }
-      alreadyEncrypted = await storage.read(key: _encryptedFlagKey) == 'true';
+      alreadyEncrypted = encryptedFlag;
     }
 
     final cipher = HiveAesCipher(key);

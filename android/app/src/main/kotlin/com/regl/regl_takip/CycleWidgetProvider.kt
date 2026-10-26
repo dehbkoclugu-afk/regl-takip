@@ -20,9 +20,10 @@ class CycleWidgetProvider : HomeWidgetProvider() {
     ) {
         for (widgetId in appWidgetIds) {
             try {
+                val daily = WidgetDaily(widgetData)
                 val views = RemoteViews(context.packageName, R.layout.cycle_widget).apply {
-                    setTextViewText(R.id.widget_line1, widgetData.getString("line1", "Regl Takip"))
-                    val line2 = widgetData.getString("line2", "") ?: ""
+                    setTextViewText(R.id.widget_line1, daily.string("line1", fallback = "Regl Takip"))
+                    val line2 = daily.string("line2") ?: ""
                     setTextViewText(R.id.widget_line2, line2)
 
                     setOnClickPendingIntent(
@@ -52,7 +53,7 @@ class CycleWidgetProvider : HomeWidgetProvider() {
                         setViewVisibility(R.id.widget_period_action, View.GONE)
                     }
 
-                    val ringPath = widgetData.getString("ring_path", null)
+                    val ringPath = daily.string("ring_path", jsonKey = "ring", fallback = null)
                     val bitmap = try {
                         ringPath?.let { BitmapFactory.decodeFile(it) }
                     } catch (error: Throwable) {

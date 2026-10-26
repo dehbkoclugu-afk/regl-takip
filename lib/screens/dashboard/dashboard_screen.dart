@@ -27,6 +27,7 @@ import 'widgets/quick_access_row.dart';
 import 'widgets/quick_status_cards.dart';
 import 'widgets/week_strip.dart';
 import '../../core/utils/motion.dart';
+import '../../core/utils/date_only.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -119,10 +120,10 @@ class DashboardScreen extends ConsumerWidget {
 
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
-      var ovulation = nextPeriod.subtract(
-          const Duration(days: AppConstants.ovulationDayBeforePeriod));
+      var ovulation =
+          addDays(nextPeriod, -AppConstants.ovulationDayBeforePeriod);
       if (ovulation.isBefore(today)) {
-        ovulation = ovulation.add(Duration(days: cycleLen));
+        ovulation = addDays(ovulation, cycleLen);
       }
       // Sıcaklıktan teyit varsa tahmin yerine ölçülen tarih gösterilir
       if (confirmedOvulation != null) {
@@ -130,8 +131,9 @@ class DashboardScreen extends ConsumerWidget {
       }
       ovulationDate = ovulation;
       ovulationStr = dateFormat.format(ovulation);
-      final fStart = ovulation.subtract(const Duration(days: 5));
-      final fEnd = ovulation.add(const Duration(days: 1));
+      final fStart = addDays(
+          ovulation, -AppConstants.fertileWindowStartBeforeOvulation);
+      final fEnd = addDays(ovulation, 1);
       fertileStr = fertileWindowLabel(fStart, fEnd, locale);
     }
 
@@ -400,12 +402,7 @@ class DashboardScreen extends ConsumerWidget {
       headline = l10n.headlineDelay(delay);
       subtitle = l10n.headlineDelaySubtitle;
     } else if (ongoing != null) {
-      final now = DateTime.now();
-      final start = ongoing.startDate;
-      final dayOfPeriod = DateTime(now.year, now.month, now.day)
-              .difference(DateTime(start.year, start.month, start.day))
-              .inDays +
-          1;
+      final dayOfPeriod = daysBetween(ongoing.startDate, DateTime.now()) + 1;
       headline = l10n.headlinePeriodDay(dayOfPeriod);
     } else {
       final cycleLen = ref.watch(effectiveCycleLengthProvider);
@@ -570,15 +567,23 @@ class DashboardScreen extends ConsumerWidget {
       ));
       notifyTrackingRecordAfterUndoWindow(snackBar);
     } else {
-      final record = await recordsNotifier.startPeriod(date);
-      await profileNotifier.saveProfile(lastPeriodStart: record.startDate);
+      final idsBefore =
+          ref.read(periodRecordsProvider).map((r) => r.id).toSet();
+      // Geçmiş bir gün seçildiyse kayıt bugün hâlâ sürüyor sayılmaz
+      final record = await recordsNotifier.startPeriod(
+        date,
+        periodLength: prevProfile?.averagePeriodLength,
+      );
+      final created = !idsBefore.contains(record.id);
+      await profileNotifier
+          .syncLastPeriodStart(ref.read(periodRecordsProvider));
       final snackBar = messenger.showSnackBar(SnackBar(
         content: Text(l10n.periodMarkedStarted),
         duration: const Duration(seconds: 6),
         action: SnackBarAction(
           label: l10n.undo,
           onPressed: () async {
-            await recordsNotifier.deleteRecord(record.id);
+            if (created) await recordsNotifier.deleteRecord(record.id);
             // Profil (lastPeriodStart dahil) eski haline:
             // updateProfile bildirim/widget'ı da tazeler
             if (prevProfile != null) {

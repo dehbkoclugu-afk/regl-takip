@@ -1,6 +1,6 @@
 # Gizlilik Politikası
 
-**Son güncelleme: 27 Şubat 2026**
+**Son güncelleme: 26 Ekim 2026**
 
 CEY Studio olarak, "Döngü Takip - Regl & Adet Takvimi" uygulamasını kullanırken gizliliğinize saygı duyuyoruz. Bu gizlilik politikası, uygulamamızın verilerinizi nasıl işlediğini açıklamaktadır.
 
@@ -18,15 +18,17 @@ Uygulamamız aşağıdaki bilgileri yalnızca cihazınızda yerel olarak saklar:
 
 ## 2. Verilerin Saklanması
 
-Tüm kişisel verileriniz yalnızca cihazınızda saklanır. Verileriniz hiçbir sunucuya, bulut hizmetine veya üçüncü taraf platformuna gönderilmez. İnternet bağlantısı olmadan da uygulama tam işlevsellikle çalışır.
+Tüm kişisel verileriniz yalnızca cihazınızda, şifreli olarak saklanır. Verileriniz bizim ya da başka birinin sunucusuna veya bulut hizmetine gönderilmez. Tek istisna, yalnızca sizin başlattığınız Sağlık entegrasyonudur (bkz. Bölüm 4). Regl takibi internet bağlantısı olmadan çalışır; satın alma, reklam ve isteğe bağlı çökme raporlama için internet gerekir.
 
 ## 3. Veri Paylaşımı
 
-Verilerinizi hiçbir üçüncü tarafla paylaşmıyoruz. Uygulama, kişisel verilerinizi satmaz, kiralamaz veya ticari amaçlarla kullanmaz.
+Verilerinizi hiçbir üçüncü tarafla paylaşmıyoruz. Uygulama, kişisel verilerinizi satmaz, kiralamaz veya ticari amaçlarla kullanmaz. Sağlık verileriniz reklam ya da pazarlama amacıyla kullanılmaz.
 
 ## 4. Üçüncü Taraf Hizmetleri
 
-Sağlık verileriniz hiçbir üçüncü tarafa gönderilmez. Uygulamanın çalışması için kullanılan üçüncü taraf hizmetleri şunlardır:
+Sağlık verileriniz, aşağıdaki Sağlık entegrasyonunu kendiniz kullanmadıkça hiçbir üçüncü tarafa gönderilmez. Uygulamanın kullandığı üçüncü taraf hizmetleri şunlardır:
+
+- **Health Connect (Android) / Apple Sağlık (iOS)**: Yalnızca ayarlardan siz başlattığınızda ve izin verdiğinizde kullanılır. Yazma: regl günleriniz cihazınızdaki Health Connect / Sağlık uygulamasına aktarılır; uygulamada sildiğiniz ya da kısalttığınız kayıtların aktarılmış günleri bir sonraki senkronda geri alınır. Okuma: son 12 aydaki adet günleri, uygulamaya eklemeden önce onayınıza sunulur. Bu veriler yalnızca regl takibi için kullanılır, reklam veya başka bir amaçla işlenmez ve üçüncü taraflara aktarılmaz. İzinleri istediğiniz zaman Health Connect / Sağlık ayarlarından geri alabilirsiniz.
 
 - **Google Play Faturalandırma**: Premium satın alma işlemleri için kullanılır. Bu işlemler Google'ın kendi gizlilik politikasına tabidir.
 - **Google AdMob**: Ücretsiz sürümde reklam göstermek için kullanılır. AdMob, reklam sunumu için cihaz tanımlayıcıları gibi teknik veriler işleyebilir; sağlık verilerinize erişemez. AB/Birleşik Krallık kullanıcılarından reklam kişiselleştirme için ayrıca onay istenir. Premium sürümde reklam ve AdMob yoktur.
@@ -42,8 +44,8 @@ Uygulama, PIN kodu ve biyometrik kimlik doğrulama (parmak izi/yüz tanıma) ile
 
 ## 7. Veri Dışa Aktarma ve Silme
 
-- Verilerinizi istediğiniz zaman CSV veya PDF formatında dışa aktarabilirsiniz.
-- Uygulamayı cihazınızdan kaldırdığınızda tüm verileriniz kalıcı olarak silinir.
+- Verilerinizi istediğiniz zaman CSV veya PDF formatında dışa aktarabilir, parolayla şifrelenmiş yedek alabilirsiniz. Dışa aktarılan geçici dosyalar uygulamanın bir sonraki açılışında cihazdan silinir.
+- Ayarlardaki "Tüm verileri sil" seçeneğiyle ya da uygulamayı kaldırarak tüm verilerinizi kalıcı olarak silebilirsiniz. Health Connect / Sağlık'a daha önce aktarılmış veriler o uygulamalarda kalır; oradan ayrıca silebilirsiniz.
 
 ## 8. Çocukların Gizliliği
 

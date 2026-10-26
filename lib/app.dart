@@ -107,19 +107,61 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   /// Bildirimden gelen aksiyonu uygular. Aksiyon tek seferlik: uygulandıktan
   /// (ya da uygulanamadıktan) sonra temizlenir, yoksa her açılışta tekrar
   /// çalışır.
+  ///
+  /// Kilit ve kılık çözülene dek bekler: aksiyon kilit ekranındaki
+  /// bildirimden de basılabiliyor ve eskiden PIN sorulmadan, gizli mod
+  /// atlanarak sağlık verisi yazılıyordu. Kilit açılınca / kılıktan
+  /// çıkılınca yeniden denenir.
   Future<void> _onNotificationAction() async {
     final action = NotificationService().pendingAction.value;
     if (action == null || !mounted) return;
+    if (!_decoyResolved ||
+        _decoyActive ||
+        (_isLocked && _needsLock) ||
+        rootNavigatorKey.currentContext == null) {
+      return;
+    }
     NotificationService().pendingAction.value = null;
 
     switch (action.id) {
       case NotificationService.actionPeriodStarted:
         final records = ref.read(periodRecordsProvider.notifier);
+        final profileNotifier = ref.read(userProfileProvider.notifier);
+        final previousProfile = ref.read(userProfileProvider);
+        final idsBefore =
+            ref.read(periodRecordsProvider).map((r) => r.id).toSet();
         final record = await records.startPeriod(DateTime.now());
-        await ref
-            .read(userProfileProvider.notifier)
-            .saveProfile(lastPeriodStart: record.startDate);
-        notifyTrackingRecordSaved();
+        await profileNotifier
+            .syncLastPeriodStart(ref.read(periodRecordsProvider));
+        if (!mounted) return;
+        if (idsBefore.contains(record.id)) break; // zaten kayıtlıydı
+        // Bildirimden yanlışlıkla basılan aksiyon geri alınabilmeli —
+        // ana ekran ve widget akışıyla aynı sözleşme
+        final messenger = _scaffoldMessengerKey.currentState;
+        final messengerContext = _scaffoldMessengerKey.currentContext;
+        if (messenger == null ||
+            messengerContext == null ||
+            !messengerContext.mounted) {
+          notifyTrackingRecordSaved();
+          break;
+        }
+        final l10n = AppLocalizations.of(messengerContext)!;
+        final controller = messenger.showSnackBar(SnackBar(
+          content: Text(l10n.periodMarkedStarted),
+          duration: const Duration(seconds: 6),
+          action: SnackBarAction(
+            label: l10n.undo,
+            onPressed: () async {
+              await records.deleteRecord(record.id);
+              if (previousProfile != null) {
+                await profileNotifier.updateProfile(previousProfile);
+              } else {
+                profileNotifier.refresh();
+              }
+            },
+          ),
+        ));
+        notifyTrackingRecordAfterUndoWindow(controller);
         break;
       case NotificationService.actionMedicationTaken:
         // Deneme bittikten sonra geçmiş görünür, yeni günlük yazma premium.
@@ -274,7 +316,8 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
       final record = await ref
           .read(periodRecordsProvider.notifier)
           .startPeriod(DateTime.now());
-      await profileNotifier.saveProfile(lastPeriodStart: record.startDate);
+      await profileNotifier
+          .syncLastPeriodStart(ref.read(periodRecordsProvider));
       // Kayıt sürerken aynı native tıklama yeniden geldiyse de tüket.
       WidgetService.pendingAction.value = null;
       if (!mounted) return;
@@ -342,6 +385,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
       _decoyResolved = true;
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _onNotificationAction();
       _onQuickAction();
       _onWidgetAction();
     });
@@ -446,6 +490,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
   void _onUnlocked() {
     setState(() => _isLocked = false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _onNotificationAction();
       _onQuickAction();
       _onWidgetAction();
     });
@@ -499,6 +544,7 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
       }
       _backgroundedAt = null;
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        _onNotificationAction();
         _onQuickAction();
         _onWidgetAction();
       });
@@ -615,8 +661,11 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
               LockScreen(onUnlocked: _onUnlocked),
             if (_decoyActive)
               DecoyNotesScreen(
-                onExitRequested: () =>
-                    setState(() => _decoyActive = false),
+                onExitRequested: () {
+                  setState(() => _decoyActive = false);
+                  WidgetsBinding.instance.addPostFrameCallback(
+                      (_) => _onNotificationAction());
+                },
               ),
           ],
         );

@@ -1,5 +1,6 @@
 import '../../models/period_record.dart';
 import '../constants/app_constants.dart';
+import 'date_only.dart';
 
 class CycleUtils {
   CycleUtils._();
@@ -7,38 +8,35 @@ class CycleUtils {
   /// Bir sonraki adet başlangıç tarihini tahmin eder
   static DateTime predictNextPeriod(
       DateTime lastPeriodStart, int cycleLength) {
-    return lastPeriodStart.add(Duration(days: cycleLength));
+    return addDays(lastPeriodStart, cycleLength);
   }
 
   /// Ovülasyon tarihini tahmin eder (bir sonraki adetten 14 gün önce)
   static DateTime predictOvulation(
       DateTime lastPeriodStart, int cycleLength) {
-    return lastPeriodStart
-        .add(Duration(days: cycleLength - AppConstants.ovulationDayBeforePeriod));
+    return addDays(
+        lastPeriodStart, cycleLength - AppConstants.ovulationDayBeforePeriod);
   }
 
   /// Verimli pencere başlangıcını hesaplar (ovülasyondan 5 gün önce)
   static DateTime fertileWindowStart(
       DateTime lastPeriodStart, int cycleLength) {
     final ovulation = predictOvulation(lastPeriodStart, cycleLength);
-    return ovulation.subtract(const Duration(
-        days: AppConstants.fertileWindowStartBeforeOvulation));
+    return addDays(
+        ovulation, -AppConstants.fertileWindowStartBeforeOvulation);
   }
 
   /// Verimli pencere bitişini hesaplar (ovülasyondan 1 gün sonra)
   static DateTime fertileWindowEnd(
       DateTime lastPeriodStart, int cycleLength) {
     final ovulation = predictOvulation(lastPeriodStart, cycleLength);
-    return ovulation.add(const Duration(days: 1));
+    return addDays(ovulation, 1);
   }
 
-  /// Döngünün kaçıncı günü olduğunu hesaplar
-  static int currentCycleDay(DateTime lastPeriodStart) {
-    final now = DateTime.now();
-    final normalizedNow = DateTime(now.year, now.month, now.day);
-    final normalizedStart = DateTime(
-        lastPeriodStart.year, lastPeriodStart.month, lastPeriodStart.day);
-    return normalizedNow.difference(normalizedStart).inDays + 1;
+  /// Döngünün kaçıncı günü olduğunu hesaplar.
+  /// [now] testlerde ve widget'ın ileri günleri hesaplamasında verilir.
+  static int currentCycleDay(DateTime lastPeriodStart, {DateTime? now}) {
+    return daysBetween(lastPeriodStart, now ?? DateTime.now()) + 1;
   }
 
   /// Ham döngü gününü 1..cycleLength aralığına sarar.
@@ -47,6 +45,20 @@ class CycleUtils {
     if (rawDay <= cycleLength) return rawDay;
     final mod = rawDay % cycleLength;
     return mod == 0 ? cycleLength : mod;
+  }
+
+  /// Ekranda gösterilecek döngü günü.
+  ///
+  /// Tahmini tarih geçtiyse ([periodDelayDays] > 0) gün başa SARILMAZ:
+  /// regl gelmemişken "1. gün" yazmak gecikmeyi saklar. Gecikme penceresi
+  /// dışında eski davranış (sarma) sürer.
+  static int displayCycleDay(DateTime lastPeriodStart, int cycleLength,
+      {DateTime? now}) {
+    final raw = currentCycleDay(lastPeriodStart, now: now);
+    if (periodDelayDays(lastPeriodStart, cycleLength, now: now) > 0) {
+      return raw;
+    }
+    return wrappedCycleDay(raw, cycleLength);
   }
 
   /// Döngü içinde ovülasyonun denk geldiği gün numarası.
@@ -72,9 +84,8 @@ class CycleUtils {
   /// Regl bugün hâlâ sürüyorsa null döner: kayıt açık (isOngoing) kalmalı.
   static DateTime? completedPeriodEnd(
       DateTime start, int periodLength, DateTime today) {
-    final s = DateTime(start.year, start.month, start.day);
-    final t = DateTime(today.year, today.month, today.day);
-    final end = s.add(Duration(days: periodLength - 1));
+    final t = dateOnly(today);
+    final end = addDays(start, periodLength - 1);
     return end.isAfter(t) ? null : end;
   }
 
@@ -103,14 +114,22 @@ class CycleUtils {
   }
 
   /// Döngü fazını belirler (gün, wrappedCycleDay ile sarılır —
-  /// currentCycleDayProvider ile tutarlı kalması için)
+  /// currentCycleDayProvider ile tutarlı kalması için).
+  ///
+  /// Gecikme penceresinde faz luteal kalır: tahmini tarih geçti diye regl
+  /// başlamış sayılamaz. Eskiden gün başa sarıldığı için başlık "X gün
+  /// gecikti" derken faz etiketi ve renkler "menstrüel" gösteriyordu.
   static CyclePhase getCurrentPhase(
     DateTime lastPeriodStart,
     int cycleLength,
-    int periodLength,
-  ) {
-    final cycleDay =
-        wrappedCycleDay(currentCycleDay(lastPeriodStart), cycleLength);
+    int periodLength, {
+    DateTime? now,
+  }) {
+    if (periodDelayDays(lastPeriodStart, cycleLength, now: now) > 0) {
+      return CyclePhase.luteal;
+    }
+    final cycleDay = wrappedCycleDay(
+        currentCycleDay(lastPeriodStart, now: now), cycleLength);
     return phaseForDay(cycleDay, cycleLength, periodLength);
   }
 
@@ -125,7 +144,7 @@ class CycleUtils {
     final gaps = <int>[];
     for (int i = 1; i < sorted.length; i++) {
       final diff =
-          sorted[i].startDate.difference(sorted[i - 1].startDate).inDays;
+          daysBetween(sorted[i - 1].startDate, sorted[i].startDate);
       if (diff >= AppConstants.minCycleLength &&
           diff <= AppConstants.maxCycleLength) {
         gaps.add(diff);
@@ -182,10 +201,7 @@ class CycleUtils {
   /// Gelecek döngülere de sarar — takvim tahmin işaretleri için.
   static int? dayInCycleFor(
       DateTime date, DateTime lastPeriodStart, int cycleLength) {
-    final normalized = DateTime(date.year, date.month, date.day);
-    final start = DateTime(lastPeriodStart.year, lastPeriodStart.month,
-        lastPeriodStart.day);
-    final diff = normalized.difference(start).inDays;
+    final diff = daysBetween(lastPeriodStart, date);
     if (diff < 0) return null;
     return (diff % cycleLength) + 1;
   }
@@ -234,14 +250,13 @@ class CycleUtils {
       final d2 = sorted[i + 1].key;
       final d3 = sorted[i + 2].key;
       final consecutiveDays =
-          d2.difference(d1).inDays == 1 && d3.difference(d2).inDays == 1;
+          daysBetween(d1, d2) == 1 && daysBetween(d2, d3) == 1;
 
       if (consecutiveDays &&
           rise1 > coverline &&
           rise2 > coverline &&
           rise3 >= coverline + 0.2) {
-        return DateTime(d1.year, d1.month, d1.day)
-            .subtract(const Duration(days: 1));
+        return addDays(d1, -1);
       }
     }
     return null;
@@ -249,12 +264,8 @@ class CycleUtils {
 
   /// Gebelik haftası (1 tabanlı, son adet tarihinden — LMP).
   /// Gelecek tarih verilirse 1 döner; 42 ile sınırlanır.
-  static int pregnancyWeek(DateTime pregnancyStart) {
-    final now = DateTime.now();
-    final normalizedNow = DateTime(now.year, now.month, now.day);
-    final start = DateTime(
-        pregnancyStart.year, pregnancyStart.month, pregnancyStart.day);
-    final days = normalizedNow.difference(start).inDays;
+  static int pregnancyWeek(DateTime pregnancyStart, {DateTime? now}) {
+    final days = daysBetween(pregnancyStart, now ?? DateTime.now());
     if (days < 0) return 1;
     return ((days ~/ 7) + 1).clamp(1, 42);
   }
@@ -288,18 +299,11 @@ class CycleUtils {
 
   /// Gebelik testinin anlamlı olduğu en erken gün.
   /// TTC kullanıcısının en beklediği tarih buydu ve hiçbir yerde yoktu.
-  static DateTime earliestPregnancyTestDay(DateTime ovulation) => DateTime(
-        ovulation.year,
-        ovulation.month,
-        ovulation.day + AppConstants.pregnancyTestAfterOvulation,
-      );
+  static DateTime earliestPregnancyTestDay(DateTime ovulation) =>
+      addDays(ovulation, AppConstants.pregnancyTestAfterOvulation);
 
-  static int pillDayInPack(DateTime packStart) {
-    final now = DateTime.now();
-    final normalizedNow = DateTime(now.year, now.month, now.day);
-    final start =
-        DateTime(packStart.year, packStart.month, packStart.day);
-    final days = normalizedNow.difference(start).inDays;
+  static int pillDayInPack(DateTime packStart, {DateTime? now}) {
+    final days = daysBetween(packStart, now ?? DateTime.now());
     if (days < 0) return 1;
     return (days % 28) + 1;
   }
@@ -316,10 +320,7 @@ class CycleUtils {
     int periodLength, {
     int cyclesAhead = 3,
   }) {
-    final normalized = DateTime(date.year, date.month, date.day);
-    final start = DateTime(lastPeriodStart.year, lastPeriodStart.month,
-        lastPeriodStart.day);
-    final diff = normalized.difference(start).inDays;
+    final diff = daysBetween(lastPeriodStart, date);
     // Mevcut döngü (diff < cycleLength) tahmin değil, gerçek kayıt alanı
     if (diff < cycleLength) return false;
     if (diff >= cycleLength * (cyclesAhead + 1)) return false;
@@ -348,23 +349,23 @@ class CycleUtils {
 
   /// Gelecekteki (bugün dahil) ilk tahmini adet başlangıcını döndürür.
   /// Tahmin geçmişte kaldıysa döngü uzunluğu kadar ileri sarar.
-  static DateTime nextFuturePeriod(DateTime lastPeriodStart, int cycleLength) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
+  static DateTime nextFuturePeriod(DateTime lastPeriodStart, int cycleLength,
+      {DateTime? now}) {
+    final today = dateOnly(now ?? DateTime.now());
     var next = predictNextPeriod(lastPeriodStart, cycleLength);
-    next = DateTime(next.year, next.month, next.day);
     while (next.isBefore(today)) {
-      next = next.add(Duration(days: cycleLength));
+      next = addDays(next, cycleLength);
     }
     return next;
   }
 
   /// Sonraki adete kalan gün sayısı
-  static int daysUntilNextPeriod(DateTime lastPeriodStart, int cycleLength) {
-    final nextPeriod = nextFuturePeriod(lastPeriodStart, cycleLength);
-    final now = DateTime.now();
-    final diff =
-        nextPeriod.difference(DateTime(now.year, now.month, now.day)).inDays;
+  static int daysUntilNextPeriod(DateTime lastPeriodStart, int cycleLength,
+      {DateTime? now}) {
+    final reference = now ?? DateTime.now();
+    final nextPeriod =
+        nextFuturePeriod(lastPeriodStart, cycleLength, now: reference);
+    final diff = daysBetween(reference, nextPeriod);
     return diff > 0 ? diff : 0;
   }
 
@@ -380,13 +381,10 @@ class CycleUtils {
   /// sonraki tahmini tarih de geçmiş demektir ve uygulama "çok geç kaldı"
   /// ile "kullanıcı uzun süredir kayıt girmiyor"u birbirinden ayıramaz.
   /// O noktada 0 dönüp normal tahmin diline geri dönmek dürüst olan.
-  static int periodDelayDays(DateTime lastPeriodStart, int cycleLength) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
+  static int periodDelayDays(DateTime lastPeriodStart, int cycleLength,
+      {DateTime? now}) {
     final predicted = predictNextPeriod(lastPeriodStart, cycleLength);
-    final delay = today
-        .difference(DateTime(predicted.year, predicted.month, predicted.day))
-        .inDays;
+    final delay = daysBetween(predicted, now ?? DateTime.now());
     if (delay <= 0 || delay >= cycleLength) return 0;
     return delay;
   }
