@@ -2,9 +2,22 @@ workflows:
   android-workflow:
     name: Android Build
     max_build_duration: 60
+    # main dalına her push'ta kendiliğinden derlenir (elle başlatmaya gerek yok)
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+      cancel_previous_builds: true
     environment:
       android_signing:
         - regl
+      # Google Play servis hesabı anahtarı (GCLOUD_SERVICE_ACCOUNT_CREDENTIALS).
+      # Codemagic > Environment variables'ta "google_play" grubunda tanımlanır.
+      groups:
+        - google_play
       flutter: 3.44.8
       java: 17
     scripts:
@@ -45,10 +58,25 @@ workflows:
         notify:
           success: true
           failure: true
+      # AAB Play Console'a kendiliğinden yüklenir. Önce "internal" (dahili
+      # test) kanalına gider; Play Console'da tek tıkla üretime yükseltilir.
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: false
 
   ios-workflow:
     name: iOS Build
     max_build_duration: 120
+    # main dalına her push'ta kendiliğinden derlenir (elle başlatmaya gerek yok)
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+      cancel_previous_builds: true
     integrations:
       app_store_connect: Codemagic
     environment:
