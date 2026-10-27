@@ -44,7 +44,9 @@ if (isReleaseTask && !hasReleaseSigning && !allowDebugSignedRelease) {
 
 android {
     namespace = "com.regl.regl_takip"
-    compileSdk = flutter.compileSdkVersion
+    // Google Play: güncellemeler en az Android 16'yı (API 36) hedeflemeli.
+    // Flutter varsayılanı bundan düşük olsa bile 36'nın altına inilmez.
+    compileSdk = maxOf(flutter.compileSdkVersion, 36)
     // Flutter araç zincirinin NDK'sini kullan — elle pinlenen 27.0.12077973
     // bu makinede bozuk kurulumdu ve gradle otomatik indirmiyor
     ndkVersion = flutter.ndkVersion
@@ -63,7 +65,7 @@ android {
         applicationId = "com.regl.regl_takip"
         // health (Health Connect) paketi minimum SDK 26 (Android 8.0) ister
         minSdk = 26
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = maxOf(flutter.targetSdkVersion, 36)
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true
