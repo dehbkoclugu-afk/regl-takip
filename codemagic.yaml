@@ -14,10 +14,6 @@ workflows:
     environment:
       android_signing:
         - regl
-      # Google Play servis hesabı anahtarı (GCLOUD_SERVICE_ACCOUNT_CREDENTIALS).
-      # Codemagic > Environment variables'ta "google_play" grubunda tanımlanır.
-      groups:
-        - google_play
       flutter: 3.44.8
       java: 17
     scripts:
@@ -58,12 +54,6 @@ workflows:
         notify:
           success: true
           failure: true
-      # AAB Play Console'a kendiliğinden yüklenir. Önce "internal" (dahili
-      # test) kanalına gider; Play Console'da tek tıkla üretime yükseltilir.
-      google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: internal
-        submit_as_draft: false
 
   ios-workflow:
     name: iOS Build
