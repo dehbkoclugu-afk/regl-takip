@@ -7,12 +7,48 @@ import 'package:path_provider/path_provider.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
+import '../core/utils/date_only.dart';
 import '../core/utils/enum_labels.dart';
 import '../models/period_record.dart';
 import '../models/daily_log.dart';
 import '../models/user_profile.dart';
 
 class ExportService {
+  /// Dışa aktarma ve yedek dosyalarının ad önekleri (geçici dizin).
+  static const exportFilePrefixes = [
+    'period_tracker_',
+    'period_calendar_',
+    'regl_takip_backup_',
+  ];
+
+  /// Paylaşılan dosya alıcı uygulama tarafından gecikmeli okunabilir;
+  /// paylaşımdan hemen sonra silmek eki bozar. Bu yüzden silme açılışta,
+  /// bu süreden eski dosyalar için yapılır.
+  static const Duration exportRetention = Duration(hours: 1);
+
+  /// Dosya adı bir dışa aktarma çıktısına mı ait?
+  static bool isExportFileName(String name) =>
+      exportFilePrefixes.any(name.startsWith);
+
+  /// Eski dışa aktarma dosyalarını siler. CSV/PDF çıktıları düz metin
+  /// sağlık verisi içeriyor ve geçici dizinde süresiz kalıyordu.
+  static Future<void> cleanupOldExports({DateTime? now}) async {
+    try {
+      final dir = await getTemporaryDirectory();
+      final cutoff = (now ?? DateTime.now()).subtract(exportRetention);
+      await for (final entity in dir.list()) {
+        if (entity is! File) continue;
+        final name = entity.uri.pathSegments.last;
+        if (!isExportFileName(name)) continue;
+        if ((await entity.lastModified()).isBefore(cutoff)) {
+          await entity.delete();
+        }
+      }
+    } catch (_) {
+      // Temizlik en iyi çaba: açılışı asla engellemesin
+    }
+  }
+
   /// CSV injection koruması: Excel/Sheets formül olarak yorumlamasın diye
   /// riskli karakterle başlayan hücrelere tek tırnak eklenir.
   static String sanitizeCsvCell(String value) {
@@ -117,7 +153,7 @@ class ExportService {
         'UID:${period.id}@regl-takip',
         'DTSTAMP:${timestamp(now)}',
         'DTSTART;VALUE=DATE:${date(period.startDate)}',
-        'DTEND;VALUE=DATE:${date(end.add(const Duration(days: 1)))}',
+        'DTEND;VALUE=DATE:${date(addDays(end, 1))}',
         'SUMMARY:${escape(eventTitle)}',
         'TRANSP:TRANSPARENT',
         'END:VEVENT',

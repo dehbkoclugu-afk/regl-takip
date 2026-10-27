@@ -49,8 +49,17 @@ jobs:
       - name: Tests
         run: flutter test
 
-      # key.properties CI'da yoksa gradle guard'ı debug anahtarıyla imzalar
+      # Türkiye'de yaz saati yok; tarih hesaplarındaki DST kaymaları ancak
+      # yaz saatli bir saat diliminde ortaya çıkıyor
+      - name: Tests (yaz saatli saat dilimi)
+        run: TZ=Europe/Berlin flutter test
+
+      # key.properties CI'da yok. build.gradle.kts release derlemesini imza
+      # anahtarı olmadan reddediyor; bu iş yalnız elden kurulum APK'sı ürettiği
+      # için debug imzasına açıkça izin verir (Play'e yüklenemez).
       - name: Build APK
+        env:
+          ALLOW_DEBUG_SIGNED_RELEASE: 'true'
         run: flutter build apk --release --split-per-abi
 
       - name: Publish release

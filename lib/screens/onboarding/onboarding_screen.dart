@@ -12,6 +12,7 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/adaptive_layout.dart';
 import '../../core/utils/cycle_utils.dart';
+import '../../core/utils/date_only.dart';
 import '../../providers/providers.dart';
 import '../../models/enums.dart';
 import '../../models/user_profile.dart';
@@ -1028,7 +1029,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
     if (daysAgo == null || !mounted) return;
     setState(() =>
-        _lastPeriodDate = today.subtract(Duration(days: daysAgo)));
+        _lastPeriodDate = addDays(today, -daysAgo));
   }
 
   /// Döngü ve regl uzunluğu tek bölümde: aynı biçimdeki iki slider ayrı

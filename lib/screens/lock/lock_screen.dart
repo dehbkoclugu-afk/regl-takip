@@ -9,6 +9,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/motion.dart';
+import '../../core/utils/pin_lockout.dart';
 import '../../core/utils/pin_utils.dart';
 import '../../providers/providers.dart';
 import 'widgets/pin_pad.dart';
@@ -29,9 +30,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   bool _isVerifying = false;
 
   // Brute-force koruması: 5 yanlış denemeden sonra artan bekleme süresi
-  static const _maxFreeAttempts = 5;
-  static const _attemptsKey = 'pin_failed_attempts';
-  static const _lockoutKey = 'pin_lockout_until';
+  final _lockout = PinLockout();
   int _lockoutRemainingSeconds = 0;
   Timer? _lockoutTimer;
   // Kalan bekleme süresi diskten okunana kadar giriş kabul edilmez, yoksa
@@ -73,14 +72,9 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   }
 
   Future<void> _restoreLockout() async {
-    final stored = await _storage.read(key: _lockoutKey);
-    final until = int.tryParse(stored ?? '');
+    final remaining = await _lockout.remainingSeconds();
     if (!mounted) return;
-    final remainingMs =
-        until == null ? 0 : until - DateTime.now().millisecondsSinceEpoch;
-    if (remainingMs > 0) {
-      _startLockoutCountdown((remainingMs / 1000).ceil());
-    }
+    if (remaining > 0) _startLockoutCountdown(remaining);
     setState(() => _lockoutRestored = true);
   }
 
@@ -103,26 +97,13 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   }
 
   Future<void> _registerFailedAttempt() async {
-    final stored = await _storage.read(key: _attemptsKey);
-    final attempts = (int.tryParse(stored ?? '') ?? 0) + 1;
-    await _storage.write(key: _attemptsKey, value: attempts.toString());
-
-    if (attempts >= _maxFreeAttempts) {
-      // Her fazladan yanlış deneme bekleme süresini 30 sn artırır (max 5 dk)
-      final lockoutSeconds =
-          (30 * (attempts - _maxFreeAttempts + 1)).clamp(30, 300);
-      final until = DateTime.now()
-          .add(Duration(seconds: lockoutSeconds))
-          .millisecondsSinceEpoch;
-      await _storage.write(key: _lockoutKey, value: until.toString());
-      if (mounted) _startLockoutCountdown(lockoutSeconds);
+    final lockoutSeconds = await _lockout.registerFailure();
+    if (lockoutSeconds > 0 && mounted) {
+      _startLockoutCountdown(lockoutSeconds);
     }
   }
 
-  Future<void> _clearFailedAttempts() async {
-    await _storage.delete(key: _attemptsKey);
-    await _storage.delete(key: _lockoutKey);
-  }
+  Future<void> _clearFailedAttempts() => _lockout.clear();
 
   Future<void> _tryBiometric() async {
     final profile = ref.read(userProfileProvider);

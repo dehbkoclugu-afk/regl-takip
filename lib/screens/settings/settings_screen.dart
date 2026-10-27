@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/access.dart';
 import '../../core/utils/adaptive_layout.dart';
@@ -1045,6 +1046,9 @@ class SettingsScreen extends ConsumerWidget {
                     // Bildirim iptali başarısız olsa da silme tamamlanmalı
                   }
                   await WidgetService.update(null, const []);
+                  // Health Connect senkron geçmişi de sıfırlanır: yoksa
+                  // yeniden girilen günler "zaten aktarıldı" sanılırdı
+                  await HealthSyncService.resetSyncState();
 
                   ref.read(userProfileProvider.notifier).refresh();
                   ref.read(periodRecordsProvider.notifier).refresh();
@@ -1067,7 +1071,8 @@ class SettingsScreen extends ConsumerWidget {
           // About
           _sectionHeader(context, l10n.about),
           _settingsCard(context, [
-            _infoTile(context, Icons.info_rounded, l10n.version, '1.1.0'),
+            _infoTile(
+                context, Icons.info_rounded, l10n.version, AppConstants.appVersion),
             _divider(context),
             _actionTile(
               context,
@@ -1211,18 +1216,25 @@ class SettingsScreen extends ConsumerWidget {
     );
     if (confirmed != true) return;
 
-    final notifier = ref.read(periodRecordsProvider.notifier);
-    for (final (start, end) in result.ranges) {
-      final record = await notifier.startPeriod(start);
-      await notifier.endPeriod(record.id, end);
+    // Aralıklar kapalı kayıt olarak, tek işlemde eklenir. Eskiden her aralık
+    // startPeriod + endPeriod ile ekleniyordu: süren bir regl varken
+    // startPeriod daha eski bir gün için SÜREN kaydı döndürüyor, endPeriod
+    // de onu başlangıç gününde kapatıyordu — içe aktarma kullanıcının
+    // güncel kaydını bozuyor, kendi aralığını ise hiç eklemiyordu.
+    final added = await ref
+        .read(periodRecordsProvider.notifier)
+        .addCompletedPeriodRanges([
+      for (final (start, end) in result.ranges) (start: start, end: end),
+    ]);
+    if (added == null) {
+      if (!context.mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text(l10n.periodRangeOverlap)));
+      return;
     }
     // Profil tarihi kayıtların türevi: en yeni kayda eşitlenmeli
-    final records = ref.read(periodRecordsProvider);
-    if (records.isNotEmpty) {
-      await ref
-          .read(userProfileProvider.notifier)
-          .saveProfile(lastPeriodStart: records.first.startDate);
-    }
+    await ref
+        .read(userProfileProvider.notifier)
+        .syncLastPeriodStart(ref.read(periodRecordsProvider));
     if (!context.mounted) return;
     messenger.showSnackBar(
       SnackBar(
@@ -1406,7 +1418,24 @@ class SettingsScreen extends ConsumerWidget {
     );
     if (confirmed != true) return;
 
-    await BackupService(HiveService()).restoreBackup(data);
+    try {
+      await BackupService(HiveService()).restoreBackup(data);
+    } catch (e) {
+      // restoreBackup mevcut veriyi geri yazdı; kullanıcı bilgilendirilir
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(l10n.errorOccurred(e.toString())),
+          backgroundColor: AppColors.error,
+        ));
+      }
+      return;
+    }
+    // Yedekteki deneme başlangıcı daha eskiyse restoreBackup onu yazdı;
+    // erişim kararı hemen buna göre verilmeli
+    final trialStart = await BackupService.adoptEarlierTrialStart(null);
+    if (trialStart != null) {
+      ref.read(trialStartProvider.notifier).state = trialStart;
+    }
     ref.read(userProfileProvider.notifier).refresh();
     ref.read(periodRecordsProvider.notifier).refresh();
     ref.read(dailyLogProvider.notifier).refresh();

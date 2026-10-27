@@ -2,6 +2,15 @@ workflows:
   android-workflow:
     name: Android Build
     max_build_duration: 60
+    # main dalına her push'ta kendiliğinden derlenir (elle başlatmaya gerek yok)
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+      cancel_previous_builds: true
     environment:
       android_signing:
         - regl
@@ -20,6 +29,7 @@ workflows:
       - name: Tests
         script: |
           flutter test
+          TZ=Europe/Berlin flutter test
       - name: Configure Android signing
         script: |
           cat > "$CM_BUILD_DIR/android/key.properties" <<EOF
@@ -30,10 +40,10 @@ workflows:
           EOF
       - name: Build app bundle
         script: |
-          flutter build appbundle --release --build-name=1.1.1 --build-number=8
+          flutter build appbundle --release
       - name: Build installable APKs
         script: |
-          flutter build apk --release --split-per-abi --build-name=1.1.1 --build-number=8
+          flutter build apk --release --split-per-abi
     artifacts:
       - build/app/outputs/bundle/release/*.aab
       - build/app/outputs/flutter-apk/*.apk
@@ -48,6 +58,15 @@ workflows:
   ios-workflow:
     name: iOS Build
     max_build_duration: 120
+    # main dalına her push'ta kendiliğinden derlenir (elle başlatmaya gerek yok)
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+      cancel_previous_builds: true
     integrations:
       app_store_connect: Codemagic
     environment:
@@ -73,6 +92,7 @@ workflows:
       - name: Tests
         script: |
           flutter test
+          TZ=Europe/Berlin flutter test
       - name: Install CocoaPods
         script: |
           cd ios && pod install

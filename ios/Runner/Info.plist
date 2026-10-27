@@ -49,8 +49,6 @@
 		<string>Uygulama kilidini güvenli biçimde açmak için Face ID kullanılır.</string>
 		<key>GADApplicationIdentifier</key>
 		<string>ca-app-pub-2554058432197193~3764480294</string>
-		<key>NSUserTrackingUsageDescription</key>
-		<string>Size daha iyi reklam deneyimi sunmak için izninizi istiyoruz.</string>
 		<key>SKAdNetworkItems</key>
 		<array>
 			<dict>

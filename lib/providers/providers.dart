@@ -9,7 +9,9 @@ import '../models/user_profile.dart';
 import '../models/period_record.dart';
 import '../models/daily_log.dart';
 import '../models/enums.dart';
+import '../core/constants/app_constants.dart';
 import '../core/utils/cycle_utils.dart';
+import '../core/utils/date_only.dart';
 import '../core/utils/phase_insights.dart';
 import '../core/utils/statistics_summary.dart';
 import 'package:uuid/uuid.dart';
@@ -198,6 +200,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     List<MedicationEntry>? medicationPlan,
     bool? medicationPlanMigrated,
     int? cycleNotificationFrequency,
+    bool clearLastPeriodStart = false,
   }) async {
     final current = state ?? UserProfile();
     final updated = current.copyWith(
@@ -237,6 +240,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
       medicationPlan: medicationPlan,
       medicationPlanMigrated: medicationPlanMigrated,
       cycleNotificationFrequency: cycleNotificationFrequency,
+      clearLastPeriodStart: clearLastPeriodStart,
     );
 
     await _hiveService.saveUserProfile(updated);
@@ -249,6 +253,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         reminderHour != null ||
         reminderMinute != null ||
         lastPeriodStart != null ||
+        clearLastPeriodStart ||
         smartPredictionEnabled != null ||
         trackingMode != null ||
         // Döngü/regl süresi tahmin tarihlerini kaydırır — bildirimler
@@ -257,7 +262,9 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         averagePeriodLength != null ||
         // Saat ve pencere değişince planlar eski değerlerde kalırdı
         medicationReminderHour != null ||
+        medicationReminderMinute != null ||
         cycleReminderHour != null ||
+        cycleReminderMinute != null ||
         periodReminderLeadDays != null ||
         // Sessizlik tercihi kanal kimliğini değiştiriyor: kurulu
         // bildirimler yeniden planlanmazsa eski kanalda kalır
@@ -269,6 +276,9 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
           updated,
           records: _hiveService.getAllPeriodRecords(),
           medications: updated.medicationPlan,
+          // Günlük kayıtlar verilmezse kişisel semptom (faz ipucu)
+          // bildirimleri her ayar değişikliğinde sessizce düşüyordu
+          logs: _hiveService.getAllDailyLogs(),
         );
       } catch (e) {
         debugPrint('[NOTIF] rescheduleAll failed: $e');
@@ -276,6 +286,27 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     }
 
     await WidgetService.update(updated, _hiveService.getAllPeriodRecords());
+  }
+
+  /// Profildeki "son regl tarihi"ni kayıtlardan türetir: en yeni kaydın
+  /// başlangıcı. Kayıt kalmadıysa tarih temizlenir.
+  ///
+  /// Akışlar profil tarihini elle `record.startDate`'e çekiyordu; geçmişe
+  /// eklenen bir kayıt bu yüzden son regl tarihini GERİYE taşıyıp tüm
+  /// tahminleri bozuyordu. Son kayıt silindiğinde de profil silinmiş tarihe
+  /// dayanarak tahmin üretmeye devam ediyordu.
+  Future<void> syncLastPeriodStart(List<PeriodRecord> records) async {
+    final current = state?.lastPeriodStart;
+    if (records.isEmpty) {
+      if (current != null) await saveProfile(clearLastPeriodStart: true);
+      return;
+    }
+    final newest = records
+        .map((r) => r.startDate)
+        .reduce((a, b) => a.isAfter(b) ? a : b);
+    if (current == null || !isSameDay(current, newest)) {
+      await saveProfile(lastPeriodStart: dateOnly(newest));
+    }
   }
 
   void refresh() {
@@ -384,31 +415,58 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
     _load();
   }
 
-  Future<PeriodRecord> startPeriod(DateTime date) async {
-    final normalizedDate = DateTime(date.year, date.month, date.day);
+  /// [date] gününde regl başlatır.
+  ///
+  /// - Gün mevcut kapalı bir kaydın içindeyse ya da süren kaydın başlangıç
+  ///   günüyse yeni kayıt açılmaz, o kayıt döner.
+  /// - Gün süren bir kaydın başlangıcından sonraysa süren kayıt bir gün
+  ///   öncesiyle kapatılır ve yeni (süren) kayıt açılır.
+  /// - Gün daha yeni bir kaydın ÖNCESİNDEYSE (geçmişe ekleme) kayıt kapalı
+  ///   açılır ve sonraki kayda taşmaz. Eskiden bitişsiz açılıyordu: takvimde
+  ///   40 gün önceye "regl bu gün başladı" demek 41 gün süren, sonraki
+  ///   kayıtlarla çakışan bir kayıt üretiyordu.
+  /// - [periodLength] verilirse ve o süre bugünden önce dolmuşsa kayıt yine
+  ///   kapalı açılır (geçmiş bir başlangıç bugün hâlâ sürüyor sayılmaz).
+  Future<PeriodRecord> startPeriod(DateTime date, {int? periodLength}) async {
+    final day = dateOnly(date);
+    final today = dateOnly(DateTime.now());
+    final length = periodLength ?? AppConstants.defaultPeriodLength;
 
-    // End any ongoing period first
-    final ongoing = state.where((r) => r.isOngoing).toList();
-    for (final record in ongoing) {
-      final start = DateTime(
-        record.startDate.year,
-        record.startDate.month,
-        record.startDate.day,
-      );
-      // Aynı gün (veya öncesi) tekrar başlatılırsa mevcut kayıt aktif kalır;
-      // yoksa endDate < startDate olur ve süre hesapları bozulur.
-      if (!normalizedDate.isAfter(start)) {
-        return record;
-      }
-      record.endDate = date.subtract(const Duration(days: 1));
-      await _hiveService.savePeriodRecord(record);
+    for (final record in state) {
+      if (!record.isOngoing && record.containsDate(day)) return record;
+      if (record.isOngoing && isSameDay(record.startDate, day)) return record;
     }
 
-    final record = PeriodRecord(id: _uuid.v4(), startDate: date);
+    // Bu günden önce başlamış süren kayıtlar bir gün öncesiyle kapanır
+    for (final record in state.where((r) => r.isOngoing).toList()) {
+      if (day.isAfter(dateOnly(record.startDate))) {
+        record.endDate = addDays(day, -1);
+        await _hiveService.savePeriodRecord(record);
+      }
+    }
+
+    DateTime? nextStart;
+    for (final record in state) {
+      final start = dateOnly(record.startDate);
+      if (start.isAfter(day) && (nextStart == null || start.isBefore(nextStart))) {
+        nextStart = start;
+      }
+    }
+
+    DateTime? end;
+    if (nextStart != null) {
+      final natural = addDays(day, length - 1);
+      final beforeNext = addDays(nextStart, -1);
+      end = natural.isBefore(beforeNext) ? natural : beforeNext;
+    } else if (periodLength != null) {
+      end = CycleUtils.completedPeriodEnd(day, periodLength, today);
+    }
+
+    final record = PeriodRecord(id: _uuid.v4(), startDate: day, endDate: end);
     await _hiveService.savePeriodRecord(record);
     _load();
     // Widget güncellemesi burada değil: çağıran akış hemen ardından
-    // saveProfile(lastPeriodStart) çağırır, widget orada güncel veriyle kurulur
+    // profili (syncLastPeriodStart) günceller, widget orada kurulur
     return record;
   }
 
@@ -510,9 +568,9 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
     try {
       final record = state.firstWhere((r) => r.id == recordId);
       // Bitiş tarihi başlangıçtan önce olamaz
-      record.endDate = date.isBefore(record.startDate)
-          ? record.startDate
-          : date;
+      final day = dateOnly(date);
+      record.endDate =
+          day.isBefore(dateOnly(record.startDate)) ? record.startDate : day;
       await _hiveService.savePeriodRecord(record);
       _load();
       await WidgetService.update(_hiveService.getUserProfile(), state);
@@ -755,10 +813,10 @@ final effectiveCycleLengthProvider = Provider<int>((ref) {
 final currentCycleDayProvider = Provider<int>((ref) {
   final profile = ref.watch(userProfileProvider);
   if (profile == null || profile.lastPeriodStart == null) return 0;
-  final rawDay = CycleUtils.currentCycleDay(profile.lastPeriodStart!);
   final cycleLength = ref.watch(effectiveCycleLengthProvider);
-  // Döngü uzunluğunu aşarsa yeni döngü başlamış demektir
-  return CycleUtils.wrappedCycleDay(rawDay, cycleLength);
+  // Döngü uzunluğunu aşarsa yeni döngü başlamış sayılır — gecikme
+  // penceresi hariç: regl gelmemişken gün başa sarılmaz
+  return CycleUtils.displayCycleDay(profile.lastPeriodStart!, cycleLength);
 });
 
 final currentCyclePhaseProvider = Provider<CyclePhase>((ref) {
@@ -789,15 +847,17 @@ final currentCyclePhaseProvider = Provider<CyclePhase>((ref) {
     final now = DateTime.now();
     final normalizedNow = DateTime(now.year, now.month, now.day);
     final normalizedEnd = DateTime(endDate.year, endDate.month, endDate.day);
-    if (normalizedNow.compareTo(normalizedEnd) >= 0) {
-      // Period is over, skip menstrual phase - use 0 as period length
-      // so getCurrentPhase won't return menstrual
-      return CycleUtils.getCurrentPhase(
-        profile.lastPeriodStart!,
-        ref.watch(effectiveCycleLengthProvider),
-        0,
-      );
-    }
+    // Bitiş günü (ve öncesi) hâlâ regl günüdür: kayıt bugünü kapsıyorsa
+    // faz menstrüeldir — ortalama süre daha kısa olsa bile. Eskiden
+    // bitiş günü "regl bitti" sayılıyordu.
+    if (!normalizedNow.isAfter(normalizedEnd)) return CyclePhase.menstrual;
+    // Period is over, skip menstrual phase - use 0 as period length
+    // so getCurrentPhase won't return menstrual
+    return CycleUtils.getCurrentPhase(
+      profile.lastPeriodStart!,
+      ref.watch(effectiveCycleLengthProvider),
+      0,
+    );
   }
   return CycleUtils.getCurrentPhase(
     profile.lastPeriodStart!,
@@ -855,7 +915,7 @@ final confirmedOvulationProvider = Provider<DateTime?>((ref) {
   final fromBbt = CycleUtils.detectOvulationFromBBT(temps);
   if (fromBbt != null) return fromBbt;
   if (latestPositiveLh != null) {
-    return latestPositiveLh.add(const Duration(days: 1));
+    return addDays(latestPositiveLh, 1);
   }
   return null;
 });

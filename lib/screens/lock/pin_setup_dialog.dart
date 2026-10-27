@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/pin_lockout.dart';
 import '../../core/utils/pin_utils.dart';
 import 'widgets/pin_pad.dart';
 
@@ -40,12 +43,55 @@ class _PinVerifyScreen extends StatefulWidget {
 
 class _PinVerifyScreenState extends State<_PinVerifyScreen> {
   final _storage = const FlutterSecureStorage();
+  // Kilit ekranıyla aynı brute-force sayacı: burada sınır yoktu ve PIN'i
+  // kaldırma ekranından tüm kombinasyonlar beklemesiz denenebiliyordu
+  final _lockout = PinLockout();
   String _pin = '';
   bool _isError = false;
   bool _isVerifying = false;
+  bool _lockoutRestored = false;
+  int _lockoutRemainingSeconds = 0;
+  Timer? _lockoutTimer;
+
+  bool get _acceptsInput =>
+      _lockoutRestored && _lockoutRemainingSeconds <= 0 && !_isVerifying;
+
+  @override
+  void initState() {
+    super.initState();
+    _lockout.remainingSeconds().then((remaining) {
+      if (!mounted) return;
+      if (remaining > 0) _startCountdown(remaining);
+      setState(() => _lockoutRestored = true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _lockoutTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startCountdown(int seconds) {
+    _lockoutTimer?.cancel();
+    setState(() => _lockoutRemainingSeconds = seconds);
+    _lockoutTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      setState(() {
+        _lockoutRemainingSeconds--;
+        if (_lockoutRemainingSeconds <= 0) {
+          _lockoutRemainingSeconds = 0;
+          timer.cancel();
+        }
+      });
+    });
+  }
 
   void _onDigit(String digit) {
-    if (_isVerifying || _pin.length >= 4) return;
+    if (!_acceptsInput || _pin.length >= 4) return;
     setState(() {
       _isError = false;
       _pin += digit;
@@ -56,7 +102,7 @@ class _PinVerifyScreenState extends State<_PinVerifyScreen> {
   }
 
   void _onDelete() {
-    if (_isVerifying || _pin.isEmpty) return;
+    if (!_acceptsInput || _pin.isEmpty) return;
     setState(() {
       _isError = false;
       _pin = _pin.substring(0, _pin.length - 1);
@@ -74,10 +120,15 @@ class _PinVerifyScreenState extends State<_PinVerifyScreen> {
     final ok = await compute(verifyPinTask, [stored, _pin]);
     if (!mounted) return;
     if (ok) {
+      await _lockout.clear();
+      if (!mounted) return;
       Navigator.of(context).pop(true);
       return;
     }
     HapticFeedback.heavyImpact();
+    final lockoutSeconds = await _lockout.registerFailure();
+    if (!mounted) return;
+    if (lockoutSeconds > 0) _startCountdown(lockoutSeconds);
     setState(() {
       _isError = true;
       _pin = '';
@@ -127,7 +178,19 @@ class _PinVerifyScreenState extends State<_PinVerifyScreen> {
                   color: Colors.white,
                 ),
               ),
-              if (_isError)
+              if (_lockoutRemainingSeconds > 0)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    l10n.tooManyAttempts(_lockoutRemainingSeconds),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.yellow.shade200,
+                    ),
+                  ),
+                )
+              else if (_isError)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
@@ -144,7 +207,7 @@ class _PinVerifyScreenState extends State<_PinVerifyScreen> {
               PinPad(
                 onDigit: _onDigit,
                 onDelete: _onDelete,
-                enabled: !_isVerifying,
+                enabled: _acceptsInput,
               ),
               const SizedBox(height: 40),
             ],

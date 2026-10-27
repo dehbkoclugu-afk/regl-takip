@@ -12,6 +12,7 @@ import '../models/period_record.dart';
 import '../models/user_profile.dart';
 import '../core/constants/app_constants.dart';
 import '../core/utils/cycle_utils.dart';
+import '../core/utils/date_only.dart';
 import '../core/utils/enum_labels.dart';
 import '../core/utils/language_utils.dart';
 import '../core/utils/phase_insights.dart';
@@ -54,6 +55,8 @@ class NotificationService {
   static const int _delayReminderBaseId = 50;
   // TTC modunda verimli pencerenin açıldığı gün
   static const int _fertileReminderBaseId = 60;
+  // Şu anki (gecikmiş) döngünün gecikme kontrolü
+  static const int _currentDelayReminderId = 59;
   // Planlanan zincirin sonunda tek bir "uygulamayı aç" hatırlatması
   static const int _chainEndReminderId = 5;
 
@@ -110,8 +113,7 @@ class NotificationService {
       debugPrint('[NOTIF] local timezone resolution failed, using UTC: $e');
     }
 
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(_iconDefault);
 
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
@@ -185,6 +187,27 @@ class NotificationService {
         ),
       ];
 
+  /// Durum çubuğu ikonları: tek renkli vektörler (res/drawable).
+  /// Launcher ikonu burada hem beyaz leke olarak çiziliyordu hem de gizli
+  /// modda uygulamanın gerçek logosunu durum çubuğunda gösteriyordu.
+  static const String _iconDefault = 'ic_stat_notify';
+  static const String _iconDiscreet = 'ic_stat_note';
+
+  /// Bugün [hour]:[minute] geçtiyse yarın aynı saat. Gün takvimden
+  /// ilerletilir: `add(Duration(days: 1))` yaz saati gecesinde saati
+  /// bir saat kaydırırdı.
+  tz.TZDateTime _nextDailyTime(int hour, int minute) {
+    final location = tz.local;
+    final now = tz.TZDateTime.now(location);
+    var scheduled =
+        tz.TZDateTime(location, now.year, now.month, now.day, hour, minute);
+    if (scheduled.isBefore(now)) {
+      scheduled = tz.TZDateTime(
+          location, now.year, now.month, now.day + 1, hour, minute);
+    }
+    return scheduled;
+  }
+
   /// Verilen tarih + saat için TZDateTime üretir.
   /// Geçmişte kaldıysa null döner (geçmişe bildirim planlanamaz).
   tz.TZDateTime? _scheduleFor(DateTime date, int hour, int minute) {
@@ -215,6 +238,7 @@ class NotificationService {
     required String channelDescription,
     required AppLocalizations l10n,
     required bool quiet,
+    bool discreet = false,
     bool high = true,
     List<AndroidNotificationAction> actions = const [],
   }) {
@@ -232,7 +256,7 @@ class NotificationService {
             ? Priority.low
             : (high ? Priority.high : Priority.defaultPriority),
         playSound: !quiet,
-        icon: '@mipmap/ic_launcher',
+        icon: discreet ? _iconDiscreet : _iconDefault,
         actions: actions,
       ),
       iOS: DarwinNotificationDetails(
@@ -296,7 +320,7 @@ class NotificationService {
     // Metin ile tarih AYNI değeri kullanmalı: kırpılmamış leadDays ile
     // yazılan gövde, kırpılmış tarihten farklı bir gün söylerdi.
     final lead = leadDays.clamp(0, 7);
-    final reminderDate = nextPeriodDate.subtract(Duration(days: lead));
+    final reminderDate = addDays(nextPeriodDate, -lead);
 
     await _plugin.cancel(id);
 
@@ -318,6 +342,7 @@ class NotificationService {
         channelDescription: l10n.notificationPeriodChannelDesc,
         l10n: l10n,
         quiet: quiet,
+        discreet: discreet,
         // Gizli modda aksiyon konmaz: etiketin kendisi kılığı deşifre eder
         actions: discreet ? const [] : _periodActions(l10n),
       ),
@@ -354,6 +379,7 @@ class NotificationService {
         channelDescription: l10n.notificationOvulationChannelDesc,
         l10n: l10n,
         quiet: quiet,
+        discreet: discreet,
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
@@ -393,6 +419,7 @@ class NotificationService {
         channelDescription: l10n.notificationOvulationChannelDesc,
         l10n: l10n,
         quiet: quiet,
+        discreet: discreet,
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
@@ -416,6 +443,7 @@ class NotificationService {
     String locale, {
     int id = _chainEndReminderId,
     bool quiet = false,
+    bool discreet = false,
   }) async {
     final l10n = _l10n(locale);
     await _plugin.cancel(id);
@@ -434,6 +462,7 @@ class NotificationService {
         channelDescription: l10n.notificationChainEndBody,
         l10n: l10n,
         quiet: quiet,
+        discreet: discreet,
         high: false,
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
@@ -475,6 +504,7 @@ class NotificationService {
         channelDescription: l10n.notificationDelayChannelDesc,
         l10n: l10n,
         quiet: quiet,
+        discreet: discreet,
         high: false,
         actions: discreet ? const [] : _periodActions(l10n),
       ),
@@ -495,18 +525,7 @@ class NotificationService {
     final l10n = _l10n(locale);
     await _plugin.cancel(_medicationReminderId);
 
-    final now = DateTime.now();
-    var scheduledDate = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      hour,
-      minute,
-    );
-    if (scheduledDate.isBefore(tz.TZDateTime.now(tz.local))) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
-    }
+    final scheduledDate = _nextDailyTime(hour, minute);
 
     await _plugin.zonedSchedule(
       _medicationReminderId,
@@ -519,6 +538,7 @@ class NotificationService {
         channelDescription: l10n.notificationMedicationChannelDesc,
         l10n: l10n,
         quiet: quiet,
+        discreet: discreet,
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
@@ -554,8 +574,10 @@ class NotificationService {
     final hasUntimed = named.any((m) => m.reminderTime == null);
 
     if (withTime.isEmpty || hasUntimed) {
+      // quiet da aktarılmalı: yoksa sessiz tercihi bu bildirimde
+      // yok sayılıp sesli kanalda çalıyordu
       await scheduleMedicationReminder(fallbackHour, fallbackMinute, locale,
-          discreet: discreet);
+          discreet: discreet, quiet: quiet);
       if (withTime.isEmpty) return;
     }
 
@@ -566,12 +588,7 @@ class NotificationService {
       final minute = parts.length > 1 ? int.tryParse(parts[1]) : null;
       if (hour == null || minute == null) continue;
 
-      final now = DateTime.now();
-      var scheduledDate =
-          tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
-      if (scheduledDate.isBefore(tz.TZDateTime.now(tz.local))) {
-        scheduledDate = scheduledDate.add(const Duration(days: 1));
-      }
+      final scheduledDate = _nextDailyTime(hour, minute);
 
       // Gizli modda ilaç adı da kilit ekranına düşmemeli
       final body = discreet
@@ -589,6 +606,7 @@ class NotificationService {
           channelDescription: l10n.notificationMedicationChannelDesc,
           l10n: l10n,
           quiet: quiet,
+          discreet: discreet,
           actions: discreet ? const [] : _medicationActions(l10n),
         ),
         // Hangi ilacın işaretleneceği aksiyonla birlikte taşınmalı
@@ -656,7 +674,7 @@ class NotificationService {
         final nextPeriod = CycleUtils.nextFuturePeriod(lastStart, cycleLen);
 
         for (int i = 0; i < _cyclesToSchedule; i++) {
-          final periodDate = nextPeriod.add(Duration(days: cycleLen * i));
+          final periodDate = addDays(nextPeriod, cycleLen * i);
 
           if (profile.periodReminderEnabled &&
               cycleNotificationEnabled(cycleFrequency, 1)) {
@@ -678,8 +696,8 @@ class NotificationService {
 
           if (profile.ovulationReminderEnabled &&
               cycleNotificationEnabled(cycleFrequency, 2)) {
-            final ovulation = periodDate.subtract(
-                const Duration(days: AppConstants.ovulationDayBeforePeriod));
+            final ovulation = addDays(
+                periodDate, -AppConstants.ovulationDayBeforePeriod);
             await scheduleOvulationReminder(
               ovulation,
               cycleHour,
@@ -695,8 +713,8 @@ class NotificationService {
             if (profile.trackingMode == TrackingMode.ttc &&
                 cycleNotificationEnabled(cycleFrequency, 3)) {
               await scheduleFertileWindowReminder(
-                ovulation.subtract(const Duration(
-                    days: AppConstants.fertileWindowStartBeforeOvulation)),
+                addDays(ovulation,
+                    -AppConstants.fertileWindowStartBeforeOvulation),
                 cycleHour,
                 cycleMinute,
                 locale,
@@ -713,7 +731,7 @@ class NotificationService {
           if (profile.periodReminderEnabled &&
               cycleNotificationEnabled(cycleFrequency, 3)) {
             await scheduleDelayReminder(
-              periodDate.add(const Duration(days: _delayCheckAfterDays)),
+              addDays(periodDate, _delayCheckAfterDays),
               cycleHour,
               cycleMinute,
               locale,
@@ -725,6 +743,30 @@ class NotificationService {
           }
         }
 
+        // Şu an gecikmedeysek: nextFuturePeriod geçmişte kalan tahmini bir
+        // döngü ileri sardığı için yukarıdaki döngü bu gecikmeyi görmüyor.
+        // Uygulama tam da gecikme sırasında açıldığında (en sık açıldığı an)
+        // cancelAll bekleyen gecikme hatırlatmasını siliyor ve yerine bir
+        // şey kurulmuyordu.
+        final hasOngoing = records.any((r) => r.isOngoing);
+        final lateBy = CycleUtils.periodDelayDays(lastStart, cycleLen);
+        if (!hasOngoing &&
+            lateBy > 0 &&
+            profile.periodReminderEnabled &&
+            cycleNotificationEnabled(cycleFrequency, 3)) {
+          await scheduleDelayReminder(
+            addDays(CycleUtils.predictNextPeriod(lastStart, cycleLen),
+                _delayCheckAfterDays),
+            cycleHour,
+            cycleMinute,
+            locale,
+            id: _currentDelayReminderId,
+            discreet: discreet,
+            quiet: quiet,
+            variant: lastStart.month,
+          );
+        }
+
         // Zincirin sonu: son planlanan döngüden bir döngü sonrası. O tarihe
         // gelindiğinde kurulu tek bildirim bu olur; kullanıcı uygulamayı
         // açınca rescheduleAll yeniden çalışır ve zincir uzar.
@@ -732,11 +774,12 @@ class NotificationService {
             (profile.periodReminderEnabled ||
                 profile.ovulationReminderEnabled)) {
           await scheduleChainEndReminder(
-            nextPeriod.add(Duration(days: cycleLen * _cyclesToSchedule)),
+            addDays(nextPeriod, cycleLen * _cyclesToSchedule),
             cycleHour,
             cycleMinute,
             locale,
             quiet: quiet,
+            discreet: discreet,
           );
         }
 
@@ -761,10 +804,9 @@ class NotificationService {
                 EnumLabels.symptom(lutealInsight.symptom, l10n);
             // Luteal başlangıcı ~ ovülasyon + 2 gün = adet - 12 gün
             for (int i = 0; i < _cyclesToSchedule; i++) {
-              final periodDate =
-                  nextPeriod.add(Duration(days: cycleLen * i));
-              final lutealStart = periodDate.subtract(const Duration(
-                  days: AppConstants.ovulationDayBeforePeriod - 2));
+              final periodDate = addDays(nextPeriod, cycleLen * i);
+              final lutealStart = addDays(
+                  periodDate, -(AppConstants.ovulationDayBeforePeriod - 2));
               final scheduled = _scheduleFor(lutealStart, cycleHour, cycleMinute);
               if (scheduled == null) continue;
               await _plugin.zonedSchedule(

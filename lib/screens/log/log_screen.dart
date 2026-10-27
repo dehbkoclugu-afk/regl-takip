@@ -19,6 +19,7 @@ import '../mood/mood_tracking_screen.dart';
 import '../notes/notes_screen.dart';
 import '../sexual_activity/sexual_activity_screen.dart';
 import '../symptoms/symptom_tracking_screen.dart';
+import '../../core/utils/date_only.dart';
 
 class LogScreen extends ConsumerStatefulWidget {
   const LogScreen({super.key});
@@ -51,7 +52,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
     );
     _weekDates = List.generate(
       7,
-      (i) => anchor.subtract(Duration(days: 6 - i)),
+      (i) => addDays(anchor, -(6 - i)),
     );
   }
 

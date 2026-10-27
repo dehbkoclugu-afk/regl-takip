@@ -1,6 +1,7 @@
 import '../../models/daily_log.dart';
 import '../../models/enums.dart';
 import 'cycle_utils.dart';
+import 'date_only.dart';
 
 /// "Bu semptom en çok şu fazda görülüyor" içgörüsü.
 /// [percent]: semptomun tüm kayıtları içinde [phase]'e düşen pay.
@@ -47,10 +48,7 @@ List<PhaseInsight> topPhaseSymptoms({
     }
     if (anchor == null) continue;
 
-    final rawDay = log.date
-            .difference(DateTime(anchor.year, anchor.month, anchor.day))
-            .inDays +
-        1;
+    final rawDay = daysBetween(anchor, log.date) + 1;
     final day = CycleUtils.wrappedCycleDay(rawDay, cycleLength);
     final phase = CycleUtils.phaseForDay(day, cycleLength, periodLength);
 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bildirim küçük ikonu (durum çubuğu). Android yalnız alfa kanalını
+     kullanır: tek renkli, arka plansız olmalı. Launcher ikonu (renkli,
+     dolu arka planlı) burada beyaz bir leke olarak çiziliyordu. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M12,2.5C12,2.5 5.5,9.9 5.5,14.5a6.5,6.5 0 0 0 13,0C18.5,9.9 12,2.5 12,2.5z" />
+</vector>

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'services/export_service.dart';
 import 'services/hive_service.dart';
 import 'services/notification_service.dart';
 import 'services/premium_service.dart';
@@ -59,6 +60,9 @@ Future<void> _run() async {
   final backdateHint = prefs.getBool('backdate_hint_needed') ?? true;
   final homePriority =
       HomePriority.fromStorage(prefs.getString(homePriorityKey));
+
+  // Önceki oturumlardan kalan düz metin dışa aktarma dosyaları
+  unawaited(ExportService.cleanupOldExports());
 
   // Premium durumu ve widget güncellemesi arka planda
   unawaited(PremiumService().init());

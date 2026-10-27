@@ -26,6 +26,7 @@ import '../../providers/providers.dart';
 import '../../services/export_service.dart';
 import '../period_history/period_record_editor.dart';
 import '../../core/utils/motion.dart';
+import '../../core/utils/date_only.dart';
 
 class StatisticsScreen extends ConsumerStatefulWidget {
   const StatisticsScreen({super.key});
@@ -402,7 +403,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
 
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final start = today.subtract(const Duration(days: 364));
+    final start = addDays(today, -364);
     final cycleLen = ref.watch(effectiveCycleLengthProvider);
     final periodLen = profile.averagePeriodLength;
     final segments = ringSegmentsFor(cycleLen, periodLen);
@@ -434,7 +435,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     }
 
     final dayColors = List<Color?>.generate(
-        365, (i) => colorFor(start.add(Duration(days: i))));
+        365, (i) => colorFor(addDays(start, i)));
     final monthLabels = List<String>.generate(12, (i) {
       final m = DateTime(start.year, start.month + i, 1);
       return DateFormat('MMM', Localizations.localeOf(context).toString())
@@ -631,7 +632,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     if (starts.length < 2) return const SizedBox.shrink();
 
     final lastGap =
-        starts[starts.length - 1].difference(starts[starts.length - 2]).inDays;
+        daysBetween(starts[starts.length - 2], starts[starts.length - 1]);
     final avgCycleAll = CycleUtils.calculateAverageCycleLength(records);
     final avgPeriodAll = CycleUtils.averagePeriodDuration(
         records, profile?.averagePeriodLength ?? 5);
@@ -1593,9 +1594,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     // eğilimin biçimini çarpıtıyordu
     final firstDay = DateTime(dataPoints.first.key.year,
         dataPoints.first.key.month, dataPoints.first.key.day);
-    double dayOf(DateTime d) =>
-        DateTime(d.year, d.month, d.day).difference(firstDay).inDays.toDouble();
-    DateTime dateOf(double x) => firstDay.add(Duration(days: x.round()));
+    double dayOf(DateTime d) => daysBetween(firstDay, d).toDouble();
+    DateTime dateOf(double x) => addDays(firstDay, x.round());
 
     final cycleLength = ref.watch(effectiveCycleLengthProvider);
     final periodLength = profile?.averagePeriodLength ?? 5;
@@ -1612,7 +1612,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         }
       }
       if (anchor == null) return null;
-      final rawDay = DateUtils.dateOnly(date).difference(anchor).inDays + 1;
+      final rawDay = daysBetween(anchor, date) + 1;
       return CycleUtils.phaseForDay(
         CycleUtils.wrappedCycleDay(rawDay, cycleLength),
         cycleLength,

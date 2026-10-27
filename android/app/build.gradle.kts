@@ -23,7 +23,14 @@ val isReleaseTask = gradle.startParameter.taskNames.any {
     it.contains("release", ignoreCase = true) || it.contains("bundle", ignoreCase = true)
 }
 
-if (isReleaseTask && !hasReleaseSigning) {
+// Yalnız elden kurulum için test APK'sı üreten CI (GitHub Actions) bunu
+// açıkça ister: imza anahtarı orada yok, debug anahtarıyla imzalanır ve
+// Play'e yüklenemez. Play derlemeleri (Codemagic) bu değişkeni vermez,
+// koruma onlar için aynen geçerli.
+val allowDebugSignedRelease =
+    System.getenv("ALLOW_DEBUG_SIGNED_RELEASE")?.equals("true", ignoreCase = true) == true
+
+if (isReleaseTask && !hasReleaseSigning && !allowDebugSignedRelease) {
     error(
         "Release signing is not configured. Copy android/key.properties.example " +
             "to android/key.properties and provide the original Play Store upload key values. " +
