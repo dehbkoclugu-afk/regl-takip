@@ -9,12 +9,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/access.dart';
-import '../../core/utils/adaptive_layout.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../core/utils/date_range_label.dart';
 import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_insights.dart';
 import '../../core/widgets/glass_card.dart';
+import '../../core/widgets/info_dialog.dart';
 import '../../core/widgets/phase_glyph.dart';
 import '../../core/widgets/pressable_scale.dart';
 import '../../models/enums.dart';
@@ -23,14 +23,30 @@ import '../../models/user_profile.dart';
 import '../../providers/providers.dart';
 import 'widgets/cycle_progress_ring.dart';
 import 'widgets/prediction_card.dart';
-import 'widgets/quick_access_row.dart';
 import 'widgets/quick_status_cards.dart';
 import 'widgets/week_strip.dart';
 import '../../core/utils/motion.dart';
 import '../../core/utils/date_only.dart';
 
-class DashboardScreen extends ConsumerWidget {
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
+
+  @override
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  /// Ring'de bir segmente dokununca üstteki faz çipi de o fazı göstersin diye:
+  /// ring seçimini buraya yazar, çip bunu dinler. null = seçim yok → güncel
+  /// faz gösterilir. ValueNotifier (setState değil) seçildi ki yalnız çip
+  /// yeniden çizilsin, tüm ekran ve giriş animasyonları tekrar oynamasın.
+  final ValueNotifier<CyclePhase?> _ringSelectedPhase = ValueNotifier(null);
+
+  @override
+  void dispose() {
+    _ringSelectedPhase.dispose();
+    super.dispose();
+  }
 
   List<Color> _gradientForPhase(CyclePhase phase) {
     switch (phase) {
@@ -58,32 +74,36 @@ class DashboardScreen extends ConsumerWidget {
     }
   }
 
-  void _showPhaseInfoDialog(BuildContext context, CyclePhase phase, AppLocalizations l10n) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: AppColors.sf(context),
-        title: Text(
-          EnumLabels.phase(phase, l10n),
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        content: Text(
-          _phaseInfo(phase, l10n),
-          style: TextStyle(fontSize: 14, height: 1.5),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.done),
-          ),
-        ],
-      ),
+  /// Faz için okunur (koyu) ton — bilgi penceresindeki ikon halkasında ve
+  /// dokunulan segmentin çipinde kullanılır.
+  Color _phaseColor(CyclePhase phase) {
+    switch (phase) {
+      case CyclePhase.menstrual:
+        return AppColors.menstrualText;
+      case CyclePhase.follicular:
+        return AppColors.follicularText;
+      case CyclePhase.ovulation:
+        return AppColors.ovulationText;
+      case CyclePhase.luteal:
+        return AppColors.lutealText;
+    }
+  }
+
+  void _showPhaseInfoDialog(
+      BuildContext context, CyclePhase phase, AppLocalizations l10n) {
+    final color = _phaseColor(phase);
+    showInfoDialog(
+      context,
+      icon: PhaseGlyph(phase: phase, size: 28, color: color),
+      color: color,
+      title: EnumLabels.phase(phase, l10n),
+      body: _phaseInfo(phase, l10n),
+      doneLabel: l10n.done,
     );
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final profile = ref.watch(userProfileProvider);
     final cycleDay = ref.watch(currentCycleDayProvider);
     final phase = ref.watch(currentCyclePhaseProvider);
@@ -218,54 +238,60 @@ class DashboardScreen extends ConsumerWidget {
                     profile!.pregnancyStartDate!,
                   ),
                 ],
-                const SizedBox(height: 24),
-                _buildActionRow(context, ref, l10n, mode),
-                const SizedBox(height: 24),
               ] else ...[
-                // Phase name — faz bilgisini açan buton
-                PressableScale(
-                    child: Semantics(
-                  button: true,
-                  label: EnumLabels.phase(phase, l10n),
-                  child: Material(
-                    color: AppColors.sf(context),
-                    borderRadius: BorderRadius.circular(16),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () => _showPhaseInfoDialog(context, phase, l10n),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            PhaseGlyph(
-                                phase: phase,
-                                size: 15,
-                                color: AppColors.primaryDeep),
-                            const SizedBox(width: 7),
-                            Flexible(
-                              child: Text(
-                                EnumLabels.phase(phase, l10n),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.tp(context),
+                // Phase name — faz bilgisini açan buton. Ring'de bir segmente
+                // dokunulduğunda o segmentin fazını gösterir; seçim yokken
+                // (ya da 5 sn sonra seçim kalkınca) güncel faza döner.
+                ValueListenableBuilder<CyclePhase?>(
+                  valueListenable: _ringSelectedPhase,
+                  builder: (context, selected, _) {
+                    final chipPhase = selected ?? phase;
+                    return PressableScale(
+                        child: Semantics(
+                      button: true,
+                      label: EnumLabels.phase(chipPhase, l10n),
+                      child: Material(
+                        color: AppColors.sf(context),
+                        borderRadius: BorderRadius.circular(16),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () =>
+                              _showPhaseInfoDialog(context, chipPhase, l10n),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                PhaseGlyph(
+                                    phase: chipPhase,
+                                    size: 15,
+                                    color: AppColors.primaryDeep),
+                                const SizedBox(width: 7),
+                                Flexible(
+                                  child: Text(
+                                    EnumLabels.phase(chipPhase, l10n),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.tp(context),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(width: 6),
+                                Icon(
+                                  Icons.info_outline_rounded,
+                                  size: 16,
+                                  color: AppColors.ts(context),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 6),
-                            Icon(
-                              Icons.info_outline_rounded,
-                              size: 16,
-                              color: AppColors.ts(context),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                )).animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms),
+                    ));
+                  },
+                ).animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms),
                 if (mode == TrackingMode.pill &&
                     profile?.pillPackStartDate != null) ...[
                   const SizedBox(height: 8),
@@ -288,13 +314,14 @@ class DashboardScreen extends ConsumerWidget {
                               delayDays: ref.watch(periodDelayProvider),
                               lastPeriodStart: profile?.lastPeriodStart,
                               patterned: ref.watch(phasePatternProvider),
+                              selectedPhase: _ringSelectedPhase,
                             ),
                             const SizedBox(height: 20),
                             const WeekStrip()
                                 .animateSafe(context)
                                 .fadeIn(delay: 150.ms, duration: 400.ms),
                             const SizedBox(height: 24),
-                            _buildActionRow(context, ref, l10n, mode),
+                            _buildActionRow(context, ref, l10n),
                           ],
                         );
 
@@ -357,12 +384,6 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(height: 28),
                 const QuickStatusCards(),
               ],
-              // Sayfayı kapatan kısayol satırı. Kaydırmanın İÇİNDE: sabit
-              // şerit olarak denendi ve iyi olmadı — gezinme çubuğunun hemen
-              // üstünde ikinci bir çubuk gibi duruyor, kalıcı yer kaplıyor ve
-              // kaydırma alanını kısaltıp hafta şeridini ortasından kesiyordu.
-              const SizedBox(height: 28),
-              const QuickAccessRow(),
                 ],
               ),
             ),
@@ -443,72 +464,33 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionRow(BuildContext context, WidgetRef ref,
-      AppLocalizations l10n, TrackingMode mode) {
+  Widget _buildActionRow(
+      BuildContext context, WidgetRef ref, AppLocalizations l10n) {
     final ongoingPeriod = ref.watch(ongoingPeriodProvider);
     // Keşfi olmayan bir hareket olmayan bir özelliktir: ipucu, kullanıcı
     // hareketi bir kez kullanana kadar durur, sonra kalıcı olarak kapanır
-    final showHint = mode != TrackingMode.pregnancy &&
-        ref.watch(backdateHintProvider);
+    final showHint = ref.watch(backdateHintProvider);
 
-    final buttons = <Widget>[
-      if (mode != TrackingMode.pregnancy)
-        _buildActionButton(
-                        context: context,
-                        icon: Icons.water_drop_rounded,
-                        label: ongoingPeriod != null
-                            ? l10n.periodEnded
-                            : l10n.periodStarted,
-                        color: AppColors.menstrual,
-                        // Regl geçmişi en değerli veri, dokunuş yanlışlıkla
-                        // olabilir: onay diyaloğu yerine 6 sn'lik Geri Al
-                        onTap: () => _togglePeriod(
-                            context, ref, l10n, ongoingPeriod, DateTime.now()),
-                        // Regl iki gün sonra hatırlanabiliyor: dokunuş hep
-                        // bugünü yazdığı için geç kalan kullanıcı yanlış tarih
-                        // girmek zorundaydı. Uzun bas = gün seç.
-                        onLongPress: () => _pickPeriodDate(
-                            context, ref, l10n, ongoingPeriod),
-                      ),
-      _buildActionButton(
-                      context: context,
-                      icon: Icons.add_reaction_rounded,
-                      label: l10n.addRecord,
-                      color: AppColors.primaryStrong,
-                      // "Kayıt Ekle" ile aşağıdaki "Bugün nasıl
-                      // hissediyorsun" kartı aynı niyeti taşıyor: bugüne
-                      // kayıt gir. İkisi ayrı yere gidiyordu — biri hızlı
-                      // kayıt sayfasına, diğeri tam günlük ekranına — yani
-                      // kullanıcı hangisine bastığına göre başka bir yere
-                      // düşüyordu. İkisi de artık günlük ekranına gidiyor.
-                      onTap: () {
-                        // Günlük kayıt premium kapsamı: ücretsiz katman
-                        // yalnız regl takibi
-                        if (!ensurePremiumAccess(context, ref)) return;
-                        // Kart da böyle yapıyor: kayıt her zaman bugüne
-                        ref.read(selectedDateProvider.notifier).state =
-                            DateTime.now();
-                        context.push('/log');
-                      },
-                    ),
-    ];
-    final row = usesLargeText(MediaQuery.textScalerOf(context)) &&
-            buttons.length > 1
-        ? Column(
-            children: [
-              SizedBox(width: double.infinity, child: buttons.first),
-              const SizedBox(height: 12),
-              SizedBox(width: double.infinity, child: buttons.last),
-            ],
-          )
-        : Row(
-            children: [
-              for (var i = 0; i < buttons.length; i++) ...[
-                Expanded(child: buttons[i]),
-                if (i < buttons.length - 1) const SizedBox(width: 12),
-              ],
-            ],
-          );
+    // "Kayıt Ekle" kaldırıldı: aşağıdaki "Bugün nasıl hissediyorsun" kartı
+    // aynı niyeti (bugüne kayıt) zaten karşılıyordu, iki ayrı giriş
+    // gereksizdi. Bu satırda yalnız regl başlangıcı/bitişi kalıyor.
+    final row = SizedBox(
+      width: double.infinity,
+      child: _buildActionButton(
+        context: context,
+        icon: Icons.water_drop_rounded,
+        label: ongoingPeriod != null ? l10n.periodEnded : l10n.periodStarted,
+        color: AppColors.menstrual,
+        // Regl geçmişi en değerli veri, dokunuş yanlışlıkla olabilir:
+        // onay diyaloğu yerine 6 sn'lik Geri Al
+        onTap: () =>
+            _togglePeriod(context, ref, l10n, ongoingPeriod, DateTime.now()),
+        // Regl iki gün sonra hatırlanabiliyor: dokunuş hep bugünü yazdığı
+        // için geç kalan kullanıcı yanlış tarih girmek zorundaydı. Uzun
+        // bas = gün seç.
+        onLongPress: () => _pickPeriodDate(context, ref, l10n, ongoingPeriod),
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

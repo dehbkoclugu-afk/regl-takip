@@ -38,6 +38,11 @@ class CycleProgressRing extends StatefulWidget {
   /// çizgi deseni biner (renk + doku çift kodlama)
   final bool patterned;
 
+  /// Bir segmente dokununca seçilen fazı buraya yazar (dokunma kalkınca
+  /// null). Üstteki faz çipi bunu dinleyip dokunulan segmentin fazını
+  /// gösterebilsin diye — ring ile çip tek gerçeği paylaşır.
+  final ValueNotifier<CyclePhase?>? selectedPhase;
+
   const CycleProgressRing({
     super.key,
     required this.cycleDay,
@@ -48,6 +53,7 @@ class CycleProgressRing extends StatefulWidget {
     this.delayDays = 0,
     this.lastPeriodStart,
     this.patterned = false,
+    this.selectedPhase,
   });
 
   @override
@@ -137,6 +143,15 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
     _toggleSelection(hit.first);
   }
 
+  /// Segment rengi -> döngü fazı (faz çipini güncellemek için).
+  /// ringFertile bandı fertil pencere + ovülasyonu kapsar → ovulation fazı.
+  CyclePhase _phaseForSegment(RingSegment s) {
+    if (s.color == AppColors.ringMenstrual) return CyclePhase.menstrual;
+    if (s.color == AppColors.ringFollicular) return CyclePhase.follicular;
+    if (s.color == AppColors.ringFertile) return CyclePhase.ovulation;
+    return CyclePhase.luteal;
+  }
+
   void _toggleSelection(RingSegment segment) {
     if (_selected?.startDay == segment.startDay &&
         _selected?.endDay == segment.endDay) {
@@ -144,6 +159,7 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
       return;
     }
     setState(() => _selected = segment);
+    widget.selectedPhase?.value = _phaseForSegment(segment);
     _revertTimer?.cancel();
     _revertTimer = Timer(const Duration(seconds: 5), _clearSelection);
   }
@@ -160,6 +176,7 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
 
   void _clearSelection() {
     _revertTimer?.cancel();
+    widget.selectedPhase?.value = null;
     if (_selected != null && mounted) setState(() => _selected = null);
   }
 
@@ -294,8 +311,20 @@ class _CycleProgressRingState extends State<CycleProgressRing> {
     if (start != null) {
       final locale = Localizations.localeOf(context).toString();
       final fmt = DateFormat('d MMM', locale);
-      final from = addDays(start, s.startDay - 1);
-      final to = addDays(start, s.endDay - 1);
+      var from = addDays(start, s.startDay - 1);
+      var to = addDays(start, s.endDay - 1);
+      // Ring bu döngünün haritası; segment tümüyle geçmişte kaldıysa
+      // (bitişi bugünden önce) tahmin kartlarıyla aynı dili konuşmak için
+      // bir sonraki döngüdeki karşılığına sarılır — aksi halde kart
+      // "Verimli Pencere 15–21 Ağu" derken ring aynı pencereyi geçmiş
+      // "18–24 Tem" olarak gösterip çelişiyordu.
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final toDay = DateTime(to.year, to.month, to.day);
+      if (toDay.isBefore(today)) {
+        from = addDays(from, widget.cycleLength);
+        to = addDays(to, widget.cycleLength);
+      }
       range = s.startDay == s.endDay
           ? fmt.format(from)
           : '${fmt.format(from)} – ${fmt.format(to)}';

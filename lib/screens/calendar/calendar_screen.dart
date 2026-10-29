@@ -42,7 +42,6 @@ class CalendarScreen extends ConsumerStatefulWidget {
 }
 
 class _CalendarScreenState extends ConsumerState<CalendarScreen> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   final GlobalKey _calendarCaptureKey = GlobalKey();
@@ -603,31 +602,42 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             expanded: expanded,
           );
 
+          // İki "en alta sabitle" denemesi de (IntrinsicHeight, sonra
+          // Expanded + kaydırmanın dışında sabit şerit) gezinme pili ile
+          // çakışmaya devam etti — nedeni doğrulanamadı. Uygulamada zaten
+          // aynı pille aynı şekilde çalışan, kanıtlanmış desene dönüldü:
+          // istatistik ekranındaki gibi tek SingleChildScrollView, uyarı
+          // kaydırılabilir içeriğin normal son öğesi, alt dolgu
+          // bottomNavInset. Uyarı artık kısa günlerde ekranın en dibine
+          // yapışmıyor ama pille asla çakışmıyor.
           return SingleChildScrollView(
             // Takvim kartı AppBar'ın hemen altından başlıyordu; diğer
             // sekmelerin tersine üstte hiç pay yoktu.
-            padding: EdgeInsets.only(
-              top: 24,
-              bottom: bottomNavInset(context),
-            ),
+            padding: EdgeInsets.only(top: 24, bottom: bottomNavInset(context)),
             child: Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1180),
                 child: FocusTraversalGroup(
                   policy: WidgetOrderTraversalPolicy(),
-                  child: expanded
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(flex: 3, child: calendar),
-                              const SizedBox(width: 28),
-                              Expanded(flex: 2, child: support),
-                            ],
-                          ),
-                        )
-                      : Column(children: [calendar, support]),
+                  child: Column(
+                    children: [
+                      expanded
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(flex: 3, child: calendar),
+                                  const SizedBox(width: 28),
+                                  Expanded(flex: 2, child: support),
+                                ],
+                              ),
+                            )
+                          : Column(children: [calendar, support]),
+                      _buildDisclaimer(l10n),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -650,13 +660,25 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         blur: 0,
         opacity: 0.18,
         margin: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: TableCalendar(
           firstDay: DateTime(2020, 1, 1),
           lastDay: DateTime(2030, 12, 31),
           focusedDay: _focusedDay,
-          calendarFormat: _calendarFormat,
+          calendarFormat: CalendarFormat.month,
           locale: Localizations.localeOf(context).toString(),
           startingDayOfWeek: calendarWeekStart,
+          // Hücreler ve gün başlıkları birbirine yapışıktı: satır ve
+          // başlık yüksekliği varsayılanları (52 / 16) küçük ekranda takvimi
+          // sıkışık gösteriyordu. Daha ferah bir ızgara için büyütüldü.
+          rowHeight: 58,
+          daysOfWeekHeight: 32,
+          // Format hiç değişmiyor (formatButtonVisible: false) ama
+          // varsayılan jest seti dikey sürüklemeyi hâlâ "2 haftaya küçült"
+          // olarak yakalıyordu — sayfayı kaydırmaya çalışan parmak takvimi
+          // ay görünümünden 2 haftalık şeride düşürüyor, geri kalan alan
+          // boş kalıyordu. Yalnız yatay (ay değiştirme) jesti bırakıldı.
+          availableGestures: AvailableGestures.horizontalSwipe,
           selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
           onDaySelected: (selectedDay, focusedDay) => _selectCalendarDay(
             selectedDay,
@@ -668,13 +690,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             _dismissPeekHint();
             _showDayPeek(day, records, dailyLogs);
           },
-          onFormatChanged: (format) =>
-              setState(() => _calendarFormat = format),
           onPageChanged: (focusedDay) =>
               setState(() => _focusedDay = focusedDay),
           headerStyle: HeaderStyle(
             formatButtonVisible: false,
             titleCentered: true,
+            headerPadding: const EdgeInsets.symmetric(vertical: 16),
             titleTextStyle: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -760,17 +781,17 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   }) {
     return Column(
       children: [
-        if (!expanded) const SizedBox(height: 20),
+        if (!expanded) const SizedBox(height: 24),
         _buildMonthPhaseStrip(profile, records)
             .animateSafe(context)
             .fadeIn(delay: 150.ms, duration: 400.ms),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
         _buildMonthSummary(l10n, records, dailyLogs)
             .animateSafe(context)
             .fadeIn(delay: 200.ms, duration: 400.ms),
         if (_showPeekHint)
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -793,7 +814,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               ],
             ),
           ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: _legendHidden
@@ -809,29 +830,50 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     ),
                   ),
                 )
+              // Dört öğeyi genişliğe göre saran bir Wrap, dile göre (uzun
+              // "Ovülasyon" gibi etiketlerde) kâh 3+1 kâh 2+2 bölünüyordu;
+              // tek başına kalan öğe ve kapatma butonunun iki satırın tam
+              // ortasına hizalanması lejantı dağınık gösteriyordu. Sabit
+              // 2x2 ızgara genişlikten bağımsız her zaman dengeli, X de
+              // üst satırla hizalı.
               : Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: Wrap(
-                        alignment: WrapAlignment.spaceEvenly,
-                        spacing: 12,
-                        runSpacing: 8,
+                      child: Column(
                         children: [
-                          _legendItem(
-                            AppColors.periodDay,
-                            l10n.periodDayLabel,
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _legendItem(
+                                  AppColors.periodDay,
+                                  l10n.periodDayLabel,
+                                ),
+                              ),
+                              Expanded(
+                                child: _legendItem(
+                                  AppColors.predictedPeriod,
+                                  l10n.predicted,
+                                ),
+                              ),
+                            ],
                           ),
-                          _legendItem(
-                            AppColors.predictedPeriod,
-                            l10n.predicted,
-                          ),
-                          _legendItem(
-                            AppColors.ovulationDay,
-                            l10n.ovulation,
-                          ),
-                          _legendItem(
-                            AppColors.fertileWindow,
-                            l10n.fertile,
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _legendItem(
+                                  AppColors.ovulationDay,
+                                  l10n.ovulation,
+                                ),
+                              ),
+                              Expanded(
+                                child: _legendItem(
+                                  AppColors.fertileWindow,
+                                  l10n.fertile,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -845,30 +887,35 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   ],
                 ),
         ).animateSafe(context).fadeIn(delay: 300.ms, duration: 500.ms),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-          child: Row(
-            children: [
-              Icon(
-                Icons.info_outline_rounded,
-                size: 14,
-                color: AppColors.ts(context).withValues(alpha: 0.6),
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  l10n.healthDisclaimer,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: AppColors.ts(context).withValues(alpha: 0.6),
-                    height: 1.4,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ],
+    );
+  }
+
+  /// Yasal uyarı: sayfa içeriği kısaysa [build]'deki esnek boşluk bunu
+  /// ekranın en altına iter, uzunsa içeriğin doğal ardından gelir.
+  Widget _buildDisclaimer(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      child: Row(
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            size: 14,
+            color: AppColors.ts(context).withValues(alpha: 0.6),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              l10n.healthDisclaimer,
+              style: TextStyle(
+                fontSize: 11,
+                color: AppColors.ts(context).withValues(alpha: 0.6),
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -978,13 +1025,13 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           },
           child: ExcludeSemantics(
             child: Container(
-              margin: const EdgeInsets.all(3),
+              margin: const EdgeInsets.all(4),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   Ink(
-                    width: 40,
-                    height: 40,
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
                       color: bgColor,
                       shape: BoxShape.circle,
@@ -1013,7 +1060,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           child: Text(
                             '${day.day}',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 15,
                               fontWeight: isToday
                                   ? FontWeight.bold
                                   : FontWeight.w600,
