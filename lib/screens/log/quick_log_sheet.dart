@@ -270,8 +270,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                       for (final option in options)
                         SizedBox(
                           width: optionWidth,
-                          child:
-                              _flowOption(option.$1, option.$2, option.$3),
+                          child: _flowOption(option.$1, option.$2, option.$3),
                         ),
                     ],
                   );
@@ -437,61 +436,61 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
   Widget _flowOption(FlowIntensity intensity, String label, int drops) {
     final selected = _flow == intensity;
     return Semantics(
-        button: true,
-        selected: selected,
-        label: label,
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 3),
-          decoration: BoxDecoration(
-            color: selected
-                ? AppColors.menstrual.withValues(alpha: 0.15)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: selected ? AppColors.primaryStrong : AppColors.dv(context),
-              width: selected ? 1.5 : 1,
-            ),
+      button: true,
+      selected: selected,
+      label: label,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 3),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppColors.menstrual.withValues(alpha: 0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: selected ? AppColors.primaryStrong : AppColors.dv(context),
+            width: selected ? 1.5 : 1,
           ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(16),
-              onTap: () => setState(() => _flow = selected ? null : intensity),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        drops,
-                        (_) => Icon(
-                          Icons.water_drop_rounded,
-                          size: 10,
-                          color: selected
-                              ? AppColors.primaryStrong
-                              : AppColors.ts(context),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      label,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () => setState(() => _flow = selected ? null : intensity),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      drops,
+                      (_) => Icon(
+                        Icons.water_drop_rounded,
+                        size: 10,
                         color: selected
                             ? AppColors.primaryStrong
                             : AppColors.ts(context),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: selected
+                          ? AppColors.primaryStrong
+                          : AppColors.ts(context),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
         ),
+      ),
     );
   }
 

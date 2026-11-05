@@ -78,27 +78,24 @@ class _DecoyNotesScreenState extends State<_DecoyNotesHome> {
   /// hepsini silerse boş liste korunur ve notlar yeniden doğmaz.
   List<String> _starterNotes() {
     return switch (Localizations.localeOf(context).languageCode) {
-      'tr' => ['Alışveriş listesi\nSüt, ekmek, kahve', 'Hafta sonu\nEvi toparla'],
+      'tr' => [
+        'Alışveriş listesi\nSüt, ekmek, kahve',
+        'Hafta sonu\nEvi toparla',
+      ],
       'de' => [
-          'Einkaufsliste\nMilch, Brot, Kaffee',
-          'Wochenende\nWohnung aufräumen'
-        ],
+        'Einkaufsliste\nMilch, Brot, Kaffee',
+        'Wochenende\nWohnung aufräumen',
+      ],
       'es' => [
-          'Lista de compras\nLeche, pan, café',
-          'Fin de semana\nOrdenar la casa'
-        ],
+        'Lista de compras\nLeche, pan, café',
+        'Fin de semana\nOrdenar la casa',
+      ],
       'fr' => [
-          'Liste de courses\nLait, pain, café',
-          'Week-end\nRanger la maison'
-        ],
-      'ru' => [
-          'Список покупок\nМолоко, хлеб, кофе',
-          'Выходные\nУбраться дома'
-        ],
-      _ => [
-          'Shopping list\nMilk, bread, coffee',
-          'Weekend\nTidy the house'
-        ],
+        'Liste de courses\nLait, pain, café',
+        'Week-end\nRanger la maison',
+      ],
+      'ru' => ['Список покупок\nМолоко, хлеб, кофе', 'Выходные\nУбраться дома'],
+      _ => ['Shopping list\nMilk, bread, coffee', 'Weekend\nTidy the house'],
     };
   }
 
@@ -109,8 +106,9 @@ class _DecoyNotesScreenState extends State<_DecoyNotesHome> {
 
   Future<void> _editNote({int? index}) async {
     final l10n = AppLocalizations.of(context)!;
-    final controller =
-        TextEditingController(text: index != null ? _notes[index] : '');
+    final controller = TextEditingController(
+      text: index != null ? _notes[index] : '',
+    );
     final result = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -156,71 +154,74 @@ class _DecoyNotesScreenState extends State<_DecoyNotesHome> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-        appBar: AppBar(
-          // Gerçek uygulamaya dönüş kapısı: başlığa uzun basış.
-          // Görsel hiçbir ipucu yok — kapı yalnız bilene açılır.
-          title: GestureDetector(
-            onLongPress: widget.onExitRequested,
-            behavior: HitTestBehavior.opaque,
-            child: Text(l10n.decoyTitle),
-          ),
+      appBar: AppBar(
+        // Gerçek uygulamaya dönüş kapısı: başlığa uzun basış.
+        // Görsel hiçbir ipucu yok — kapı yalnız bilene açılır.
+        title: GestureDetector(
+          onLongPress: widget.onExitRequested,
+          behavior: HitTestBehavior.opaque,
+          child: Text(l10n.decoyTitle),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => _editNote(),
-          child: const Icon(Icons.add),
-        ),
-        body: !_loaded
-            ? const SizedBox.shrink()
-            : _notes.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.sticky_note_2_outlined,
-                            size: 56, color: Colors.grey.shade400),
-                        const SizedBox(height: 12),
-                        Text(l10n.decoyEmpty,
-                            style: TextStyle(color: Colors.grey.shade600)),
-                      ],
-                    ),
-                  )
-                : ListView.separated(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _notes.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 8),
-                    itemBuilder: (context, index) => Dismissible(
-                      key: ValueKey('decoy-$index-${_notes[index].hashCode}'),
-                      direction: DismissDirection.endToStart,
-                      onDismissed: (_) => _deleteNote(index),
-                      background: Container(
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 20),
-                        decoration: BoxDecoration(
-                          color: Colors.red.shade400,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(Icons.delete, color: Colors.white),
-                      ),
-                      child: Material(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(12),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () => _editNote(index: index),
-                          child: Padding(
-                            padding: const EdgeInsets.all(14),
-                            child: Text(
-                              _notes[index],
-                              maxLines: 4,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _editNote(),
+        child: const Icon(Icons.add),
+      ),
+      body: !_loaded
+          ? const SizedBox.shrink()
+          : _notes.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.sticky_note_2_outlined,
+                    size: 56,
+                    color: Colors.grey.shade400,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    l10n.decoyEmpty,
+                    style: TextStyle(color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: _notes.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              itemBuilder: (context, index) => Dismissible(
+                key: ValueKey('decoy-$index-${_notes[index].hashCode}'),
+                direction: DismissDirection.endToStart,
+                onDismissed: (_) => _deleteNote(index),
+                background: Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade400,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.delete, color: Colors.white),
+                ),
+                child: Material(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(12),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => _editNote(index: index),
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Text(
+                        _notes[index],
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ),
+                ),
+              ),
+            ),
     );
   }
 }

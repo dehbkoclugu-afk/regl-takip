@@ -17,7 +17,6 @@ import '../../providers/providers.dart';
 /// Takibin kendisi ücretsizse doğruluğu da ücretsiz olmalı — bu yüzden
 /// düzenleyici ortak bir yere taşındı.
 
-
 /// Düzenleme/silme sonrası profil tarihi kayıtların türevi olarak
 /// eşitlenir: en yeni kaydın başlangıcı = lastPeriodStart. Elle çift
 /// tutmanın ürettiği ayrışma (B-8) böylece tek yönlü akara bağlanır.
@@ -38,10 +37,16 @@ Future<void> showPeriodRecordEditor(
   final messenger = ScaffoldMessenger.of(context);
 
   var start = DateTime(
-      record.startDate.year, record.startDate.month, record.startDate.day);
+    record.startDate.year,
+    record.startDate.month,
+    record.startDate.day,
+  );
   var end = record.endDate != null
-      ? DateTime(record.endDate!.year, record.endDate!.month,
-          record.endDate!.day)
+      ? DateTime(
+          record.endDate!.year,
+          record.endDate!.month,
+          record.endDate!.day,
+        )
       : null;
 
   await showModalBottomSheet<void>(
@@ -74,7 +79,8 @@ Future<void> showPeriodRecordEditor(
           );
           if (picked != null) {
             setSheetState(
-                () => end = DateTime(picked.year, picked.month, picked.day));
+              () => end = DateTime(picked.year, picked.month, picked.day),
+            );
           }
         }
 
@@ -96,20 +102,28 @@ Future<void> showPeriodRecordEditor(
                 onTap: onTap,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   child: Row(
                     children: [
-                      Text(label,
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.ts(sheetContext))),
+                      Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.ts(sheetContext),
+                        ),
+                      ),
                       const Spacer(),
-                      Text(value,
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.tp(sheetContext))),
+                      Text(
+                        value,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.tp(sheetContext),
+                        ),
+                      ),
                       if (trailing != null) trailing,
                     ],
                   ),
@@ -122,11 +136,14 @@ Future<void> showPeriodRecordEditor(
         return Container(
           decoration: BoxDecoration(
             color: AppColors.sf(sheetContext),
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(28)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           ),
           padding: EdgeInsets.fromLTRB(
-              24, 16, 24, 24 + MediaQuery.viewInsetsOf(sheetContext).bottom),
+            24,
+            16,
+            24,
+            24 + MediaQuery.viewInsetsOf(sheetContext).bottom,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -142,11 +159,14 @@ Future<void> showPeriodRecordEditor(
                 ),
               ),
               const SizedBox(height: 16),
-              Text(l10n.editPeriodRecord,
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.tp(sheetContext))),
+              Text(
+                l10n.editPeriodRecord,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.tp(sheetContext),
+                ),
+              ),
               const SizedBox(height: 16),
               dateTile(
                 label: l10n.startDateLabel,
@@ -161,8 +181,11 @@ Future<void> showPeriodRecordEditor(
                 trailing: end != null
                     ? IconButton(
                         tooltip: l10n.ongoing,
-                        icon: Icon(Icons.close_rounded,
-                            size: 18, color: AppColors.ts(sheetContext)),
+                        icon: Icon(
+                          Icons.close_rounded,
+                          size: 18,
+                          color: AppColors.ts(sheetContext),
+                        ),
                         onPressed: () => setSheetState(() => end = null),
                       )
                     : null,
@@ -176,25 +199,30 @@ Future<void> showPeriodRecordEditor(
                       .updateRecordDates(record.id, start, end);
                   await _syncProfileToNewestRecord(ref);
                   notifyTrackingRecordSaved();
-                  messenger.showSnackBar(SnackBar(
+                  messenger.showSnackBar(
+                    SnackBar(
                       content: Text(l10n.recordUpdated),
-                      backgroundColor: AppColors.success));
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
                 },
                 child: Text(l10n.save),
               ),
               TextButton(
-                style:
-                    TextButton.styleFrom(foregroundColor: AppColors.error),
+                style: TextButton.styleFrom(foregroundColor: AppColors.error),
                 onPressed: () async {
                   final confirmed = await showDialog<bool>(
                     context: sheetContext,
                     builder: (ctx) => AlertDialog(
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24)),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
                       title: Text(l10n.deleteRecord),
-                      content: Text(end != null
-                          ? '${dateFormat.format(start)} - ${dateFormat.format(end!)}'
-                          : '${dateFormat.format(start)} (${l10n.ongoing})'),
+                      content: Text(
+                        end != null
+                            ? '${dateFormat.format(start)} - ${dateFormat.format(end!)}'
+                            : '${dateFormat.format(start)} (${l10n.ongoing})',
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(ctx, false),
@@ -203,7 +231,8 @@ Future<void> showPeriodRecordEditor(
                         TextButton(
                           onPressed: () => Navigator.pop(ctx, true),
                           style: TextButton.styleFrom(
-                              foregroundColor: AppColors.error),
+                            foregroundColor: AppColors.error,
+                          ),
                           child: Text(l10n.delete),
                         ),
                       ],
@@ -217,9 +246,12 @@ Future<void> showPeriodRecordEditor(
                       .read(periodRecordsProvider.notifier)
                       .deleteRecord(record.id);
                   await _syncProfileToNewestRecord(ref);
-                  messenger.showSnackBar(SnackBar(
+                  messenger.showSnackBar(
+                    SnackBar(
                       content: Text(l10n.recordDeleted),
-                      backgroundColor: AppColors.success));
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
                 },
                 child: Text(l10n.deleteRecord),
               ),

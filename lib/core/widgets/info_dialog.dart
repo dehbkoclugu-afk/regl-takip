@@ -59,70 +59,74 @@ class _InfoDialog extends StatelessWidget {
           ),
         ),
         padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Renkli gradyan halka: konunun rengini taşır (faz/tahmin)
-            Container(
-              width: 62,
-              height: 62,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    color.withValues(alpha: 0.28),
-                    color.withValues(alpha: 0.12),
-                  ],
-                ),
-              ),
-              alignment: Alignment.center,
-              child: icon,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 19,
-                fontWeight: FontWeight.w800,
-                color: AppColors.tp(context),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              body,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14.5,
-                height: 1.6,
-                color: AppColors.ts(context),
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                // Uygulamanın buton dili: primaryStrong + beyaz (açık pembe
-                // primary üzerine beyaz metnin kontrastı düşük kalıyordu).
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.primaryStrong,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Renkli gradyan halka: konunun rengini taşır (faz/tahmin)
+              Container(
+                width: 62,
+                height: 62,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      color.withValues(alpha: 0.28),
+                      color.withValues(alpha: 0.12),
+                    ],
                   ),
                 ),
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  doneLabel,
-                  style: const TextStyle(
-                      fontSize: 15, fontWeight: FontWeight.w700),
+                alignment: Alignment.center,
+                child: icon,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.tp(context),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 10),
+              Text(
+                body,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14.5,
+                  height: 1.6,
+                  color: AppColors.ts(context),
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  // Uygulamanın buton dili: primaryStrong + beyaz (açık pembe
+                  // primary üzerine beyaz metnin kontrastı düşük kalıyordu).
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.primaryDeep,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    doneLabel,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

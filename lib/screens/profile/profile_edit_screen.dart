@@ -108,7 +108,9 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
             );
       }
 
-      await ref.read(userProfileProvider.notifier).saveProfile(
+      await ref
+          .read(userProfileProvider.notifier)
+          .saveProfile(
             name: _nameController.text.trim(),
             birthDate: _birthDate,
             lastPeriodStart: _lastPeriodDate,
@@ -151,9 +153,13 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     return Scaffold(
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
-        title: Text(l10n.editProfile,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
+        title: Text(
+          l10n.editProfile,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppColors.tp(context),
+          ),
+        ),
         backgroundColor: AppColors.bg(context),
         elevation: 0,
         iconTheme: IconThemeData(color: AppColors.tp(context)),
@@ -167,94 +173,114 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                 children: [
                   // Name
                   _buildCard(
-                    icon: Icons.person_rounded,
-                    title: l10n.name,
-                    child: TextField(
-                      controller: _nameController,
-                      textCapitalization: TextCapitalization.words,
-                      style: TextStyle(fontSize: 16),
-                      decoration: InputDecoration(
-                        hintText: l10n.yourName,
-                        hintStyle:
-                            TextStyle(color: AppColors.ts(context)),
-                        filled: true,
-                        fillColor: AppColors.isDark(context) ? AppColors.cardDark : AppColors.background,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
+                        icon: Icons.person_rounded,
+                        title: l10n.name,
+                        child: TextField(
+                          controller: _nameController,
+                          textCapitalization: TextCapitalization.words,
+                          style: TextStyle(fontSize: 16),
+                          decoration: InputDecoration(
+                            hintText: l10n.yourName,
+                            hintStyle: TextStyle(color: AppColors.ts(context)),
+                            filled: true,
+                            fillColor: AppColors.isDark(context)
+                                ? AppColors.cardDark
+                                : AppColors.background,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                color: AppColors.primary,
+                                width: 2,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
+                          ),
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                              color: AppColors.primary, width: 2),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 14),
-                      ),
-                    ),
-                  ).animateSafe(context).fadeIn(duration: 400.ms).slideY(begin: 0.05),
+                      )
+                      .animateSafe(context)
+                      .fadeIn(duration: 400.ms)
+                      .slideY(begin: 0.05),
 
                   const SizedBox(height: 12),
 
                   // Birth date
                   _buildCard(
-                    icon: Icons.cake_rounded,
-                    title: l10n.birthDate,
-                    child: _buildDateTile(
-                      value: _birthDate != null
-                          ? dateFormatter.format(_birthDate!)
-                          : l10n.selectDateHint,
-                      hasValue: _birthDate != null,
-                      onTap: () => _pickDate(isBirthDate: true),
-                    ),
-                  ).animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms).slideY(begin: 0.05),
+                        icon: Icons.cake_rounded,
+                        title: l10n.birthDate,
+                        child: _buildDateTile(
+                          value: _birthDate != null
+                              ? dateFormatter.format(_birthDate!)
+                              : l10n.selectDateHint,
+                          hasValue: _birthDate != null,
+                          onTap: () => _pickDate(isBirthDate: true),
+                        ),
+                      )
+                      .animateSafe(context)
+                      .fadeIn(delay: 100.ms, duration: 400.ms)
+                      .slideY(begin: 0.05),
 
                   const SizedBox(height: 12),
 
                   // Last period date
                   _buildCard(
-                    icon: Icons.water_drop_rounded,
-                    title: l10n.lastPeriodDate,
-                    child: _buildDateTile(
-                      value: _lastPeriodDate != null
-                          ? dateFormatter.format(_lastPeriodDate!)
-                          : l10n.selectDateHint,
-                      hasValue: _lastPeriodDate != null,
-                      onTap: () => _pickDate(isBirthDate: false),
-                    ),
-                  ).animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.05),
+                        icon: Icons.water_drop_rounded,
+                        title: l10n.lastPeriodDate,
+                        child: _buildDateTile(
+                          value: _lastPeriodDate != null
+                              ? dateFormatter.format(_lastPeriodDate!)
+                              : l10n.selectDateHint,
+                          hasValue: _lastPeriodDate != null,
+                          onTap: () => _pickDate(isBirthDate: false),
+                        ),
+                      )
+                      .animateSafe(context)
+                      .fadeIn(delay: 200.ms, duration: 400.ms)
+                      .slideY(begin: 0.05),
 
                   const SizedBox(height: 12),
 
                   // Cycle length
                   _buildCard(
-                    icon: Icons.loop_rounded,
-                    title: l10n.averageCycleLength,
-                    child: _buildSlider(
-                      value: _cycleLength,
-                      min: 18,
-                      max: 45,
-                      divisions: 27,
-                      displayText: l10n.nDays(_cycleLength.round()),
-                      onChanged: (v) => setState(() => _cycleLength = v),
-                    ),
-                  ).animateSafe(context).fadeIn(delay: 300.ms, duration: 400.ms).slideY(begin: 0.05),
+                        icon: Icons.loop_rounded,
+                        title: l10n.averageCycleLength,
+                        child: _buildSlider(
+                          value: _cycleLength,
+                          min: 18,
+                          max: 45,
+                          divisions: 27,
+                          displayText: l10n.nDays(_cycleLength.round()),
+                          onChanged: (v) => setState(() => _cycleLength = v),
+                        ),
+                      )
+                      .animateSafe(context)
+                      .fadeIn(delay: 300.ms, duration: 400.ms)
+                      .slideY(begin: 0.05),
 
                   const SizedBox(height: 12),
 
                   // Period length
                   _buildCard(
-                    icon: Icons.timelapse_rounded,
-                    title: l10n.averagePeriodLength,
-                    child: _buildSlider(
-                      value: _periodLength,
-                      min: 2,
-                      max: 10,
-                      divisions: 8,
-                      displayText: l10n.nDays(_periodLength.round()),
-                      onChanged: (v) => setState(() => _periodLength = v),
-                    ),
-                  ).animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms).slideY(begin: 0.05),
+                        icon: Icons.timelapse_rounded,
+                        title: l10n.averagePeriodLength,
+                        child: _buildSlider(
+                          value: _periodLength,
+                          min: 2,
+                          max: 10,
+                          divisions: 8,
+                          displayText: l10n.nDays(_periodLength.round()),
+                          onChanged: (v) => setState(() => _periodLength = v),
+                        ),
+                      )
+                      .animateSafe(context)
+                      .fadeIn(delay: 400.ms, duration: 400.ms)
+                      .slideY(begin: 0.05),
 
                   const SizedBox(height: 20),
                 ],
@@ -301,11 +327,14 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(title,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.tp(context))),
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.tp(context),
+                  ),
+                ),
               ),
             ],
           ),
@@ -333,32 +362,37 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
           borderRadius: BorderRadius.circular(12),
           onTap: onTap,
           child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: hasValue ? AppColors.primary.withValues(alpha: 0.3) : Colors.transparent,
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.calendar_today_rounded,
-                color: hasValue ? AppColors.primary : AppColors.ts(context),
-                size: 20),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                value,
-                style: TextStyle(
-                  fontSize: 15,
-                  color:
-                      hasValue ? AppColors.tp(context) : AppColors.ts(context),
-                ),
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: hasValue
+                    ? AppColors.primary.withValues(alpha: 0.3)
+                    : Colors.transparent,
               ),
             ),
-          ],
-        ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.calendar_today_rounded,
+                  color: hasValue ? AppColors.primary : AppColors.ts(context),
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: hasValue
+                          ? AppColors.tp(context)
+                          : AppColors.ts(context),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -422,20 +456,26 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
             backgroundColor: AppColors.primaryStrong,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            disabledBackgroundColor:
-                AppColors.primaryStrong.withValues(alpha: 0.5),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            disabledBackgroundColor: AppColors.primaryStrong.withValues(
+              alpha: 0.5,
+            ),
           ),
           child: _isSaving
               ? const SizedBox(
                   width: 22,
                   height: 22,
                   child: CircularProgressIndicator(
-                      strokeWidth: 2.5, color: Colors.white))
-              : Text(l10n.save,
-                  style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold)),
+                    strokeWidth: 2.5,
+                    color: Colors.white,
+                  ),
+                )
+              : Text(
+                  l10n.save,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
         ),
       ),
     );

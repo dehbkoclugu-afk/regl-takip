@@ -47,13 +47,11 @@ class GlassCard extends StatelessWidget {
         color: gradient == null ? bgColor : null,
         gradient: gradient,
         borderRadius: BorderRadius.circular(borderRadius),
-        border: Border.all(
-          color: border,
-          width: borderWidth,
-        ),
+        border: Border.all(color: border, width: borderWidth),
         // Düz kart dili: ince kenar + çok hafif zemin gölgesi.
         // Belirgin ışıma yalnız hero yüzeylerde (ring).
-        boxShadow: boxShadow ??
+        boxShadow:
+            boxShadow ??
             [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.04),
@@ -108,17 +106,15 @@ class GlassContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor =
-        backgroundColor ?? (isDark ? AppColors.cardDark : AppColors.surfaceElevated);
+        backgroundColor ??
+        (isDark ? AppColors.cardDark : AppColors.surfaceElevated);
 
     final inner = Container(
       padding: padding,
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(borderRadius),
-        border: Border.all(
-          color: AppColors.dv(context),
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.dv(context), width: 1),
       ),
       child: child,
     );

@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../services/usage_metrics.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,8 +12,7 @@ bool shouldShowTrialEndNotice({
   required AccessLevel access,
   required bool alreadyShown,
   required bool onboardingCompleted,
-}) =>
-    access == AccessLevel.free && !alreadyShown && onboardingCompleted;
+}) => access == AccessLevel.free && !alreadyShown && onboardingCompleted;
 
 bool canWriteDailyTracking(AccessLevel access) => access != AccessLevel.free;
 
@@ -33,7 +33,10 @@ bool ensureTrackingWriteAccess(BuildContext context, WidgetRef ref) =>
 /// Başarılı kullanıcı kaydını uygulama köküne bildirir. Reklam gösterilip
 /// gösterilmeyeceği burada değil, erişim ve 24 saat sınırı yeniden
 /// doğrulandıktan sonra kökte kararlaştırılır.
-void notifyTrackingRecordSaved() => AdService.notifyRecordSaved();
+void notifyTrackingRecordSaved() {
+  unawaited(UsageMetrics.record(UsageEvent.trackingAction));
+  AdService.notifyRecordSaved();
+}
 
 bool shouldNotifyTrackingRecord(SnackBarClosedReason reason) =>
     reason != SnackBarClosedReason.action;
@@ -43,7 +46,9 @@ bool shouldNotifyTrackingRecord(SnackBarClosedReason reason) =>
 void notifyTrackingRecordAfterUndoWindow(
   ScaffoldFeatureController<SnackBar, SnackBarClosedReason> controller,
 ) {
-  unawaited(controller.closed.then((reason) {
-    if (shouldNotifyTrackingRecord(reason)) notifyTrackingRecordSaved();
-  }));
+  unawaited(
+    controller.closed.then((reason) {
+      if (shouldNotifyTrackingRecord(reason)) notifyTrackingRecordSaved();
+    }),
+  );
 }

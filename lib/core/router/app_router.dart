@@ -27,14 +27,18 @@ import '../../providers/providers.dart';
 // Navigation keys for each branch in the StatefulShellRoute
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 GlobalKey<NavigatorState> get rootNavigatorKey => _rootNavigatorKey;
-final _shellNavigatorDashboardKey =
-    GlobalKey<NavigatorState>(debugLabel: 'dashboard');
-final _shellNavigatorCalendarKey =
-    GlobalKey<NavigatorState>(debugLabel: 'calendar');
-final _shellNavigatorStatisticsKey =
-    GlobalKey<NavigatorState>(debugLabel: 'statistics');
-final _shellNavigatorSettingsKey =
-    GlobalKey<NavigatorState>(debugLabel: 'settings');
+final _shellNavigatorDashboardKey = GlobalKey<NavigatorState>(
+  debugLabel: 'dashboard',
+);
+final _shellNavigatorCalendarKey = GlobalKey<NavigatorState>(
+  debugLabel: 'calendar',
+);
+final _shellNavigatorStatisticsKey = GlobalKey<NavigatorState>(
+  debugLabel: 'statistics',
+);
+final _shellNavigatorSettingsKey = GlobalKey<NavigatorState>(
+  debugLabel: 'settings',
+);
 
 final routerProvider = Provider<GoRouter>((ref) {
   final userProfile = ref.read(userProfileProvider);

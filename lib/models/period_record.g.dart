@@ -96,10 +96,7 @@ class MoodEntryAdapter extends TypeAdapter<MoodEntry> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return MoodEntry(
-      type: fields[0] as MoodType,
-      note: fields[1] as String?,
-    );
+    return MoodEntry(type: fields[0] as MoodType, note: fields[1] as String?);
   }
 
   @override

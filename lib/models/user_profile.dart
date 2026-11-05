@@ -139,6 +139,11 @@ class UserProfile extends HiveObject {
   @HiveField(31, defaultValue: 3)
   int cycleNotificationFrequency;
 
+  @HiveField(32, defaultValue: 21)
+  int pillActiveDays;
+  @HiveField(33, defaultValue: 7)
+  int pillBreakDays;
+
   /// Döngü hatırlatmaları için etkin saat (özel saat yoksa genel saat).
   int get effectiveCycleHour => cycleReminderHour ?? reminderHour;
   int get effectiveCycleMinute => cycleReminderMinute ?? reminderMinute;
@@ -182,6 +187,8 @@ class UserProfile extends HiveObject {
     this.medicationPlan = const [],
     this.medicationPlanMigrated = true,
     this.cycleNotificationFrequency = 3,
+    this.pillActiveDays = 21,
+    this.pillBreakDays = 7,
   });
 
   /// Yeni bir kopya döndürür; verilen alanlar güncellenir.
@@ -222,8 +229,12 @@ class UserProfile extends HiveObject {
     bool? medicationPlanMigrated,
     int? cycleNotificationFrequency,
     bool clearLastPeriodStart = false,
+    int? pillActiveDays,
+    int? pillBreakDays,
   }) {
     return UserProfile(
+      pillActiveDays: pillActiveDays ?? this.pillActiveDays,
+      pillBreakDays: pillBreakDays ?? this.pillBreakDays,
       name: name ?? this.name,
       birthDate: birthDate ?? this.birthDate,
       averageCycleLength: averageCycleLength ?? this.averageCycleLength,
@@ -271,6 +282,8 @@ class UserProfile extends HiveObject {
   }
 
   Map<String, dynamic> toJson() => {
+    'pillActiveDays': pillActiveDays,
+    'pillBreakDays': pillBreakDays,
     'name': name,
     'birthDate': birthDate?.toIso8601String(),
     'averageCycleLength': averageCycleLength,
@@ -306,6 +319,8 @@ class UserProfile extends HiveObject {
   };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
+    pillActiveDays: json['pillActiveDays'] as int? ?? 21,
+    pillBreakDays: json['pillBreakDays'] as int? ?? 7,
     name: json['name'] as String? ?? '',
     birthDate: json['birthDate'] != null
         ? DateTime.tryParse(json['birthDate'] as String)
@@ -353,8 +368,7 @@ class UserProfile extends HiveObject {
     medicationPlan: (json['medicationPlan'] as List<dynamic>? ?? [])
         .map((m) => MedicationEntry.fromJson(m as Map<String, dynamic>))
         .toList(),
-    medicationPlanMigrated:
-        json['medicationPlanMigrated'] as bool? ?? false,
+    medicationPlanMigrated: json['medicationPlanMigrated'] as bool? ?? false,
     cycleNotificationFrequency:
         (json['cycleNotificationFrequency'] as int? ?? 3).clamp(1, 3),
   );

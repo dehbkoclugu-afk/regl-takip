@@ -1,5 +1,7 @@
 class UnitConversion {
   UnitConversion._();
+  static String formatTemperature(double celsius, {bool fahrenheit = false}) =>
+      '${(fahrenheit ? celsiusToFahrenheit(celsius) : celsius).toStringAsFixed(1)} ${fahrenheit ? '°F' : '°C'}';
 
   static const double poundsPerKilogram = 2.2046226218;
 

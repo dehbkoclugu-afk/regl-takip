@@ -37,12 +37,17 @@ class _TemperatureTrackingScreenState
   double _displayTemperature(double celsius) =>
       _useFahrenheit ? UnitConversion.celsiusToFahrenheit(celsius) : celsius;
 
+  late DateTime _editDate;
+
   @override
   void initState() {
     super.initState();
-    final log = ref
-        .read(dailyLogProvider.notifier)
-        .getDailyLog(ref.read(selectedDateProvider));
+    final selected = ref.read(selectedDateProvider);
+    final now = DateTime.now();
+    _editDate = DateTime(selected.year, selected.month, selected.day);
+    if (_editDate.isAfter(now))
+      _editDate = DateTime(now.year, now.month, now.day);
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(_editDate);
     if (log != null) {
       _temperature = log.temperature ?? 36.5;
       _hasExistingMeasurement = log.temperature != null;
@@ -319,10 +324,9 @@ class _TemperatureTrackingScreenState
   /// Yanlışlıkla kaydedilen ölçüm BBT eğrisini (ve ovülasyon teyidini)
   /// bozar — silinebilmeli.
   Future<void> _delete() async {
-    if (!ensureTrackingWriteAccess(context, ref)) return;
     await ref
         .read(dailyLogProvider.notifier)
-        .updateTemperature(ref.read(selectedDateProvider), null);
+        .updateTemperature(_editDate, null);
     if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -340,11 +344,7 @@ class _TemperatureTrackingScreenState
         '${_measureTime.hour.toString().padLeft(2, '0')}:${_measureTime.minute.toString().padLeft(2, '0')}';
     await ref
         .read(dailyLogProvider.notifier)
-        .updateTemperature(
-          ref.read(selectedDateProvider),
-          _temperature,
-          temperatureTime: timeStr,
-        );
+        .updateTemperature(_editDate, _temperature, temperatureTime: timeStr);
     notifyTrackingRecordSaved();
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;

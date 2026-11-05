@@ -19,15 +19,23 @@ class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.navigationShell});
 
   List<_ShellDestination> _destinations(AppLocalizations l10n) => [
-        _ShellDestination(
-            Icons.home_outlined, Icons.home_rounded, l10n.home),
-        _ShellDestination(Icons.calendar_month_outlined,
-            Icons.calendar_month_rounded, l10n.calendar),
-        _ShellDestination(
-            Icons.bar_chart_outlined, Icons.bar_chart_rounded, l10n.statistics),
-        _ShellDestination(
-            Icons.settings_outlined, Icons.settings_rounded, l10n.settings),
-      ];
+    _ShellDestination(Icons.home_outlined, Icons.home_rounded, l10n.home),
+    _ShellDestination(
+      Icons.calendar_month_outlined,
+      Icons.calendar_month_rounded,
+      l10n.calendar,
+    ),
+    _ShellDestination(
+      Icons.bar_chart_outlined,
+      Icons.bar_chart_rounded,
+      l10n.statistics,
+    ),
+    _ShellDestination(
+      Icons.settings_outlined,
+      Icons.settings_rounded,
+      l10n.settings,
+    ),
+  ];
 
   void _onDestinationSelected(int index) {
     navigationShell.goBranch(
@@ -61,8 +69,10 @@ class AppShell extends StatelessWidget {
                   for (final d in destinations)
                     NavigationRailDestination(
                       icon: Icon(d.icon),
-                      selectedIcon:
-                          Icon(d.selectedIcon, color: AppColors.primaryStrong),
+                      selectedIcon: Icon(
+                        d.selectedIcon,
+                        color: AppColors.primaryStrong,
+                      ),
                       label: Text(d.label),
                     ),
                 ],
@@ -120,14 +130,18 @@ class AppShell extends StatelessWidget {
               labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
               // Sekme geçişi durum bildirir, gösteri değil: 250 ms.
               // Sistem animasyonları kapalıysa anında.
-              animationDuration:
-                  context.motionDuration(const Duration(milliseconds: 250)),
+              animationDuration: context.motionDuration(
+                const Duration(milliseconds: 250),
+              ),
               destinations: [
                 for (final d in destinations)
                   NavigationDestination(
                     icon: Icon(d.icon, size: 24),
-                    selectedIcon: Icon(d.selectedIcon,
-                        size: 24, color: AppColors.primaryStrong),
+                    selectedIcon: Icon(
+                      d.selectedIcon,
+                      size: 24,
+                      color: AppColors.primaryStrong,
+                    ),
                     label: d.label,
                   ),
               ],

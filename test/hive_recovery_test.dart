@@ -38,48 +38,31 @@ void main() {
     }
   });
 
-  test('yanlış anahtar (yeni cihaz) çökmek yerine temiz başlar', () async {
+  test('wrong key preserves all original ciphertext and fails closed',
+      () async {
     final service = HiveService();
-
-    // Eski cihaz: keyA ile şifreli veri yaz
     await service.init(
-      encryptionKey: keyA,
-      manageHivePath: false,
-      assumeEncrypted: true,
-    );
-    await service.saveUserProfile(
-        UserProfile(name: 'Eski Cihaz', onboardingCompleted: true));
-    expect(service.getUserProfile()?.name, 'Eski Cihaz');
-
-    // Yeni cihaz: dosyalar duruyor, anahtar farklı (Keystore kayıp).
-    // Hive, açılış hatasını hem rethrow eder hem iç completer'ına yazar;
-    // completer'ı kimse beklemediği için hata "unhandled async error"
-    // olarak zone'a düşer (hive_impl._openBox). Kurtarma init içinde
-    // yapıldığından bu sahipsiz kopya guarded zone ile yutulur.
+        encryptionKey: keyA, manageHivePath: false, assumeEncrypted: true);
+    await service.saveUserProfile(UserProfile(name: 'Original'));
+    final path = service.profileStoragePath!;
     await Hive.close();
     service.resetForTesting();
+    final before = await File(path).readAsBytes();
     final done = Completer<void>();
     runZonedGuarded(() async {
-      await service.init(
-        encryptionKey: keyB,
-        manageHivePath: false,
-        assumeEncrypted: true,
-      );
-      if (!done.isCompleted) done.complete();
-    }, (e, s) {
-      if (e is HiveError) return; // beklenen sahipsiz kopya
-      if (!done.isCompleted) done.completeError(e, s);
+      try {
+        await service.init(
+            encryptionKey: keyB, manageHivePath: false, assumeEncrypted: true);
+        done.completeError(StateError('Wrong key was accepted'));
+      } catch (_) {
+        done.complete();
+      }
+    }, (e, stack) {
+      if (e is! HiveError && !done.isCompleted) done.completeError(e, stack);
     });
     await done.future;
-
-    // Çökmedi, sıfırdan başladı ve bunu UI'a bildirecek bayrağı bıraktı
-    expect(service.dataResetPerformed, isTrue);
-    expect(service.getUserProfile(), isNull);
-    expect(service.getAllPeriodRecords(), isEmpty);
-
-    // Temiz başlangıç yazılabilir durumda
-    await service.saveUserProfile(UserProfile(name: 'Yeni Cihaz'));
-    expect(service.getUserProfile()?.name, 'Yeni Cihaz');
+    expect(service.isInitialized, false);
+    expect(await File(path).readAsBytes(), before);
   });
 
   test('bayrak kaybı (anahtar sağlam) veri KAYBETMEZ', () async {

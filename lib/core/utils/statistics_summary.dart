@@ -26,14 +26,17 @@ List<SymptomSummary> summarizeSymptoms(
     }
   }
 
-  final summaries = counts.entries
-      .map((entry) => SymptomSummary(
-            entry.key,
-            entry.value,
-            severityTotals[entry.key]! / entry.value,
-          ))
-      .toList()
-    ..sort((a, b) => b.count.compareTo(a.count));
+  final summaries =
+      counts.entries
+          .map(
+            (entry) => SymptomSummary(
+              entry.key,
+              entry.value,
+              severityTotals[entry.key]! / entry.value,
+            ),
+          )
+          .toList()
+        ..sort((a, b) => b.count.compareTo(a.count));
   return summaries.take(take).toList();
 }
 
@@ -86,8 +89,7 @@ TrackingConsistency calculateTrackingConsistency(
 
   var lastSevenDays = 0;
   for (var offset = 0; offset < 7; offset++) {
-    if (loggedDays.contains(
-        key(addDays(currentDay, -offset)))) {
+    if (loggedDays.contains(key(addDays(currentDay, -offset)))) {
       lastSevenDays++;
     }
   }
@@ -111,17 +113,16 @@ List<DateTime> ovulationMarkersForRange({
   required DateTime rangeEnd,
   DateTime? confirmedLatest,
 }) {
-  DateTime day(DateTime value) =>
-      DateTime(value.year, value.month, value.day);
+  DateTime day(DateTime value) => DateTime(value.year, value.month, value.day);
 
   final starts = periodStarts.map(day).toList()..sort();
   final firstDay = day(rangeStart);
   final lastDay = day(rangeEnd);
   final markers = <DateTime>[];
   for (var index = 0; index < starts.length; index++) {
-    final predicted = starts[index].add(Duration(
-      days: CycleUtils.ovulationDayNumber(cycleLength) - 1,
-    ));
+    final predicted = starts[index].add(
+      Duration(days: CycleUtils.ovulationDayNumber(cycleLength) - 1),
+    );
     final marker = index == starts.length - 1 && confirmedLatest != null
         ? day(confirmedLatest)
         : predicted;
@@ -146,8 +147,7 @@ CycleSymptomComparison compareLastTwoCycleSymptoms({
   required Iterable<DateTime> periodStarts,
   required DateTime today,
 }) {
-  DateTime day(DateTime value) =>
-      DateTime(value.year, value.month, value.day);
+  DateTime day(DateTime value) => DateTime(value.year, value.month, value.day);
 
   final starts = periodStarts.map(day).toList()..sort();
   if (starts.length < 2) {
@@ -164,7 +164,9 @@ CycleSymptomComparison compareLastTwoCycleSymptoms({
     if (log.symptoms.isEmpty) continue;
     final logDay = day(log.date);
     final severity = log.symptoms.fold<int>(
-        0, (total, symptom) => total + symptom.severity);
+      0,
+      (total, symptom) => total + symptom.severity,
+    );
     if (!logDay.isBefore(currentStart) && !logDay.isAfter(day(today))) {
       final cycleDay = daysBetween(currentStart, logDay) + 1;
       current[cycleDay] = (current[cycleDay] ?? 0) + severity;
@@ -182,11 +184,8 @@ CycleSymptomComparison compareLastTwoCycleSymptoms({
 class MonthlyDataCoverage extends DataCoverage {
   final DateTime month;
 
-  const MonthlyDataCoverage(
-    this.month,
-    int loggedDays,
-    int totalDays,
-  ) : super(loggedDays, totalDays);
+  const MonthlyDataCoverage(this.month, int loggedDays, int totalDays)
+    : super(loggedDays, totalDays);
 }
 
 DataCoverage calculateDataCoverage(
@@ -209,10 +208,7 @@ DataCoverage calculateDataCoverage(
     loggedDates.add('${day.year}-${day.month}-${day.day}');
   }
 
-  return DataCoverage(
-    loggedDates.length,
-    daysBetween(firstDay, lastDay) + 1,
-  );
+  return DataCoverage(loggedDates.length, daysBetween(firstDay, lastDay) + 1);
 }
 
 List<MonthlyDataCoverage> calculateMonthlyDataCoverage(
@@ -241,10 +237,6 @@ List<MonthlyDataCoverage> calculateMonthlyDataCoverage(
       start: rangeStart,
       end: rangeEnd,
     );
-    return MonthlyDataCoverage(
-      month,
-      coverage.loggedDays,
-      coverage.totalDays,
-    );
+    return MonthlyDataCoverage(month, coverage.loggedDays, coverage.totalDays);
   }).toList();
 }

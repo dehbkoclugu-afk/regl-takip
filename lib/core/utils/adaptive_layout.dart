@@ -16,17 +16,17 @@ int adaptiveGridColumns({
 }) {
   final scaleGrowth = 1 + (math.max(1, textScale) - 1) * 0.35;
   final targetWidth = minCardWidth * scaleGrowth;
-  return ((width + spacing) / (targetWidth + spacing))
-      .floor()
-      .clamp(1, maxColumns);
+  return ((width + spacing) / (targetWidth + spacing)).floor().clamp(
+    1,
+    maxColumns,
+  );
 }
 
 double scaledGridExtent(
   double baseExtent,
   double textScale, {
   double growth = 0.65,
-}) =>
-    baseExtent * (1 + (math.max(1, textScale) - 1) * growth);
+}) => baseExtent * (1 + (math.max(1, textScale) - 1) * growth);
 
 /// Yüzen gezinme pill'inin kapladığı dikey alan.
 ///

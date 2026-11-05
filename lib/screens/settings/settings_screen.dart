@@ -1,4 +1,6 @@
+import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
+import 'audit_settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -13,12 +15,11 @@ import '../../models/user_profile.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:file_picker/file_picker.dart';
 import '../../core/utils/cycle_utils.dart';
 import '../../models/enums.dart';
 import '../../providers/providers.dart';
 import '../../services/backup_service.dart';
-import '../../services/encrypted_backup_codec.dart';
+import '../../services/backup_import_flow.dart';
 import '../../services/disguise_service.dart';
 import '../../services/export_service.dart';
 import '../../services/health_sync_service.dart';
@@ -55,6 +56,7 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: EdgeInsets.fromLTRB(16, 16, 16, bottomNavInset(context)),
         children: [
+          const AuditSettings(),
           GlassCard(
             borderRadius: 16,
             blur: 0,
@@ -177,8 +179,14 @@ class SettingsScreen extends ConsumerWidget {
                               for (final (mode, icon, label) in pair) ...[
                                 SizedBox(
                                   width: double.infinity,
-                                  child: _modeCard(context, ref, profile, mode,
-                                      icon, label),
+                                  child: _modeCard(
+                                    context,
+                                    ref,
+                                    profile,
+                                    mode,
+                                    icon,
+                                    label,
+                                  ),
                                 ),
                                 if (mode != pair.last.$1)
                                   const SizedBox(height: 10),
@@ -190,8 +198,14 @@ class SettingsScreen extends ConsumerWidget {
                             children: [
                               for (final (mode, icon, label) in pair) ...[
                                 Expanded(
-                                  child: _modeCard(context, ref, profile, mode,
-                                      icon, label),
+                                  child: _modeCard(
+                                    context,
+                                    ref,
+                                    profile,
+                                    mode,
+                                    icon,
+                                    label,
+                                  ),
                                 ),
                                 if (mode != pair.last.$1)
                                   const SizedBox(width: 10),
@@ -245,36 +259,50 @@ class SettingsScreen extends ConsumerWidget {
                 l10n.language,
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
-              // 6 dil + sistem: varsayılan cihaz dilini izler
-              trailing: DropdownButton<String>(
-                value: profile?.language ?? 'system',
-                underline: const SizedBox.shrink(),
-                borderRadius: BorderRadius.circular(14),
-                items: [
-                  DropdownMenuItem(
-                    value: 'system',
-                    child: Text(l10n.languageSystem),
+              // 10 dil + sistem: varsayılan cihaz dilini izler
+              trailing: SizedBox(
+                width: 120,
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: profile?.language ?? 'system',
+                  underline: const SizedBox.shrink(),
+                  borderRadius: BorderRadius.circular(14),
+                  items: [
+                    DropdownMenuItem(
+                      value: 'system',
+                      child: Text(l10n.languageSystem),
+                    ),
+                    const DropdownMenuItem(value: 'tr', child: Text('Türkçe')),
+                    const DropdownMenuItem(value: 'en', child: Text('English')),
+                    const DropdownMenuItem(value: 'es', child: Text('Español')),
+                    const DropdownMenuItem(value: 'de', child: Text('Deutsch')),
+                    const DropdownMenuItem(
+                      value: 'fr',
+                      child: Text('Français'),
+                    ),
+                    const DropdownMenuItem(value: 'ru', child: Text('Русский')),
+                    const DropdownMenuItem(
+                      value: 'pt',
+                      child: Text('Português'),
+                    ),
+                    const DropdownMenuItem(value: 'ar', child: Text('العربية')),
+                    const DropdownMenuItem(value: 'hi', child: Text('हिन्दी')),
+                    const DropdownMenuItem(value: 'zh', child: Text('简体中文')),
+                  ],
+                  onChanged: (value) {
+                    if (value == null) return;
+                    ref.read(localeProvider.notifier).state = value == 'system'
+                        ? null
+                        : Locale(value);
+                    ref
+                        .read(userProfileProvider.notifier)
+                        .saveProfile(language: value);
+                  },
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.tp(context),
                   ),
-                  const DropdownMenuItem(value: 'tr', child: Text('Türkçe')),
-                  const DropdownMenuItem(value: 'en', child: Text('English')),
-                  const DropdownMenuItem(value: 'es', child: Text('Español')),
-                  const DropdownMenuItem(value: 'de', child: Text('Deutsch')),
-                  const DropdownMenuItem(value: 'fr', child: Text('Français')),
-                  const DropdownMenuItem(value: 'ru', child: Text('Русский')),
-                ],
-                onChanged: (value) {
-                  if (value == null) return;
-                  ref.read(localeProvider.notifier).state = value == 'system'
-                      ? null
-                      : Locale(value);
-                  ref
-                      .read(userProfileProvider.notifier)
-                      .saveProfile(language: value);
-                },
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.tp(context),
                 ),
               ),
             ),
@@ -464,17 +492,12 @@ class SettingsScreen extends ConsumerWidget {
                               ? l10n.cycleFirst
                               : l10n.todayFirst,
                         ),
-                        selected:
-                            ref.watch(homePriorityProvider) == option,
+                        selected: ref.watch(homePriorityProvider) == option,
                         onSelected: (_) async {
                           ref.read(homePriorityProvider.notifier).state =
                               option;
-                          final prefs =
-                              await SharedPreferences.getInstance();
-                          await prefs.setString(
-                            homePriorityKey,
-                            option.name,
-                          );
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setString(homePriorityKey, option.name);
                         },
                       ),
                   ],
@@ -787,7 +810,7 @@ class SettingsScreen extends ConsumerWidget {
               l10n.backupData,
               AppColors.primary,
               () async {
-                final password = await _requestBackupPassword(
+                final password = await requestBackupPassword(
                   context,
                   l10n,
                   confirmPassword: true,
@@ -795,14 +818,13 @@ class SettingsScreen extends ConsumerWidget {
                 if (password == null || !context.mounted) return;
                 try {
                   final backupService = BackupService(HiveService());
-                  final path = await _withBackupProgress(
+                  final path = await withBackupProgress(
                     context,
                     l10n.backupData,
                     () => backupService.exportBackup(password),
                   );
-                  await ExportService().shareFile(path);
-                  // Dosyayı yazmak yeterli değil; paylaşım da tamamlandı
-                  await BackupService.markBackedUp();
+                  final shared = await ExportService().shareFile(path);
+                  if (shared.status == ShareResultStatus.success) await BackupService.markBackedUp();
                   ref.invalidate(lastBackupProvider);
                 } catch (e) {
                   if (context.mounted) {
@@ -836,9 +858,10 @@ class SettingsScreen extends ConsumerWidget {
                 if (!ensurePremiumAccess(context, ref)) return;
                 final result = await HealthSyncService().syncPeriods(
                   ref.read(periodRecordsProvider),
+                  logs: ref.read(dailyLogProvider).values.toList(),
                 );
                 if (!context.mounted) return;
-                final (message, color) = switch (result) {
+                final (message, color) = switch (result.status) {
                   HealthSyncResult.success => (
                     l10n.healthSyncSuccess,
                     AppColors.success,
@@ -851,13 +874,13 @@ class SettingsScreen extends ConsumerWidget {
                     l10n.healthSyncUnavailable,
                     AppColors.warning,
                   ),
-                  HealthSyncResult.error => (
+                  HealthSyncResult.partial || HealthSyncResult.error => (
                     l10n.healthSyncFailed,
                     AppColors.error,
                   ),
                 };
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(message), backgroundColor: color),
+                  SnackBar(content: Text('$message\n${l10n.healthSyncCounts(result.counts.written, result.counts.deleted, result.counts.pending)}'), backgroundColor: color),
                 );
               },
             ),
@@ -1014,7 +1037,8 @@ class SettingsScreen extends ConsumerWidget {
                           child: Text(l10n.cancel),
                         ),
                         TextButton(
-                          onPressed: controller.text.trim().toUpperCase() ==
+                          onPressed:
+                              controller.text.trim().toUpperCase() ==
                                   deleteToken
                               ? () => Navigator.pop(ctx, true)
                               : null,
@@ -1030,6 +1054,10 @@ class SettingsScreen extends ConsumerWidget {
                 controller.dispose();
                 if (confirmed == true) {
                   await HiveService().clearAll();
+                  await ExportService.cleanupOldExports(all: true);
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.remove('decoy_notes');
+                  await prefs.remove(BackupService.lastBackupKey);
                   // Migrasyondan kalan düz metin anlık görüntü de "tüm veri"nin
                   // parçası — kutularla birlikte gitmeli
                   await HiveService().deleteLegacyPlaintextSnapshot();
@@ -1072,7 +1100,11 @@ class SettingsScreen extends ConsumerWidget {
           _sectionHeader(context, l10n.about),
           _settingsCard(context, [
             _infoTile(
-                context, Icons.info_rounded, l10n.version, AppConstants.appVersion),
+              context,
+              Icons.info_rounded,
+              l10n.version,
+              AppConstants.appVersion,
+            ),
             _divider(context),
             _actionTile(
               context,
@@ -1120,9 +1152,7 @@ class SettingsScreen extends ConsumerWidget {
   ) async {
     // Yasal metin arayüz dilini izlemeli; politika dosyası yalnız TR/EN
     // var — diğer diller İngilizce politikayı görür
-    final lang = Localizations.localeOf(context).languageCode == 'tr'
-        ? 'tr'
-        : 'en';
+    final lang = Localizations.localeOf(context).languageCode;
     final text = await DefaultAssetBundle.of(
       context,
     ).loadString('assets/legal/privacy_policy_$lang.md');
@@ -1135,7 +1165,11 @@ class SettingsScreen extends ConsumerWidget {
           width: double.maxFinite,
           child: SingleChildScrollView(
             child: Text(
-              text,
+              (lang == 'en' &&
+                          Localizations.localeOf(context).languageCode != 'en'
+                      ? '${l10n.policyAvailableEnglish}\n\n'
+                      : '') +
+                  text,
               style: TextStyle(
                 fontSize: 13,
                 height: 1.5,
@@ -1226,8 +1260,8 @@ class SettingsScreen extends ConsumerWidget {
     final added = await ref
         .read(periodRecordsProvider.notifier)
         .addCompletedPeriodRanges([
-      for (final (start, end) in result.ranges) (start: start, end: end),
-    ]);
+          for (final (start, end) in result.ranges) (start: start, end: end),
+        ]);
     if (added == null) {
       if (!context.mounted) return;
       messenger.showSnackBar(SnackBar(content: Text(l10n.periodRangeOverlap)));
@@ -1340,95 +1374,20 @@ class SettingsScreen extends ConsumerWidget {
     WidgetRef ref,
     AppLocalizations l10n,
   ) async {
-    final result = await FilePicker.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['rtbackup', 'json'],
-    );
-    final path = result?.files.single.path;
-    if (path == null) return;
-
-    final BackupData data;
-    var isLegacyBackup = false;
-    try {
-      final backupService = BackupService(HiveService());
-      var source = await backupService.readBackupFile(path);
-      final isEncrypted = path.toLowerCase().endsWith('.rtbackup') ||
-          backupService.isEncryptedBackup(source);
-      if (isEncrypted) {
-        if (!context.mounted) return;
-        final password = await _requestBackupPassword(
-          context,
-          l10n,
-          confirmPassword: false,
-        );
-        if (password == null || !context.mounted) return;
-        source = await _withBackupProgress(
-          context,
-          l10n.unlockBackupTitle,
-          () => backupService.decryptBackup(source, password),
-        );
-      } else {
-        isLegacyBackup = true;
-      }
-      data = backupService.parseBackup(source);
-    } on EncryptedBackupException {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.backupPasswordOrFileInvalid),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-      return;
-    } catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.invalidBackupFile),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-      return;
-    }
-
-    if (!context.mounted) return;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text(l10n.restoreConfirmTitle),
-        content: Text(
-          [
-            l10n.restoreConfirmBody(data.totalRecordCount),
-            if (isLegacyBackup) l10n.legacyBackupWarning,
-          ].join('\n\n'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: Text(l10n.restore),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true) return;
+    final data = await pickBackupForRestore(context);
+    if (data == null) return;
 
     try {
       await BackupService(HiveService()).restoreBackup(data);
     } catch (e) {
       // restoreBackup mevcut veriyi geri yazdı; kullanıcı bilgilendirilir
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(l10n.errorOccurred(e.toString())),
-          backgroundColor: AppColors.error,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.errorOccurred(e.toString())),
+            backgroundColor: AppColors.error,
+          ),
+        );
       }
       return;
     }
@@ -1472,182 +1431,11 @@ class SettingsScreen extends ConsumerWidget {
     }
   }
 
-  Future<String?> _requestBackupPassword(
-    BuildContext context,
-    AppLocalizations l10n, {
-    required bool confirmPassword,
-  }) async {
-    final passwordController = TextEditingController();
-    final confirmationController = TextEditingController();
-    var obscurePassword = true;
-    String? errorText;
-
-    try {
-      return await showModalBottomSheet<String>(
-        context: context,
-        isScrollControlled: true,
-        showDragHandle: true,
-        builder: (sheetContext) => StatefulBuilder(
-          builder: (context, setSheetState) {
-            void submit() {
-              final password = passwordController.text;
-              final confirmation = confirmationController.text;
-              final validation = validateBackupPassword(
-                password,
-                confirmation: confirmPassword ? confirmation : null,
-              );
-              final error = switch (validation) {
-                BackupPasswordValidation.valid => null,
-                BackupPasswordValidation.invalidLength =>
-                  l10n.backupPasswordLength,
-                BackupPasswordValidation.mismatch =>
-                  l10n.backupPasswordsDoNotMatch,
-              };
-              if (error != null) {
-                setSheetState(() => errorText = error);
-                return;
-              }
-              Navigator.pop(sheetContext, password);
-            }
-
-            final visibilityLabel = obscurePassword
-                ? l10n.showPassword
-                : l10n.hidePassword;
-            return SafeArea(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(
-                  24,
-                  0,
-                  24,
-                  24 + MediaQuery.viewInsetsOf(context).bottom,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      confirmPassword
-                          ? l10n.backupData
-                          : l10n.unlockBackupTitle,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      confirmPassword
-                          ? l10n.backupNoRecovery
-                          : l10n.unlockBackupBody,
-                      style: TextStyle(
-                        height: 1.4,
-                        color: confirmPassword
-                            ? AppColors.warningText
-                            : AppColors.ts(context),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: passwordController,
-                      autofocus: true,
-                      obscureText: obscurePassword,
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      textInputAction: confirmPassword
-                          ? TextInputAction.next
-                          : TextInputAction.done,
-                      onSubmitted: confirmPassword ? null : (_) => submit(),
-                      decoration: InputDecoration(
-                        labelText: l10n.backupPassword,
-                        errorText: errorText,
-                        suffixIcon: IconButton(
-                          tooltip: visibilityLabel,
-                          onPressed: () => setSheetState(
-                            () => obscurePassword = !obscurePassword,
-                          ),
-                          icon: Icon(
-                            obscurePassword
-                                ? Icons.visibility_rounded
-                                : Icons.visibility_off_rounded,
-                          ),
-                        ),
-                      ),
-                    ),
-                    if (confirmPassword) ...[
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: confirmationController,
-                        obscureText: obscurePassword,
-                        autocorrect: false,
-                        enableSuggestions: false,
-                        textInputAction: TextInputAction.done,
-                        onSubmitted: (_) => submit(),
-                        decoration: InputDecoration(
-                          labelText: l10n.backupPasswordConfirm,
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(sheetContext),
-                          child: Text(l10n.cancel),
-                        ),
-                        const SizedBox(width: 8),
-                        FilledButton(
-                          onPressed: submit,
-                          child: Text(l10n.continueBtn),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      );
-    } finally {
-      passwordController.dispose();
-      confirmationController.dispose();
-    }
-  }
-
-  Future<T> _withBackupProgress<T>(
-    BuildContext context,
-    String label,
-    Future<T> Function() operation,
-  ) async {
-    final navigator = Navigator.of(context, rootNavigator: true);
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => PopScope(
-        canPop: false,
-        child: AlertDialog(
-          content: Row(
-            children: [
-              const CircularProgressIndicator(),
-              const SizedBox(width: 20),
-              Expanded(child: Text(label)),
-            ],
-          ),
-        ),
-      ),
-    );
-    try {
-      return await operation();
-    } finally {
-      if (navigator.canPop()) navigator.pop();
-    }
-  }
-
   Widget _sectionHeader(BuildContext context, String title) {
     // Bölüm başlığı dili: 13/w700 ikincil renk — kart başlıklarından
     // (18/bold birincil) net biçimde ayrışır, ListView ritmini bozmaz
     return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 8, top: 4),
+      padding: const EdgeInsetsDirectional.only(start: 4, bottom: 8, top: 4),
       child: Text(
         title,
         style: TextStyle(
@@ -1664,7 +1452,10 @@ class SettingsScreen extends ConsumerWidget {
       borderRadius: 20,
       blur: 0,
       opacity: 0.15,
-      child: Column(children: children),
+      child: Material(
+        type: MaterialType.transparency,
+        child: Column(children: children),
+      ),
     ).animateSafe(context).fadeIn(duration: 400.ms).slideY(begin: 0.05, end: 0);
   }
 
@@ -1695,8 +1486,10 @@ class SettingsScreen extends ConsumerWidget {
         style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
       ),
       subtitle: largeText
-          ? Text(value,
-              style: TextStyle(fontSize: 14, color: AppColors.ts(context)))
+          ? Text(
+              value,
+              style: TextStyle(fontSize: 14, color: AppColors.ts(context)),
+            )
           : null,
       // Uzun değerler ("Deneme: 27 gün kaldı", uzun isim) başlığı ezmesin
       trailing: largeText
@@ -2176,32 +1969,8 @@ class _ScreenProtectionTileState extends State<_ScreenProtectionTile> {
   }
 
   (String, String) _labels(BuildContext context) {
-    return switch (Localizations.localeOf(context).languageCode) {
-      'tr' => (
-          'Ekran görüntüsü koruması',
-          'Ekran görüntülerini ve son uygulamalar önizlemesini engeller.'
-        ),
-      'de' => (
-          'Bildschirmschutz',
-          'Blockiert Screenshots und die Vorschau der letzten Apps.'
-        ),
-      'es' => (
-          'Protección de pantalla',
-          'Bloquea capturas y la vista previa de aplicaciones recientes.'
-        ),
-      'fr' => (
-          'Protection de l’écran',
-          'Bloque les captures et l’aperçu des applications récentes.'
-        ),
-      'ru' => (
-          'Защита экрана',
-          'Блокирует снимки экрана и предпросмотр недавних приложений.'
-        ),
-      _ => (
-          'Screen protection',
-          'Blocks screenshots and the recent-apps preview.'
-        ),
-    };
+    final l10n = AppLocalizations.of(context)!;
+    return (l10n.screenProtectionTitle, l10n.screenProtectionDescription);
   }
 
   @override

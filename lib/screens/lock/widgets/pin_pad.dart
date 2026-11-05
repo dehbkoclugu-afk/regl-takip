@@ -38,12 +38,16 @@ class PinPad extends StatelessWidget {
                 if (key == 'del') {
                   return Semantics(
                     button: true,
-                    label:
-                        MaterialLocalizations.of(context).deleteButtonTooltip,
+                    label: MaterialLocalizations.of(
+                      context,
+                    ).deleteButtonTooltip,
                     child: _PinPadButton(
                       onTap: enabled ? onDelete : null,
-                      child: const Icon(Icons.backspace_rounded,
-                          color: Colors.white, size: 24),
+                      child: const Icon(
+                        Icons.backspace_rounded,
+                        color: Colors.white,
+                        size: 24,
+                      ),
                     ),
                   );
                 }
@@ -128,8 +132,9 @@ class PinDots extends StatelessWidget {
           children: List.generate(length, (i) {
             final isFilled = i < filled;
             return AnimatedContainer(
-              duration:
-                  context.motionDuration(const Duration(milliseconds: 200)),
+              duration: context.motionDuration(
+                const Duration(milliseconds: 200),
+              ),
               margin: const EdgeInsets.symmetric(horizontal: 10),
               width: isFilled ? 18 : 14,
               height: isFilled ? 18 : 14,
@@ -138,11 +143,13 @@ class PinDots extends StatelessWidget {
                 color: isError
                     ? Colors.yellow.shade200
                     : isFilled
-                        ? Colors.white
-                        : Colors.white.withValues(alpha: 0.3),
+                    ? Colors.white
+                    : Colors.white.withValues(alpha: 0.3),
                 border: !isFilled
                     ? Border.all(
-                        color: Colors.white.withValues(alpha: 0.5), width: 2)
+                        color: Colors.white.withValues(alpha: 0.5),
+                        width: 2,
+                      )
                     : null,
               ),
             );

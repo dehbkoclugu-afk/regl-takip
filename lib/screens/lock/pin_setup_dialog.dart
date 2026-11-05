@@ -153,13 +153,16 @@ class _PinVerifyScreenState extends State<_PinVerifyScreen> {
           child: Column(
             children: [
               Align(
-                alignment: Alignment.topLeft,
+                alignment: AlignmentDirectional.topStart,
                 child: IconButton(
                   onPressed: _isVerifying
                       ? null
                       : () => Navigator.of(context).pop(false),
-                  icon: const Icon(Icons.close_rounded,
-                      color: Colors.white, size: 28),
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
                   tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                 ),
               ),
@@ -301,12 +304,16 @@ class _PinSetupScreenState extends State<_PinSetupScreen> {
           child: Column(
             children: [
               Align(
-                alignment: Alignment.topLeft,
+                alignment: AlignmentDirectional.topStart,
                 child: IconButton(
-                  onPressed:
-                      _isSaving ? null : () => Navigator.of(context).pop(false),
-                  icon: const Icon(Icons.close_rounded,
-                      color: Colors.white, size: 28),
+                  onPressed: _isSaving
+                      ? null
+                      : () => Navigator.of(context).pop(false),
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
                   tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                 ),
               ),

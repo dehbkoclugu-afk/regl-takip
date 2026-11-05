@@ -16,6 +16,7 @@ class PinUtils {
   PinUtils._();
 
   static const int iterations = 50000;
+  static const int maxIterations = 500000;
   static const String _prefix = 'pbkdf2';
 
   /// Eski (tuzsuz) format — yalnız geriye dönük doğrulama için.
@@ -40,12 +41,13 @@ class PinUtils {
       final parts = stored.split(r'$');
       if (parts.length != 4) return false;
       final rounds = int.tryParse(parts[1]);
-      if (rounds == null || rounds <= 0) return false;
+      if (rounds == null || rounds <= 0 || rounds > maxIterations) return false;
       final List<int> expected;
       final List<int> salt;
       try {
         expected = base64Decode(parts[3]);
         salt = base64Decode(parts[2]);
+        if (expected.length != 32 || salt.length != 16) return false;
       } on FormatException {
         return false;
       }

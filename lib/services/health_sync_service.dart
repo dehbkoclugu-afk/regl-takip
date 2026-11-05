@@ -1,13 +1,19 @@
+import 'health_sync_batch.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform;
+import 'dart:convert';
+import '../models/daily_log.dart';
+import '../models/enums.dart';
+import '../core/utils/calendar_days.dart';
+import 'hive_service.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:health/health.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/utils/date_only.dart';
 import '../models/period_record.dart';
 
-enum HealthSyncResult { success, permissionDenied, unavailable, error }
+enum HealthSyncResult { partial, success, permissionDenied, unavailable, error }
 
 /// İçe aktarma sonucu: durum + bulunan aralıklar.
 /// [ranges] yalnız [HealthSyncResult.success] durumunda anlamlı.
@@ -28,24 +34,29 @@ class HealthImportResult {
 /// "aktarılan en son gün" eşiği tutuluyordu: sonradan eklenen eski bir
 /// dönem hiç aktarılmıyor, silinen ya da kısaltılan kayıtların günleri
 /// Health Connect'te kalıyordu.
+class HealthSyncReport {
+  final HealthSyncResult status;
+  final HealthSyncCounts counts;
+  const HealthSyncReport(this.status, [this.counts = const HealthSyncCounts()]);
+}
+
 class HealthSyncService {
+  static Future<HealthSyncReport>? _syncInFlight;
+  Future<HealthSyncReport> syncPeriods(
+    List<PeriodRecord> records, {
+    List<DailyLog> logs = const [],
+  }) {
+    return _syncInFlight ??= _syncPeriods(
+      records,
+      logs: logs,
+    ).whenComplete(() => _syncInFlight = null);
+  }
+
   final Health _health = Health();
 
   static const _types = [HealthDataType.MENSTRUATION_FLOW];
   static const _permissions = [HealthDataAccess.WRITE];
   static const _readPermissions = [HealthDataAccess.READ];
-
-  /// Eski sürümün eşiği (son aktarılan gün, epoch ms). Yalnız geçiş için
-  /// okunur ve silinir.
-  static const legacyLastSyncedKey = 'health_last_synced_day';
-
-  /// Aktarılmış günler (yyyy-MM-dd listesi).
-  static const syncedDaysKey = 'health_synced_days';
-
-  /// İçe aktarmada geriye kaç ay bakılacağı. Daha eskisi kullanıcının
-  /// zaten girdiği geçmişle çakışıyor ve okuma maliyetini büyütüyor.
-  static const int importMonths = 12;
-
   static String dayKey(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}-'
       '${d.month.toString().padLeft(2, '0')}-'
@@ -54,8 +65,9 @@ class HealthSyncService {
   /// Kayıtların kapsadığı günler (süren kayıt bugüne kadar), gün başına
   /// ve dönemin ilk günü mü bilgisiyle.
   static Map<String, ({DateTime day, bool isStart})> periodDays(
-      List<PeriodRecord> records,
-      {DateTime? now}) {
+    List<PeriodRecord> records, {
+    DateTime? now,
+  }) {
     final today = dateOnly(now ?? DateTime.now());
     final out = <String, ({DateTime day, bool isStart})>{};
     for (final record in records) {
@@ -71,19 +83,40 @@ class HealthSyncService {
   /// Eski eşikten geçiş: eşiğe kadarki kayıt günleri zaten aktarılmış
   /// sayılır (yeniden yazılıp çiftlenmesin).
   static Set<String> migrateLegacySynced(
-      int? legacyEpochMs, Map<String, ({DateTime day, bool isStart})> days) {
+    int? legacyEpochMs,
+    Map<String, ({DateTime day, bool isStart})> days,
+  ) {
     if (legacyEpochMs == null) return <String>{};
     final watermark = dateOnly(
-        DateTime.fromMillisecondsSinceEpoch(legacyEpochMs));
+      DateTime.fromMillisecondsSinceEpoch(legacyEpochMs),
+    );
     return {
       for (final entry in days.entries)
         if (!entry.value.day.isAfter(watermark)) entry.key,
     };
   }
 
-  Future<HealthSyncResult> syncPeriods(List<PeriodRecord> records) async {
+  static const legacyLastSyncedKey = 'health_last_synced_day';
+  static const syncedDaysKey = 'health_synced_days';
+  static Future<void> resetSyncState() async {
+    await HiveService().writeMetadata(_ledgerKey, '{}');
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(legacyLastSyncedKey);
+    await prefs.remove(syncedDaysKey);
+  }
+
+  static const _ledgerKey = 'health_sync_ledger_v2';
+
+  /// İçe aktarmada geriye kaç ay bakılacağı. Daha eskisi kullanıcının
+  /// zaten girdiği geçmişle çakışıyor ve okuma maliyetini büyütüyor.
+  static const int importMonths = 12;
+
+  Future<HealthSyncReport> _syncPeriods(
+    List<PeriodRecord> records, {
+    List<DailyLog> logs = const [],
+  }) async {
     if (kIsWeb || !(Platform.isAndroid || Platform.isIOS)) {
-      return HealthSyncResult.unavailable;
+      return const HealthSyncReport(HealthSyncResult.unavailable);
     }
 
     try {
@@ -93,54 +126,84 @@ class HealthSyncService {
         _types,
         permissions: _permissions,
       );
-      if (!granted) return HealthSyncResult.permissionDenied;
+      if (!granted)
+        return const HealthSyncReport(HealthSyncResult.permissionDenied);
 
-      final prefs = await SharedPreferences.getInstance();
-      final wanted = periodDays(records);
-      final synced = prefs.getStringList(syncedDaysKey)?.toSet() ??
-          migrateLegacySynced(prefs.getInt(legacyLastSyncedKey), wanted);
-
-      // Artık regl günü olmayan (silinen/kısaltılan kayıt) aktarılmış
-      // günler geri alınır. Platform yalnız bu uygulamanın yazdıklarını
-      // siler; başka uygulamaların verisine dokunulmaz.
-      for (final key in synced.difference(wanted.keys.toSet()).toList()) {
-        final day = DateTime.parse(key);
-        final deleted = await _health.delete(
-          type: HealthDataType.MENSTRUATION_FLOW,
-          startTime: day,
-          endTime: addDays(day, 1),
-        );
-        if (deleted) synced.remove(key);
-      }
-
-      for (final entry in wanted.entries) {
-        if (synced.contains(entry.key)) continue;
-        final day = entry.value.day;
-        final ok = await _health.writeMenstruationFlow(
-          flow: MenstrualFlow.medium,
-          startTime: DateTime(day.year, day.month, day.day, 12),
-          endTime: DateTime(day.year, day.month, day.day, 12, 1),
-          isStartOfCycle: entry.value.isStart,
-          recordingMethod: RecordingMethod.manual,
-        );
-        if (ok) synced.add(entry.key);
-      }
-
-      await prefs.setStringList(syncedDaysKey, synced.toList()..sort());
-      await prefs.remove(legacyLastSyncedKey);
-      return HealthSyncResult.success;
+      final store = HiveService();
+      final ledger = Map<String, dynamic>.from(
+        jsonDecode(store.readMetadata(_ledgerKey) ?? '{}') as Map,
+      );
+      final plan = buildSyncPlan(records, logs);
+      final counts = await runHealthSyncBatch(
+        plan: plan,
+        ledger: ledger,
+        delete: (key) {
+          final day = DateTime.parse(key);
+          return _health.delete(
+            type: HealthDataType.MENSTRUATION_FLOW,
+            startTime: DateTime(day.year, day.month, day.day),
+            endTime: DateTime(day.year, day.month, day.day + 1),
+          );
+        },
+        write: (key, value) {
+          final day = DateTime.parse(key);
+          final parts = value.split(':');
+          return _health.writeMenstruationFlow(
+            flow: MenstrualFlow.values.byName(parts[0]),
+            startTime: DateTime(day.year, day.month, day.day, 12),
+            endTime: DateTime(day.year, day.month, day.day, 12, 1),
+            isStartOfCycle: parts[1] == '1',
+            recordingMethod: RecordingMethod.manual,
+          );
+        },
+        persist: (next) => store.writeMetadata(_ledgerKey, jsonEncode(next)),
+      );
+      return HealthSyncReport(
+        counts.complete
+            ? HealthSyncResult.success
+            : counts.written + counts.deleted > 0
+            ? HealthSyncResult.partial
+            : HealthSyncResult.error,
+        counts,
+      );
     } catch (e) {
       debugPrint('[HEALTH] sync failed: $e');
-      return HealthSyncResult.error;
+      return const HealthSyncReport(HealthSyncResult.error);
     }
   }
 
-  /// "Tüm verileri sil" sonrası: senkron geçmişi de sıfırlanmalı, yoksa
-  /// yeniden girilen günler "zaten aktarıldı" sanılıp atlanır.
-  static Future<void> resetSyncState() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(syncedDaysKey);
-    await prefs.remove(legacyLastSyncedKey);
+  static MenstrualFlow flowFor(FlowIntensity? value) => switch (value) {
+    FlowIntensity.light => MenstrualFlow.light,
+    FlowIntensity.normal => MenstrualFlow.medium,
+    FlowIntensity.heavy || FlowIntensity.veryHeavy => MenstrualFlow.heavy,
+    _ => MenstrualFlow.unspecified,
+  };
+
+  static Map<String, String> buildSyncPlan(
+    List<PeriodRecord> records,
+    List<DailyLog> logs, {
+    DateTime? now,
+  }) {
+    final flows = {
+      for (final log in logs) log.dateKey: flowFor(log.flowIntensity),
+    };
+    final result = <String, String>{};
+    final today = now ?? DateTime.now();
+    for (final record in records) {
+      final start = DateTime(
+        record.startDate.year,
+        record.startDate.month,
+        record.startDate.day,
+      );
+      final rawEnd = record.endDate ?? today;
+      final end = rawEnd.isAfter(today) ? today : rawEnd;
+      for (var day = start; !day.isAfter(end); day = CalendarDays.add(day, 1)) {
+        final key = day.toIso8601String().substring(0, 10);
+        result[key] =
+            '${(flows[key] ?? MenstrualFlow.unspecified).name}:${day == start ? '1' : '0'}';
+      }
+    }
+    return result;
   }
 
   /// Health Connect / HealthKit'ten adet günlerini okur ve uygulamada
@@ -152,8 +215,7 @@ class HealthSyncService {
   ///
   /// Yazma değil öneri üretir: kayıtları oluşturmak çağıranın işi, böylece
   /// kullanıcı onaylamadan hiçbir şey yazılmaz.
-  Future<HealthImportResult> readPeriods(
-      List<PeriodRecord> existing) async {
+  Future<HealthImportResult> readPeriods(List<PeriodRecord> existing) async {
     if (kIsWeb || !(Platform.isAndroid || Platform.isIOS)) {
       return const HealthImportResult(HealthSyncResult.unavailable);
     }
@@ -179,12 +241,14 @@ class HealthSyncService {
       // Yalnız gün bilgisi kullanılıyor: akış şiddetinin karşılığı
       // platformdan platforma değişiyor, tarih ise sabit
       final days = points
-          .map((p) => DateTime(p.dateFrom.year, p.dateFrom.month, p.dateFrom.day))
+          .map(
+            (p) => DateTime(p.dateFrom.year, p.dateFrom.month, p.dateFrom.day),
+          )
           .toList();
 
-      final ranges = groupConsecutiveDays(days)
-          .where((r) => !overlapsExisting(r, existing))
-          .toList();
+      final ranges = groupConsecutiveDays(
+        days,
+      ).where((r) => !overlapsExisting(r, existing)).toList();
       return HealthImportResult(HealthSyncResult.success, ranges);
     } catch (e) {
       debugPrint('[HEALTH] read failed: $e');
@@ -194,20 +258,18 @@ class HealthSyncService {
 
   /// Gün listesini bitişik bloklara ayırır. Tekrarlar elenir, sıra
   /// garanti edilmez (Health Connect sırayı garanti etmiyor).
-  static List<(DateTime, DateTime)> groupConsecutiveDays(
-      List<DateTime> days) {
+  static List<(DateTime, DateTime)> groupConsecutiveDays(List<DateTime> days) {
     if (days.isEmpty) return const [];
 
     final unique = <DateTime>{
       for (final d in days) DateTime(d.year, d.month, d.day),
-    }.toList()
-      ..sort();
+    }.toList()..sort();
 
     final ranges = <(DateTime, DateTime)>[];
     var start = unique.first;
     var prev = unique.first;
     for (final day in unique.skip(1)) {
-      final isNext = daysBetween(prev, day) == 1;
+      final isNext = CalendarDays.between(day, prev) == 1;
       if (!isNext) {
         ranges.add((start, prev));
         start = day;
@@ -221,13 +283,17 @@ class HealthSyncService {
   /// Aralık mevcut kayıtlardan biriyle kesişiyor mu?
   /// Kesişen aralık içe aktarılmaz: kullanıcının kendi kaydı esastır.
   static bool overlapsExisting(
-      (DateTime, DateTime) range, List<PeriodRecord> existing) {
+    (DateTime, DateTime) range,
+    List<PeriodRecord> existing,
+  ) {
     for (final record in existing) {
-      final rStart = DateTime(record.startDate.year, record.startDate.month,
-          record.startDate.day);
+      final rStart = DateTime(
+        record.startDate.year,
+        record.startDate.month,
+        record.startDate.day,
+      );
       final endSource = record.endDate ?? DateTime.now();
-      final rEnd =
-          DateTime(endSource.year, endSource.month, endSource.day);
+      final rEnd = DateTime(endSource.year, endSource.month, endSource.day);
       // Kesişim: biri diğerinin tamamen dışında değilse
       if (!range.$2.isBefore(rStart) && !range.$1.isAfter(rEnd)) {
         return true;

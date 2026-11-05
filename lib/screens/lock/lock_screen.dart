@@ -52,8 +52,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   }
 
   bool get _isLockedOut => _lockoutRemainingSeconds > 0;
-  bool get _acceptsInput =>
-      _lockoutRestored && !_isLockedOut && !_isVerifying;
+  bool get _acceptsInput => _lockoutRestored && !_isLockedOut && !_isVerifying;
 
   /// Hive geri yüklendiği hâlde secure storage boşsa (cihaz yedeğinden
   /// dönüş, Keystore sıfırlanması) `pinEnabled` açık ama PIN yok olur —
@@ -197,8 +196,11 @@ class _LockScreenState extends ConsumerState<LockScreen> {
     final profile = ref.watch(userProfileProvider);
     final motion = context.motionEnabled;
 
-    Widget lockIcon = Icon(Icons.lock_rounded,
-        size: 48, color: Colors.white.withValues(alpha: 0.9));
+    Widget lockIcon = Icon(
+      Icons.lock_rounded,
+      size: 48,
+      color: Colors.white.withValues(alpha: 0.9),
+    );
     if (motion) {
       lockIcon = lockIcon
           .animateSafe(context)
@@ -218,10 +220,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
 
     Widget wrongPinText = Text(
       l10n.wrongPin,
-      style: TextStyle(
-        fontSize: 14,
-        color: Colors.yellow.shade200,
-      ),
+      style: TextStyle(fontSize: 14, color: Colors.yellow.shade200),
     );
     if (motion) {
       wrongPinText = wrongPinText.animateSafe(context).shakeX(hz: 4, amount: 4);
@@ -277,8 +276,11 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                       if (profile?.biometricEnabled == true)
                         TextButton.icon(
                           onPressed: _tryBiometric,
-                          icon: const Icon(Icons.fingerprint_rounded,
-                              color: Colors.white, size: 28),
+                          icon: const Icon(
+                            Icons.fingerprint_rounded,
+                            color: Colors.white,
+                            size: 28,
+                          ),
                           label: Text(
                             l10n.unlockWithBiometric,
                             textAlign: TextAlign.center,

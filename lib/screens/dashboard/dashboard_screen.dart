@@ -1,3 +1,4 @@
+import '../../core/utils/cycle_prediction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -90,7 +91,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   void _showPhaseInfoDialog(
-      BuildContext context, CyclePhase phase, AppLocalizations l10n) {
+    BuildContext context,
+    CyclePhase phase,
+    AppLocalizations l10n,
+  ) {
     final color = _phaseColor(phase);
     showInfoDialog(
       context,
@@ -122,39 +126,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final effectiveCycleLen = ref.watch(effectiveCycleLengthProvider);
     final access = ref.watch(accessProvider);
     final trialDaysLeft = ref.watch(trialDaysLeftProvider);
-    final todayFirst =
-        ref.watch(homePriorityProvider) == HomePriority.today;
-    // Ücretsiz katman yalnız regl takibi: modlara özel arayüz (hamilelik
-    // hero'su, hap çipi, TTC kartı) premium kapsamında — free'de veri
-    // silinmez ama görünüm klasik regl takibine döner
-    final storedMode = profile?.trackingMode ?? TrackingMode.period;
-    final mode =
-        access == AccessLevel.free ? TrackingMode.period : storedMode;
-    final confirmedOvulation = ref.watch(confirmedOvulationProvider);
-    if (profile?.lastPeriodStart != null) {
-      final cycleLen = effectiveCycleLen;
-      final lastStart = profile!.lastPeriodStart!;
-      // Tahmin geçmişte kaldıysa (gecikmiş döngü) ileri sarılmış tarih göster
-      final nextPeriod = CycleUtils.nextFuturePeriod(lastStart, cycleLen);
-      nextPeriodStr = dateFormat.format(nextPeriod);
-
-      final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
-      var ovulation =
-          addDays(nextPeriod, -AppConstants.ovulationDayBeforePeriod);
-      if (ovulation.isBefore(today)) {
-        ovulation = addDays(ovulation, cycleLen);
-      }
-      // Sıcaklıktan teyit varsa tahmin yerine ölçülen tarih gösterilir
-      if (confirmedOvulation != null) {
-        ovulation = confirmedOvulation;
-      }
-      ovulationDate = ovulation;
-      ovulationStr = dateFormat.format(ovulation);
-      final fStart = addDays(
-          ovulation, -AppConstants.fertileWindowStartBeforeOvulation);
-      final fEnd = addDays(ovulation, 1);
-      fertileStr = fertileWindowLabel(fStart, fEnd, locale);
+    final todayFirst = ref.watch(homePriorityProvider) == HomePriority.today;
+    final mode = profile?.trackingMode ?? TrackingMode.period;
+    final prediction = ref.watch(cyclePredictionProvider);
+    if (prediction != null) {
+      nextPeriodStr = dateFormat.format(prediction.nextPeriod);
+      ovulationDate = prediction.ovulation;
+      ovulationStr = dateFormat.format(prediction.ovulation);
+      fertileStr = fertileWindowLabel(
+        prediction.fertileStart,
+        prediction.fertileEnd,
+        locale,
+      );
     }
 
     final isDarkTheme = AppColors.isDark(context);
@@ -193,128 +176,152 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-              const SizedBox(height: 20),
-              // Selamlama artık display anı değil: ekranın en büyük yazısı
-              // kullanıcının sorusuna ("ne zaman?") ait olmalı, ismine değil.
-              // Tema düğmesi de buradan kalktı — ayda bir kullanılan bir
-              // tercih, her açılışta göz hizasındaki köşeyi hak etmiyor
-              // (üçlü seçici ayarlarda duruyor).
-              Text(
-                (profile?.name.trim().isNotEmpty ?? false)
-                    ? l10n.helloName(profile!.name.trim())
-                    : l10n.helloGeneric,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.ts(context),
-                ),
-                textAlign: TextAlign.center,
-              )
-                  .animateSafe(context)
-                  .fadeIn(duration: 350.ms)
-                  .slideY(begin: -0.2, end: 0, duration: 350.ms),
-              if (mode != TrackingMode.pregnancy) ...[
-                const SizedBox(height: 6),
-                _buildHeadline(context, l10n, ref, profile, daysUntil, locale)
-                    .animateSafe(context)
-                    .fadeIn(delay: 60.ms, duration: 400.ms)
-                    .slideY(begin: -0.15, end: 0, duration: 400.ms),
-              ],
-              if (todayFirst) ...[
-                const SizedBox(height: 20),
-                const QuickStatusCards(),
-                const SizedBox(height: 14),
-              ],
-              const SizedBox(height: 14),
-              if (mode == TrackingMode.pregnancy) ...[
-                // Hamilelik modu: hafta sayacı hero, tahminler gizli
-                const SizedBox(height: 20),
-                _buildPregnancyHero(context, l10n, profile?.pregnancyStartDate),
-                if (profile?.pregnancyStartDate != null) ...[
+                  const SizedBox(height: 20),
+                  // Selamlama artık display anı değil: ekranın en büyük yazısı
+                  // kullanıcının sorusuna ("ne zaman?") ait olmalı, ismine değil.
+                  // Tema düğmesi de buradan kalktı — ayda bir kullanılan bir
+                  // tercih, her açılışta göz hizasındaki köşeyi hak etmiyor
+                  // (üçlü seçici ayarlarda duruyor).
+                  Text(
+                        (profile?.name.trim().isNotEmpty ?? false)
+                            ? l10n.helloName(profile!.name.trim())
+                            : l10n.helloGeneric,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.ts(context),
+                        ),
+                        textAlign: TextAlign.center,
+                      )
+                      .animateSafe(context)
+                      .fadeIn(duration: 350.ms)
+                      .slideY(begin: -0.2, end: 0, duration: 350.ms),
+                  if (mode != TrackingMode.pregnancy) ...[
+                    const SizedBox(height: 6),
+                    _buildHeadline(
+                          context,
+                          l10n,
+                          ref,
+                          profile,
+                          daysUntil,
+                          locale,
+                        )
+                        .animateSafe(context)
+                        .fadeIn(delay: 60.ms, duration: 400.ms)
+                        .slideY(begin: -0.15, end: 0, duration: 400.ms),
+                  ],
+                  if (todayFirst) ...[
+                    const SizedBox(height: 20),
+                    const QuickStatusCards(),
+                    const SizedBox(height: 14),
+                  ],
                   const SizedBox(height: 14),
-                  _buildPregnancyInsight(
-                    context,
-                    l10n,
-                    profile!.pregnancyStartDate!,
-                  ),
-                ],
-              ] else ...[
-                // Phase name — faz bilgisini açan buton. Ring'de bir segmente
-                // dokunulduğunda o segmentin fazını gösterir; seçim yokken
-                // (ya da 5 sn sonra seçim kalkınca) güncel faza döner.
-                ValueListenableBuilder<CyclePhase?>(
-                  valueListenable: _ringSelectedPhase,
-                  builder: (context, selected, _) {
-                    final chipPhase = selected ?? phase;
-                    return PressableScale(
-                        child: Semantics(
-                      button: true,
-                      label: EnumLabels.phase(chipPhase, l10n),
-                      child: Material(
-                        color: AppColors.sf(context),
-                        borderRadius: BorderRadius.circular(16),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(16),
-                          onTap: () =>
-                              _showPhaseInfoDialog(context, chipPhase, l10n),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                PhaseGlyph(
-                                    phase: chipPhase,
-                                    size: 15,
-                                    color: AppColors.primaryDeep),
-                                const SizedBox(width: 7),
-                                Flexible(
-                                  child: Text(
-                                    EnumLabels.phase(chipPhase, l10n),
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.tp(context),
+                  if (mode == TrackingMode.pregnancy) ...[
+                    // Hamilelik modu: hafta sayacı hero, tahminler gizli
+                    const SizedBox(height: 20),
+                    _buildPregnancyHero(
+                      context,
+                      l10n,
+                      profile?.pregnancyStartDate,
+                    ),
+                    if (profile?.pregnancyStartDate != null) ...[
+                      const SizedBox(height: 14),
+                      _buildPregnancyInsight(
+                        context,
+                        l10n,
+                        profile!.pregnancyStartDate!,
+                      ),
+                    ],
+                  ] else ...[
+                    // Phase name — faz bilgisini açan buton. Ring'de bir segmente
+                    // dokunulduğunda o segmentin fazını gösterir; seçim yokken
+                    // (ya da 5 sn sonra seçim kalkınca) güncel faza döner.
+                    ValueListenableBuilder<CyclePhase?>(
+                          valueListenable: _ringSelectedPhase,
+                          builder: (context, selected, _) {
+                            final chipPhase = selected ?? phase;
+                            return PressableScale(
+                              child: Semantics(
+                                button: true,
+                                label: EnumLabels.phase(chipPhase, l10n),
+                                child: Material(
+                                  color: AppColors.sf(context),
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(16),
+                                    onTap: () => _showPhaseInfoDialog(
+                                      context,
+                                      chipPhase,
+                                      l10n,
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 8,
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          PhaseGlyph(
+                                            phase: chipPhase,
+                                            size: 15,
+                                            color: AppColors.primaryDeep,
+                                          ),
+                                          const SizedBox(width: 7),
+                                          Flexible(
+                                            child: Text(
+                                              EnumLabels.phase(chipPhase, l10n),
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                color: AppColors.tp(context),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Icon(
+                                            Icons.info_outline_rounded,
+                                            size: 16,
+                                            color: AppColors.ts(context),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 6),
-                                Icon(
-                                  Icons.info_outline_rounded,
-                                  size: 16,
-                                  color: AppColors.ts(context),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                              ),
+                            );
+                          },
+                        )
+                        .animateSafe(context)
+                        .fadeIn(delay: 100.ms, duration: 400.ms),
+                    if (mode == TrackingMode.pill &&
+                        profile?.pillPackStartDate != null) ...[
+                      const SizedBox(height: 8),
+                      _buildPillCard(
+                        context,
+                        l10n,
+                        profile!.pillPackStartDate!,
                       ),
-                    ));
-                  },
-                ).animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms),
-                if (mode == TrackingMode.pill &&
-                    profile?.pillPackStartDate != null) ...[
-                  const SizedBox(height: 8),
-                  _buildPillCard(context, l10n, profile!.pillPackStartDate!),
-                ],
-                const SizedBox(height: 28),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final expanded = constraints.maxWidth >= 840;
+                    ],
+                    const SizedBox(height: 28),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final expanded = constraints.maxWidth >= 840;
 
-                    Widget cycleColumn() => Column(
+                        Widget cycleColumn() => Column(
                           children: [
                             CycleProgressRing(
                               cycleDay: cycleDay,
                               cycleLength: effectiveCycleLen,
-                              periodLength:
-                                  profile?.averagePeriodLength ?? 5,
+                              periodLength: profile?.averagePeriodLength ?? 5,
                               phase: phase,
                               daysUntilNextPeriod: daysUntil,
                               delayDays: ref.watch(periodDelayProvider),
                               lastPeriodStart: profile?.lastPeriodStart,
                               patterned: ref.watch(phasePatternProvider),
                               selectedPhase: _ringSelectedPhase,
+                              prediction: prediction,
                             ),
                             const SizedBox(height: 20),
                             const WeekStrip()
@@ -325,15 +332,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           ],
                         );
 
-                    Widget insightColumn() => Column(
+                        Widget insightColumn() => Column(
                           children: [
-                            PredictionCardsRow(
-                              nextPeriodDate: nextPeriodStr,
-                              ovulationDate: ovulationStr,
-                              fertileWindowDate: fertileStr,
-                              ovulationConfirmed:
-                                  confirmedOvulation != null,
-                            ),
+                            if (prediction != null)
+                              PredictionCardsRow(
+                                nextPeriodDate: nextPeriodStr,
+                                ovulationDate: ovulationStr,
+                                fertileWindowDate: fertileStr,
+                                source: prediction.source,
+                              ),
                             const SizedBox(height: 24),
                             if (mode == TrackingMode.ttc) ...[
                               _buildTtcCard(
@@ -351,39 +358,39 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           ],
                         );
 
-                    return FocusTraversalGroup(
-                      policy: WidgetOrderTraversalPolicy(),
-                      child: expanded
-                          ? Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(child: cycleColumn()),
-                                const SizedBox(width: 32),
-                                Expanded(child: insightColumn()),
-                              ],
-                            )
-                          : Column(
-                              children: [
-                                cycleColumn(),
-                                const SizedBox(height: 28),
-                                insightColumn(),
-                              ],
-                            ),
-                    );
-                  },
-                ),
-              ],
-              // Deneme/ücretsiz durumu görünür kalır ama ekranın tepesinde
-              // değil: orası "ne zaman?" cevabının yeri
-              if (access == AccessLevel.free ||
-                  (access == AccessLevel.trial && trialDaysLeft <= 7)) ...[
-                const SizedBox(height: 24),
-                _buildAccessChip(context, l10n, access, trialDaysLeft),
-              ],
-              if (!todayFirst) ...[
-                const SizedBox(height: 28),
-                const QuickStatusCards(),
-              ],
+                        return FocusTraversalGroup(
+                          policy: WidgetOrderTraversalPolicy(),
+                          child: expanded
+                              ? Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(child: cycleColumn()),
+                                    const SizedBox(width: 32),
+                                    Expanded(child: insightColumn()),
+                                  ],
+                                )
+                              : Column(
+                                  children: [
+                                    cycleColumn(),
+                                    const SizedBox(height: 28),
+                                    insightColumn(),
+                                  ],
+                                ),
+                        );
+                      },
+                    ),
+                  ],
+                  // Deneme/ücretsiz durumu görünür kalır ama ekranın tepesinde
+                  // değil: orası "ne zaman?" cevabının yeri
+                  if (access == AccessLevel.free ||
+                      (access == AccessLevel.trial && trialDaysLeft <= 7)) ...[
+                    const SizedBox(height: 24),
+                    _buildAccessChip(context, l10n, access, trialDaysLeft),
+                  ],
+                  if (!todayFirst) ...[
+                    const SizedBox(height: 28),
+                    const QuickStatusCards(),
+                  ],
                 ],
               ),
             ),
@@ -427,7 +434,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       headline = l10n.headlinePeriodDay(dayOfPeriod);
     } else {
       final cycleLen = ref.watch(effectiveCycleLengthProvider);
-      final next = CycleUtils.nextFuturePeriod(profile!.lastPeriodStart!, cycleLen);
+      final next = CycleUtils.nextFuturePeriod(
+        profile!.lastPeriodStart!,
+        cycleLen,
+      );
       subtitle = DateFormat('d MMMM', locale).format(next);
       headline = switch (daysUntil) {
         0 => l10n.headlinePeriodToday,
@@ -465,7 +475,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   Widget _buildActionRow(
-      BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) {
     final ongoingPeriod = ref.watch(ongoingPeriodProvider);
     // Keşfi olmayan bir hareket olmayan bir özelliktir: ipucu, kullanıcı
     // hareketi bir kez kullanana kadar durur, sonra kalıcı olarak kapanır
@@ -493,23 +506,23 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        row,
-        if (showHint) ...[
-          const SizedBox(height: 8),
-          Text(
-            l10n.backdateHint,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
-              height: 1.35,
-              color: AppColors.ts(context),
-            ),
-          ),
-        ],
-      ],
-    )
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            row,
+            if (showHint) ...[
+              const SizedBox(height: 8),
+              Text(
+                l10n.backdateHint,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  height: 1.35,
+                  color: AppColors.ts(context),
+                ),
+              ),
+            ],
+          ],
+        )
         .animateSafe(context)
         .fadeIn(delay: 250.ms, duration: 400.ms)
         .slideY(begin: 0.15, end: 0, delay: 250.ms, duration: 400.ms);
@@ -536,46 +549,53 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       final recordId = ongoingPeriod.id;
       await recordsNotifier.endPeriod(recordId, date);
       profileNotifier.refresh();
-      final snackBar = messenger.showSnackBar(SnackBar(
-        content: Text(l10n.periodMarkedEnded),
-        duration: const Duration(seconds: 6),
-        action: SnackBarAction(
-          label: l10n.undo,
-          onPressed: () async {
-            await recordsNotifier.reopenRecord(recordId);
-            profileNotifier.refresh();
-          },
+      final snackBar = messenger.showSnackBar(
+        SnackBar(
+          content: Text(l10n.periodMarkedEnded),
+          duration: const Duration(seconds: 6),
+          action: SnackBarAction(
+            label: l10n.undo,
+            onPressed: () async {
+              await recordsNotifier.reopenRecord(recordId);
+              profileNotifier.refresh();
+            },
+          ),
         ),
-      ));
+      );
       notifyTrackingRecordAfterUndoWindow(snackBar);
     } else {
-      final idsBefore =
-          ref.read(periodRecordsProvider).map((r) => r.id).toSet();
+      final idsBefore = ref
+          .read(periodRecordsProvider)
+          .map((r) => r.id)
+          .toSet();
       // Geçmiş bir gün seçildiyse kayıt bugün hâlâ sürüyor sayılmaz
       final record = await recordsNotifier.startPeriod(
         date,
         periodLength: prevProfile?.averagePeriodLength,
       );
       final created = !idsBefore.contains(record.id);
-      await profileNotifier
-          .syncLastPeriodStart(ref.read(periodRecordsProvider));
-      final snackBar = messenger.showSnackBar(SnackBar(
-        content: Text(l10n.periodMarkedStarted),
-        duration: const Duration(seconds: 6),
-        action: SnackBarAction(
-          label: l10n.undo,
-          onPressed: () async {
-            if (created) await recordsNotifier.deleteRecord(record.id);
-            // Profil (lastPeriodStart dahil) eski haline:
-            // updateProfile bildirim/widget'ı da tazeler
-            if (prevProfile != null) {
-              await profileNotifier.updateProfile(prevProfile);
-            } else {
-              profileNotifier.refresh();
-            }
-          },
+      await profileNotifier.syncLastPeriodStart(
+        ref.read(periodRecordsProvider),
+      );
+      final snackBar = messenger.showSnackBar(
+        SnackBar(
+          content: Text(l10n.periodMarkedStarted),
+          duration: const Duration(seconds: 6),
+          action: SnackBarAction(
+            label: l10n.undo,
+            onPressed: () async {
+              if (created) await recordsNotifier.deleteRecord(record.id);
+              // Profil (lastPeriodStart dahil) eski haline:
+              // updateProfile bildirim/widget'ı da tazeler
+              if (prevProfile != null) {
+                await profileNotifier.updateProfile(prevProfile);
+              } else {
+                profileNotifier.refresh();
+              }
+            },
+          ),
         ),
-      ));
+      );
       notifyTrackingRecordAfterUndoWindow(snackBar);
     }
   }
@@ -592,8 +612,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final today = DateTime(now.year, now.month, now.day);
     // Bitiş, başlangıçtan önce olamaz
     final earliest = ongoingPeriod != null
-        ? DateTime(ongoingPeriod.startDate.year, ongoingPeriod.startDate.month,
-            ongoingPeriod.startDate.day)
+        ? DateTime(
+            ongoingPeriod.startDate.year,
+            ongoingPeriod.startDate.month,
+            ongoingPeriod.startDate.day,
+          )
         : today.subtract(const Duration(days: 90));
 
     final picked = await showDatePicker(
@@ -618,15 +641,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     await _togglePeriod(context, ref, l10n, ongoingPeriod, picked);
   }
 
-  Widget _buildAccessChip(BuildContext context, AppLocalizations l10n,
-      AccessLevel access, int daysLeft) {
+  Widget _buildAccessChip(
+    BuildContext context,
+    AppLocalizations l10n,
+    AccessLevel access,
+    int daysLeft,
+  ) {
     final isFree = access == AccessLevel.free;
     // Deneme bitişi sessizce geliyordu: 30. gün her şey açık, 31. gün on
     // ekran birden kapalı. Son üç gün çip uyarı diline geçer ki kapanış
     // sürpriz olmasın.
     final isEnding = !isFree && daysLeft <= 3;
-    final label =
-        isFree ? l10n.freeBadge : l10n.trialBadge(daysLeft);
+    final label = isFree ? l10n.freeBadge : l10n.trialBadge(daysLeft);
     return Semantics(
       button: true,
       label: label,
@@ -637,8 +663,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           borderRadius: BorderRadius.circular(14),
           onTap: () => GoRouter.of(context).push('/paywall'),
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
@@ -661,18 +686,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ),
                 const SizedBox(width: 6),
                 Flexible(
-                  child: Text(label,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: isEnding
-                            ? FontWeight.w700
-                            : FontWeight.w600,
-                        color: isEnding
-                            ? AppColors.warningText
-                            : AppColors.ts(context),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis),
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: isEnding ? FontWeight.w700 : FontWeight.w600,
+                      color: isEnding
+                          ? AppColors.warningText
+                          : AppColors.ts(context),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
@@ -685,66 +710,69 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   String _coachMessage(CyclePhase phase, AppLocalizations l10n) {
     final messages = switch (phase) {
       CyclePhase.menstrual => [
-          l10n.coachMenstrual0,
-          l10n.coachMenstrual1,
-          l10n.coachMenstrual2
-        ],
+        l10n.coachMenstrual0,
+        l10n.coachMenstrual1,
+        l10n.coachMenstrual2,
+      ],
       CyclePhase.follicular => [
-          l10n.coachFollicular0,
-          l10n.coachFollicular1,
-          l10n.coachFollicular2
-        ],
+        l10n.coachFollicular0,
+        l10n.coachFollicular1,
+        l10n.coachFollicular2,
+      ],
       CyclePhase.ovulation => [
-          l10n.coachOvulation0,
-          l10n.coachOvulation1,
-          l10n.coachOvulation2
-        ],
+        l10n.coachOvulation0,
+        l10n.coachOvulation1,
+        l10n.coachOvulation2,
+      ],
       CyclePhase.luteal => [
-          l10n.coachLuteal0,
-          l10n.coachLuteal1,
-          l10n.coachLuteal2
-        ],
+        l10n.coachLuteal0,
+        l10n.coachLuteal1,
+        l10n.coachLuteal2,
+      ],
     };
     // Gün bazlı deterministik rotasyon: aynı gün hep aynı mesaj,
     // ertesi gün değişir
-    final dayOfYear =
-        DateTime.now().difference(DateTime(DateTime.now().year)).inDays;
+    final dayOfYear = DateTime.now()
+        .difference(DateTime(DateTime.now().year))
+        .inDays;
     return messages[dayOfYear % messages.length];
   }
 
   Widget _buildTtcCard(
-      BuildContext context,
-      WidgetRef ref,
-      AppLocalizations l10n,
-      int cycleDay,
-      int cycleLength,
-      DateTime? ovulationDate,
-      String locale) {
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    int cycleDay,
+    int cycleLength,
+    DateTime? ovulationDate,
+    String locale,
+  ) {
     final level = CycleUtils.fertilityLevelForDay(cycleDay, cycleLength);
     final isDark = AppColors.isDark(context);
     // Rozet METNİ pastel durum rengiyle yazılamaz (açık zeminde ~2:1):
     // açık temada koyu metin tonu, zemin tonu pastel kalır
     final (levelText, levelColor, levelTextColor) = switch (level) {
       FertilityLevel.high => (
-          l10n.fertilityHigh,
-          AppColors.success,
-          isDark ? AppColors.success : AppColors.fertileWindowText
-        ),
+        l10n.fertilityHigh,
+        AppColors.success,
+        isDark ? AppColors.success : AppColors.fertileWindowText,
+      ),
       FertilityLevel.medium => (
-          l10n.fertilityMedium,
-          AppColors.warning,
-          isDark ? AppColors.warning : AppColors.warningText
-        ),
+        l10n.fertilityMedium,
+        AppColors.warning,
+        isDark ? AppColors.warning : AppColors.warningText,
+      ),
       FertilityLevel.low => (
-          l10n.fertilityLow,
-          AppColors.textSecondary,
-          AppColors.ts(context)
-        ),
+        l10n.fertilityLow,
+        AppColors.textSecondary,
+        AppColors.ts(context),
+      ),
     };
 
     final today = DateTime.now();
-    final todayLog = ref.watch(dailyLogProvider)[
-        '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}'];
+    final todayLog = ref.watch(
+      dailyLogProvider,
+    )['${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}'];
     final lhResult = todayLog?.ovulationTestPositive;
 
     return GlassCard(
@@ -757,27 +785,38 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         children: [
           Row(
             children: [
-              Icon(Icons.favorite_rounded,
-                  size: 18, color: AppColors.primaryStrong),
+              Icon(
+                Icons.favorite_rounded,
+                size: 18,
+                color: AppColors.primaryStrong,
+              ),
               const SizedBox(width: 8),
-              Text(l10n.fertilityToday,
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.tp(context))),
+              Text(
+                l10n.fertilityToday,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.tp(context),
+                ),
+              ),
               const Spacer(),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: levelColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(levelText,
-                    style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: levelTextColor)),
+                child: Text(
+                  levelText,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: levelTextColor,
+                  ),
+                ),
               ),
             ],
           ),
@@ -785,48 +824,53 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           // yazmıyordu. Daha erken test yanlış negatif verir.
           if (ovulationDate != null) ...[
             const SizedBox(height: 10),
-            Builder(builder: (context) {
-              final testDay =
-                  CycleUtils.earliestPregnancyTestDay(ovulationDate);
-              final now = DateTime.now();
-              final today = DateTime(now.year, now.month, now.day);
-              final ready = !testDay.isAfter(today);
-              return Row(
-                children: [
-                  Icon(
-                    ready
-                        ? Icons.check_circle_outline_rounded
-                        : Icons.schedule_rounded,
-                    size: 15,
-                    color: ready
-                        ? AppColors.fertileWindowText
-                        : AppColors.ts(context),
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
+            Builder(
+              builder: (context) {
+                final testDay = CycleUtils.earliestPregnancyTestDay(
+                  ovulationDate,
+                );
+                final now = DateTime.now();
+                final today = DateTime(now.year, now.month, now.day);
+                final ready = !testDay.isAfter(today);
+                return Row(
+                  children: [
+                    Icon(
                       ready
-                          ? l10n.pregnancyTestReady
-                          : l10n.pregnancyTestFrom(
-                              DateFormat('d MMMM', locale).format(testDay)),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: ready
-                            ? AppColors.fertileWindowText
-                            : AppColors.ts(context),
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                          ? Icons.check_circle_outline_rounded
+                          : Icons.schedule_rounded,
+                      size: 15,
+                      color: ready
+                          ? AppColors.fertileWindowText
+                          : AppColors.ts(context),
                     ),
-                  ),
-                ],
-              );
-            }),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        ready
+                            ? l10n.pregnancyTestReady
+                            : l10n.pregnancyTestFrom(
+                                DateFormat('d MMMM', locale).format(testDay),
+                              ),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: ready
+                              ? AppColors.fertileWindowText
+                              : AppColors.ts(context),
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
           ],
           const SizedBox(height: 12),
-          Text(l10n.lhTestTitle,
-              style: TextStyle(
-                  fontSize: 13, color: AppColors.ts(context))),
+          Text(
+            l10n.lhTestTitle,
+            style: TextStyle(fontSize: 13, color: AppColors.ts(context)),
+          ),
           const SizedBox(height: 8),
           Row(
             children: [
@@ -841,7 +885,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   onTap: () => ref
                       .read(dailyLogProvider.notifier)
                       .updateOvulationTest(
-                          today, lhResult == true ? null : true),
+                        today,
+                        lhResult == true ? null : true,
+                      ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -854,7 +900,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   onTap: () => ref
                       .read(dailyLogProvider.notifier)
                       .updateOvulationTest(
-                          today, lhResult == false ? null : false),
+                        today,
+                        lhResult == false ? null : false,
+                      ),
                 ),
               ),
             ],
@@ -875,9 +923,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       button: true,
       selected: selected,
       child: Material(
-        color: selected
-            ? color.withValues(alpha: 0.18)
-            : AppColors.sf(context),
+        color: selected ? color.withValues(alpha: 0.18) : AppColors.sf(context),
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
@@ -888,9 +934,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: selected
-                    ? color
-                    : AppColors.dv(context),
+                color: selected ? color : AppColors.dv(context),
                 width: selected ? 1.5 : 1,
               ),
             ),
@@ -908,8 +952,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  Widget _buildCoachCard(BuildContext context, WidgetRef ref,
-      CyclePhase phase, AppLocalizations l10n) {
+  Widget _buildCoachCard(
+    BuildContext context,
+    WidgetRef ref,
+    CyclePhase phase,
+    AppLocalizations l10n,
+  ) {
     // Genel ipucunun üstüne kişisel içgörü: kullanıcının KENDİ kayıtları
     // bu fazda hangi semptomu gösteriyorsa o söylenir — "uygulama beni
     // tanıyor" anı (motor: topPhaseSymptoms, istatistikle aynı).
@@ -930,8 +978,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.insights_rounded,
-                    size: 18, color: AppColors.primaryDeep),
+                Icon(
+                  Icons.insights_rounded,
+                  size: 18,
+                  color: AppColors.primaryDeep,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -957,7 +1008,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 1),
                 child: PhaseGlyph(
-                    phase: phase, size: 17, color: AppColors.primaryDeep),
+                  phase: phase,
+                  size: 17,
+                  color: AppColors.primaryDeep,
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -978,7 +1032,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   Widget _buildPregnancyHero(
-      BuildContext context, AppLocalizations l10n, DateTime? start) {
+    BuildContext context,
+    AppLocalizations l10n,
+    DateTime? start,
+  ) {
     // Başlangıç tarihi yoksa "1. hafta" göstermek uydurma bilgi olur:
     // kullanıcıyı tarihi gireceği yere yönlendir
     if (start == null) {
@@ -995,8 +1052,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               padding: const EdgeInsets.all(28),
               child: Column(
                 children: [
-                  const Icon(Icons.pregnant_woman_rounded,
-                      size: 40, color: AppColors.primaryDeep),
+                  const Icon(
+                    Icons.pregnant_woman_rounded,
+                    size: 40,
+                    color: AppColors.primaryDeep,
+                  ),
                   const SizedBox(height: 12),
                   Text(
                     l10n.pregnancySetStartPrompt,
@@ -1033,15 +1093,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           padding: const EdgeInsets.all(28),
           child: Column(
             children: [
-              const Icon(Icons.pregnant_woman_rounded,
-                  size: 40, color: AppColors.primaryDeep),
+              const Icon(
+                Icons.pregnant_woman_rounded,
+                size: 40,
+                color: AppColors.primaryDeep,
+              ),
               const SizedBox(height: 8),
               Text(
                 l10n.pregnancyWeekLabel(week),
-                style: Theme.of(context)
-                    .textTheme
-                    .displayMedium!
-                    .copyWith(color: AppColors.tp(context)),
+                style: Theme.of(context).textTheme.displayMedium!.copyWith(
+                  color: AppColors.tp(context),
+                ),
               ),
               const SizedBox(height: 4),
               Text(
@@ -1148,7 +1210,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   /// Tek bir çipti: kaçıncı gün olduğu yazıyordu ama bu modun asıl sorusu
   /// ("ara ne zaman başlıyor", "yeni paket ne zaman") cevapsızdı.
   Widget _buildPillCard(
-      BuildContext context, AppLocalizations l10n, DateTime packStart) {
+    BuildContext context,
+    AppLocalizations l10n,
+    DateTime packStart,
+  ) {
     final day = CycleUtils.pillDayInPack(packStart);
     final isBreak = CycleUtils.pillIsBreak(day);
     final accent = isBreak ? AppColors.warningText : AppColors.primaryDeep;
@@ -1212,51 +1277,55 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     VoidCallback? onLongPress,
   }) {
     return PressableScale(
-        child: GlassCard(
-      borderRadius: 20,
-      blur: 0,
-      opacity: 0.2,
-      padding: EdgeInsets.zero,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          onLongPress: onLongPress,
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 18),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [color.withValues(alpha: 0.3), color.withValues(alpha: 0.15)],
+      child: GlassCard(
+        borderRadius: 20,
+        blur: 0,
+        opacity: 0.2,
+        padding: EdgeInsets.zero,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            onLongPress: onLongPress,
+            borderRadius: BorderRadius.circular(20),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 18),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          color.withValues(alpha: 0.3),
+                          color.withValues(alpha: 0.15),
+                        ],
+                      ),
+                      shape: BoxShape.circle,
                     ),
-                    shape: BoxShape.circle,
+                    child: Icon(icon, color: color, size: 20),
                   ),
-                  child: Icon(icon, color: color, size: 20),
-                ),
-                const SizedBox(width: 10),
-                // Etiket iki butona bölünmüş dar alanda yaşıyor: büyük yazı
-                // tipinde satırı taşırmak yerine sarmalı
-                Flexible(
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.tp(context),
+                  const SizedBox(width: 10),
+                  // Etiket iki butona bölünmüş dar alanda yaşıyor: büyük yazı
+                  // tipinde satırı taşırmak yerine sarmalı
+                  Flexible(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.tp(context),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ));
+    );
   }
 }

@@ -56,12 +56,17 @@ class _DailyMeasurementsScreenState
       _sleepQuality != _initialSleepQuality ||
       _temperatureTime != _initialTemperatureTime;
 
+  late DateTime _editDate;
+
   @override
   void initState() {
     super.initState();
-    final log = ref
-        .read(dailyLogProvider.notifier)
-        .getDailyLog(ref.read(selectedDateProvider));
+    final selected = ref.read(selectedDateProvider);
+    final now = DateTime.now();
+    _editDate = DateTime(selected.year, selected.month, selected.day);
+    if (_editDate.isAfter(now))
+      _editDate = DateTime(now.year, now.month, now.day);
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(_editDate);
     _glasses = log?.waterIntake ?? 0;
 
     if (log?.weight != null) {
@@ -81,10 +86,7 @@ class _DailyMeasurementsScreenState
     _bedTime = _parseTime(log?.sleepStart, _bedTime);
     _wakeTime = _parseTime(log?.sleepEnd, _wakeTime);
     _sleepQuality = log?.sleepQuality ?? 3;
-    _temperatureTime = _parseTime(
-      log?.temperatureTime,
-      _temperatureTime,
-    );
+    _temperatureTime = _parseTime(log?.temperatureTime, _temperatureTime);
 
     _initialWeight = _weightController.text;
     _initialTemperature = _temperatureController.text;
@@ -179,8 +181,7 @@ class _DailyMeasurementsScreenState
         runSpacing: 8,
         children: [
           IconButton.filledTonal(
-            onPressed:
-                _glasses == 0 ? null : () => setState(() => _glasses--),
+            onPressed: _glasses == 0 ? null : () => setState(() => _glasses--),
             tooltip: l10n.decrease,
             icon: const Icon(Icons.remove_rounded),
           ),
@@ -269,8 +270,7 @@ class _DailyMeasurementsScreenState
                     children: List.generate(5, (index) {
                       final value = index + 1;
                       return IconButton(
-                        onPressed: () =>
-                            setState(() => _sleepQuality = value),
+                        onPressed: () => setState(() => _sleepQuality = value),
                         tooltip: l10n.severityLevel(value),
                         icon: Icon(
                           value <= _sleepQuality
@@ -296,8 +296,7 @@ class _DailyMeasurementsScreenState
         children: [
           TextField(
             controller: _temperatureController,
-            keyboardType:
-                const TextInputType.numberWithOptions(decimal: true),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             textInputAction: TextInputAction.done,
             onChanged: (_) => setState(() {}),
             decoration: InputDecoration(
@@ -430,8 +429,9 @@ class _DailyMeasurementsScreenState
     if (raw.trim().isEmpty) return null;
     final value = double.tryParse(raw.trim().replaceAll(',', '.'));
     if (value == null || value.isNaN) return double.nan;
-    final kilograms =
-        _usePounds ? UnitConversion.poundsToKilograms(value) : value;
+    final kilograms = _usePounds
+        ? UnitConversion.poundsToKilograms(value)
+        : value;
     if (kilograms < InputParsing.minWeightKg ||
         kilograms > InputParsing.maxWeightKg) {
       return double.nan;
@@ -468,17 +468,26 @@ class _DailyMeasurementsScreenState
       return;
     }
 
-    await ref.read(dailyLogProvider.notifier).updateMeasurements(
-      ref.read(selectedDateProvider),
+    await ref
+        .read(dailyLogProvider.notifier)
+        .updateMeasurements(
+          _editDate,
+          changedFields: {
+        if (_glasses != _initialGlasses) 'water',
+        if (_weightController.text != _initialWeight) 'weight',
+        if (_temperatureController.text != _initialTemperature || _temperatureTime != _initialTemperatureTime) 'temperature',
+        if (_sleepEnabled != _initialSleepEnabled || _bedTime != _initialBedTime || _wakeTime != _initialWakeTime || _sleepQuality != _initialSleepQuality) 'sleep',
+      },
       waterIntake: _glasses,
-      temperature: temperature,
-      temperatureTime:
-          temperature == null ? null : _timeString(_temperatureTime),
-      weight: weight,
-      sleepStart: _sleepEnabled ? _timeString(_bedTime) : null,
-      sleepEnd: _sleepEnabled ? _timeString(_wakeTime) : null,
-      sleepQuality: _sleepEnabled ? _sleepQuality : null,
-    );
+          temperature: temperature,
+          temperatureTime: temperature == null
+              ? null
+              : _timeString(_temperatureTime),
+          weight: weight,
+          sleepStart: _sleepEnabled ? _timeString(_bedTime) : null,
+          sleepEnd: _sleepEnabled ? _timeString(_wakeTime) : null,
+          sleepQuality: _sleepEnabled ? _sleepQuality : null,
+        );
     notifyTrackingRecordSaved();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(

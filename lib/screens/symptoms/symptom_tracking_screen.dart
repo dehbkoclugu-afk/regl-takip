@@ -34,12 +34,21 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
     return false;
   }
 
+  late DateTime _editDate;
+
   @override
   void initState() {
     super.initState();
-    _tabController =
-        TabController(length: SymptomCategory.values.length, vsync: this);
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
+    final selected = ref.read(selectedDateProvider);
+    final now = DateTime.now();
+    _editDate = DateTime(selected.year, selected.month, selected.day);
+    if (_editDate.isAfter(now))
+      _editDate = DateTime(now.year, now.month, now.day);
+    _tabController = TabController(
+      length: SymptomCategory.values.length,
+      vsync: this,
+    );
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(_editDate);
     if (log != null) {
       for (final entry in log.symptoms) {
         _selectedSymptoms[entry.type] = entry.severity;
@@ -57,21 +66,46 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
   List<SymptomType> _getSymptomsForCategory(SymptomCategory category) {
     switch (category) {
       case SymptomCategory.physical:
-        return [SymptomType.cramp, SymptomType.headache, SymptomType.bloating,
-          SymptomType.breastTenderness, SymptomType.backPain,
-          SymptomType.fatigue, SymptomType.nausea, SymptomType.dizziness];
+        return [
+          SymptomType.cramp,
+          SymptomType.headache,
+          SymptomType.bloating,
+          SymptomType.breastTenderness,
+          SymptomType.backPain,
+          SymptomType.fatigue,
+          SymptomType.nausea,
+          SymptomType.dizziness,
+        ];
       case SymptomCategory.emotional:
-        return [SymptomType.stress, SymptomType.anxiety,
-          SymptomType.irritability, SymptomType.crying, SymptomType.sensitivity];
+        return [
+          SymptomType.stress,
+          SymptomType.anxiety,
+          SymptomType.irritability,
+          SymptomType.crying,
+          SymptomType.sensitivity,
+        ];
       case SymptomCategory.skin:
-        return [SymptomType.acne, SymptomType.oilySkin, SymptomType.drySkin,
-          SymptomType.glowing];
+        return [
+          SymptomType.acne,
+          SymptomType.oilySkin,
+          SymptomType.drySkin,
+          SymptomType.glowing,
+        ];
       case SymptomCategory.digestive:
-        return [SymptomType.constipation, SymptomType.diarrhea, SymptomType.gas,
-          SymptomType.increasedAppetite, SymptomType.decreasedAppetite];
+        return [
+          SymptomType.constipation,
+          SymptomType.diarrhea,
+          SymptomType.gas,
+          SymptomType.increasedAppetite,
+          SymptomType.decreasedAppetite,
+        ];
       case SymptomCategory.other:
-        return [SymptomType.insomnia, SymptomType.hotFlash, SymptomType.edema,
-          SymptomType.hairLoss];
+        return [
+          SymptomType.insomnia,
+          SymptomType.hotFlash,
+          SymptomType.edema,
+          SymptomType.hairLoss,
+        ];
     }
   }
 
@@ -124,8 +158,11 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
         indicatorColor: AppColors.primary,
         labelStyle: TextStyle(fontWeight: FontWeight.w700),
         tabs: [
-          Tab(text: l10n.physical), Tab(text: l10n.emotional), Tab(text: l10n.skinCategory),
-          Tab(text: l10n.digestive), Tab(text: l10n.otherCategory),
+          Tab(text: l10n.physical),
+          Tab(text: l10n.emotional),
+          Tab(text: l10n.skinCategory),
+          Tab(text: l10n.digestive),
+          Tab(text: l10n.otherCategory),
         ],
       ),
       body: TabBarView(
@@ -142,11 +179,14 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
             backgroundColor: AppColors.primaryStrong,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
           ),
-          child: Text(l10n.saveNSymptoms(_selectedSymptoms.length),
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          child: Text(
+            l10n.saveNSymptoms(_selectedSymptoms.length),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
         ),
       ),
     );
@@ -156,8 +196,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
     final symptoms = _getSymptomsForCategory(category);
     return LayoutBuilder(
       builder: (context, constraints) {
-        final textScale =
-            effectiveTextScale(MediaQuery.textScalerOf(context));
+        final textScale = effectiveTextScale(MediaQuery.textScalerOf(context));
         return GridView.builder(
           padding: const EdgeInsets.all(16),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -173,102 +212,121 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
           ),
           itemCount: symptoms.length,
           itemBuilder: (context, index) {
-        final symptom = symptoms[index];
-        final isSelected = _selectedSymptoms.containsKey(symptom);
-        final severity = _selectedSymptoms[symptom] ?? 1;
+            final symptom = symptoms[index];
+            final isSelected = _selectedSymptoms.containsKey(symptom);
+            final severity = _selectedSymptoms[symptom] ?? 1;
 
-        return Semantics(
-          button: true,
-          selected: isSelected,
-          label: isSelected
-              ? '${_symptomName(symptom, l10n)}, ${l10n.severityLevel(severity)}'
-              : _symptomName(symptom, l10n),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(20),
-            onTap: () => setState(() {
-              if (isSelected) {
-                _selectedSymptoms.remove(symptom);
-              } else {
-                _selectedSymptoms[symptom] = 1;
-              }
-            }),
-            child: AnimatedContainer(
-            duration: context.motionDuration(const Duration(milliseconds: 250)),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              gradient: isSelected
-                  ? LinearGradient(
-                      colors: [AppColors.primary.withValues(alpha: 0.15), AppColors.primary.withValues(alpha: 0.05)],
-                    )
-                  : null,
-              color: isSelected ? null : AppColors.sf(context),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: isSelected ? AppColors.primary : AppColors.dv(context),
-                width: isSelected ? 1.5 : 0.5,
-              ),
-              boxShadow: isSelected
-                  ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.15), blurRadius: 12)]
-                  : [],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(_symptomIcon(symptom),
-                    // primary beyaz zeminde 2,01:1 — ikon için de 3:1 gerekir
-                    color: isSelected
-                        ? AppColors.primaryStrong
-                        : AppColors.ts(context),
-                    size: 28),
-                const SizedBox(height: 6),
-                Text(_symptomName(symptom, l10n),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                      // Seçim etiketi primary'ye dönüyordu: 2,01:1. Ailenin
-                      // bordo ucu aynı kimliği 6,30:1 ile veriyor
+            return Semantics(
+              button: true,
+              selected: isSelected,
+              label: isSelected
+                  ? '${_symptomName(symptom, l10n)}, ${l10n.severityLevel(severity)}'
+                  : _symptomName(symptom, l10n),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () => setState(() {
+                  if (isSelected) {
+                    _selectedSymptoms.remove(symptom);
+                  } else {
+                    _selectedSymptoms[symptom] = 1;
+                  }
+                }),
+                child: AnimatedContainer(
+                  duration: context.motionDuration(
+                    const Duration(milliseconds: 250),
+                  ),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    gradient: isSelected
+                        ? LinearGradient(
+                            colors: [
+                              AppColors.primary.withValues(alpha: 0.15),
+                              AppColors.primary.withValues(alpha: 0.05),
+                            ],
+                          )
+                        : null,
+                    color: isSelected ? null : AppColors.sf(context),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
                       color: isSelected
-                          ? AppColors.primaryDeep
-                          : AppColors.tp(context),
+                          ? AppColors.primary
+                          : AppColors.dv(context),
+                      width: isSelected ? 1.5 : 0.5,
                     ),
-                    textAlign: TextAlign.center),
-                if (isSelected) ...[
-                  const SizedBox(height: 2),
-                  // Şiddet noktaları 10 px ikon + 2 px boşluktu: dokunma
-                  // hedefi ~14 px. Her nokta artık 28 px'lik alanda.
-                  Row(
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.15),
+                              blurRadius: 12,
+                            ),
+                          ]
+                        : [],
+                  ),
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      5,
-                      (i) => Semantics(
-                        button: true,
-                        selected: i < severity,
-                        label: l10n.severityLevel(i + 1),
-                        child: InkWell(
-                          customBorder: const CircleBorder(),
-                          onTap: () =>
-                              setState(() => _selectedSymptoms[symptom] = i + 1),
-                          child: SizedBox(
-                            width: 28,
-                            height: 28,
-                            child: Icon(
-                              i < severity
-                                  ? Icons.circle
-                                  : Icons.circle_outlined,
-                              size: 12,
-                              color: AppColors.primary,
+                    children: [
+                      Icon(
+                        _symptomIcon(symptom),
+                        // primary beyaz zeminde 2,01:1 — ikon için de 3:1 gerekir
+                        color: isSelected
+                            ? AppColors.primaryStrong
+                            : AppColors.ts(context),
+                        size: 28,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        _symptomName(symptom, l10n),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w600,
+                          // Seçim etiketi primary'ye dönüyordu: 2,01:1. Ailenin
+                          // bordo ucu aynı kimliği 6,30:1 ile veriyor
+                          color: isSelected
+                              ? AppColors.primaryDeep
+                              : AppColors.tp(context),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      if (isSelected) ...[
+                        const SizedBox(height: 2),
+                        // Şiddet noktaları 10 px ikon + 2 px boşluktu: dokunma
+                        // hedefi ~14 px. Her nokta artık 28 px'lik alanda.
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(
+                            5,
+                            (i) => Semantics(
+                              button: true,
+                              selected: i < severity,
+                              label: l10n.severityLevel(i + 1),
+                              child: InkWell(
+                                customBorder: const CircleBorder(),
+                                onTap: () => setState(
+                                  () => _selectedSymptoms[symptom] = i + 1,
+                                ),
+                                child: SizedBox(
+                                  width: 28,
+                                  height: 28,
+                                  child: Icon(
+                                    i < severity
+                                        ? Icons.circle
+                                        : Icons.circle_outlined,
+                                    size: 12,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
+                      ],
+                    ],
                   ),
-                ],
-              ],
-            ),
-          ),
-          ),
-        ).animateSafe(context).fadeIn(delay: (index * 50).ms, duration: 300.ms);
+                ),
+              ),
+            ).animateSafe(context).fadeIn(delay: (index * 50).ms, duration: 300.ms);
           },
         );
       },
@@ -278,7 +336,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
   Future<void> _save() async {
     if (!ensureTrackingWriteAccess(context, ref)) return;
     final notifier = ref.read(dailyLogProvider.notifier);
-    final date = ref.read(selectedDateProvider);
+    final date = _editDate;
     final entries = _selectedSymptoms.entries
         .map((e) => SymptomEntry(type: e.key, severity: e.value))
         .toList();
@@ -294,8 +352,10 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.nSymptomsSaved(entries.length)),
-            backgroundColor: AppColors.success),
+        SnackBar(
+          content: Text(l10n.nSymptomsSaved(entries.length)),
+          backgroundColor: AppColors.success,
+        ),
       );
       Navigator.of(context).pop();
     }

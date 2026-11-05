@@ -58,19 +58,25 @@ List<PhaseInsight> topPhaseSymptoms({
     }
   }
 
-  final eligible = counts.entries
-      .where((e) =>
-          e.value.values.fold<int>(0, (a, b) => a + b) >= minOccurrences)
-      .toList()
-    ..sort((a, b) => b.value.values
-        .fold<int>(0, (x, y) => x + y)
-        .compareTo(a.value.values.fold<int>(0, (x, y) => x + y)));
+  final eligible =
+      counts.entries
+          .where(
+            (e) =>
+                e.value.values.fold<int>(0, (a, b) => a + b) >= minOccurrences,
+          )
+          .toList()
+        ..sort(
+          (a, b) => b.value.values
+              .fold<int>(0, (x, y) => x + y)
+              .compareTo(a.value.values.fold<int>(0, (x, y) => x + y)),
+        );
 
   final insights = <PhaseInsight>[];
   for (final entry in eligible.take(take)) {
     final total = entry.value.values.fold<int>(0, (a, b) => a + b);
-    final topPhase =
-        entry.value.entries.reduce((a, b) => a.value >= b.value ? a : b);
+    final topPhase = entry.value.entries.reduce(
+      (a, b) => a.value >= b.value ? a : b,
+    );
     final percent = (topPhase.value / total * 100).round();
     insights.add(PhaseInsight(entry.key, topPhase.key, percent, total));
   }
@@ -80,7 +86,9 @@ List<PhaseInsight> topPhaseSymptoms({
 /// Verilen faz için en güçlü içgörü (yoksa null) — koç satırı ve
 /// faz-ipucu bildirimi için kısayol.
 PhaseInsight? topInsightForPhase(
-    List<PhaseInsight> insights, CyclePhase phase) {
+  List<PhaseInsight> insights,
+  CyclePhase phase,
+) {
   for (final insight in insights) {
     if (insight.phase == phase) return insight;
   }

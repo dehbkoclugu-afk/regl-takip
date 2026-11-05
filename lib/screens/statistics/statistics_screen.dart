@@ -56,23 +56,26 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final cutoff = _filterMonths == 0
         ? DateTime.fromMillisecondsSinceEpoch(0)
         : DateTime.now().subtract(Duration(days: _filterMonths * 30));
-    final filteredRecords =
-        records.where((r) => r.startDate.isAfter(cutoff)).toList();
-    final filteredLogs =
-        dailyLogs.values.where((l) => l.date.isAfter(cutoff)).toList();
+    final filteredRecords = records
+        .where((r) => r.startDate.isAfter(cutoff))
+        .toList();
+    final filteredLogs = dailyLogs.values
+        .where((l) => l.date.isAfter(cutoff))
+        .toList();
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final meaningfulLogs = dailyLogs.values
-        .where((log) =>
-            hasMeaningfulDailyData(log) && !log.date.isAfter(today))
+        .where((log) => hasMeaningfulDailyData(log) && !log.date.isAfter(today))
         .toList();
     final coverageStart = _filterMonths == 0
         ? (meaningfulLogs.isEmpty
-            ? today
-            : meaningfulLogs
-                .map((log) =>
-                    DateTime(log.date.year, log.date.month, log.date.day))
-                .reduce((a, b) => a.isBefore(b) ? a : b))
+              ? today
+              : meaningfulLogs
+                    .map(
+                      (log) =>
+                          DateTime(log.date.year, log.date.month, log.date.day),
+                    )
+                    .reduce((a, b) => a.isBefore(b) ? a : b))
         : today.subtract(Duration(days: _filterMonths * 30));
     final coverage = calculateDataCoverage(
       dailyLogs.values,
@@ -92,115 +95,132 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     // Seçili aralıktaki tüm kayıtlar devam ediyorsa (endDate yok) eski
     // hesap 0/1 = 0 veriyor ve "0,0 gün" yazıyordu — profil değeri kullanılır
     final avgPeriod = CycleUtils.averagePeriodDuration(
-        filteredRecords, profile?.averagePeriodLength ?? 5);
+      filteredRecords,
+      profile?.averagePeriodLength ?? 5,
+    );
 
     final content = SingleChildScrollView(
-        // Kilitliyken kaydırma kapalı: bulanık içerik gezilecek bir şey değil
-        physics: locked ? const NeverScrollableScrollPhysics() : null,
-        padding: EdgeInsets.fromLTRB(16, 16, 16, bottomNavInset(context)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Hiç kayıt yoksa: tek seferlik yönlendirme metni
-            // (kart içi boşlukların üstünde, tekrarı önler)
-            if (records.isEmpty) ...[
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: EmptyState(
-                    icon: Icons.insights_outlined,
-                    title: l10n.statistics,
-                    message: l10n.noDataYet,
-                  ),
+      // Kilitliyken kaydırma kapalı: bulanık içerik gezilecek bir şey değil
+      physics: locked ? const NeverScrollableScrollPhysics() : null,
+      padding: EdgeInsets.fromLTRB(16, 16, 16, bottomNavInset(context)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Hiç kayıt yoksa: tek seferlik yönlendirme metni
+          // (kart içi boşlukların üstünde, tekrarı önler)
+          if (records.isEmpty) ...[
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: EmptyState(
+                  icon: Icons.insights_outlined,
+                  title: l10n.statistics,
+                  message: l10n.noDataYet,
                 ),
               ),
-              const SizedBox(height: 20),
-            ],
-            // Doktora götürülecek özet uygulamanın en somut faydası ama
-            // ayarların derinliğinde duruyordu — istatistiğin başında olmalı
-            _buildDoctorExportButton(l10n, records, dailyLogs, profile)
-                .animateSafe(context)
-                .fadeIn(duration: 400.ms),
+            ),
             const SizedBox(height: 20),
-            // Tek parça segmentli filtre: üç ayrı baloncuk yerine
-            // birleşik seçici — daha derli toplu, daha "ürün" his
-            _buildFilterBar(l10n).animateSafe(context).fadeIn(duration: 400.ms),
-            const SizedBox(height: 24),
-            _sectionHeader(l10n.statsSectionOverview),
-            _buildOverviewCard(l10n, avgCycle, avgPeriod, filteredRecords),
-            const SizedBox(height: 16),
-            // "Son döngün normaline göre nasıldı?" — filtreden bağımsız:
-            // "son" ve "ortalaman" kişisel normun tamamından hesaplanır
-            _buildComparisonCard(l10n, records, profile),
-            const SizedBox(height: 16),
-            // "Yılım": son 12 ay tek halka — düzenlilik bir bakışta.
-            // Ring/faz şeridiyle aynı görsel aile (imza dili üçüncü yüzeyde)
-            _buildYearRing(l10n, records, profile),
-            const SizedBox(height: 16),
-            _buildDataCoverageCard(l10n, coverage, monthlyCoverage),
-            const SizedBox(height: 28),
-            _sectionHeader(l10n.statsSectionCharts),
-            _buildSymptomChart(l10n, filteredLogs),
-            const SizedBox(height: 16),
-            _buildMoodChart(l10n, filteredLogs),
-            const SizedBox(height: 16),
-            _buildPhaseInsights(l10n, filteredLogs, records, profile),
-            const SizedBox(height: 16),
-            _buildCycleSymptomComparison(
-              l10n,
-              dailyLogs.values.toList(),
-              records,
-            ),
-            const SizedBox(height: 28),
-            _sectionHeader(l10n.statsSectionHistory),
-            _buildCycleHistory(l10n, filteredRecords),
-            const SizedBox(height: 16),
-            _buildTrendChart(
-              l10n.temperatureTrend, filteredLogs,
-              (log) => log.temperature, AppColors.temperature, '°C',
-              records, profile,
-            ),
-            const SizedBox(height: 16),
-            _buildTrendChart(
-              l10n.weightTrend, filteredLogs,
-              (log) => log.weight, AppColors.weightColor, 'kg',
-              records, profile,
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline_rounded,
-                      size: 14,
-                      color: AppColors.ts(context)),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      l10n.healthDisclaimer,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.ts(context),
-                        height: 1.4,
-                      ),
+          ],
+          // Doktora götürülecek özet uygulamanın en somut faydası ama
+          // ayarların derinliğinde duruyordu — istatistiğin başında olmalı
+          _buildDoctorExportButton(
+            l10n,
+            records,
+            dailyLogs,
+            profile,
+          ).animateSafe(context).fadeIn(duration: 400.ms),
+          const SizedBox(height: 20),
+          // Tek parça segmentli filtre: üç ayrı baloncuk yerine
+          // birleşik seçici — daha derli toplu, daha "ürün" his
+          _buildFilterBar(l10n).animateSafe(context).fadeIn(duration: 400.ms),
+          const SizedBox(height: 24),
+          _sectionHeader(l10n.statsSectionOverview),
+          _buildOverviewCard(l10n, avgCycle, avgPeriod, filteredRecords),
+          const SizedBox(height: 16),
+          // "Son döngün normaline göre nasıldı?" — filtreden bağımsız:
+          // "son" ve "ortalaman" kişisel normun tamamından hesaplanır
+          _buildComparisonCard(l10n, records, profile),
+          const SizedBox(height: 16),
+          // "Yılım": son 12 ay tek halka — düzenlilik bir bakışta.
+          // Ring/faz şeridiyle aynı görsel aile (imza dili üçüncü yüzeyde)
+          _buildYearRing(l10n, records, profile),
+          const SizedBox(height: 16),
+          _buildDataCoverageCard(l10n, coverage, monthlyCoverage),
+          const SizedBox(height: 28),
+          _sectionHeader(l10n.statsSectionCharts),
+          _buildSymptomChart(l10n, filteredLogs),
+          const SizedBox(height: 16),
+          _buildMoodChart(l10n, filteredLogs),
+          const SizedBox(height: 16),
+          _buildPhaseInsights(l10n, filteredLogs, records, profile),
+          const SizedBox(height: 16),
+          _buildCycleSymptomComparison(
+            l10n,
+            dailyLogs.values.toList(),
+            records,
+          ),
+          const SizedBox(height: 28),
+          _sectionHeader(l10n.statsSectionHistory),
+          _buildCycleHistory(l10n, filteredRecords),
+          const SizedBox(height: 16),
+          _buildTrendChart(
+            l10n.temperatureTrend,
+            filteredLogs,
+            (log) => log.temperature,
+            AppColors.temperature,
+            '°C',
+            records,
+            profile,
+          ),
+          const SizedBox(height: 16),
+          _buildTrendChart(
+            l10n.weightTrend,
+            filteredLogs,
+            (log) => log.weight,
+            AppColors.weightColor,
+            'kg',
+            records,
+            profile,
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.info_outline_rounded,
+                  size: 14,
+                  color: AppColors.ts(context),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    l10n.healthDisclaimer,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AppColors.ts(context),
+                      height: 1.4,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            // Son öğe için ayrıca alt boşluk yok: bottomNavInset zaten pill'in
-            // üstünde 24 px nefes payı bırakıyor; buradaki ek SizedBox sayfa
-            // sonunda bir-iki satırlık boş alanı ikiye katlıyordu.
-          ],
-        ),
-      );
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
 
     return Scaffold(
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
-        title: Text(l10n.statistics,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
+        title: Text(
+          l10n.statistics,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppColors.tp(context),
+          ),
+        ),
         backgroundColor: AppColors.bg(context),
         elevation: 0,
       ),
@@ -212,8 +232,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 // uydurma bir örnek değil, bulanıklaştırılmış gerçek.
                 Positioned.fill(
                   child: ImageFiltered(
-                    imageFilter:
-                        ui.ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                    imageFilter: ui.ImageFilter.blur(sigmaX: 6, sigmaY: 6),
                     child: IgnorePointer(child: content),
                   ),
                 ),
@@ -248,13 +267,25 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 try {
                   final service = ExportService();
                   final path = await service.exportPdf(
-                      profile, records, dailyLogs, l10n);
+                    profile,
+                    records,
+                    dailyLogs,
+                    l10n,
+                    includeAllLogs: _filterMonths == 0,
+                    rangeStart: _filterMonths == 0
+                        ? null
+                        : DateTime.now().subtract(
+                            Duration(days: _filterMonths * 30),
+                          ),
+                  );
                   await service.shareFile(path);
                 } catch (e) {
-                  messenger.showSnackBar(SnackBar(
-                    content: Text(l10n.errorOccurred(e.toString())),
-                    backgroundColor: AppColors.error,
-                  ));
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text(l10n.errorOccurred(e.toString())),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
                 }
               },
         icon: const Icon(Icons.picture_as_pdf_rounded, size: 18),
@@ -264,7 +295,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           side: BorderSide(color: AppColors.dv(context)),
           padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16)),
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
       ),
     );
@@ -290,22 +322,31 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.lock_outline_rounded,
-                size: 40, color: AppColors.primaryStrong),
+            Icon(
+              Icons.lock_outline_rounded,
+              size: 40,
+              color: AppColors.primaryStrong,
+            ),
             const SizedBox(height: 12),
-            Text(l10n.premiumLockedTitle,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.tp(context))),
+            Text(
+              l10n.premiumLockedTitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.tp(context),
+              ),
+            ),
             const SizedBox(height: 8),
-            Text(l10n.premiumLockedBody,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 14,
-                    height: 1.45,
-                    color: AppColors.ts(context))),
+            Text(
+              l10n.premiumLockedBody,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                height: 1.45,
+                color: AppColors.ts(context),
+              ),
+            ),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
@@ -347,14 +388,17 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   onTap: () => setState(() => _filterMonths = months),
                   child: AnimatedContainer(
                     duration: context.motionDuration(
-                        const Duration(milliseconds: 200)),
+                      const Duration(milliseconds: 200),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
                       gradient: _filterMonths == months
-                          ? const LinearGradient(colors: [
-                              AppColors.primaryStrong,
-                              AppColors.primaryDeep,
-                            ])
+                          ? const LinearGradient(
+                              colors: [
+                                AppColors.primaryStrong,
+                                AppColors.primaryDeep,
+                              ],
+                            )
                           : null,
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -382,7 +426,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   /// hiyerarşi kurar
   Widget _sectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 10),
+      padding: const EdgeInsetsDirectional.only(start: 4, bottom: 10),
       child: Text(
         title,
         style: TextStyle(
@@ -400,7 +444,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   /// önceki dönem boş iz. Düzenli bir yıl eşit aralıklı koyu dilimler
   /// olarak okunur — düzensizlik kendini gösterir.
   Widget _buildYearRing(
-      AppLocalizations l10n, List<PeriodRecord> records, UserProfile? profile) {
+    AppLocalizations l10n,
+    List<PeriodRecord> records,
+    UserProfile? profile,
+  ) {
     if (records.isEmpty || profile == null) return const SizedBox.shrink();
 
     final now = DateTime.now();
@@ -437,67 +484,79 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     }
 
     final dayColors = List<Color?>.generate(
-        365, (i) => colorFor(addDays(start, i)));
+      365,
+      (i) => colorFor(addDays(start, i)),
+    );
     final monthLabels = List<String>.generate(12, (i) {
       final m = DateTime(start.year, start.month + i, 1);
-      return DateFormat('MMM', Localizations.localeOf(context).toString())
-          .format(m);
+      return DateFormat(
+        'MMM',
+        Localizations.localeOf(context).toString(),
+      ).format(m);
     });
 
     return GlassCard(
-      borderRadius: 20,
-      blur: 0,
-      opacity: 0.18,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.yearRingTitle,
-              style: TextStyle(
+          borderRadius: 20,
+          blur: 0,
+          opacity: 0.18,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.yearRingTitle,
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.tp(context))),
-          const SizedBox(height: 16),
-          Semantics(
-            label: l10n.yearRingSummary(cyclesInYear),
-            child: ExcludeSemantics(
-              child: Center(
-                child: SizedBox(
-                  width: 280,
-                  height: 280,
-                  child: CustomPaint(
-                    painter: _YearRingPainter(
-                      dayColors: dayColors,
-                      monthLabels: monthLabels,
-                      trackColor: AppColors.dv(context),
-                      labelColor: AppColors.ts(context),
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('$cyclesInYear',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .displayMedium!
-                                  .copyWith(color: AppColors.tp(context))),
-                          Text(l10n.yearRingCycles,
-                              style: TextStyle(
+                  color: AppColors.tp(context),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Semantics(
+                label: l10n.yearRingSummary(cyclesInYear),
+                child: ExcludeSemantics(
+                  child: Center(
+                    child: SizedBox(
+                      width: 280,
+                      height: 280,
+                      child: CustomPaint(
+                        painter: _YearRingPainter(
+                          dayColors: dayColors,
+                          monthLabels: monthLabels,
+                          trackColor: AppColors.dv(context),
+                          labelColor: AppColors.ts(context),
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '$cyclesInYear',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displayMedium!
+                                    .copyWith(color: AppColors.tp(context)),
+                              ),
+                              Text(
+                                l10n.yearRingCycles,
+                                style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   letterSpacing: 1.2,
-                                  color: AppColors.ts(context))),
-                        ],
+                                  color: AppColors.ts(context),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
-    )
+        )
         .animateSafe(context)
         .fadeIn(delay: 110.ms, duration: 400.ms)
         .slideY(begin: 0.1, end: 0);
@@ -508,118 +567,120 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     DataCoverage coverage,
     List<MonthlyDataCoverage> monthlyCoverage,
   ) {
-    final monthFormat =
-        DateFormat('MMM yyyy', Localizations.localeOf(context).toString());
+    final monthFormat = DateFormat(
+      'MMM yyyy',
+      Localizations.localeOf(context).toString(),
+    );
     return GlassCard(
-      borderRadius: 20,
-      blur: 0,
-      opacity: 0.18,
-      padding: const EdgeInsets.all(20),
-      child: Semantics(
-        label: l10n.dataCoverageValue(
-          coverage.loggedDays,
-          coverage.totalDays,
-          coverage.percent,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+          borderRadius: 20,
+          blur: 0,
+          opacity: 0.18,
+          padding: const EdgeInsets.all(20),
+          child: Semantics(
+            label: l10n.dataCoverageValue(
+              coverage.loggedDays,
+              coverage.totalDays,
+              coverage.percent,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.calendar_view_month_rounded,
-                    size: 20, color: AppColors.primaryStrong),
-                const SizedBox(width: 8),
-                Text(
-                  l10n.dataCoverage,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.tp(context),
-                  ),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_view_month_rounded,
+                      size: 20,
+                      color: AppColors.primaryStrong,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.dataCoverage,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.tp(context),
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '%${coverage.percent}',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.primaryStrong,
+                      ),
+                    ),
+                  ],
                 ),
-                const Spacer(),
-                Text(
-                  '%${coverage.percent}',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
+                const SizedBox(height: 12),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: LinearProgressIndicator(
+                    value: coverage.percent / 100,
+                    minHeight: 8,
+                    backgroundColor: AppColors.dv(context),
                     color: AppColors.primaryStrong,
                   ),
                 ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.dataCoverageValue(
+                    coverage.loggedDays,
+                    coverage.totalDays,
+                    coverage.percent,
+                  ),
+                  style: TextStyle(fontSize: 12, color: AppColors.ts(context)),
+                ),
+                if (monthlyCoverage.length > 1) ...[
+                  const SizedBox(height: 16),
+                  ...monthlyCoverage.map(
+                    (month) => Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 72,
+                            child: Text(
+                              monthFormat.format(month.month),
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: AppColors.ts(context),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: LinearProgressIndicator(
+                                value: month.percent / 100,
+                                minHeight: 6,
+                                backgroundColor: AppColors.dv(context),
+                                color: AppColors.primaryStrong,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          SizedBox(
+                            width: 34,
+                            child: Text(
+                              '%${month.percent}',
+                              textAlign: TextAlign.end,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.tp(context),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
-            const SizedBox(height: 12),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: LinearProgressIndicator(
-                value: coverage.percent / 100,
-                minHeight: 8,
-                backgroundColor: AppColors.dv(context),
-                color: AppColors.primaryStrong,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.dataCoverageValue(
-                coverage.loggedDays,
-                coverage.totalDays,
-                coverage.percent,
-              ),
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.ts(context),
-              ),
-            ),
-            if (monthlyCoverage.length > 1) ...[
-              const SizedBox(height: 16),
-              ...monthlyCoverage.map(
-                (month) => Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 72,
-                        child: Text(
-                          monthFormat.format(month.month),
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: AppColors.ts(context),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(6),
-                          child: LinearProgressIndicator(
-                            value: month.percent / 100,
-                            minHeight: 6,
-                            backgroundColor: AppColors.dv(context),
-                            color: AppColors.primaryStrong,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      SizedBox(
-                        width: 34,
-                        child: Text(
-                          '%${month.percent}',
-                          textAlign: TextAlign.end,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.tp(context),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    )
+          ),
+        )
         .animateSafe(context)
         .fadeIn(delay: 115.ms, duration: 400.ms)
         .slideY(begin: 0.1, end: 0);
@@ -628,16 +689,23 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   /// Son döngü ve son regl, kullanıcının kendi ortalamasıyla kıyaslanır
   /// (Clue'nun sevilen deseni: "normalin nasıl?" sorusuna tek bakış).
   Widget _buildComparisonCard(
-      AppLocalizations l10n, List<PeriodRecord> records, UserProfile? profile) {
+    AppLocalizations l10n,
+    List<PeriodRecord> records,
+    UserProfile? profile,
+  ) {
     // Son tamamlanmış döngü = son iki başlangıç arası
     final starts = records.map((r) => r.startDate).toList()..sort();
     if (starts.length < 2) return const SizedBox.shrink();
 
-    final lastGap =
-        daysBetween(starts[starts.length - 2], starts[starts.length - 1]);
+    final lastGap = daysBetween(
+      starts[starts.length - 2],
+      starts[starts.length - 1],
+    );
     final avgCycleAll = CycleUtils.calculateAverageCycleLength(records);
     final avgPeriodAll = CycleUtils.averagePeriodDuration(
-        records, profile?.averagePeriodLength ?? 5);
+      records,
+      profile?.averagePeriodLength ?? 5,
+    );
 
     PeriodRecord? lastCompleted;
     for (final r in records) {
@@ -656,57 +724,63 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     }
 
     Widget line(IconData icon, Color color, String text) => Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(icon, size: 18, color: color),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(text,
-                    style: TextStyle(
-                        fontSize: 14,
-                        height: 1.4,
-                        color: AppColors.tp(context))),
-              ),
-            ],
-          ),
-        );
-
-    return GlassCard(
-      borderRadius: 20,
-      blur: 0,
-      opacity: 0.18,
-      padding: const EdgeInsets.all(20),
-      child: Column(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.cycleComparison,
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
               style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.tp(context))),
-          const SizedBox(height: 12),
-          line(
-            Icons.loop_rounded,
-            AppColors.isDark(context)
-                ? AppColors.primaryLight
-                : AppColors.primaryStrong,
-            '${l10n.lastCycleLength(lastGap)} — '
-            '${diffText(lastGap, avgCycleAll)}',
-          ),
-          if (lastCompleted != null)
-            line(
-              Icons.water_drop_rounded,
-              AppColors.isDark(context)
-                  ? AppColors.menstrual
-                  : AppColors.menstrualText,
-              '${l10n.lastPeriodLength(lastCompleted.durationDays)} — '
-              '${diffText(lastCompleted.durationDays, avgPeriodAll)}',
+                fontSize: 14,
+                height: 1.4,
+                color: AppColors.tp(context),
+              ),
             ),
+          ),
         ],
       ),
-    )
+    );
+
+    return GlassCard(
+          borderRadius: 20,
+          blur: 0,
+          opacity: 0.18,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.cycleComparison,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.tp(context),
+                ),
+              ),
+              const SizedBox(height: 12),
+              line(
+                Icons.loop_rounded,
+                AppColors.isDark(context)
+                    ? AppColors.primaryLight
+                    : AppColors.primaryStrong,
+                '${l10n.lastCycleLength(lastGap)} — '
+                '${diffText(lastGap, avgCycleAll)}',
+              ),
+              if (lastCompleted != null)
+                line(
+                  Icons.water_drop_rounded,
+                  AppColors.isDark(context)
+                      ? AppColors.menstrual
+                      : AppColors.menstrualText,
+                  '${l10n.lastPeriodLength(lastCompleted.durationDays)} — '
+                  '${diffText(lastCompleted.durationDays, avgPeriodAll)}',
+                ),
+            ],
+          ),
+        )
         .animateSafe(context)
         .fadeIn(delay: 90.ms, duration: 400.ms)
         .slideY(begin: 0.1, end: 0);
@@ -719,132 +793,168 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       EnumLabels.mood(mood, l10n);
 
   Widget _buildOverviewCard(
-      AppLocalizations l10n, double avgCycle, double avgPeriod, List<PeriodRecord> records) {
+    AppLocalizations l10n,
+    double avgCycle,
+    double avgPeriod,
+    List<PeriodRecord> records,
+  ) {
     // null = veri yetersiz; aksi halde en uzun/en kısa döngü farkı >= 9 gün
     // düzensiz sayılır (CycleUtils.isIrregular)
     final irregular = CycleUtils.isIrregular(records);
     final gapCount = CycleUtils.validCycleGaps(records).length;
     final statItems = <Widget>[
-      _statItem(l10n.avgCycle, avgCycle.toStringAsFixed(1), l10n.days,
-          Icons.loop_rounded, AppColors.primaryStrong),
-      _statItem(l10n.avgPeriod, avgPeriod.toStringAsFixed(1), l10n.days,
-          Icons.water_drop_rounded, AppColors.menstrual),
+      _statItem(
+        l10n.avgCycle,
+        avgCycle.toStringAsFixed(1),
+        l10n.days,
+        Icons.loop_rounded,
+        AppColors.primaryStrong,
+      ),
+      _statItem(
+        l10n.avgPeriod,
+        avgPeriod.toStringAsFixed(1),
+        l10n.days,
+        Icons.water_drop_rounded,
+        AppColors.menstrual,
+      ),
       InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () => _showRegularityInfo(l10n, irregular, gapCount),
         child: _statItem(
-            l10n.regularity,
-            irregular == null
-                ? l10n.insufficientData
-                : (irregular ? l10n.irregular : l10n.regular),
-            null,
-            irregular == true
-                ? Icons.info_outline_rounded
-                : Icons.check_circle_rounded,
-            irregular == null
-                ? AppColors.warningText
-                : (irregular
+          l10n.regularity,
+          irregular == null
+              ? l10n.insufficientData
+              : (irregular ? l10n.irregular : l10n.regular),
+          null,
+          irregular == true
+              ? Icons.info_outline_rounded
+              : Icons.check_circle_rounded,
+          irregular == null
+              ? AppColors.warningText
+              : (irregular
                     ? AppColors.warningText
-                    : AppColors.fertileWindowText)),
+                    : AppColors.fertileWindowText),
+        ),
       ),
     ];
     final largeText = usesLargeText(MediaQuery.textScalerOf(context));
     return GlassCard(
-      borderRadius: 20,
-      blur: 0,
-      opacity: 0.18,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.cycleOverview,
-              style: TextStyle(
+          borderRadius: 20,
+          blur: 0,
+          opacity: 0.18,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.cycleOverview,
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.tp(context))),
-          const SizedBox(height: 16),
-          if (largeText)
-            Column(
-              children: [
-                for (var i = 0; i < statItems.length; i++) ...[
-                  SizedBox(width: double.infinity, child: statItems[i]),
-                  if (i < statItems.length - 1) const SizedBox(height: 20),
-                ],
-              ],
-            )
-          else
-            Row(
-              children: [
-                for (final item in statItems) Expanded(child: item),
-              ],
-            ),
-          const SizedBox(height: 14),
-          // Sayının tek başına anlamı yok: "29,3 gün" iyi mi kötü mü?
-          Text(
-            l10n.typicalRangeNote(AppConstants.typicalCycleMin,
-                AppConstants.typicalCycleMax, AppConstants.typicalPeriodMax),
-            style: TextStyle(
-                fontSize: 11, height: 1.4, color: AppColors.ts(context)),
-          ),
-          // Az veriyle hesaplanan ortalama yanıltıcı: kaç döngüden
-          // çıktığı söylenmeli
-          if (gapCount < AppConstants.minGapsForRegularity) ...[
-            const SizedBox(height: 6),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.info_outline_rounded,
-                    size: 13, color: AppColors.warningText),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    l10n.lowConfidenceNote(gapCount),
-                    style: TextStyle(
-                        fontSize: 11,
-                        height: 1.4,
-                        color: AppColors.warningText),
-                  ),
+                  color: AppColors.tp(context),
+                ),
+              ),
+              const SizedBox(height: 16),
+              if (largeText)
+                Column(
+                  children: [
+                    for (var i = 0; i < statItems.length; i++) ...[
+                      SizedBox(width: double.infinity, child: statItems[i]),
+                      if (i < statItems.length - 1) const SizedBox(height: 20),
+                    ],
+                  ],
+                )
+              else
+                Row(
+                  children: [
+                    for (final item in statItems) Expanded(child: item),
+                  ],
+                ),
+              const SizedBox(height: 14),
+              // Sayının tek başına anlamı yok: "29,3 gün" iyi mi kötü mü?
+              Text(
+                l10n.typicalRangeNote(
+                  AppConstants.typicalCycleMin,
+                  AppConstants.typicalCycleMax,
+                  AppConstants.typicalPeriodMax,
+                ),
+                style: TextStyle(
+                  fontSize: 11,
+                  height: 1.4,
+                  color: AppColors.ts(context),
+                ),
+              ),
+              // Az veriyle hesaplanan ortalama yanıltıcı: kaç döngüden
+              // çıktığı söylenmeli
+              if (gapCount < AppConstants.minGapsForRegularity) ...[
+                const SizedBox(height: 6),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.info_outline_rounded,
+                      size: 13,
+                      color: AppColors.warningText,
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        l10n.lowConfidenceNote(gapCount),
+                        style: TextStyle(
+                          fontSize: 11,
+                          height: 1.4,
+                          color: AppColors.warningText,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
-            ),
-          ],
-        ],
-      ),
-    ).animateSafe(context).fadeIn(delay: 60.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+            ],
+          ),
+        )
+        .animateSafe(context)
+        .fadeIn(delay: 60.ms, duration: 400.ms)
+        .slideY(begin: 0.1, end: 0);
   }
 
   /// Düzenlilik yargısının ne demek olduğunu açıklar. Ölçütü saklamak
   /// kullanıcıyı yargının karşısında çaresiz bırakıyor.
   void _showRegularityInfo(
-      AppLocalizations l10n, bool? irregular, int gapCount) {
+    AppLocalizations l10n,
+    bool? irregular,
+    int gapCount,
+  ) {
     final body = irregular == null
         ? l10n.regularityInfoInsufficient(AppConstants.minGapsForRegularity)
         : (irregular
-            ? l10n.regularityInfoIrregular
-            : l10n.regularityInfoRegular);
+              ? l10n.regularityInfoIrregular
+              : l10n.regularityInfoRegular);
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         backgroundColor: AppColors.sf(ctx),
-        title: Text(l10n.regularity,
-            style: const TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold)),
+        title: Text(
+          l10n.regularity,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(body,
-                  style: const TextStyle(fontSize: 14, height: 1.5)),
+              Text(body, style: const TextStyle(fontSize: 14, height: 1.5)),
               const SizedBox(height: 12),
-              Text(l10n.regularityInfoSeeDoctor,
-                  style: TextStyle(
-                      fontSize: 13,
-                      height: 1.5,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.tp(ctx))),
+              Text(
+                l10n.regularityInfoSeeDoctor,
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 1.5,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.tp(ctx),
+                ),
+              ),
             ],
           ),
         ),
@@ -861,7 +971,12 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   /// Genel bakış metriği: kahraman sayı + küçük birim (metrik ölçek
   /// dili). unit null ise değer metin olarak (düzenlilik durumu) yazılır.
   Widget _statItem(
-      String label, String value, String? unit, IconData icon, Color color) {
+    String label,
+    String value,
+    String? unit,
+    IconData icon,
+    Color color,
+  ) {
     return Column(
       children: [
         Container(
@@ -869,7 +984,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           height: 40,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [color.withValues(alpha: 0.22), color.withValues(alpha: 0.08)],
+              colors: [
+                color.withValues(alpha: 0.22),
+                color.withValues(alpha: 0.08),
+              ],
             ),
             shape: BoxShape.circle,
           ),
@@ -877,20 +995,22 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         ),
         const SizedBox(height: 10),
         if (unit == null)
-          Text(value,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: color))
+          Text(
+            value,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+              color: color,
+            ),
+          )
         else
           Text.rich(
             TextSpan(
               text: value,
-              style: Theme.of(context)
-                  .textTheme
-                  .displaySmall!
-                  .copyWith(color: AppColors.tp(context)),
+              style: Theme.of(
+                context,
+              ).textTheme.displaySmall!.copyWith(color: AppColors.tp(context)),
               children: [
                 TextSpan(
                   text: ' $unit',
@@ -905,9 +1025,11 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             textAlign: TextAlign.center,
           ),
         const SizedBox(height: 2),
-        Text(label,
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 11, color: AppColors.ts(context))),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 11, color: AppColors.ts(context)),
+        ),
       ],
     );
   }
@@ -950,115 +1072,125 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.symptomFrequency,
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.tp(context))),
-          if (story != null) ...[
-            const SizedBox(height: 4),
-            _storyLine(story),
-          ],
+          Text(
+            l10n.symptomFrequency,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.tp(context),
+            ),
+          ),
+          if (story != null) ...[const SizedBox(height: 4), _storyLine(story)],
           const SizedBox(height: 16),
           // Ekran okuyucu için grafik verisi metin özeti olarak sunulur
           Semantics(
             label: top5
-                .map((e) =>
-                    '${_symptomName(e.type, l10n)}: ${e.count}, '
-                    '${l10n.averageSeverity(e.averageSeverity.toStringAsFixed(1))}')
+                .map(
+                  (e) =>
+                      '${_symptomName(e.type, l10n)}: ${e.count}, '
+                      '${l10n.averageSeverity(e.averageSeverity.toStringAsFixed(1))}',
+                )
                 .join(', '),
             child: ExcludeSemantics(
               child: SizedBox(
-            height: 180,
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceAround,
-                maxY: (top5.first.count + 2).toDouble(),
-                // Değer çubuğun üstünde kalıcı yazılır: dokunma kapalıyken
-                // gören kullanıcı yalnız göreli yükseklik görüyordu (ekran
-                // okuyucu özeti sayı alırken görene sayı yoktu)
-                barTouchData: BarTouchData(
-                  enabled: false,
-                  touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (_) => Colors.transparent,
-                    tooltipPadding: EdgeInsets.zero,
-                    tooltipMargin: 2,
-                    getTooltipItem: (group, groupIndex, rod, rodIndex) =>
-                        BarTooltipItem(
-                      rod.toY.round().toString(),
-                      TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.tp(context),
-                      ),
-                    ),
-                  ),
-                ),
-                titlesData: FlTitlesData(
-                  show: true,
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      // İki satırlık tam ad için yer; 4 harfe kırpma
-                      // ("Baş ", "Kram") TR'de hiçbir şey ayırt etmiyordu
-                      reservedSize: 40,
-                      getTitlesWidget: (value, meta) {
-                        final idx = value.toInt();
-                        if (idx >= 0 && idx < top5.length) {
-                          final name = _symptomName(top5[idx].type, l10n);
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 6),
-                            child: SizedBox(
-                              // 60 px etiketler 5 çubuklu dar grafikte
-                              // birbirine değiyordu
-                              width: 50,
-                              child: Text(
-                                name,
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    fontSize: 8.5,
-                                    height: 1.15,
-                                    color: AppColors.ts(context)),
+                height: 180,
+                child: BarChart(
+                  BarChartData(
+                    alignment: BarChartAlignment.spaceAround,
+                    maxY: (top5.first.count + 2).toDouble(),
+                    // Değer çubuğun üstünde kalıcı yazılır: dokunma kapalıyken
+                    // gören kullanıcı yalnız göreli yükseklik görüyordu (ekran
+                    // okuyucu özeti sayı alırken görene sayı yoktu)
+                    barTouchData: BarTouchData(
+                      enabled: false,
+                      touchTooltipData: BarTouchTooltipData(
+                        getTooltipColor: (_) => Colors.transparent,
+                        tooltipPadding: EdgeInsets.zero,
+                        tooltipMargin: 2,
+                        getTooltipItem: (group, groupIndex, rod, rodIndex) =>
+                            BarTooltipItem(
+                              rod.toY.round().toString(),
+                              TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.tp(context),
                               ),
                             ),
-                          );
-                        }
-                        return const SizedBox();
-                      },
-                    ),
-                  ),
-                  leftTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
-                ),
-                borderData: FlBorderData(show: false),
-                gridData: const FlGridData(show: false),
-                barGroups: top5.asMap().entries.map((entry) {
-                  return BarChartGroupData(
-                    x: entry.key,
-                    barRods: [
-                      BarChartRodData(
-                        toY: entry.value.count.toDouble(),
-                        gradient: const LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [AppColors.primaryLight, AppColors.primary],
-                        ),
-                        width: 24,
-                        borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(10)),
                       ),
-                    ],
-                  );
-                }).toList(),
+                    ),
+                    titlesData: FlTitlesData(
+                      show: true,
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          // İki satırlık tam ad için yer; 4 harfe kırpma
+                          // ("Baş ", "Kram") TR'de hiçbir şey ayırt etmiyordu
+                          reservedSize: 40,
+                          getTitlesWidget: (value, meta) {
+                            final idx = value.toInt();
+                            if (idx >= 0 && idx < top5.length) {
+                              final name = _symptomName(top5[idx].type, l10n);
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 6),
+                                child: SizedBox(
+                                  // 60 px etiketler 5 çubuklu dar grafikte
+                                  // birbirine değiyordu
+                                  width: 50,
+                                  child: Text(
+                                    name,
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 8.5,
+                                      height: 1.15,
+                                      color: AppColors.ts(context),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+                            return const SizedBox();
+                          },
+                        ),
+                      ),
+                      leftTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                    ),
+                    borderData: FlBorderData(show: false),
+                    gridData: const FlGridData(show: false),
+                    barGroups: top5.asMap().entries.map((entry) {
+                      return BarChartGroupData(
+                        x: entry.key,
+                        barRods: [
+                          BarChartRodData(
+                            toY: entry.value.count.toDouble(),
+                            gradient: const LinearGradient(
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                              colors: [
+                                AppColors.primaryLight,
+                                AppColors.primary,
+                              ],
+                            ),
+                            width: 24,
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(10),
+                            ),
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
-            ),
-          ),
             ),
           ),
           const SizedBox(height: 12),
@@ -1068,8 +1200,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             children: top5
                 .map(
                   (summary) => Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(12),
@@ -1119,89 +1253,104 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final total = moodCount.values.fold<int>(0, (a, b) => a + b);
 
     return GlassCard(
-      borderRadius: 20,
-      blur: 0,
-      opacity: 0.18,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.moodDistribution,
-              style: TextStyle(
+          borderRadius: 20,
+          blur: 0,
+          opacity: 0.18,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.moodDistribution,
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.tp(context))),
-          const SizedBox(height: 16),
-          // Ekran okuyucu için pasta grafiği metin özeti olarak sunulur
-          Semantics(
-            label: moodCount.entries
-                .map((e) =>
-                    '${_moodName(e.key, l10n)}: %${(e.value / total * 100).toStringAsFixed(0)}')
-                .join(', '),
-            child: ExcludeSemantics(
-              child: SizedBox(
-                height: 180,
-                child: PieChart(
-                  PieChartData(
-                    sectionsSpace: 2,
-                    centerSpaceRadius: 40,
-                    sections: moodCount.entries.map((e) {
-                      final pct = (e.value / total * 100).toStringAsFixed(0);
-                      final sliceColor = colors[e.key] ?? AppColors.moodNeutral;
-                      // Soluk pastel dilimde beyaz yüzde okunmuyor (~1.4:1):
-                      // dilimin parlaklığına göre koyu/beyaz metin seçilir
-                      final titleColor = sliceColor.computeLuminance() > 0.5
-                          ? AppColors.textPrimary
-                          : Colors.white;
-                      return PieChartSectionData(
-                        color: sliceColor,
-                        value: e.value.toDouble(),
-                        title: '$pct%',
-                        radius: 50,
-                        titleStyle: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: titleColor),
-                      );
-                    }).toList(),
+                  color: AppColors.tp(context),
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Ekran okuyucu için pasta grafiği metin özeti olarak sunulur
+              Semantics(
+                label: moodCount.entries
+                    .map(
+                      (e) =>
+                          '${_moodName(e.key, l10n)}: %${(e.value / total * 100).toStringAsFixed(0)}',
+                    )
+                    .join(', '),
+                child: ExcludeSemantics(
+                  child: SizedBox(
+                    height: 180,
+                    child: PieChart(
+                      PieChartData(
+                        sectionsSpace: 2,
+                        centerSpaceRadius: 40,
+                        sections: moodCount.entries.map((e) {
+                          final pct = (e.value / total * 100).toStringAsFixed(
+                            0,
+                          );
+                          final sliceColor =
+                              colors[e.key] ?? AppColors.moodNeutral;
+                          // Soluk pastel dilimde beyaz yüzde okunmuyor (~1.4:1):
+                          // dilimin parlaklığına göre koyu/beyaz metin seçilir
+                          final titleColor = sliceColor.computeLuminance() > 0.5
+                              ? AppColors.textPrimary
+                              : Colors.white;
+                          return PieChartSectionData(
+                            color: sliceColor,
+                            value: e.value.toDouble(),
+                            title: '$pct%',
+                            radius: 50,
+                            titleStyle: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: titleColor,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 12,
+                runSpacing: 6,
+                children: moodCount.entries.map((e) {
+                  return Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          color: colors[e.key] ?? AppColors.moodNeutral,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      // Yüzde lejantta da yazar: dilimi lejanta bağlayan tek
+                      // kanal renkti ve ruh hâli paleti pastel — deuteranopiada
+                      // sarı/turuncu/yeşil noktalar birbirine karışıyor.
+                      // Dilimin içindeki "%38" ile lejanttaki "%38" eşleşiyor.
+                      Text(
+                        '${_moodName(e.key, l10n)} '
+                        '%${(e.value / total * 100).toStringAsFixed(0)}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppColors.ts(context),
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList(),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 12,
-            runSpacing: 6,
-            children: moodCount.entries.map((e) {
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: colors[e.key] ?? AppColors.moodNeutral,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  // Yüzde lejantta da yazar: dilimi lejanta bağlayan tek
-                  // kanal renkti ve ruh hâli paleti pastel — deuteranopiada
-                  // sarı/turuncu/yeşil noktalar birbirine karışıyor.
-                  // Dilimin içindeki "%38" ile lejanttaki "%38" eşleşiyor.
-                  Text(
-                      '${_moodName(e.key, l10n)} '
-                      '%${(e.value / total * 100).toStringAsFixed(0)}',
-                      style: TextStyle(
-                          fontSize: 11, color: AppColors.ts(context))),
-                ],
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    ).animateSafe(context).fadeIn(delay: 180.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+        )
+        .animateSafe(context)
+        .fadeIn(delay: 180.ms, duration: 400.ms)
+        .slideY(begin: 0.1, end: 0);
   }
 
   /// Semptom kayıtlarını döngü fazlarına eşler; her semptomun en sık
@@ -1230,48 +1379,58 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     }
 
     return GlassCard(
-      borderRadius: 20,
-      blur: 0,
-      opacity: 0.18,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.phaseInsights,
-              style: TextStyle(
+          borderRadius: 20,
+          blur: 0,
+          opacity: 0.18,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.phaseInsights,
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.tp(context))),
-          const SizedBox(height: 12),
-          ...insights.map((insight) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.insights_rounded,
-                      size: 18, color: AppColors.primaryDeep),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      l10n.insightLine(
-                        _symptomName(insight.symptom, l10n),
-                        EnumLabels.phase(insight.phase, l10n),
-                        insight.percent,
-                      ),
-                      style: TextStyle(
-                          fontSize: 14,
-                          height: 1.4,
-                          color: AppColors.tp(context)),
-                    ),
-                  ),
-                ],
+                  color: AppColors.tp(context),
+                ),
               ),
-            );
-          }),
-        ],
-      ),
-    ).animateSafe(context).fadeIn(delay: 220.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+              const SizedBox(height: 12),
+              ...insights.map((insight) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.insights_rounded,
+                        size: 18,
+                        color: AppColors.primaryDeep,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          l10n.insightLine(
+                            _symptomName(insight.symptom, l10n),
+                            EnumLabels.phase(insight.phase, l10n),
+                            insight.percent,
+                          ),
+                          style: TextStyle(
+                            fontSize: 14,
+                            height: 1.4,
+                            color: AppColors.tp(context),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ),
+        )
+        .animateSafe(context)
+        .fadeIn(delay: 220.ms, duration: 400.ms)
+        .slideY(begin: 0.1, end: 0);
   }
 
   Widget _buildCycleSymptomComparison(
@@ -1299,43 +1458,44 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final currentSpots = spots(comparison.current);
     final previousSpots = spots(comparison.previous);
     final allSpots = [...currentSpots, ...previousSpots];
-    final maxX = allSpots
-        .map((spot) => spot.x)
-        .reduce((a, b) => a > b ? a : b);
-    final maxY = allSpots
-        .map((spot) => spot.y)
-        .reduce((a, b) => a > b ? a : b);
-    final currentTotal = comparison.current.values
-        .fold<double>(0, (total, value) => total + value);
-    final previousTotal = comparison.previous.values
-        .fold<double>(0, (total, value) => total + value);
+    final maxX = allSpots.map((spot) => spot.x).reduce((a, b) => a > b ? a : b);
+    final maxY = allSpots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b);
+    final currentTotal = comparison.current.values.fold<double>(
+      0,
+      (total, value) => total + value,
+    );
+    final previousTotal = comparison.previous.values.fold<double>(
+      0,
+      (total, value) => total + value,
+    );
 
     Widget legend(Color color, String label, {bool dashed = false}) => Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 18,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  for (var i = 0; i < (dashed ? 3 : 1); i++)
-                    Container(
-                      width: dashed ? 4 : 18,
-                      height: 3,
-                      decoration: BoxDecoration(
-                        color: color,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 6),
-            Text(label,
-                style:
-                    TextStyle(fontSize: 11, color: AppColors.ts(context))),
-          ],
-        );
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: 18,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              for (var i = 0; i < (dashed ? 3 : 1); i++)
+                Container(
+                  width: dashed ? 4 : 18,
+                  height: 3,
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: TextStyle(fontSize: 11, color: AppColors.ts(context)),
+        ),
+      ],
+    );
 
     return GlassCard(
       borderRadius: 20,
@@ -1373,7 +1533,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           ),
           const SizedBox(height: 12),
           Semantics(
-            label: '${l10n.currentCycleLabel}: '
+            label:
+                '${l10n.currentCycleLabel}: '
                 '${currentTotal.toStringAsFixed(0)}. '
                 '${l10n.previousCycleLabel}: '
                 '${previousTotal.toStringAsFixed(0)}.',
@@ -1389,19 +1550,20 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     gridData: FlGridData(
                       show: true,
                       drawVerticalLine: false,
-                      getDrawingHorizontalLine: (_) => FlLine(
-                        color: AppColors.dv(context),
-                        strokeWidth: 1,
-                      ),
+                      getDrawingHorizontalLine: (_) =>
+                          FlLine(color: AppColors.dv(context), strokeWidth: 1),
                     ),
                     borderData: FlBorderData(show: false),
                     titlesData: FlTitlesData(
                       leftTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false)),
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
                       topTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false)),
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
                       rightTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false)),
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
                       bottomTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
@@ -1422,14 +1584,16 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     lineTouchData: LineTouchData(
                       touchTooltipData: LineTouchTooltipData(
                         getTooltipItems: (touched) => touched
-                            .map((spot) => LineTooltipItem(
-                                  '${l10n.day} ${spot.x.round()}\n'
-                                  '${spot.y.toStringAsFixed(0)}',
-                                  const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ))
+                            .map(
+                              (spot) => LineTooltipItem(
+                                '${l10n.day} ${spot.x.round()}\n'
+                                '${spot.y.toStringAsFixed(0)}',
+                                const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            )
                             .toList(),
                       ),
                     ),
@@ -1477,88 +1641,111 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.cycleHistory,
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.tp(context))),
+          Text(
+            l10n.cycleHistory,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.tp(context),
+            ),
+          ),
           const SizedBox(height: 12),
           // Kayıtlar salt-okunur değil: yanlış girilen tarih düzeltilebilmeli,
           // yanlış açılan kayıt silinebilmeli — aksi halde bozuk veri kalıcı
           // ve tahmin motoru onunla çalışır
-          ...records.take(10).map((r) => Semantics(
-                button: true,
-                label:
-                    '${l10n.editPeriodRecord}: ${dateFormat.format(r.startDate)}',
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(12),
-                  onTap: () => _showRecordEditor(r),
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
+          ...records
+              .take(10)
+              .map(
+                (r) => Semantics(
+                  button: true,
+                  label:
+                      '${l10n.editPeriodRecord}: ${dateFormat.format(r.startDate)}',
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => _showRecordEditor(r),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 2,
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
                               color: AppColors.periodDay,
-                              shape: BoxShape.circle),
-                        ),
-                        const SizedBox(width: 12),
-                        // Tarih aralığı + süre + kalem dar ekranda taşıyordu:
-                        // tarih bölümü esner, gerekirse kısalır
-                        Expanded(
-                          child: Text.rich(
-                            TextSpan(
-                              text: dateFormat.format(r.startDate),
-                              style: TextStyle(
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          // Tarih aralığı + süre + kalem dar ekranda taşıyordu:
+                          // tarih bölümü esner, gerekirse kısalır
+                          Expanded(
+                            child: Text.rich(
+                              TextSpan(
+                                text: dateFormat.format(r.startDate),
+                                style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.tp(context)),
-                              children: [
-                                if (r.endDate != null)
-                                  TextSpan(
-                                    text:
-                                        ' - ${dateFormat.format(r.endDate!)}',
-                                    style: TextStyle(
+                                  color: AppColors.tp(context),
+                                ),
+                                children: [
+                                  if (r.endDate != null)
+                                    TextSpan(
+                                      text:
+                                          ' - ${dateFormat.format(r.endDate!)}',
+                                      style: TextStyle(
                                         fontWeight: FontWeight.w400,
-                                        color: AppColors.ts(context)),
-                                  )
-                                else
-                                  TextSpan(
-                                    text: ' (${l10n.ongoing})',
-                                    style: const TextStyle(
+                                        color: AppColors.ts(context),
+                                      ),
+                                    )
+                                  else
+                                    TextSpan(
+                                      text: ' (${l10n.ongoing})',
+                                      style: const TextStyle(
                                         fontWeight: FontWeight.w400,
                                         color: AppColors.menstrual,
-                                        fontStyle: FontStyle.italic),
-                                  ),
-                              ],
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              maxLines:
+                                  usesLargeText(
+                                    MediaQuery.textScalerOf(context),
+                                  )
+                                  ? null
+                                  : 1,
+                              overflow:
+                                  usesLargeText(
+                                    MediaQuery.textScalerOf(context),
+                                  )
+                                  ? null
+                                  : TextOverflow.ellipsis,
                             ),
-                            maxLines: usesLargeText(
-                                    MediaQuery.textScalerOf(context))
-                                ? null
-                                : 1,
-                            overflow: usesLargeText(
-                                    MediaQuery.textScalerOf(context))
-                                ? null
-                                : TextOverflow.ellipsis,
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(l10n.nDays(r.durationDays),
+                          const SizedBox(width: 8),
+                          Text(
+                            l10n.nDays(r.durationDays),
                             style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.ts(context))),
-                        const SizedBox(width: 8),
-                        Icon(Icons.edit_rounded,
-                            size: 16, color: AppColors.ts(context)),
-                      ],
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.ts(context),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.edit_rounded,
+                            size: 16,
+                            color: AppColors.ts(context),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              )),
+              ),
         ],
       ),
     ).animateSafe(context).fadeIn(delay: 260.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
@@ -1594,16 +1781,19 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     // x = ilk ölçümden itibaren GÜN: önceden x liste indeksiydi, seyrek
     // veri (bir haftada 3 ölçüm + iki ay boşluk) eşit aralıklı çizilip
     // eğilimin biçimini çarpıtıyordu
-    final firstDay = DateTime(dataPoints.first.key.year,
-        dataPoints.first.key.month, dataPoints.first.key.day);
+    final firstDay = DateTime(
+      dataPoints.first.key.year,
+      dataPoints.first.key.month,
+      dataPoints.first.key.day,
+    );
     double dayOf(DateTime d) => daysBetween(firstDay, d).toDouble();
     DateTime dateOf(double x) => addDays(firstDay, x.round());
 
     final cycleLength = ref.watch(effectiveCycleLengthProvider);
     final periodLength = profile?.averagePeriodLength ?? 5;
-    final starts = records.map((record) => DateUtils.dateOnly(record.startDate))
-        .toList()
-      ..sort();
+    final starts =
+        records.map((record) => DateUtils.dateOnly(record.startDate)).toList()
+          ..sort();
     CyclePhase? phaseOf(DateTime date) {
       DateTime? anchor;
       for (final start in starts) {
@@ -1633,9 +1823,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             confirmedLatest: confirmedOvulation,
           );
 
-    final spots = dataPoints
-        .map((e) => FlSpot(dayOf(e.key), e.value))
-        .toList();
+    final spots = dataPoints.map((e) => FlSpot(dayOf(e.key), e.value)).toList();
     final totalDays = spots.last.x;
 
     final minY = spots.map((s) => s.y).reduce((a, b) => a < b ? a : b);
@@ -1661,204 +1849,227 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     }
 
     return GlassCard(
-      borderRadius: 20,
-      blur: 0,
-      opacity: 0.18,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title,
-              style: TextStyle(
+          borderRadius: 20,
+          blur: 0,
+          opacity: 0.18,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.tp(context))),
-          if (story != null) ...[
-            const SizedBox(height: 4),
-            _storyLine(story),
-          ],
-          const SizedBox(height: 16),
-          // Ekran okuyucu için trend özeti: son / en düşük / en yüksek
-          Semantics(
-            label:
-                '$title: ${spots.last.y.toStringAsFixed(1)} $unit. '
-                'Min ${minY.toStringAsFixed(1)}, Max ${maxY.toStringAsFixed(1)} $unit.'
-                '${ovulationDates.isEmpty ? '' : ' ${l10nStory.ovulationMarkerHint}.'}',
-            child: ExcludeSemantics(
-              child: SizedBox(
-            height: 180,
-            child: LineChart(
-              LineChartData(
-                minY: minY - padding.clamp(0.5, 5),
-                maxY: maxY + padding.clamp(0.5, 5),
-                extraLinesData: ExtraLinesData(
-                  verticalLines: ovulationDates
-                      .map(
-                        (date) => VerticalLine(
-                          x: dayOf(date),
-                          color: AppColors.ringOvulation
-                              .withValues(alpha: 0.75),
-                          strokeWidth: 1.5,
-                          dashArray: const [5, 4],
+                  color: AppColors.tp(context),
+                ),
+              ),
+              if (story != null) ...[
+                const SizedBox(height: 4),
+                _storyLine(story),
+              ],
+              const SizedBox(height: 16),
+              // Ekran okuyucu için trend özeti: son / en düşük / en yüksek
+              Semantics(
+                label:
+                    '$title: ${spots.last.y.toStringAsFixed(1)} $unit. '
+                    'Min ${minY.toStringAsFixed(1)}, Max ${maxY.toStringAsFixed(1)} $unit.'
+                    '${ovulationDates.isEmpty ? '' : ' ${l10nStory.ovulationMarkerHint}.'}',
+                child: ExcludeSemantics(
+                  child: SizedBox(
+                    height: 180,
+                    child: LineChart(
+                      LineChartData(
+                        minY: minY - padding.clamp(0.5, 5),
+                        maxY: maxY + padding.clamp(0.5, 5),
+                        extraLinesData: ExtraLinesData(
+                          verticalLines: ovulationDates
+                              .map(
+                                (date) => VerticalLine(
+                                  x: dayOf(date),
+                                  color: AppColors.ringOvulation.withValues(
+                                    alpha: 0.75,
+                                  ),
+                                  strokeWidth: 1.5,
+                                  dashArray: const [5, 4],
+                                ),
+                              )
+                              .toList(),
                         ),
-                      )
-                      .toList(),
-                ),
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                  horizontalInterval: (maxY - minY) > 0 ? (maxY - minY) / 4 : 1,
-                  getDrawingHorizontalLine: (value) => FlLine(
-                    color: AppColors.dv(context),
-                    strokeWidth: 1,
-                  ),
-                ),
-                titlesData: FlTitlesData(
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 42,
-                      getTitlesWidget: (value, meta) {
-                        return Text(value.toStringAsFixed(1),
-                            style: TextStyle(
-                                fontSize: 10, color: AppColors.ts(context)));
-                      },
-                    ),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      interval:
-                          (totalDays / 4).ceilToDouble().clamp(1, 3650),
-                      getTitlesWidget: (value, meta) {
-                        if (value < 0 || value > totalDays) {
-                          return const SizedBox();
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            dateFormat.format(dateOf(value)),
-                            style: TextStyle(
-                                fontSize: 9, color: AppColors.ts(context)),
+                        gridData: FlGridData(
+                          show: true,
+                          drawVerticalLine: false,
+                          horizontalInterval: (maxY - minY) > 0
+                              ? (maxY - minY) / 4
+                              : 1,
+                          getDrawingHorizontalLine: (value) => FlLine(
+                            color: AppColors.dv(context),
+                            strokeWidth: 1,
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                  topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
-                ),
-                borderData: FlBorderData(show: false),
-                lineTouchData: LineTouchData(
-                  touchCallback: (event, response) {
-                    if (event is! FlTapUpEvent) return;
-                    final touchedSpots = response?.lineBarSpots;
-                    if (touchedSpots == null || touchedSpots.isEmpty) {
-                      return;
-                    }
-                    ref.read(selectedDateProvider.notifier).state =
-                        dateOf(touchedSpots.first.x);
-                    context.push('/log');
-                  },
-                  touchTooltipData: LineTouchTooltipData(
-                    getTooltipItems: (spots) {
-                      return spots.map((spot) {
-                        final phase = phaseOf(dateOf(spot.x));
-                        return LineTooltipItem(
-                          '${dateFormat.format(dateOf(spot.x))}\n'
-                          '${spot.y.toStringAsFixed(1)} $unit'
-                          '${phase == null ? '' : '\n${EnumLabels.phase(phase, l10nStory)}'}',
-                          TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                        );
-                      }).toList();
-                    },
-                  ),
-                ),
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: spots,
-                    isCurved: true,
-                    curveSmoothness: 0.3,
-                    color: color,
-                    barWidth: 3,
-                    isStrokeCapRound: true,
-                    dotData: FlDotData(
-                      show: spots.length <= 15,
-                      getDotPainter: (spot, percent, bar, index) =>
-                          FlDotCirclePainter(
-                        radius: 3,
-                        color: color,
-                        strokeWidth: 1.5,
-                        strokeColor: Colors.white,
+                        ),
+                        titlesData: FlTitlesData(
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              reservedSize: 42,
+                              getTitlesWidget: (value, meta) {
+                                return Text(
+                                  value.toStringAsFixed(1),
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: AppColors.ts(context),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              interval: (totalDays / 4).ceilToDouble().clamp(
+                                1,
+                                3650,
+                              ),
+                              getTitlesWidget: (value, meta) {
+                                if (value < 0 || value > totalDays) {
+                                  return const SizedBox();
+                                }
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Text(
+                                    dateFormat.format(dateOf(value)),
+                                    style: TextStyle(
+                                      fontSize: 9,
+                                      color: AppColors.ts(context),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          topTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          rightTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                        ),
+                        borderData: FlBorderData(show: false),
+                        lineTouchData: LineTouchData(
+                          touchCallback: (event, response) {
+                            if (event is! FlTapUpEvent) return;
+                            final touchedSpots = response?.lineBarSpots;
+                            if (touchedSpots == null || touchedSpots.isEmpty) {
+                              return;
+                            }
+                            ref.read(selectedDateProvider.notifier).state =
+                                dateOf(touchedSpots.first.x);
+                            context.push('/log');
+                          },
+                          touchTooltipData: LineTouchTooltipData(
+                            getTooltipItems: (spots) {
+                              return spots.map((spot) {
+                                final phase = phaseOf(dateOf(spot.x));
+                                return LineTooltipItem(
+                                  '${dateFormat.format(dateOf(spot.x))}\n'
+                                  '${spot.y.toStringAsFixed(1)} $unit'
+                                  '${phase == null ? '' : '\n${EnumLabels.phase(phase, l10nStory)}'}',
+                                  TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                );
+                              }).toList();
+                            },
+                          ),
+                        ),
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: spots,
+                            isCurved: true,
+                            curveSmoothness: 0.3,
+                            color: color,
+                            barWidth: 3,
+                            isStrokeCapRound: true,
+                            dotData: FlDotData(
+                              show: spots.length <= 15,
+                              getDotPainter: (spot, percent, bar, index) =>
+                                  FlDotCirclePainter(
+                                    radius: 3,
+                                    color: color,
+                                    strokeWidth: 1.5,
+                                    strokeColor: Colors.white,
+                                  ),
+                            ),
+                            belowBarData: BarAreaData(
+                              show: true,
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  color.withValues(alpha: 0.2),
+                                  color.withValues(alpha: 0.02),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    belowBarData: BarAreaData(
-                      show: true,
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          color.withValues(alpha: 0.2),
-                          color.withValues(alpha: 0.02),
-                        ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Icon(
+                    Icons.touch_app_rounded,
+                    size: 14,
+                    color: AppColors.ts(context),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      l10nStory.tapChartPointHint,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: AppColors.ts(context),
                       ),
                     ),
                   ),
                 ],
               ),
-            ),
-          ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Icon(Icons.touch_app_rounded,
-                  size: 14, color: AppColors.ts(context)),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  l10nStory.tapChartPointHint,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: AppColors.ts(context),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          if (ovulationDates.isNotEmpty) ...[
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                SizedBox(
-                  width: 14,
-                  child: Divider(
-                    color: AppColors.ringOvulation,
-                    thickness: 1.5,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    l10nStory.ovulationMarkerHint,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: AppColors.ts(context),
+              if (ovulationDates.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 14,
+                      child: Divider(
+                        color: AppColors.ringOvulation,
+                        thickness: 1.5,
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        l10nStory.ovulationMarkerHint,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppColors.ts(context),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
-            ),
-          ],
-        ],
-      ),
-    ).animateSafe(context).fadeIn(delay: 300.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+            ],
+          ),
+        )
+        .animateSafe(context)
+        .fadeIn(delay: 300.ms, duration: 400.ms)
+        .slideY(begin: 0.1, end: 0);
   }
 
   /// Grafik kartının başlığı altına veriden türetilmiş tek cümle:

@@ -15,7 +15,8 @@ class WaterTrackingScreen extends ConsumerStatefulWidget {
   const WaterTrackingScreen({super.key});
 
   @override
-  ConsumerState<WaterTrackingScreen> createState() => _WaterTrackingScreenState();
+  ConsumerState<WaterTrackingScreen> createState() =>
+      _WaterTrackingScreenState();
 }
 
 class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
@@ -24,12 +25,20 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
 
   bool get _isDirty => _glasses != _initialGlasses;
 
-  int get _goal => ref.read(userProfileProvider)?.waterGoal ?? AppConstants.defaultWaterGoal;
+  int get _goal =>
+      ref.read(userProfileProvider)?.waterGoal ?? AppConstants.defaultWaterGoal;
+
+  late DateTime _editDate;
 
   @override
   void initState() {
     super.initState();
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
+    final selected = ref.read(selectedDateProvider);
+    final now = DateTime.now();
+    _editDate = DateTime(selected.year, selected.month, selected.day);
+    if (_editDate.isAfter(now))
+      _editDate = DateTime(now.year, now.month, now.day);
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(_editDate);
     if (log != null) {
       _glasses = log.waterIntake;
     }
@@ -48,35 +57,46 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
       title: l10n.waterTracking,
       isDirty: _isDirty,
       body: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  const SizedBox(height: 16),
-                  _buildWaterCircle(progress, totalMl, goalMl, goal, l10n)
-                      .animateSafe(context).fadeIn(duration: 500.ms)
-                      .scale(begin: const Offset(0.8, 0.8), end: const Offset(1, 1), duration: 500.ms),
-                  const SizedBox(height: 12),
-                  Text(
-                    '1 ${l10n.glasses} = ${AppConstants.waterGlassMl} ml',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: AppColors.ts(context),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  _buildControls(goal)
-                      .animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
-                  const SizedBox(height: 28),
-                  _buildGlassGrid(goal, l10n)
-                      .animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
-                ],
-              ),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            const SizedBox(height: 16),
+            _buildWaterCircle(progress, totalMl, goalMl, goal, l10n)
+                .animateSafe(context)
+                .fadeIn(duration: 500.ms)
+                .scale(
+                  begin: const Offset(0.8, 0.8),
+                  end: const Offset(1, 1),
+                  duration: 500.ms,
+                ),
+            const SizedBox(height: 12),
+            Text(
+              '1 ${l10n.glasses} = ${AppConstants.waterGlassMl} ml',
+              style: TextStyle(fontSize: 13, color: AppColors.ts(context)),
             ),
+            const SizedBox(height: 24),
+            _buildControls(
+              goal,
+            ).animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
+            const SizedBox(height: 28),
+            _buildGlassGrid(
+              goal,
+              l10n,
+            ).animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
+          ],
+        ),
+      ),
       bottomBar: _buildSaveButton(l10n),
     );
   }
 
-  Widget _buildWaterCircle(double progress, int totalMl, int goalMl, int goal, AppLocalizations l10n) {
+  Widget _buildWaterCircle(
+    double progress,
+    int totalMl,
+    int goalMl,
+    int goal,
+    AppLocalizations l10n,
+  ) {
     return Center(
       child: TweenAnimationBuilder<double>(
         tween: Tween(begin: 0, end: progress.clamp(0.0, 1.0)),
@@ -103,21 +123,37 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.local_drink_rounded,
-                        color: AppColors.water, size: 36),
+                    const Icon(
+                      Icons.local_drink_rounded,
+                      color: AppColors.water,
+                      size: 36,
+                    ),
                     const SizedBox(height: 8),
-                    Text('$_glasses/$goal',
-                        style: Theme.of(context)
-                            .textTheme
-                            .displayMedium!
-                            .copyWith(color: AppColors.categoryText(context, AppColors.water))),
-                    Text(l10n.glasses,
-                        style: TextStyle(
-                            fontSize: 14, color: AppColors.ts(context))),
+                    Text(
+                      '$_glasses/$goal',
+                      style: Theme.of(context).textTheme.displayMedium!
+                          .copyWith(
+                            color: AppColors.categoryText(
+                              context,
+                              AppColors.water,
+                            ),
+                          ),
+                    ),
+                    Text(
+                      l10n.glasses,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.ts(context),
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    Text('$totalMl / $goalMl ml',
-                        style: TextStyle(
-                            fontSize: 12, color: AppColors.ts(context))),
+                    Text(
+                      '$totalMl / $goalMl ml',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.ts(context),
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -149,8 +185,10 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
               borderRadius: BorderRadius.circular(12),
               onTap: _showGoalDialog,
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
@@ -160,8 +198,11 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.edit_rounded,
-                        color: AppColors.water, size: 16),
+                    const Icon(
+                      Icons.edit_rounded,
+                      color: AppColors.water,
+                      size: 16,
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       '${l10n.dailyGoal}: $goal',
@@ -179,8 +220,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
         ),
         // Hedefin üstünde içilen su da kayda girmeli: sayaç hedefte
         // durduruluyordu, fazlası kaydedilemiyordu
-        _counterBtn(Icons.add, l10n.increase,
-            () => setState(() => _glasses++)),
+        _counterBtn(Icons.add, l10n.increase, () => setState(() => _glasses++)),
       ],
     );
   }
@@ -194,8 +234,10 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
         builder: (ctx, setDialogState) {
           final tempMl = tempGoal * AppConstants.waterGlassMl;
           return AlertDialog(
-            title: Text(l10n.dailyGoal,
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            title: Text(
+              l10n.dailyGoal,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -212,10 +254,13 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                     const SizedBox(width: 16),
                     Text(
                       '$tempGoal',
-                      style: Theme.of(context)
-                          .textTheme
-                          .displayMedium!
-                          .copyWith(color: AppColors.categoryText(context, AppColors.water)),
+                      style: Theme.of(context).textTheme.displayMedium!
+                          .copyWith(
+                            color: AppColors.categoryText(
+                              context,
+                              AppColors.water,
+                            ),
+                          ),
                     ),
                     const SizedBox(width: 16),
                     IconButton(
@@ -230,10 +275,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
                 const SizedBox(height: 8),
                 Text(
                   '$tempGoal ${l10n.glasses} = $tempMl ml',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.ts(context),
-                  ),
+                  style: TextStyle(fontSize: 14, color: AppColors.ts(context)),
                 ),
               ],
             ),
@@ -291,39 +333,50 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.dailyGoal,
-              style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w700,
-                  color: AppColors.tp(context))),
+          Text(
+            l10n.dailyGoal,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.tp(context),
+            ),
+          ),
           const SizedBox(height: 16),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4, crossAxisSpacing: 12, mainAxisSpacing: 12,
+              crossAxisCount: 4,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
             ),
             // Hedef aşıldıysa fazla bardaklar da görünsün
             itemCount: _glasses > goal ? _glasses : goal,
             itemBuilder: (context, index) {
               final isFilled = index < _glasses;
               return AnimatedContainer(
-                duration:
-                    context.motionDuration(const Duration(milliseconds: 300)),
+                duration: context.motionDuration(
+                  const Duration(milliseconds: 300),
+                ),
                 decoration: BoxDecoration(
                   color: isFilled
                       ? AppColors.water.withValues(alpha: 0.15)
-                      : AppColors.isDark(context) ? AppColors.cardDark : Colors.grey.shade100,
+                      : AppColors.isDark(context)
+                      ? AppColors.cardDark
+                      : Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isFilled ? AppColors.water : Colors.transparent,
                     width: 2,
                   ),
                 ),
-                child: Icon(Icons.local_drink_rounded,
-                    color: isFilled
-                        ? AppColors.water
-                        : AppColors.ts(context).withValues(alpha: 0.3),
-                    size: 28),
+                child: Icon(
+                  Icons.local_drink_rounded,
+                  color: isFilled
+                      ? AppColors.water
+                      : AppColors.ts(context).withValues(alpha: 0.3),
+                  size: 28,
+                ),
               );
             },
           ),
@@ -341,24 +394,29 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
           backgroundColor: AppColors.water,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
-        child: Text(l10n.save,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        child: Text(
+          l10n.save,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
 
   Future<void> _save() async {
     if (!ensureTrackingWriteAccess(context, ref)) return;
-    await ref.read(dailyLogProvider.notifier).updateWater(ref.read(selectedDateProvider), _glasses);
+    await ref.read(dailyLogProvider.notifier).updateWater(_editDate, _glasses);
     notifyTrackingRecordSaved();
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.waterSaved),
-            backgroundColor: AppColors.success),
+        SnackBar(
+          content: Text(l10n.waterSaved),
+          backgroundColor: AppColors.success,
+        ),
       );
       Navigator.of(context).pop();
     }

@@ -45,12 +45,17 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
     return double.parse(kilograms.toStringAsFixed(1));
   }
 
+  late DateTime _editDate;
+
   @override
   void initState() {
     super.initState();
-    final log = ref
-        .read(dailyLogProvider.notifier)
-        .getDailyLog(ref.read(selectedDateProvider));
+    final selected = ref.read(selectedDateProvider);
+    final now = DateTime.now();
+    _editDate = DateTime(selected.year, selected.month, selected.day);
+    if (_editDate.isAfter(now))
+      _editDate = DateTime(now.year, now.month, now.day);
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(_editDate);
     if (log?.weight != null) {
       _weight = log!.weight!;
       _hasExistingWeight = true;
@@ -273,7 +278,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
           if (_hasExistingWeight) ...[
             const SizedBox(height: 4),
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: TextButton.icon(
                 onPressed: _delete,
                 icon: const Icon(Icons.delete_outline_rounded, size: 18),
@@ -309,10 +314,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   }
 
   Future<void> _delete() async {
-    if (!ensureTrackingWriteAccess(context, ref)) return;
-    await ref
-        .read(dailyLogProvider.notifier)
-        .updateWeight(ref.read(selectedDateProvider), null);
+    await ref.read(dailyLogProvider.notifier).updateWeight(_editDate, null);
     if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -340,9 +342,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
     }
     _weight = parsed;
 
-    await ref
-        .read(dailyLogProvider.notifier)
-        .updateWeight(ref.read(selectedDateProvider), _weight);
+    await ref.read(dailyLogProvider.notifier).updateWeight(_editDate, _weight);
     notifyTrackingRecordSaved();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(

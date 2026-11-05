@@ -11,6 +11,10 @@ import 'services/quick_action_service.dart';
 import 'services/widget_service.dart';
 import 'providers/providers.dart';
 import 'app.dart';
+import 'services/export_cleanup.dart';
+import 'services/usage_metrics.dart';
+import 'l10n/generated/app_localizations.dart';
+import 'core/utils/language_utils.dart';
 
 /// Crash raporlama DSN'i build sırasında verilir:
 ///   flutter build apk --dart-define=SENTRY_DSN=https://...
@@ -23,19 +27,24 @@ Future<void> main() async {
     await _run();
     return;
   }
-  await SentryFlutter.init(
-    (options) {
-      options.dsn = _sentryDsn;
-      options.sendDefaultPii = false;
-      options.tracesSampleRate = 0.0; // yalnız crash, performans izleme yok
-    },
-    appRunner: _run,
-  );
+  await SentryFlutter.init((options) {
+    options.dsn = _sentryDsn;
+    options.sendDefaultPii = false;
+    options.tracesSampleRate = 0.0; // yalnız crash, performans izleme yok
+  }, appRunner: _run);
 }
 
 Future<void> _run() async {
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await _runInitialized();
+  } catch (_) {
+    // Preserve unreadable files; recovery must never silently erase them.
+    runApp(_StartupRecovery(onRetry: _run));
+  }
+}
 
+Future<void> _runInitialized() async {
   // Set preferred orientations
   // Oryantasyon kilidi yok: tüm ekranlar kaydırılabilir, tablet/landscape
   // düzenleri app_shell'deki genişlik sınıfı (NavigationRail) ile karşılanıyor
@@ -47,6 +56,8 @@ Future<void> _run() async {
   await HiveService().init();
   await QuickActionService().init();
   await WidgetService.init();
+  unawaited(UsageMetrics.record(UsageEvent.appOpen));
+  unawaited(ExportCleanup.run().catchError((Object _) {}));
 
   final profile = HiveService().getUserProfile();
 
@@ -58,16 +69,16 @@ Future<void> _run() async {
   final cachedPremium = prefs.getBool('premium_active') ?? false;
   final phasePattern = prefs.getBool('phase_pattern') ?? false;
   final backdateHint = prefs.getBool('backdate_hint_needed') ?? true;
-  final homePriority =
-      HomePriority.fromStorage(prefs.getString(homePriorityKey));
+  final homePriority = HomePriority.fromStorage(
+    prefs.getString(homePriorityKey),
+  );
 
   // Önceki oturumlardan kalan düz metin dışa aktarma dosyaları
   unawaited(ExportService.cleanupOldExports());
 
   // Premium durumu ve widget güncellemesi arka planda
   unawaited(PremiumService().init());
-  unawaited(
-      WidgetService.update(profile, HiveService().getAllPeriodRecords()));
+  unawaited(WidgetService.update(profile, HiveService().getAllPeriodRecords()));
 
   // Bildirim kurulumu ilk kareyi bloklamasın — arka planda tamamlanır
   final notificationService = NotificationService();
@@ -105,13 +116,53 @@ Future<void> _run() async {
         backdateHintProvider.overrideWith((ref) => backdateHint),
         homePriorityProvider.overrideWith((ref) => homePriority),
         if (profile != null) ...[
-          themeModeProvider.overrideWith((ref) => themeModeFromProfile(profile)),
+          themeModeProvider.overrideWith(
+            (ref) => themeModeFromProfile(profile),
+          ),
           // 'system' = override yok, MaterialApp cihaz dilini izler
           if (profile.language != 'system')
             localeProvider.overrideWith((ref) => Locale(profile.language)),
         ],
       ],
       child: const ReglTakipApp(),
+    ),
+  );
+}
+
+class _StartupRecovery extends StatelessWidget {
+  final Future<void> Function() onRetry;
+  const _StartupRecovery({required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+    localeListResolutionCallback: (preferred, _) => resolveAppLocale(preferred),
+    supportedLocales: AppLocalizations.supportedLocales,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    home: Builder(
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return Scaffold(
+          body: SafeArea(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(l10n.dataResetTitle),
+                      const SizedBox(height: 16),
+                      Text(l10n.startupRecoveryBody),
+                      const SizedBox(height: 16),
+                      FilledButton(onPressed: onRetry, child: Text(l10n.retry)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     ),
   );
 }

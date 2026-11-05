@@ -19,10 +19,11 @@ DateTime addDays(DateTime d, int days) =>
     DateTime(d.year, d.month, d.day + days);
 
 /// [from]'dan [to]'ya kaç takvim günü olduğu (saatler yok sayılır).
-int daysBetween(DateTime from, DateTime to) =>
-    DateTime.utc(to.year, to.month, to.day)
-        .difference(DateTime.utc(from.year, from.month, from.day))
-        .inDays;
+int daysBetween(DateTime from, DateTime to) => DateTime.utc(
+  to.year,
+  to.month,
+  to.day,
+).difference(DateTime.utc(from.year, from.month, from.day)).inDays;
 
 /// İki tarih aynı takvim gününde mi?
 bool isSameDay(DateTime a, DateTime b) =>

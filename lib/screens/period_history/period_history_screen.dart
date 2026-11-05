@@ -27,9 +27,13 @@ class PeriodHistoryScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.bg(context),
       appBar: AppBar(
-        title: Text(l10n.cycleHistory,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: AppColors.tp(context))),
+        title: Text(
+          l10n.cycleHistory,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppColors.tp(context),
+          ),
+        ),
         backgroundColor: AppColors.bg(context),
         elevation: 0,
         iconTheme: IconThemeData(color: AppColors.tp(context)),
@@ -48,15 +52,13 @@ class PeriodHistoryScreen extends ConsumerWidget {
           : ListView.separated(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
               itemCount: records.length,
-              separatorBuilder: (_, __) => Divider(
-                height: 1,
-                color: AppColors.dv(context),
-              ),
+              separatorBuilder: (_, __) =>
+                  Divider(height: 1, color: AppColors.dv(context)),
               itemBuilder: (context, index) => _RecordTile(
                 record: records[index],
                 dateFormat: dateFormat,
-                onTap: () => showPeriodRecordEditor(
-                    context, ref, records[index]),
+                onTap: () =>
+                    showPeriodRecordEditor(context, ref, records[index]),
               ),
             ),
     );
@@ -96,7 +98,9 @@ class _RecordTile extends StatelessWidget {
                 width: 8,
                 height: 8,
                 decoration: const BoxDecoration(
-                    color: AppColors.periodDay, shape: BoxShape.circle),
+                  color: AppColors.periodDay,
+                  shape: BoxShape.circle,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -113,12 +117,19 @@ class _RecordTile extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(l10n.nDays(record.durationDays),
-                      style: TextStyle(
-                          fontSize: 13, color: AppColors.ts(context))),
+                  Text(
+                    l10n.nDays(record.durationDays),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.ts(context),
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Icon(Icons.edit_rounded,
-                      size: 16, color: AppColors.ts(context)),
+                  Icon(
+                    Icons.edit_rounded,
+                    size: 16,
+                    color: AppColors.ts(context),
+                  ),
                 ],
               ),
             ],
