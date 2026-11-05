@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../core/constants/app_constants.dart';
 import '../core/utils/cycle_utils.dart';
+import '../core/utils/cycle_prediction.dart';
 import '../core/utils/date_only.dart';
 import '../core/utils/language_utils.dart';
 import '../core/utils/ring_segments.dart';
@@ -17,6 +18,7 @@ import '../models/enums.dart';
 import '../models/period_record.dart';
 import '../models/user_profile.dart';
 import 'disguise_service.dart';
+import 'hive_service.dart';
 
 enum WidgetPeriodActionDestination { wait, discard, startPeriod }
 
@@ -361,10 +363,12 @@ class WidgetService {
           final pillDay = CycleUtils.pillDayInPack(
             profile.pillPackStartDate!,
             now: day,
+            activeDays: profile.pillActiveDays,
+            breakDays: profile.pillBreakDays,
           );
-          out['line1'] = pillDay > 21
-              ? '${_t(locale, 'breakWeek')} ${pillDay - 21}/7'
-              : '${_t(locale, 'pill')} $pillDay/21';
+          out['line1'] = pillDay > profile.pillActiveDays
+              ? '${_t(locale, 'breakWeek')} ${pillDay - profile.pillActiveDays}/${profile.pillBreakDays}'
+              : '${_t(locale, 'pill')} $pillDay/${profile.pillActiveDays}';
         }
         break;
       case TrackingMode.ttc:
@@ -404,22 +408,13 @@ class WidgetService {
           ringFile,
         );
 
-        // Geniş widget: üç tahmin tarihi. Geçmişte kalan
-        // ovülasyon/fertil pencere bir sonraki döngüye kaydırılır.
-        final today = dateOnly(day);
-        final predPeriod = CycleUtils.nextFuturePeriod(
-          lastStart,
-          cycleLen,
+        final prediction = CyclePrediction.calculate(
+          start: lastStart,
+          length: cycleLen,
+          mode: profile.trackingMode,
+          logs: HiveService().getAllDailyLogs(),
           now: day,
-        );
-        var ovulation = CycleUtils.predictOvulation(lastStart, cycleLen);
-        while (ovulation.isBefore(today)) {
-          ovulation = addDays(ovulation, cycleLen);
-        }
-        final fertile = addDays(
-          ovulation,
-          -AppConstants.fertileWindowStartBeforeOvulation,
-        );
+        )!;
         String fmt(DateTime d) {
           // Locale verisi henüz yüklenmemişse (erken çağrı) sayısal düşüş
           try {
@@ -430,11 +425,15 @@ class WidgetService {
         }
 
         out['pred1_label'] = _t(locale, 'nextPeriod');
-        out['pred1_value'] = fmt(predPeriod);
-        out['pred2_label'] = _t(locale, 'ovulation');
-        out['pred2_value'] = fmt(ovulation);
+        out['pred1_value'] = fmt(prediction.nextPeriod);
+        out['pred2_label'] = prediction.source == PredictionSource.lh
+            ? (locale == 'tr' ? 'LH sonrası tahmin' : 'After positive LH')
+            : prediction.source == PredictionSource.temperature
+            ? (locale == 'tr' ? 'Sıcaklık örüntüsü' : 'Temperature pattern')
+            : _t(locale, 'ovulation');
+        out['pred2_value'] = fmt(prediction.ovulation);
         out['pred3_label'] = _t(locale, 'fertile');
-        out['pred3_value'] = fmt(fertile);
+        out['pred3_value'] = fmt(prediction.fertileStart);
         break;
     }
     return out;

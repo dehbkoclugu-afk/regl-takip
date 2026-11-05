@@ -39,6 +39,9 @@ class _LogScreenState extends ConsumerState<LogScreen> {
     final fromCalendar = ref.read(selectedDateProvider);
     final now = DateTime.now();
     _selectedDate = fromCalendar.isAfter(now) ? now : fromCalendar;
+    if (fromCalendar.isAfter(now)) {
+      ref.read(selectedDateProvider.notifier).state = _selectedDate;
+    }
     _buildWeekDates();
   }
 
