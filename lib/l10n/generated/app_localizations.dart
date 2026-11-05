@@ -3432,6 +3432,12 @@ abstract class AppLocalizations {
   /// **'PIN’ini unutursan kurtarma yolu yok; tek çıkış tüm verini silmek olur. Hatırlayacağın bir sayı seç.'**
   String get pinNoRecoveryWarning;
 
+  /// No description provided for @pinUnavailableRecovery.
+  ///
+  /// In tr, this message translates to:
+  /// **'PIN bu cihazda bulunamıyor. Biyometri açıksa onunla giriş yapabilir veya yedeğini geri yükleyebilirsin. İkisi de yoksa yeniden başlamak için cihaz ayarlarından uygulama verilerini silmen gerekir.'**
+  String get pinUnavailableRecovery;
+
   /// No description provided for @lockAfterMinutes.
   ///
   /// In tr, this message translates to:

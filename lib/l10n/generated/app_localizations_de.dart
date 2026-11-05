@@ -2086,6 +2086,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wenn du deine PIN vergisst, gibt es keine Wiederherstellung; der einzige Weg zurück ist das Löschen aller Daten. Wähle etwas, das du dir merkst.';
 
   @override
+  String get pinUnavailableRecovery =>
+      'Die PIN ist auf diesem Gerät nicht mehr verfügbar. Du kannst dich mit Biometrie anmelden, falls sie aktiviert ist, oder eine Sicherung wiederherstellen. Andernfalls musst du die App-Daten auf dem Gerät löschen, um neu zu beginnen.';
+
+  @override
   String lockAfterMinutes(int minutes) {
     final intl.NumberFormat minutesNumberFormat =
         intl.NumberFormat.decimalPattern(localeName);

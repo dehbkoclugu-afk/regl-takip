@@ -2088,6 +2088,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Si vous oubliez votre code, il n’y a aucun moyen de le récupérer ; la seule issue est de supprimer toutes vos données. Choisissez un code dont vous vous souviendrez.';
 
   @override
+  String get pinUnavailableRecovery =>
+      'Le code PIN n’est plus disponible sur cet appareil. Utilisez la biométrie si elle est activée, ou restaurez une sauvegarde. Sinon, effacez les données de l’application sur l’appareil pour recommencer.';
+
+  @override
   String lockAfterMinutes(int minutes) {
     final intl.NumberFormat minutesNumberFormat =
         intl.NumberFormat.decimalPattern(localeName);

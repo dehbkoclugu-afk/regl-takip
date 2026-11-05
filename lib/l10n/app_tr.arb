@@ -975,6 +975,7 @@
     }
   },
   "pinNoRecoveryWarning": "PIN’ini unutursan kurtarma yolu yok; tek çıkış tüm verini silmek olur. Hatırlayacağın bir sayı seç.",
+  "pinUnavailableRecovery": "PIN bu cihazda bulunamıyor. Biyometri açıksa onunla giriş yapabilir veya yedeğini geri yükleyebilirsin. İkisi de yoksa yeniden başlamak için cihaz ayarlarından uygulama verilerini silmen gerekir.",
   "lockAfterMinutes": "{minutes} dk sonra",
   "@lockAfterMinutes": {
     "placeholders": {

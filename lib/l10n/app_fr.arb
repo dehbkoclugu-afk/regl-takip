@@ -718,6 +718,7 @@
     }
   },
   "pinNoRecoveryWarning": "Si vous oubliez votre code, il n’y a aucun moyen de le récupérer ; la seule issue est de supprimer toutes vos données. Choisissez un code dont vous vous souviendrez.",
+  "pinUnavailableRecovery": "Le code PIN n’est plus disponible sur cet appareil. Utilisez la biométrie si elle est activée, ou restaurez une sauvegarde. Sinon, effacez les données de l’application sur l’appareil pour recommencer.",
   "lockAfterMinutes": "Après {minutes} min",
   "@lockAfterMinutes": {
     "placeholders": {

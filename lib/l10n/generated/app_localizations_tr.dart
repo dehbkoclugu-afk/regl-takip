@@ -2072,6 +2072,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'PIN’ini unutursan kurtarma yolu yok; tek çıkış tüm verini silmek olur. Hatırlayacağın bir sayı seç.';
 
   @override
+  String get pinUnavailableRecovery =>
+      'PIN bu cihazda bulunamıyor. Biyometri açıksa onunla giriş yapabilir veya yedeğini geri yükleyebilirsin. İkisi de yoksa yeniden başlamak için cihaz ayarlarından uygulama verilerini silmen gerekir.';
+
+  @override
   String lockAfterMinutes(int minutes) {
     final intl.NumberFormat minutesNumberFormat =
         intl.NumberFormat.decimalPattern(localeName);

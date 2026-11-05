@@ -8,10 +8,16 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/router/app_router.dart';
 import '../../core/utils/motion.dart';
 import '../../core/utils/pin_lockout.dart';
 import '../../core/utils/pin_utils.dart';
 import '../../providers/providers.dart';
+import '../../services/backup_import_flow.dart';
+import '../../services/backup_service.dart';
+import '../../services/hive_service.dart';
+import '../../services/notification_service.dart';
+import '../../services/widget_service.dart';
 import 'widgets/pin_pad.dart';
 
 class LockScreen extends ConsumerStatefulWidget {
@@ -29,6 +35,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   bool _isError = false;
   bool _isVerifying = false;
   bool _pinUnavailable = false;
+  bool _restoringBackup = false;
 
   // Brute-force koruması: 5 yanlış denemeden sonra artan bekleme süresi
   final _lockout = PinLockout();
@@ -72,6 +79,56 @@ class _LockScreenState extends ConsumerState<LockScreen> {
       }
     } catch (_) {
       if (mounted) setState(() => _pinUnavailable = true);
+    }
+  }
+
+  Future<void> _restoreFromBackup() async {
+    if (_restoringBackup) return;
+    setState(() => _restoringBackup = true);
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final data = await pickBackupForRestore(context);
+      if (data == null || !mounted) return;
+      await BackupService(HiveService()).restoreBackup(data);
+      final trialStart = await BackupService.adoptEarlierTrialStart(null);
+      if (trialStart != null) {
+        ref.read(trialStartProvider.notifier).state = trialStart;
+      }
+      ref.read(userProfileProvider.notifier).refresh();
+      ref.read(periodRecordsProvider.notifier).refresh();
+      ref.read(dailyLogProvider.notifier).refresh();
+      final profile = HiveService().getUserProfile();
+      try {
+        if (profile != null) {
+          await NotificationService().rescheduleAll(
+            profile,
+            records: HiveService().getAllPeriodRecords(),
+            medications: profile.medicationPlan,
+            logs: HiveService().getAllDailyLogs(),
+          );
+        }
+        await WidgetService.update(
+          profile,
+          HiveService().getAllPeriodRecords(),
+        );
+      } catch (_) {
+        // Bildirim veya widget hatası, doğrulanmış restore'u geri almaz.
+      }
+      if (!mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text(l10n.backupRestored)));
+      widget.onUnlocked();
+      ref
+          .read(routerProvider)
+          .go(
+            profile?.onboardingCompleted == true ? '/dashboard' : '/onboarding',
+          );
+    } catch (_) {
+      if (mounted) {
+        messenger.showSnackBar(SnackBar(content: Text(l10n.invalidBackupFile)));
+      }
+    } finally {
+      if (mounted) setState(() => _restoringBackup = false);
     }
   }
 
@@ -255,10 +312,23 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                       if (_pinUnavailable)
                         Padding(
                           padding: const EdgeInsets.all(16),
-                          child: Text(
-                            l10n.pinNoRecoveryWarning,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.white),
+                          child: Column(
+                            children: [
+                              Text(
+                                l10n.pinUnavailableRecovery,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              TextButton(
+                                onPressed: _restoringBackup
+                                    ? null
+                                    : _restoreFromBackup,
+                                child: Text(
+                                  l10n.restoreData,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       if (_isLockedOut)

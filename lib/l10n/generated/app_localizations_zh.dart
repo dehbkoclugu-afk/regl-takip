@@ -2016,6 +2016,10 @@ class AppLocalizationsZh extends AppLocalizations {
       '如果您忘记了 PIN 码，则无法恢复；恢复的唯一方法是删除所有数据。选择一些你会记住的东西。';
 
   @override
+  String get pinUnavailableRecovery =>
+      '此设备上的 PIN 已不可用。如已启用生物识别，可使用它解锁；也可以恢复备份。如果都不可用，请在设备设置中清除本应用的数据后重新开始。';
+
+  @override
   String lockAfterMinutes(int minutes) {
     final intl.NumberFormat minutesNumberFormat =
         intl.NumberFormat.decimalPattern(localeName);

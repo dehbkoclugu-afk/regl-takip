@@ -17,34 +17,46 @@ void main() {
     Hive.init(dir.path);
     store.resetForTesting();
     await store.init(
-        encryptionKey: key, manageHivePath: false, assumeEncrypted: true);
+      encryptionKey: key,
+      manageHivePath: false,
+      assumeEncrypted: true,
+    );
     await store.saveUserProfile(UserProfile(name: 'Original'));
     await store.saveDailyLog(
-        DailyLog(id: 'old', date: DateTime(2026, 1, 1), waterIntake: 4));
+      DailyLog(id: 'old', date: DateTime(2026, 1, 1), waterIntake: 4),
+    );
   });
   tearDown(() async {
     await Hive.close();
     await dir.delete(recursive: true);
   });
-  BackupData replacement() =>
-      BackupData(profile: UserProfile(name: 'Replacement'), periodRecords: [
-        PeriodRecord(id: 'new-period', startDate: DateTime(2026, 2, 1))
-      ], dailyLogs: [
-        DailyLog(id: 'new', date: DateTime(2026, 2, 1), waterIntake: 8)
-      ]);
+  BackupData replacement() => BackupData(
+    profile: UserProfile(name: 'Replacement'),
+    periodRecords: [
+      PeriodRecord(id: 'new-period', startDate: DateTime(2026, 2, 1)),
+    ],
+    dailyLogs: [
+      DailyLog(id: 'new', date: DateTime(2026, 2, 1), waterIntake: 8),
+    ],
+  );
 
   for (final stage in ['profile', 'periods', 'beforeCommit']) {
     test('failure at $stage keeps original after restart', () async {
       store.transactionCheckpoint = (at) async {
         if (at == stage) throw FileSystemException('Injected failure');
       };
-      await expectLater(BackupService(store).restoreBackup(replacement()),
-          throwsA(isA<FileSystemException>()));
+      await expectLater(
+        BackupService(store).restoreBackup(replacement()),
+        throwsA(isA<FileSystemException>()),
+      );
       expect(store.getUserProfile()!.name, 'Original');
       await Hive.close();
       store.resetForTesting();
       await store.init(
-          encryptionKey: key, manageHivePath: false, assumeEncrypted: true);
+        encryptionKey: key,
+        manageHivePath: false,
+        assumeEncrypted: true,
+      );
       expect(store.getUserProfile()!.name, 'Original');
       expect(store.getAllDailyLogs().single.waterIntake, 4);
     });
@@ -54,16 +66,40 @@ void main() {
     await Hive.close();
     store.resetForTesting();
     await store.init(
-        encryptionKey: key, manageHivePath: false, assumeEncrypted: true);
+      encryptionKey: key,
+      manageHivePath: false,
+      assumeEncrypted: true,
+    );
     expect(store.getUserProfile()!.name, 'Replacement');
     expect(store.getAllDailyLogs().single.id, 'new');
     expect(store.getAllPeriodRecords().single.id, 'new-period');
   });
+  test(
+    'backup restore removes device PIN lock without losing records',
+    () async {
+      final locked = replacement();
+      locked.profile!.pinEnabled = true;
+      locked.profile!.biometricEnabled = true;
+      await BackupService(store).restoreBackup(locked);
+      await Hive.close();
+      store.resetForTesting();
+      await store.init(
+        encryptionKey: key,
+        manageHivePath: false,
+        assumeEncrypted: true,
+      );
+      expect(store.getUserProfile()!.pinEnabled, isFalse);
+      expect(store.getUserProfile()!.biometricEnabled, isFalse);
+      expect(store.getAllDailyLogs().single.id, 'new');
+    },
+  );
   test('invalid replacement cannot erase existing data', () async {
     final bad = replacement();
     bad.profile!.averageCycleLength = 0;
-    await expectLater(BackupService(store).restoreBackup(bad),
-        throwsA(isA<BackupException>()));
+    await expectLater(
+      BackupService(store).restoreBackup(bad),
+      throwsA(isA<BackupException>()),
+    );
     expect(store.getUserProfile()!.name, 'Original');
   });
   test('interrupted clear keeps all boxes after restart', () async {
@@ -76,7 +112,10 @@ void main() {
     await Hive.close();
     store.resetForTesting();
     await store.init(
-        encryptionKey: key, manageHivePath: false, assumeEncrypted: true);
+      encryptionKey: key,
+      manageHivePath: false,
+      assumeEncrypted: true,
+    );
     expect(store.getUserProfile()!.name, 'Original');
     expect(store.getAllDailyLogs().single.id, 'old');
   });
@@ -85,7 +124,10 @@ void main() {
     await Hive.close();
     store.resetForTesting();
     await store.init(
-        encryptionKey: key, manageHivePath: false, assumeEncrypted: true);
+      encryptionKey: key,
+      manageHivePath: false,
+      assumeEncrypted: true,
+    );
     expect(store.getUserProfile(), isNull);
     expect(store.getAllDailyLogs(), isEmpty);
     expect(store.getAllPeriodRecords(), isEmpty);
@@ -93,21 +135,29 @@ void main() {
   test('concurrent write waits for replacement and survives restart', () async {
     final restoring = BackupService(store).restoreBackup(replacement());
     final writing = store.saveDailyLog(
-        DailyLog(id: 'concurrent', date: DateTime(2026, 3, 1), waterIntake: 3));
+      DailyLog(id: 'concurrent', date: DateTime(2026, 3, 1), waterIntake: 3),
+    );
     await Future.wait([restoring, writing]);
     await Hive.close();
     store.resetForTesting();
     await store.init(
-        encryptionKey: key, manageHivePath: false, assumeEncrypted: true);
+      encryptionKey: key,
+      manageHivePath: false,
+      assumeEncrypted: true,
+    );
     expect(store.getDailyLogByDate(DateTime(2026, 3, 1))!.waterIntake, 3);
     expect(store.getDailyLogByDate(DateTime(2026, 2, 1))!.id, 'new');
   });
-  test('duplicate ids and overlapping records cannot silently overwrite',
-      () async {
-    final bad = replacement();
-    bad.dailyLogs.add(bad.dailyLogs.first);
-    await expectLater(BackupService(store).restoreBackup(bad),
-        throwsA(isA<BackupException>()));
-    expect(store.getAllDailyLogs().single.id, 'old');
-  });
+  test(
+    'duplicate ids and overlapping records cannot silently overwrite',
+    () async {
+      final bad = replacement();
+      bad.dailyLogs.add(bad.dailyLogs.first);
+      await expectLater(
+        BackupService(store).restoreBackup(bad),
+        throwsA(isA<BackupException>()),
+      );
+      expect(store.getAllDailyLogs().single.id, 'old');
+    },
+  );
 }

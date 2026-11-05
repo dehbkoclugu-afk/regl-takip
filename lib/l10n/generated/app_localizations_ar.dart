@@ -2095,6 +2095,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'إذا نسيت رقم التعريف الشخصي (PIN) الخاص بك، فلا توجد طريقة لاستعادته؛ الطريقة الوحيدة للعودة هي حذف جميع بياناتك. اختر شيئًا سوف تتذكره.';
 
   @override
+  String get pinUnavailableRecovery =>
+      'رمز PIN غير متاح على هذا الجهاز. يمكنك فتح التطبيق بالبصمة إذا كانت مفعّلة، أو استعادة نسخة احتياطية. إذا لم يتوفر أي منهما، امسح بيانات التطبيق من إعدادات الجهاز للبدء من جديد.';
+
+  @override
   String lockAfterMinutes(int minutes) {
     final intl.NumberFormat minutesNumberFormat =
         intl.NumberFormat.decimalPattern(localeName);
