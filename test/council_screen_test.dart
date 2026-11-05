@@ -43,7 +43,7 @@ void main() {
           locale: locale,
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
-          home: screen,
+          home: Scaffold(body: screen),
         ),
       );
 
