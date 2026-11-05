@@ -479,6 +479,7 @@
   "notificationChainEndTitle": "Los recordatorios se pausan",
   "notificationChainEndBody": "Los recordatorios programados se han agotado. Abre la app para crear nuevos.",
   "noPurchasesToRestore": "No se encontraron compras para restaurar",
+  "restoreNotConfirmed": "Todavía no se ha verificado ninguna compra. Si tienes una suscripción activa, intenta restaurarla de nuevo.",
   "restoringPurchases": "Restaurando compras…",
   "backdateHint": "Mantén pulsado para elegir otro día",
   "periodStartDateHelp": "¿Cuándo empezó tu regla?",

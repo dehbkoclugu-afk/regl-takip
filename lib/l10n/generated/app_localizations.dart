@@ -2940,6 +2940,12 @@ abstract class AppLocalizations {
   /// **'Geri yüklenecek bir satın alma bulunamadı'**
   String get noPurchasesToRestore;
 
+  /// No description provided for @restoreNotConfirmed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz doğrulanmış bir satın alma yok. Aktif aboneliğin varsa geri yüklemeyi tekrar dene.'**
+  String get restoreNotConfirmed;
+
   /// No description provided for @restoringPurchases.
   ///
   /// In tr, this message translates to:

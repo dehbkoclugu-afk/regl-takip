@@ -479,6 +479,7 @@
   "notificationChainEndTitle": "Les rappels sont en pause",
   "notificationChainEndBody": "Les rappels programmés sont épuisés. Ouvrez l'application pour en planifier de nouveaux.",
   "noPurchasesToRestore": "Aucun achat à restaurer",
+  "restoreNotConfirmed": "Aucun achat n’a encore été vérifié. Si vous avez un abonnement actif, réessayez la restauration.",
   "restoringPurchases": "Restauration des achats…",
   "backdateHint": "Appui long pour choisir un autre jour",
   "periodStartDateHelp": "Quand vos règles ont-elles commencé ?",

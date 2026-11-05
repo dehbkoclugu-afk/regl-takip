@@ -1703,6 +1703,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get noPurchasesToRestore => 'Nenhuma compra encontrada para restaurar';
 
   @override
+  String get restoreNotConfirmed =>
+      'Nenhuma compra foi verificada ainda. Se você tem uma assinatura ativa, tente restaurá-la novamente.';
+
+  @override
   String get restoringPurchases => 'Restaurando compras…';
 
   @override

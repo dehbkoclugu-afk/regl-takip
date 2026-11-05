@@ -1715,6 +1715,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noPurchasesToRestore => 'لم يتم العثور على مشتريات لاستعادتها';
 
   @override
+  String get restoreNotConfirmed =>
+      'لم يتم التحقق من أي عملية شراء بعد. إذا كان لديك اشتراك نشط، فحاول استعادة المشتريات مرة أخرى.';
+
+  @override
   String get restoringPurchases => 'جارٍ استعادة عمليات الشراء...';
 
   @override

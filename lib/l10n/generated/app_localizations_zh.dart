@@ -1647,6 +1647,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noPurchasesToRestore => '未找到可恢复的购买';
 
   @override
+  String get restoreNotConfirmed => '尚未验证任何购买。如果你有有效订阅，请再次尝试恢复购买。';
+
+  @override
   String get restoringPurchases => '正在恢复购买...';
 
   @override

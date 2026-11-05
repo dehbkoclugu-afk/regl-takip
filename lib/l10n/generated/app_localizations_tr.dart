@@ -1692,6 +1692,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'Geri yüklenecek bir satın alma bulunamadı';
 
   @override
+  String get restoreNotConfirmed =>
+      'Henüz doğrulanmış bir satın alma yok. Aktif aboneliğin varsa geri yüklemeyi tekrar dene.';
+
+  @override
   String get restoringPurchases => 'Satın alımlar geri yükleniyor…';
 
   @override

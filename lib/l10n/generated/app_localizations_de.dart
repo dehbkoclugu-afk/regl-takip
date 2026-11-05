@@ -1702,6 +1702,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Keine Käufe zum Wiederherstellen gefunden';
 
   @override
+  String get restoreNotConfirmed =>
+      'Es wurde noch kein Kauf bestätigt. Wenn du ein aktives Abo hast, versuche die Wiederherstellung erneut.';
+
+  @override
   String get restoringPurchases => 'Käufe werden wiederhergestellt…';
 
   @override

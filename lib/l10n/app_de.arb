@@ -479,6 +479,7 @@
   "notificationChainEndTitle": "Erinnerungen pausieren",
   "notificationChainEndBody": "Die geplanten Erinnerungen sind aufgebraucht. Öffne die App, um neue einzurichten.",
   "noPurchasesToRestore": "Keine Käufe zum Wiederherstellen gefunden",
+  "restoreNotConfirmed": "Es wurde noch kein Kauf bestätigt. Wenn du ein aktives Abo hast, versuche die Wiederherstellung erneut.",
   "restoringPurchases": "Käufe werden wiederhergestellt…",
   "backdateHint": "Für einen anderen Tag lange drücken",
   "periodStartDateHelp": "Wann hat deine Periode begonnen?",

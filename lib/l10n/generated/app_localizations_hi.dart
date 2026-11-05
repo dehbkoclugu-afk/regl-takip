@@ -1698,6 +1698,10 @@ class AppLocalizationsHi extends AppLocalizations {
       'पुनर्स्थापित करने के लिए कोई खरीदारी नहीं मिली';
 
   @override
+  String get restoreNotConfirmed =>
+      'अभी तक कोई खरीद सत्यापित नहीं हुई है। यदि आपकी सक्रिय सदस्यता है, तो फिर से पुनर्स्थापित करने का प्रयास करें।';
+
+  @override
   String get restoringPurchases => 'खरीदारी बहाल की जा रही है...';
 
   @override

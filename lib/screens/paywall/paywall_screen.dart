@@ -76,7 +76,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       if (!mounted) return;
       if (!restored) {
         messenger.showSnackBar(
-          SnackBar(content: Text(l10n.noPurchasesToRestore)),
+          // Mağaza akışı süre dolmadan yanıtlamamış olabilir; yokluk
+          // doğrulanmadığı hâlde "satın alma bulunamadı" demeyelim.
+          SnackBar(content: Text(l10n.restoreNotConfirmed)),
         );
       }
     } finally {

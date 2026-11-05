@@ -1698,6 +1698,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noPurchasesToRestore => 'No se encontraron compras para restaurar';
 
   @override
+  String get restoreNotConfirmed =>
+      'Todavía no se ha verificado ninguna compra. Si tienes una suscripción activa, intenta restaurarla de nuevo.';
+
+  @override
   String get restoringPurchases => 'Restaurando compras…';
 
   @override

@@ -736,6 +736,7 @@
   "notificationChainEndTitle": "Reminders are pausing",
   "notificationChainEndBody": "The scheduled reminders have run out. Open the app to set up new ones.",
   "noPurchasesToRestore": "No purchases found to restore",
+  "restoreNotConfirmed": "No purchase has been verified yet. If you have an active subscription, try restoring again.",
   "restoringPurchases": "Restoring purchases…",
   "backdateHint": "Long-press for a different day",
   "periodStartDateHelp": "When did your period start?",

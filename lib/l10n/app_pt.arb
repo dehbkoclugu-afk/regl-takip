@@ -736,6 +736,7 @@
   "notificationChainEndTitle": "Os lembretes estão pausando",
   "notificationChainEndBody": "Os lembretes programados acabaram. Abra o aplicativo para configurar novos.",
   "noPurchasesToRestore": "Nenhuma compra encontrada para restaurar",
+  "restoreNotConfirmed": "Nenhuma compra foi verificada ainda. Se você tem uma assinatura ativa, tente restaurá-la novamente.",
   "restoringPurchases": "Restaurando compras…",
   "backdateHint": "Pressione longamente para um dia diferente",
   "periodStartDateHelp": "Quando começou sua menstruação?",

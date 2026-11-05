@@ -736,6 +736,7 @@
   "notificationChainEndTitle": "提醒已暂停",
   "notificationChainEndBody": "预定的提醒已用完。打开应用程序以设置新的。",
   "noPurchasesToRestore": "未找到可恢复的购买",
+  "restoreNotConfirmed": "尚未验证任何购买。如果你有有效订阅，请再次尝试恢复购买。",
   "restoringPurchases": "正在恢复购买...",
   "backdateHint": "长按选择不同的一天",
   "periodStartDateHelp": "你的月经是什么时候开始的？",

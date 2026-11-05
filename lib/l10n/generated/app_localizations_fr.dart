@@ -1705,6 +1705,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noPurchasesToRestore => 'Aucun achat à restaurer';
 
   @override
+  String get restoreNotConfirmed =>
+      'Aucun achat n’a encore été vérifié. Si vous avez un abonnement actif, réessayez la restauration.';
+
+  @override
   String get restoringPurchases => 'Restauration des achats…';
 
   @override

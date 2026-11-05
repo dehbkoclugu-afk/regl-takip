@@ -736,6 +736,7 @@
   "notificationChainEndTitle": "Hatırlatmalar duraklıyor",
   "notificationChainEndBody": "Planlanan hatırlatmalar bitti. Uygulamayı açtığında yenileri kurulur.",
   "noPurchasesToRestore": "Geri yüklenecek bir satın alma bulunamadı",
+  "restoreNotConfirmed": "Henüz doğrulanmış bir satın alma yok. Aktif aboneliğin varsa geri yüklemeyi tekrar dene.",
   "restoringPurchases": "Satın alımlar geri yükleniyor…",
   "backdateHint": "Farklı bir gün için butona uzun bas",
   "periodStartDateHelp": "Regl hangi gün başladı?",

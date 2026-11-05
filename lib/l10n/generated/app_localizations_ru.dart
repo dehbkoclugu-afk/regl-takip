@@ -1695,6 +1695,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get noPurchasesToRestore => 'Покупки для восстановления не найдены';
 
   @override
+  String get restoreNotConfirmed =>
+      'Покупка пока не подтверждена. Если у вас есть активная подписка, попробуйте восстановить её ещё раз.';
+
+  @override
   String get restoringPurchases => 'Восстановление покупок…';
 
   @override

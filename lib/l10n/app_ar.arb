@@ -736,6 +736,7 @@
   "notificationChainEndTitle": "التذكيرات متوقفة مؤقتًا",
   "notificationChainEndBody": "لقد نفدت التذكيرات المجدولة. افتح التطبيق لإعداد تطبيقات جديدة.",
   "noPurchasesToRestore": "لم يتم العثور على مشتريات لاستعادتها",
+  "restoreNotConfirmed": "لم يتم التحقق من أي عملية شراء بعد. إذا كان لديك اشتراك نشط، فحاول استعادة المشتريات مرة أخرى.",
   "restoringPurchases": "جارٍ استعادة عمليات الشراء...",
   "backdateHint": "اضغط لفترة طويلة ليوم مختلف",
   "periodStartDateHelp": "متى بدأت دورتك الشهرية؟",
