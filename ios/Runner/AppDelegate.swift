@@ -7,7 +7,7 @@ import UIKit
 
   override func applicationWillResignActive(_ application: UIApplication) {
     super.applicationWillResignActive(application)
-    guard let window = window else { return }
+    guard privacyCover == nil, let window = window else { return }
     let cover = UIView(frame: window.bounds)
     cover.backgroundColor = UIColor.systemBackground
     cover.autoresizingMask = [.flexibleWidth, .flexibleHeight]

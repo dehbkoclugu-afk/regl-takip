@@ -31,8 +31,9 @@ void main() {
         wakeDay,
         const TimeOfDay(hour: 1, minute: 0),
         const TimeOfDay(hour: 7, minute: 0),
-      ).inHours,
-      6,
+      ).inMinutes,
+      360 + DateTime(2026, 10, 25, 1).timeZoneOffset.inMinutes -
+          wake.timeZoneOffset.inMinutes,
     );
     expect(
       () => sleepElapsed(

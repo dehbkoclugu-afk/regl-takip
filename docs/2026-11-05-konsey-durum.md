@@ -1,7 +1,7 @@
 # Konsey raporu uygulama durumu — 5 Kasım 2026
 
 Profildeki son regl tarihinin düzeltilmesi de diğer dönem kayıtlarıyla çakışma denetiminden geçer; reddedilen değişiklik mevcut kayıtları değiştirmez.
-Uyku kaydı uyanılan güne bağlanır; yerel yaz saati farkı süre hesabına girer ve aynı yatış/uyanış saati kaydedilemez. Sadece HH:mm saklanan eski kayıtların seyahat anındaki özgün saat dilimi geri çıkarılamaz; cihaz kabulü hâlâ açıktır.
+Uyku kaydı uyanılan güne bağlanır; yerel yaz saati farkı süre hesabına girer ve aynı yatış/uyanış saati kaydedilemez. Sadece HH:mm saklanan eski kayıtların seyahat anındaki özgün saat dilimi geri çıkarılamaz; cihaz kabulü hâlâ açıktır. Hızlı kayıttan çıkış ve tüm kayıt türlerine geçiş, değişmiş taslak için kaydet/vazgeç/iptal sorar. iOS uygulama değiştirici örtüsü tekrarlanan pasife geçişlerde tek örnek olarak tutulur.
 
 Bu tablo kod, otomatik test ve cihaz/mağaza kanıtını ayırır. PR #11, PR #10'u taban alır ve PR #7'nin daha önce ana dala girmeyen değişikliklerini içerir. `main` henüz güncellenmedi.
 

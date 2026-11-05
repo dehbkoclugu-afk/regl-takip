@@ -56,6 +56,8 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
   MoodType? _initialMood;
   Map<SymptomType, int> _initialSymptoms = {};
   String _initialNote = '';
+  bool _allowPop = false;
+  bool _closing = false;
 
   bool get _isDirty =>
       _flow != _initialFlow ||
@@ -185,6 +187,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
 
     final wrote = await _persist(_date);
     if (!mounted) return;
+    setState(() => _allowPop = true);
     navigator.pop();
     // Hiçbir şey yazılmadıysa "Kaydedildi" demek yanlış bilgi
     if (!wrote) return;
@@ -197,6 +200,49 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     );
   }
 
+  Future<void> _close({bool openTrackers = false}) async {
+    if (_closing) return;
+    _closing = true;
+    try {
+      if (_isDirty) {
+        final l10n = AppLocalizations.of(context)!;
+        final save = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(l10n.discardChangesTitle),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(l10n.cancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(l10n.discard),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text(l10n.save),
+              ),
+            ],
+          ),
+        );
+        if (!mounted || save == null) return;
+        if (save) {
+          if (!ensureTrackingWriteAccess(context, ref)) return;
+          await _persist(_date);
+          notifyTrackingRecordSaved();
+        }
+      }
+      if (!mounted) return;
+      final router = openTrackers ? GoRouter.of(context) : null;
+      setState(() => _allowPop = true);
+      Navigator.of(context).pop();
+      router?.push('/log');
+    } finally {
+      _closing = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -206,13 +252,18 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     final today = DateTime(now.year, now.month, now.day);
     final canGoForward = _date.isBefore(today);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-        border: Border.all(color: AppColors.dv(context), width: 1),
-      ),
-      padding: EdgeInsets.only(
+    return PopScope(
+      canPop: _allowPop,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _close();
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.sf(context),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          border: Border.all(color: AppColors.dv(context), width: 1),
+        ),
+        padding: EdgeInsets.only(
         left: 20,
         right: 20,
         top: 12,
@@ -444,10 +495,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               const SizedBox(height: 8),
               Center(
                 child: TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    context.push('/log');
-                  },
+                  onPressed: () => _close(openTrackers: true),
                   child: Text(
                     l10n.allTrackers,
                     style: TextStyle(
@@ -460,6 +508,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
             ],
           ),
         ),
+      ),
       ),
     );
   }
