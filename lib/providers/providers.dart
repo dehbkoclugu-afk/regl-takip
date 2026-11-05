@@ -679,6 +679,28 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     });
   }
 
+  static String _appendNote(String? existingNote, String note) {
+    final existing = existingNote?.trim() ?? '';
+    final text = note.trim();
+    if (existing.isEmpty) return text;
+    if (text.isEmpty || existing == text) return existing;
+    return '$existing\n$text';
+  }
+
+  /// Ruh hali kaldırılırken formdaki notu bağımsız günlük notuna taşır.
+  /// Her iki alan tek Hive yazımında değişir; mevcut günlük notu korunur.
+  Future<void> removeMoodKeepingNote(DateTime date, String note) {
+    return _serial(date, () async {
+      final log = _getOrCreateLog(date);
+      final text = note.trim();
+      if (text.isNotEmpty) {
+        log.notes = _appendNote(log.notes, text);
+      }
+      log.mood = null;
+      await saveDailyLog(log);
+    });
+  }
+
   /// Hızlı formun dört alanını tek günlük yazımıyla kaydeder. Eşzamanlı
   /// ayrıntılı kayıtlar aynı gün kuyruğunda sıraya girer.
   Future<void> updateQuickLog(
@@ -700,6 +722,9 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
             );
       log.symptoms = symptoms;
       log.notes = notes;
+      if (mood == null && previousMood?.note?.trim().isNotEmpty == true) {
+        log.notes = _appendNote(log.notes, previousMood!.note!);
+      }
       await saveDailyLog(log);
     });
   }

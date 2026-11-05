@@ -255,6 +255,17 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
                 ),
               ),
             ).animateSafe(context).fadeIn(delay: 500.ms, duration: 400.ms),
+            if (_selectedMood == null && _noteController.text.trim().isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Row(
+                  children: [
+                    const Icon(Icons.arrow_forward_rounded, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text('${l10n.notes} → ${l10n.myNotes}')),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
@@ -263,7 +274,11 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
         child: ElevatedButton(
           // Kayıtlı ruh hali varken seçim kaldırılırsa kaydetmek
           // silme anlamına gelir — buton kapanmamalı
-          onPressed: (_selectedMood != null || _hadExistingMood) ? _save : null,
+          onPressed: (_selectedMood != null ||
+                  _hadExistingMood ||
+                  _noteController.text.trim().isNotEmpty)
+              ? _save
+              : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primaryStrong,
             foregroundColor: Colors.white,
@@ -283,16 +298,34 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
   }
 
   Future<void> _save() async {
-    if (!ensureTrackingWriteAccess(context, ref)) return;
     final selected = _selectedMood;
-    final mood = selected == null
-        ? null
-        : MoodEntry(
-            type: selected,
-            note: _noteController.text.trim().isEmpty
-                ? null
-                : _noteController.text.trim(),
-          );
+    // Kendi kaydını kaldırmak için abonelik gerekmez; yeni/yeniden yazılmış
+    // not bu istisnadan yararlanıp ücretsiz katman kapısını aşamaz.
+    final unchangedExistingNote =
+        _hadExistingMood && _noteController.text.trim() == _initialNote;
+    if ((selected != null || !unchangedExistingNote) &&
+        !ensureTrackingWriteAccess(context, ref)) {
+      return;
+    }
+    if (selected == null) {
+      await ref.read(dailyLogProvider.notifier).removeMoodKeepingNote(
+        _editDate,
+        _noteController.text,
+      );
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.recordDeleted)),
+      );
+      Navigator.of(context).pop();
+      return;
+    }
+    final mood = MoodEntry(
+      type: selected,
+      note: _noteController.text.trim().isEmpty
+          ? null
+          : _noteController.text.trim(),
+    );
     await ref.read(dailyLogProvider.notifier).updateMood(_editDate, mood);
     notifyTrackingRecordSaved();
     if (mounted) {

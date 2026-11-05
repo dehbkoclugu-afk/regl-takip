@@ -32,6 +32,20 @@ void main() {
   });
 
   group('DailyLogNotifier akış alanı', () {
+    test('ruh hali silinince not günlük Notlar alanına taşınır', () async {
+      final notifier = DailyLogNotifier(service);
+      await notifier.updateNotes(day, 'Existing daily note');
+      await notifier.updateMood(
+        day,
+        MoodEntry(type: MoodType.happy, note: 'Mood note'),
+      );
+      await notifier.removeMoodKeepingNote(day, 'Mood note');
+      final reloaded = DailyLogNotifier(service).getDailyLog(day)!;
+      expect(reloaded.mood, isNull);
+      expect(reloaded.notes, 'Existing daily note\nMood note');
+      await notifier.removeMoodKeepingNote(day, 'Mood note');
+      expect(notifier.getDailyLog(day)?.notes, 'Existing daily note\nMood note');
+    });
     test('hızlı kayıt ruh hali notunu ve diğer ölçümleri korur', () async {
       final notifier = DailyLogNotifier(service);
       await notifier.updateMood(
@@ -52,6 +66,23 @@ void main() {
       expect(reloaded.flowIntensity, FlowIntensity.light);
       expect(reloaded.symptoms.single.severity, 2);
       expect(reloaded.notes, 'Daily note');
+    });
+    test('hızlı kayıt ruh hali kaldırınca notu günlük Notlar alanına taşır', () async {
+      final notifier = DailyLogNotifier(service);
+      await notifier.updateMood(
+        day,
+        MoodEntry(type: MoodType.happy, note: 'Mood note'),
+      );
+      await notifier.updateQuickLog(
+        day,
+        flow: null,
+        mood: null,
+        symptoms: const [],
+        notes: 'Daily note',
+      );
+      final reloaded = DailyLogNotifier(service).getDailyLog(day)!;
+      expect(reloaded.mood, isNull);
+      expect(reloaded.notes, 'Daily note\nMood note');
     });
     test('simultaneous partial updates retain both fields', () async {
       final notifier = DailyLogNotifier(service);

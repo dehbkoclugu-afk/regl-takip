@@ -49,6 +49,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
 
   FlowIntensity? _flow;
   MoodType? _mood;
+  String? _moodNote;
   final Map<SymptomType, int> _symptoms = {};
   final TextEditingController _noteController = TextEditingController();
 
@@ -82,6 +83,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     final log = ref.read(dailyLogProvider.notifier).getDailyLog(date);
     _flow = log?.flowIntensity;
     _mood = log?.mood?.type;
+    _moodNote = log?.mood?.note;
     _symptoms.clear();
     for (final s in log?.symptoms ?? const <SymptomEntry>[]) {
       _symptoms[s.type] = s.severity;
@@ -296,6 +298,11 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                   }).toList(),
                 ),
               ),
+              if (_mood == null && _moodNote?.trim().isNotEmpty == true)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text('${l10n.notes} → ${l10n.myNotes}'),
+                ),
               const SizedBox(height: 20),
 
               // Semptomlar — sık girilenler önde (liste kullanıldıkça

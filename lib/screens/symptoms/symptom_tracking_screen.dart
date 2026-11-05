@@ -193,7 +193,11 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
   }
 
   Widget _buildCategoryGrid(SymptomCategory category, AppLocalizations l10n) {
-    final symptoms = _getSymptomsForCategory(category);
+    final options = _getSymptomsForCategory(category);
+    final symptoms = [
+      ...options.where(_selectedSymptoms.containsKey),
+      ...options.where((type) => !_selectedSymptoms.containsKey(type)),
+    ];
     return LayoutBuilder(
       builder: (context, constraints) {
         final textScale = effectiveTextScale(MediaQuery.textScalerOf(context));
