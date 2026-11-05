@@ -786,7 +786,7 @@ class SettingsScreen extends ConsumerWidget {
                         content: Text(
                           restored
                               ? l10n.premiumActive
-                              : l10n.noPurchasesToRestore,
+                              : l10n.restoreNotConfirmed,
                         ),
                       ),
                     );
