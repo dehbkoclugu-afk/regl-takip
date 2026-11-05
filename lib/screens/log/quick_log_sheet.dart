@@ -52,6 +52,18 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
   String? _moodNote;
   final Map<SymptomType, int> _symptoms = {};
   final TextEditingController _noteController = TextEditingController();
+  FlowIntensity? _initialFlow;
+  MoodType? _initialMood;
+  Map<SymptomType, int> _initialSymptoms = {};
+  String _initialNote = '';
+
+  bool get _isDirty =>
+      _flow != _initialFlow ||
+      _mood != _initialMood ||
+      _noteController.text.trim() != _initialNote ||
+      _symptoms.length != _initialSymptoms.length ||
+      _symptoms.entries.any((entry) =>
+          _initialSymptoms[entry.key] != entry.value);
 
   /// Sheet'te gösterilen en sık semptomlar; tamamı semptom ekranında
   static const _commonSymptoms = [
@@ -89,6 +101,10 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
       _symptoms[s.type] = s.severity;
     }
     _noteController.text = log?.notes ?? '';
+    _initialFlow = _flow;
+    _initialMood = _mood;
+    _initialSymptoms = Map.of(_symptoms);
+    _initialNote = _noteController.text.trim();
   }
 
   /// Formdaki hâli [date] gününe yazar. Hiçbir şey girilmemişse ve o güne
@@ -118,16 +134,40 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     return true;
   }
 
-  /// Gün değiştirir. Ekrandaki hâl önce mevcut güne yazılır: kullanıcı
-  /// "dünü girdim, şimdi bugüne geçeyim" derken girdisini kaybetmemeli.
+  /// Gün değiştirirken taslağı sessizce kaydetme ya da kaybetme.
   Future<void> _switchDay(int deltaDays) async {
-    if (!ensureTrackingWriteAccess(context, ref)) return;
     final target = DateTime(_date.year, _date.month, _date.day + deltaDays);
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     if (target.isAfter(today)) return;
-
-    await _persist(_date);
+    if (_isDirty) {
+      final l10n = AppLocalizations.of(context)!;
+      final save = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(l10n.discardChangesTitle),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l10n.discard),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l10n.save),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || save == null) return;
+      if (save) {
+        if (!ensureTrackingWriteAccess(context, ref)) return;
+        await _persist(_date);
+      }
+    }
     if (!mounted) return;
     setState(() {
       _date = target;
