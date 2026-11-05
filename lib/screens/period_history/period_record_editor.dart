@@ -193,18 +193,29 @@ Future<void> showPeriodRecordEditor(
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-                  Navigator.of(sheetContext).pop();
-                  await ref
-                      .read(periodRecordsProvider.notifier)
-                      .updateRecordDates(record.id, start, end);
-                  await _syncProfileToNewestRecord(ref);
-                  notifyTrackingRecordSaved();
-                  messenger.showSnackBar(
-                    SnackBar(
-                      content: Text(l10n.recordUpdated),
-                      backgroundColor: AppColors.success,
-                    ),
-                  );
+                  try {
+                    await ref
+                        .read(periodRecordsProvider.notifier)
+                        .updateRecordDates(record.id, start, end);
+                    await _syncProfileToNewestRecord(ref);
+                    if (!sheetContext.mounted) return;
+                    Navigator.of(sheetContext).pop();
+                    notifyTrackingRecordSaved();
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(l10n.recordUpdated),
+                        backgroundColor: AppColors.success,
+                      ),
+                    );
+                  } on ArgumentError {
+                    messenger.showSnackBar(
+                      SnackBar(content: Text(l10n.periodRangeOverlap)),
+                    );
+                  } catch (_) {
+                    messenger.showSnackBar(
+                      SnackBar(content: Text(l10n.errorOccurred(l10n.retry))),
+                    );
+                  }
                 },
                 child: Text(l10n.save),
               ),
@@ -239,19 +250,24 @@ Future<void> showPeriodRecordEditor(
                     ),
                   );
                   if (confirmed != true) return;
-                  if (sheetContext.mounted) {
+                  try {
+                    await ref
+                        .read(periodRecordsProvider.notifier)
+                        .deleteRecord(record.id);
+                    await _syncProfileToNewestRecord(ref);
+                    if (!sheetContext.mounted) return;
                     Navigator.of(sheetContext).pop();
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(l10n.recordDeleted),
+                        backgroundColor: AppColors.success,
+                      ),
+                    );
+                  } catch (_) {
+                    messenger.showSnackBar(
+                      SnackBar(content: Text(l10n.errorOccurred(l10n.retry))),
+                    );
                   }
-                  await ref
-                      .read(periodRecordsProvider.notifier)
-                      .deleteRecord(record.id);
-                  await _syncProfileToNewestRecord(ref);
-                  messenger.showSnackBar(
-                    SnackBar(
-                      content: Text(l10n.recordDeleted),
-                      backgroundColor: AppColors.success,
-                    ),
-                  );
                 },
                 child: Text(l10n.deleteRecord),
               ),

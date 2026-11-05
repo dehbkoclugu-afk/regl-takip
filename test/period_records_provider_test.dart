@@ -234,6 +234,35 @@ void main() {
       expect(notifier.state.single.isOngoing, isTrue);
     });
 
+    test('çakışan tarih düzeltmesi kayıtları değiştirmez', () async {
+      final notifier = PeriodRecordsNotifier(service);
+      await notifier.addRecord(PeriodRecord(
+        id: 'r1',
+        startDate: DateTime(2026, 7, 1),
+        endDate: DateTime(2026, 7, 5),
+      ));
+      await notifier.addRecord(PeriodRecord(
+        id: 'r2',
+        startDate: DateTime(2026, 7, 10),
+        endDate: DateTime(2026, 7, 15),
+      ));
+      await expectLater(
+        notifier.updateRecordDates(
+          'r1', DateTime(2026, 7, 8), DateTime(2026, 7, 12)),
+        throwsArgumentError,
+      );
+      expect(notifier.state.singleWhere((r) => r.id == 'r1').startDate,
+          DateTime(2026, 7, 1));
+      expect(service.getAllPeriodRecords().singleWhere((r) => r.id == 'r1').startDate,
+          DateTime(2026, 7, 1));
+      await expectLater(
+        notifier.updateRecordDates('r1', DateTime(2026, 7, 1), null),
+        throwsArgumentError,
+      );
+      expect(notifier.state.singleWhere((r) => r.id == 'r1').endDate,
+          DateTime(2026, 7, 5));
+    });
+
     test('reopenRecord "reglim bitti"yi geri alır', () async {
       final notifier = PeriodRecordsNotifier(service);
       final record = await notifier.startPeriod(DateTime(2026, 7, 10));

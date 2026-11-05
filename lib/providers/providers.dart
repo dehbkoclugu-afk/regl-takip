@@ -512,9 +512,22 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
         normalizedEnd = normalizedStart;
       }
     }
-    record.startDate = normalizedStart;
-    record.endDate = normalizedEnd;
-    await _hiveService.savePeriodRecord(record);
+    final overlaps = state.any((other) {
+      if (other.id == recordId) return false;
+      final otherStart = dateOnly(other.startDate);
+      final otherEnd = other.endDate == null ? null : dateOnly(other.endDate!);
+      return !(normalizedEnd?.isBefore(otherStart) ?? false) &&
+          !(otherEnd?.isBefore(normalizedStart) ?? false);
+    });
+    if (overlaps) throw ArgumentError('Period range overlaps another record');
+    // Hive nesnesini diske yazmadan önce değiştirme: yazma hatasında ekran
+    // eski kayıt varmış gibi görünmeye devam edebilmeli.
+    await _hiveService.savePeriodRecord(PeriodRecord(
+      id: record.id,
+      startDate: normalizedStart,
+      endDate: normalizedEnd,
+      notes: record.notes,
+    ));
     _load();
     await WidgetService.update(_hiveService.getUserProfile(), state);
   }
