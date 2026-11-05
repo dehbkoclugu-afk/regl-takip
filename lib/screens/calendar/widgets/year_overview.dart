@@ -57,6 +57,7 @@ class _YearOverviewSheetState extends State<YearOverviewSheet> {
     return profile != null &&
         start != null &&
         profile.trackingMode != TrackingMode.pregnancy &&
+        profile.trackingMode != TrackingMode.pill &&
         !_isPeriodDay(day) &&
         CycleUtils.isPredictedPeriodDay(
           day,
