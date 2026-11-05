@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:regl_takip/core/theme/app_colors.dart';
 import 'package:regl_takip/core/utils/cycle_prediction.dart';
 import 'package:regl_takip/core/utils/unit_conversion.dart';
 import 'package:regl_takip/core/utils/cycle_utils.dart';
@@ -11,6 +13,11 @@ import 'package:regl_takip/services/health_sync_batch.dart';
 import 'package:regl_takip/services/hive_service.dart';
 
 void main() {
+  test('primary action white text clears 4.5:1 contrast', () {
+    final dark = AppColors.primaryDeep.computeLuminance();
+    final white = Colors.white.computeLuminance();
+    expect((white + 0.05) / (dark + 0.05), greaterThanOrEqualTo(4.5));
+  });
   test('temperature preference formats Turkish Fahrenheit consistently', () {
     expect(
       UnitConversion.formatTemperature(37, fahrenheit: true, locale: 'tr'),
