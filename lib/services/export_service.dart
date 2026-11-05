@@ -45,7 +45,8 @@ class ExportService {
         }
       }
     } catch (_) {
-      // Temizlik en iyi çaba: açılışı asla engellemesin
+      // Açılışta en iyi çaba; açık veri silme isteğinde başarısızlığı bildir.
+      if (all) rethrow;
     }
   }
 

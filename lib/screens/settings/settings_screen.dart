@@ -29,6 +29,7 @@ import '../../services/premium_service.dart';
 import '../../services/privacy_screen_service.dart';
 import '../../services/quick_action_service.dart';
 import '../../services/widget_service.dart';
+import '../../services/usage_metrics.dart';
 import '../lock/pin_setup_dialog.dart';
 import '../../core/utils/motion.dart';
 
@@ -1053,30 +1054,51 @@ class SettingsScreen extends ConsumerWidget {
                 );
                 controller.dispose();
                 if (confirmed == true) {
-                  await HiveService().clearAll();
-                  await ExportService.cleanupOldExports(all: true);
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.remove('decoy_notes');
-                  await prefs.remove(BackupService.lastBackupKey);
-                  // Migrasyondan kalan düz metin anlık görüntü de "tüm veri"nin
-                  // parçası — kutularla birlikte gitmeli
-                  await HiveService().deleteLegacyPlaintextSnapshot();
-                  // Veri silindi ama kilit, bildirimler ve ana ekran widget'ı
-                  // eski veriyle ayakta kalıyordu: PIN hâlâ kurulu, hatırlatmalar
-                  // planlı, widget döngü gününü göstermeye devam ediyordu
-                  const storage = FlutterSecureStorage();
-                  await storage.delete(key: 'app_pin');
-                  await storage.delete(key: 'pin_failed_attempts');
-                  await storage.delete(key: 'pin_lockout_until');
                   try {
+                    // Tekrar çalıştırılabilir temizlik. Önce eski verinin
+                    // görünebileceği yerleri boşalt, kutuları en son temizle.
                     await NotificationService().cancelAll();
+                    await WidgetService.update(null, const []);
+                    await ExportService.cleanupOldExports(all: true);
+                    await HiveService().deleteLegacyPlaintextSnapshot();
+                    await HealthSyncService.resetSyncState();
+                    final prefs = await SharedPreferences.getInstance();
+                    for (final key in [
+                      'decoy_notes',
+                      BackupService.lastBackupKey,
+                      'phase_pattern',
+                      'backdate_hint_needed',
+                      homePriorityKey,
+                      'calendar_legend_hidden',
+                      'calendar_peek_hint_seen',
+                      'trial_end_notice_shown_v1',
+                      ScreenProtection.prefsKey,
+                      LockTimeout.prefsKey,
+                      UsageMetrics.preferenceKey,
+                    ]) {
+                      await prefs.remove(key);
+                    }
+                    for (final event in UsageEvent.values) {
+                      await prefs.remove('usage_count_${event.name}');
+                    }
+                    await HiveService().clearAll();
+                    const storage = FlutterSecureStorage();
+                    for (final key in [
+                      'app_pin',
+                      'pin_failed_attempts',
+                      'pin_lockout_until',
+                    ]) {
+                      await storage.delete(key: key);
+                    }
+                    ScreenProtection.enabled.value = false;
                   } catch (_) {
-                    // Bildirim iptali başarısız olsa da silme tamamlanmalı
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(l10n.errorOccurred(l10n.retry))),
+                      );
+                    }
+                    return;
                   }
-                  await WidgetService.update(null, const []);
-                  // Health Connect senkron geçmişi de sıfırlanır: yoksa
-                  // yeniden girilen günler "zaten aktarıldı" sanılırdı
-                  await HealthSyncService.resetSyncState();
 
                   ref.read(userProfileProvider.notifier).refresh();
                   ref.read(periodRecordsProvider.notifier).refresh();
