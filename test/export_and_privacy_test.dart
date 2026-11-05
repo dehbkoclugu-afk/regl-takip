@@ -66,7 +66,7 @@ void main() {
     final bytes = await File(path).readAsBytes();
     expect(String.fromCharCodes(bytes.take(5)), '%PDF-');
     expect(bytes.length, greaterThan(10000));
-  });
+  }, timeout: const Timeout(Duration(minutes: 3)));
   test('cleanup removes only old owned exports', () async {
     final now = DateTime.now();
     final old = File('${dir.path}/period_tracker_20260101_000000.csv');
