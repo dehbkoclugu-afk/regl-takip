@@ -734,7 +734,16 @@ class _ReglTakipAppState extends ConsumerState<ReglTakipApp>
         // gelir: alttaki Navigator ağacı yaşamaya devam eder.
         return Stack(
           children: [
-            child ?? const SizedBox.shrink(),
+            ExcludeSemantics(
+              excluding: (_isLocked && _needsLock) || _decoyActive,
+              child: ExcludeFocus(
+                excluding: (_isLocked && _needsLock) || _decoyActive,
+                child: IgnorePointer(
+                  ignoring: (_isLocked && _needsLock) || _decoyActive,
+                  child: child ?? const SizedBox.shrink(),
+                ),
+              ),
+            ),
             if (_isLocked && _needsLock) LockScreen(onUnlocked: _onUnlocked),
             if (_decoyActive)
               DecoyNotesScreen(
