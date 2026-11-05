@@ -679,6 +679,31 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     });
   }
 
+  /// Hızlı formun dört alanını tek günlük yazımıyla kaydeder. Eşzamanlı
+  /// ayrıntılı kayıtlar aynı gün kuyruğunda sıraya girer.
+  Future<void> updateQuickLog(
+    DateTime date, {
+    required FlowIntensity? flow,
+    required MoodType? mood,
+    required List<SymptomEntry> symptoms,
+    required String? notes,
+  }) {
+    return _serial(date, () async {
+      final log = _getOrCreateLog(date);
+      log.flowIntensity = flow;
+      final previousMood = log.mood;
+      log.mood = mood == null
+          ? null
+          : MoodEntry(
+              type: mood,
+              note: previousMood?.type == mood ? previousMood?.note : null,
+            );
+      log.symptoms = symptoms;
+      log.notes = notes;
+      await saveDailyLog(log);
+    });
+  }
+
   Future<void> updateWater(DateTime date, int waterIntake) {
     return _serial(date, () async {
       final log = _getOrCreateLog(date);

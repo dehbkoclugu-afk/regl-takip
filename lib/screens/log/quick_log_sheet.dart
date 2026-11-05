@@ -104,28 +104,15 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
         note.isNotEmpty;
     if (!hasInput && !hasExistingLog) return false;
 
-    // setFlowIntensity: seçim kaldırıldığında akış da silinmeli.
-    // updateFlow null'ı "dokunma" sayıyor, eski değer kalıyordu.
-    await notifier.setFlowIntensity(date, _flow);
-    final existingMood = notifier.getDailyLog(date)?.mood;
-    await notifier.updateMood(
+    await notifier.updateQuickLog(
       date,
-      _mood != null
-          ? MoodEntry(
-              type: _mood!,
-              // Hızlı formda ruh hali notu editörü yok. Aynı ruh halini
-              // yeniden kaydetmek ayrıntılı formdaki notu silmemeli.
-              note: existingMood?.type == _mood ? existingMood?.note : null,
-            )
-          : null,
-    );
-    await notifier.updateSymptoms(
-      date,
-      _symptoms.entries
+      flow: _flow,
+      mood: _mood,
+      symptoms: _symptoms.entries
           .map((e) => SymptomEntry(type: e.key, severity: e.value))
           .toList(),
+      notes: note.isEmpty ? null : note,
     );
-    await notifier.updateNotes(date, note.isEmpty ? null : note);
     return true;
   }
 
