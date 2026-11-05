@@ -454,10 +454,9 @@ class HiveService {
   // ─── Clear all data ─────────────────────────────────────────────────
 
   Future<void> clearAll() async {
-    await _write(() async {
-      await _userProfileBox.clear();
-      await _periodRecordsBox.clear();
-      await _dailyLogsBox.clear();
-    });
+    // Use the same durable generation switch as restore. A crash before the
+    // catalog commit must reopen the complete original set, not a half-empty
+    // set of independently cleared boxes.
+    await replaceAll(profile: null, records: const [], logs: const []);
   }
 }

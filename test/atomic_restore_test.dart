@@ -66,6 +66,30 @@ void main() {
         throwsA(isA<BackupException>()));
     expect(store.getUserProfile()!.name, 'Original');
   });
+  test('interrupted clear keeps all boxes after restart', () async {
+    store.transactionCheckpoint = (at) async {
+      if (at == 'beforeCommit') {
+        throw FileSystemException('Injected clear interruption');
+      }
+    };
+    await expectLater(store.clearAll(), throwsA(isA<FileSystemException>()));
+    await Hive.close();
+    store.resetForTesting();
+    await store.init(
+        encryptionKey: key, manageHivePath: false, assumeEncrypted: true);
+    expect(store.getUserProfile()!.name, 'Original');
+    expect(store.getAllDailyLogs().single.id, 'old');
+  });
+  test('committed clear stays empty after restart', () async {
+    await store.clearAll();
+    await Hive.close();
+    store.resetForTesting();
+    await store.init(
+        encryptionKey: key, manageHivePath: false, assumeEncrypted: true);
+    expect(store.getUserProfile(), isNull);
+    expect(store.getAllDailyLogs(), isEmpty);
+    expect(store.getAllPeriodRecords(), isEmpty);
+  });
   test('concurrent write waits for replacement and survives restart', () async {
     final restoring = BackupService(store).restoreBackup(replacement());
     final writing = store.saveDailyLog(

@@ -1072,8 +1072,6 @@ class SettingsScreen extends ConsumerWidget {
                       'calendar_legend_hidden',
                       'calendar_peek_hint_seen',
                       'trial_end_notice_shown_v1',
-                      ScreenProtection.prefsKey,
-                      LockTimeout.prefsKey,
                       UsageMetrics.preferenceKey,
                     ]) {
                       await prefs.remove(key);
@@ -1082,6 +1080,8 @@ class SettingsScreen extends ConsumerWidget {
                       await prefs.remove('usage_count_${event.name}');
                     }
                     await HiveService().clearAll();
+                    await prefs.remove(ScreenProtection.prefsKey);
+                    await prefs.remove(LockTimeout.prefsKey);
                     const storage = FlutterSecureStorage();
                     for (final key in [
                       'app_pin',

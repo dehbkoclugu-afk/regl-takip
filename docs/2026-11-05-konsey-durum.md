@@ -4,7 +4,7 @@ Bu tablo kod, otomatik test ve cihaz/mağaza kanıtını ayırır. PR #11, PR #1
 
 | Bulgu | Kod durumu | Kapanış için kalan kanıt/iş |
 |---|---|---|
-| R01/R13 veri değiştirme ve doğrulama | Nesil tabanlı şifreli değiştirme, önce alan/ilişki doğrulama ve hata testleri var | Gerçek cihazda güç kesme, dolu disk, eski binary yükseltme/düşürme, karantina kurtarma |
+| R01/R13 veri değiştirme ve doğrulama | Geri yükleme, migrasyon ve tümünü silme için nesil tabanlı şifreli değiştirme; önce alan/ilişki doğrulama ve kesintili silme hata testleri var | Gerçek cihazda güç kesme, dolu disk, eski binary yükseltme/düşürme, karantina kurtarma |
 | R02/R10 tahmin kaynağı ve tarihler | Kaynak etiketli hesap Bugün, takvim, halka ve widget'a taşındı; kesin teyit dili kaldırıldı | Her modda ve iki cihazda LH/BBT geçmişi ile takvim/push tutarlılığı; tıbbi editör incelemesi |
 | R03/R14 gizlilik | PIN/kılık widget nötr, silme owned geçici dosya/notlar/PIN sayaçları ve yerel kullanım sayaçlarını kapsar; yardımcı temizlikten sonra Hive silinir, geçici dosya hatası başarı sayılmaz; Android native açılış nötr | Android 12+ açık/koyu, force-stop/widget/bildirim; iOS app switcher/Health ve veri/ağ akışı kanıtı |
 | R04 Sağlık | Başarı/kısmi/başarısız/izin yok sonucu, yazılan/silinen/bekleyen sayıları; gün bazlı kalıcı defter ve seri işlem | Health Connect/HealthKit izin, tekrar dene, başka uygulama kaydını koru testi |
