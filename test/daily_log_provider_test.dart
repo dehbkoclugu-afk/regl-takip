@@ -32,6 +32,27 @@ void main() {
   });
 
   group('DailyLogNotifier akış alanı', () {
+    test('hızlı kayıt ruh hali notunu ve diğer ölçümleri korur', () async {
+      final notifier = DailyLogNotifier(service);
+      await notifier.updateMood(
+        day,
+        MoodEntry(type: MoodType.happy, note: 'Keep this note'),
+      );
+      await notifier.updateWeight(day, 62.5);
+      await notifier.updateQuickLog(
+        day,
+        flow: FlowIntensity.light,
+        mood: MoodType.happy,
+        symptoms: [SymptomEntry(type: SymptomType.cramp, severity: 2)],
+        notes: 'Daily note',
+      );
+      final reloaded = DailyLogNotifier(service).getDailyLog(day)!;
+      expect(reloaded.mood?.note, 'Keep this note');
+      expect(reloaded.weight, 62.5);
+      expect(reloaded.flowIntensity, FlowIntensity.light);
+      expect(reloaded.symptoms.single.severity, 2);
+      expect(reloaded.notes, 'Daily note');
+    });
     test('simultaneous partial updates retain both fields', () async {
       final notifier = DailyLogNotifier(service);
       await Future.wait([
