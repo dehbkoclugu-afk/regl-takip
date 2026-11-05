@@ -619,11 +619,6 @@ class NotificationService {
 
       final scheduledDate = _nextDailyTime(hour, minute);
 
-      // Gizli modda ilaç adı da kilit ekranına düşmemeli
-      final body = discreet
-          ? l10n.notificationDiscreetBody
-          : (med.dose.isEmpty ? med.name : '${med.name} — ${med.dose}');
-
       await _plugin.zonedSchedule(
         4000 + i,
         discreet
