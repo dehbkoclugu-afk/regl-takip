@@ -4067,6 +4067,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Tahminler ovülasyonu doğrulamaz ve gebelikten korunmak için kullanılmamalıdır. Sıcaklık örüntüsü geçmişe dönüktür; ölçüm saati, hastalık ve uyku sonucu etkileyebilir.'**
   String get predictionLimitations;
+
+  /// No description provided for @healthSyncCounts.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yazılan: {written} · Silinen: {deleted} · Bekleyen: {pending}'**
+  String healthSyncCounts(int written, int deleted, int pending);
 }
 
 class _AppLocalizationsDelegate

@@ -2499,4 +2499,9 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get predictionLimitations =>
       'Estimates are not confirmation of ovulation and must not be used for contraception. Temperature patterns are retrospective; timing, illness and sleep can affect them.';
+
+  @override
+  String healthSyncCounts(int written, int deleted, int pending) {
+    return 'Written: $written · Deleted: $deleted · Pending: $pending';
+  }
 }

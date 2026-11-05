@@ -2494,4 +2494,9 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get predictionLimitations =>
       'Schätzungen bestätigen keinen Eisprung und dürfen nicht zur Verhütung verwendet werden. Temperaturmuster sind rückblickend; Messzeit, Krankheit und Schlaf beeinflussen sie.';
+
+  @override
+  String healthSyncCounts(int written, int deleted, int pending) {
+    return 'Written: $written · Deleted: $deleted · Pending: $pending';
+  }
 }

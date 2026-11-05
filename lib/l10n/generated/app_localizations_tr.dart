@@ -2478,4 +2478,9 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get predictionLimitations =>
       'Tahminler ovülasyonu doğrulamaz ve gebelikten korunmak için kullanılmamalıdır. Sıcaklık örüntüsü geçmişe dönüktür; ölçüm saati, hastalık ve uyku sonucu etkileyebilir.';
+
+  @override
+  String healthSyncCounts(int written, int deleted, int pending) {
+    return 'Yazılan: $written · Silinen: $deleted · Bekleyen: $pending';
+  }
 }

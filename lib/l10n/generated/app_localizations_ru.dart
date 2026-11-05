@@ -2483,4 +2483,9 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get predictionLimitations =>
       'Прогноз не подтверждает овуляцию и не предназначен для контрацепции. Температурная оценка ретроспективна; время измерения, болезнь и сон влияют на результат.';
+
+  @override
+  String healthSyncCounts(int written, int deleted, int pending) {
+    return 'Written: $written · Deleted: $deleted · Pending: $pending';
+  }
 }
