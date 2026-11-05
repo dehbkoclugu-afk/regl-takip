@@ -7,6 +7,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:regl_takip/core/widgets/info_dialog.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:regl_takip/models/user_profile.dart';
+import 'package:regl_takip/models/daily_log.dart';
+import 'package:regl_takip/models/period_record.dart';
+import 'package:regl_takip/models/enums.dart';
+import 'package:regl_takip/screens/log/quick_log_sheet.dart';
 import 'package:regl_takip/screens/dashboard/dashboard_screen.dart';
 import 'package:regl_takip/screens/calendar/calendar_screen.dart';
 import 'package:regl_takip/screens/dashboard/widgets/cycle_progress_ring.dart';
@@ -65,6 +69,31 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     expect(find.byType(CalendarScreen), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('quick log preserves an existing detailed mood note', (
+    tester,
+  ) async {
+    final date = DateTime(2026, 1, 1);
+    await HiveService().saveDailyLog(
+      DailyLog(
+        id: 'mood-note',
+        date: date,
+        mood: MoodEntry(type: MoodType.happy, note: 'Keep this note'),
+      ),
+    );
+    await tester.pumpWidget(app(Consumer(builder: (context, ref, _) {
+      return ElevatedButton(
+        onPressed: () => showQuickLogSheet(context, ref, date),
+        child: const Text('Open quick log'),
+      );
+    })));
+    await tester.tap(find.text('Open quick log'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byType(ElevatedButton).last);
+    await tester.tap(find.byType(ElevatedButton).last);
+    await tester.pumpAndSettle();
+    expect(HiveService().getDailyLogByDate(date)?.mood?.note, 'Keep this note');
   });
 
   testWidgets('info dialog remains dismissible with long German copy', (

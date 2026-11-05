@@ -107,9 +107,17 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     // setFlowIntensity: seçim kaldırıldığında akış da silinmeli.
     // updateFlow null'ı "dokunma" sayıyor, eski değer kalıyordu.
     await notifier.setFlowIntensity(date, _flow);
+    final existingMood = notifier.getDailyLog(date)?.mood;
     await notifier.updateMood(
       date,
-      _mood != null ? MoodEntry(type: _mood!) : null,
+      _mood != null
+          ? MoodEntry(
+              type: _mood!,
+              // Hızlı formda ruh hali notu editörü yok. Aynı ruh halini
+              // yeniden kaydetmek ayrıntılı formdaki notu silmemeli.
+              note: existingMood?.type == _mood ? existingMood?.note : null,
+            )
+          : null,
     );
     await notifier.updateSymptoms(
       date,
