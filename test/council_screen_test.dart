@@ -89,10 +89,10 @@ void main() {
       );
     })));
     await tester.tap(find.text('Open quick log'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 400));
     await tester.ensureVisible(find.byType(ElevatedButton).last);
     await tester.tap(find.byType(ElevatedButton).last);
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 400));
     expect(HiveService().getDailyLogByDate(date)?.mood?.note, 'Keep this note');
   });
 
