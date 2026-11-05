@@ -154,7 +154,13 @@ class BackupService {
     try {
       final rawProfile = decoded['profile'];
       if (rawProfile is Map) {
-        if (rawProfile['trackingMode'] != null && !['period','ttc','pregnancy','pill'].contains(rawProfile['trackingMode'])) {
+        if (rawProfile['trackingMode'] != null &&
+            ![
+              'period',
+              'ttc',
+              'pregnancy',
+              'pill',
+            ].contains(rawProfile['trackingMode'])) {
           throw BackupException('Invalid tracking mode');
         }
         for (final field in [
@@ -215,7 +221,7 @@ class BackupService {
       logs: data.dailyLogs,
     );
     await _hiveService.ensureMedicationPlanMigrated();
-    await adoptEarlierTrialStart(data.trialStart);
+    if (data.trialStart != null) await adoptEarlierTrialStart(data.trialStart);
   }
 
   /// Yedekteki deneme başlangıcı bu kurulumunkinden eskiyse onu benimser.

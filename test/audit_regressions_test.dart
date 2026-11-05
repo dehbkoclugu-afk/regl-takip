@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,6 +19,7 @@ import 'package:regl_takip/services/hive_service.dart';
 /// Denetimde bulunan hataların regresyonları.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
 
   late Directory tempDir;
   late HiveService service;
@@ -30,7 +32,10 @@ void main() {
     HiveService().resetForTesting();
     service = HiveService();
     await service.init(
-        encryptionKey: key, manageHivePath: false, assumeEncrypted: true);
+      encryptionKey: key,
+      manageHivePath: false,
+      assumeEncrypted: true,
+    );
   });
 
   tearDown(() async {
@@ -39,36 +44,48 @@ void main() {
   });
 
   group('startPeriod geçmişe ekleme', () {
-    test('daha yeni bir kaydın öncesine eklenen kayıt kapalı ve taşmaz',
-        () async {
-      final notifier = PeriodRecordsNotifier(service);
-      await notifier.addRecord(PeriodRecord(
-        id: 'recent',
-        startDate: addDays(today, -10),
-        endDate: addDays(today, -6),
-      ));
+    test(
+      'daha yeni bir kaydın öncesine eklenen kayıt kapalı ve taşmaz',
+      () async {
+        final notifier = PeriodRecordsNotifier(service);
+        await notifier.addRecord(
+          PeriodRecord(
+            id: 'recent',
+            startDate: addDays(today, -10),
+            endDate: addDays(today, -6),
+          ),
+        );
 
-      final record = await notifier.startPeriod(addDays(today, -40));
+        final record = await notifier.startPeriod(addDays(today, -40));
 
-      expect(record.isOngoing, isFalse);
-      expect(record.startDate, addDays(today, -40));
-      expect(record.endDate,
-          addDays(today, -40 + AppConstants.defaultPeriodLength - 1));
-      expect(notifier.state.where((r) => r.isOngoing), isEmpty);
-    });
+        expect(record.isOngoing, isFalse);
+        expect(record.startDate, addDays(today, -40));
+        expect(
+          record.endDate,
+          addDays(today, -40 + AppConstants.defaultPeriodLength - 1),
+        );
+        expect(notifier.state.where((r) => r.isOngoing), isEmpty);
+      },
+    );
 
-    test('sonraki kayda yakın başlangıç onun bir gün öncesinde biter',
-        () async {
-      final notifier = PeriodRecordsNotifier(service);
-      await notifier.addRecord(PeriodRecord(
-        id: 'next',
-        startDate: addDays(today, -10),
-        endDate: addDays(today, -6),
-      ));
-      final record =
-          await notifier.startPeriod(addDays(today, -12), periodLength: 5);
-      expect(record.endDate, addDays(today, -11));
-    });
+    test(
+      'sonraki kayda yakın başlangıç onun bir gün öncesinde biter',
+      () async {
+        final notifier = PeriodRecordsNotifier(service);
+        await notifier.addRecord(
+          PeriodRecord(
+            id: 'next',
+            startDate: addDays(today, -10),
+            endDate: addDays(today, -6),
+          ),
+        );
+        final record = await notifier.startPeriod(
+          addDays(today, -12),
+          periodLength: 5,
+        );
+        expect(record.endDate, addDays(today, -11));
+      },
+    );
 
     test('süren kaydın öncesine ekleme süren kaydı bozmaz', () async {
       final notifier = PeriodRecordsNotifier(service);
@@ -83,28 +100,36 @@ void main() {
 
     test('kapalı kaydın içindeki gün yeni kayıt açmaz', () async {
       final notifier = PeriodRecordsNotifier(service);
-      await notifier.addRecord(PeriodRecord(
-        id: 'r',
-        startDate: addDays(today, -20),
-        endDate: addDays(today, -16),
-      ));
+      await notifier.addRecord(
+        PeriodRecord(
+          id: 'r',
+          startDate: addDays(today, -20),
+          endDate: addDays(today, -16),
+        ),
+      );
       final record = await notifier.startPeriod(addDays(today, -18));
       expect(record.id, 'r');
       expect(notifier.state.length, 1);
     });
 
-    test('periodLength verilirse süresi dolmuş geçmiş başlangıç kapanır',
-        () async {
-      final notifier = PeriodRecordsNotifier(service);
-      final record =
-          await notifier.startPeriod(addDays(today, -40), periodLength: 5);
-      expect(record.endDate, addDays(today, -36));
-    });
+    test(
+      'periodLength verilirse süresi dolmuş geçmiş başlangıç kapanır',
+      () async {
+        final notifier = PeriodRecordsNotifier(service);
+        final record = await notifier.startPeriod(
+          addDays(today, -40),
+          periodLength: 5,
+        );
+        expect(record.endDate, addDays(today, -36));
+      },
+    );
 
     test('periodLength verilirse hâlâ sürebilecek kayıt açık kalır', () async {
       final notifier = PeriodRecordsNotifier(service);
-      final record =
-          await notifier.startPeriod(addDays(today, -2), periodLength: 5);
+      final record = await notifier.startPeriod(
+        addDays(today, -2),
+        periodLength: 5,
+      );
       expect(record.isOngoing, isTrue);
     });
   });
@@ -128,32 +153,45 @@ void main() {
     late ProviderContainer container;
     setUp(() {
       container = ProviderContainer(
-          overrides: [hiveServiceProvider.overrideWithValue(service)]);
+        overrides: [hiveServiceProvider.overrideWithValue(service)],
+      );
     });
     tearDown(() => container.dispose());
 
     test('geçmişe eklenen kayıt son regl tarihini geri taşımaz', () async {
       final profile = container.read(userProfileProvider.notifier);
       final records = container.read(periodRecordsProvider.notifier);
-      await profile.updateProfile(UserProfile(
-          onboardingCompleted: true, lastPeriodStart: addDays(today, -5)));
+      await profile.updateProfile(
+        UserProfile(
+          onboardingCompleted: true,
+          lastPeriodStart: addDays(today, -5),
+        ),
+      );
       await records.addRecord(
-          PeriodRecord(id: 'new', startDate: addDays(today, -5)));
+        PeriodRecord(id: 'new', startDate: addDays(today, -5)),
+      );
 
       await records.startPeriod(addDays(today, -40));
       await profile.syncLastPeriodStart(container.read(periodRecordsProvider));
 
-      expect(container.read(userProfileProvider)?.lastPeriodStart,
-          addDays(today, -5));
+      expect(
+        container.read(userProfileProvider)?.lastPeriodStart,
+        addDays(today, -5),
+      );
     });
 
     test('son kayıt silinince tarih temizlenir', () async {
       final profile = container.read(userProfileProvider.notifier);
       final records = container.read(periodRecordsProvider.notifier);
-      await profile.updateProfile(UserProfile(
-          onboardingCompleted: true, lastPeriodStart: addDays(today, -5)));
+      await profile.updateProfile(
+        UserProfile(
+          onboardingCompleted: true,
+          lastPeriodStart: addDays(today, -5),
+        ),
+      );
       await records.addRecord(
-          PeriodRecord(id: 'only', startDate: addDays(today, -5)));
+        PeriodRecord(id: 'only', startDate: addDays(today, -5)),
+      );
 
       await records.deleteRecord('only');
       await profile.syncLastPeriodStart(container.read(periodRecordsProvider));
@@ -166,12 +204,15 @@ void main() {
       final records = container.read(periodRecordsProvider.notifier);
       final start = addDays(today, -4);
       await records.addRecord(
-          PeriodRecord(id: 'r', startDate: start, endDate: today));
-      await profile.updateProfile(UserProfile(
-        onboardingCompleted: true,
-        lastPeriodStart: start,
-        averagePeriodLength: 3,
-      ));
+        PeriodRecord(id: 'r', startDate: start, endDate: today),
+      );
+      await profile.updateProfile(
+        UserProfile(
+          onboardingCompleted: true,
+          lastPeriodStart: start,
+          averagePeriodLength: 3,
+        ),
+      );
       expect(container.read(currentCyclePhaseProvider), CyclePhase.menstrual);
     });
   });
@@ -180,19 +221,26 @@ void main() {
     // Yaz saati olan bir saat diliminde de doğru kalmalı:
     //   TZ=Europe/Berlin flutter test test/audit_regressions_test.dart
     test('tahmini tarih yaz saati geçişinde kaymaz', () {
-      expect(CycleUtils.predictNextPeriod(DateTime(2026, 10, 1), 28),
-          DateTime(2026, 10, 29));
-      expect(CycleUtils.predictNextPeriod(DateTime(2026, 3, 20), 28),
-          DateTime(2026, 4, 17));
+      expect(
+        CycleUtils.predictNextPeriod(DateTime(2026, 10, 1), 28),
+        DateTime(2026, 10, 29),
+      );
+      expect(
+        CycleUtils.predictNextPeriod(DateTime(2026, 3, 20), 28),
+        DateTime(2026, 4, 17),
+      );
     });
 
     test('gün farkı yaz saati geçişinde eksik çıkmaz', () {
       expect(daysBetween(DateTime(2026, 3, 28), DateTime(2026, 3, 30)), 2);
       expect(daysBetween(DateTime(2026, 10, 24), DateTime(2026, 10, 26)), 2);
       expect(
-          CycleUtils.currentCycleDay(DateTime(2026, 3, 28),
-              now: DateTime(2026, 3, 30, 9)),
-          3);
+        CycleUtils.currentCycleDay(
+          DateTime(2026, 3, 28),
+          now: DateTime(2026, 3, 30, 9),
+        ),
+        3,
+      );
     });
 
     test('regl süresi yaz saati geçişinde doğru', () {
@@ -233,7 +281,9 @@ void main() {
         ),
       ]);
       final synced = HealthSyncService.migrateLegacySynced(
-          DateTime(2026, 5, 3).millisecondsSinceEpoch, days);
+        DateTime(2026, 5, 3).millisecondsSinceEpoch,
+        days,
+      );
       expect(synced, {'2026-05-01', '2026-05-02', '2026-05-03'});
       expect(HealthSyncService.migrateLegacySynced(null, days), isEmpty);
     });
@@ -245,8 +295,10 @@ void main() {
       final now = DateTime(2026, 10, 1); // 31. gün, 28 günlük döngü
       expect(CycleUtils.periodDelayDays(start, 28, now: now), 2);
       expect(CycleUtils.displayCycleDay(start, 28, now: now), 31);
-      expect(CycleUtils.getCurrentPhase(start, 28, 5, now: now),
-          CyclePhase.luteal);
+      expect(
+        CycleUtils.getCurrentPhase(start, 28, 5, now: now),
+        CyclePhase.luteal,
+      );
     });
   });
 
@@ -279,8 +331,9 @@ void main() {
     test('deneme başlangıcı yedeğe girer ve geri okunur', () {
       final backup = BackupService(service);
       final trial = DateTime(2026, 1, 15, 10);
-      final parsed =
-          backup.parseBackup(backup.buildBackupJson(trialStart: trial));
+      final parsed = backup.parseBackup(
+        backup.buildBackupJson(trialStart: trial),
+      );
       expect(parsed.trialStart, trial);
     });
 
@@ -291,17 +344,23 @@ void main() {
   });
 
   test('dışa aktarma dosyaları tanınır', () {
-    expect(ExportService.isExportFileName('period_tracker_20261026.csv'),
-        isTrue);
     expect(
-        ExportService.isExportFileName('regl_takip_backup_1.rtbackup'), isTrue);
+      ExportService.isExportFileName('period_tracker_20261026.csv'),
+      isTrue,
+    );
+    expect(
+      ExportService.isExportFileName('regl_takip_backup_1.rtbackup'),
+      isTrue,
+    );
     expect(ExportService.isExportFileName('cycle_widget_ring_0.png'), isFalse);
   });
 
   test('ayarlardaki sürüm pubspec ile aynı', () {
     final pubspec = File('pubspec.yaml').readAsStringSync();
-    final match =
-        RegExp(r'^version:\s*([^+\s]+)', multiLine: true).firstMatch(pubspec);
+    final match = RegExp(
+      r'^version:\s*([^+\s]+)',
+      multiLine: true,
+    ).firstMatch(pubspec);
     expect(match?.group(1), AppConstants.appVersion);
   });
 }
