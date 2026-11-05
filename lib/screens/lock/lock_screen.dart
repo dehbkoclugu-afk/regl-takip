@@ -28,6 +28,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   String _enteredPin = '';
   bool _isError = false;
   bool _isVerifying = false;
+  bool _pinUnavailable = false;
 
   // Brute-force koruması: 5 yanlış denemeden sonra artan bekleme süresi
   final _lockout = PinLockout();
@@ -41,7 +42,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   void initState() {
     super.initState();
     _restoreLockout();
-    _recoverIfPinMissing();
+    _checkPinAvailability();
     _tryBiometric();
   }
 
@@ -52,22 +53,26 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   }
 
   bool get _isLockedOut => _lockoutRemainingSeconds > 0;
-  bool get _acceptsInput => _lockoutRestored && !_isLockedOut && !_isVerifying;
+  bool get _acceptsInput =>
+      ref.read(userProfileProvider)?.pinEnabled == true &&
+      _lockoutRestored &&
+      !_pinUnavailable &&
+      !_isLockedOut &&
+      !_isVerifying;
 
-  /// Hive geri yüklendiği hâlde secure storage boşsa (cihaz yedeğinden
-  /// dönüş, Keystore sıfırlanması) `pinEnabled` açık ama PIN yok olur —
-  /// kullanıcı asla giremeyeceği bir ekranda kilitli kalır. Böyle bir
-  /// durumda kilidi kapat ve içeri al.
-  Future<void> _recoverIfPinMissing() async {
+  /// Cihaz geri yüklemesi veya Keystore kaybı PIN anahtarını silebilir.
+  /// Profil hâlâ kilitliyse bunu otomatik olarak kapatmak korumayı aşar.
+  Future<void> _checkPinAvailability() async {
     final profile = ref.read(userProfileProvider);
     if (profile?.pinEnabled != true) return;
-    final stored = await _storage.read(key: 'app_pin');
-    if (stored != null || !mounted) return;
-    await ref.read(userProfileProvider.notifier).saveProfile(pinEnabled: false);
-    if (!mounted) return;
-    // Biyometri hâlâ açıksa kilit ekranı orada kalır; değilse içeri gir
-    final p = ref.read(userProfileProvider);
-    if (p?.biometricEnabled != true) widget.onUnlocked();
+    try {
+      final stored = await _storage.read(key: 'app_pin');
+      if (mounted && stored == null) {
+        setState(() => _pinUnavailable = true);
+      }
+    } catch (_) {
+      if (mounted) setState(() => _pinUnavailable = true);
+    }
   }
 
   Future<void> _restoreLockout() async {
@@ -159,7 +164,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
     try {
       final stored = await _storage.read(key: 'app_pin');
       if (stored == null) {
-        // PIN kaydı yok: _recoverIfPinMissing devrede, burada kilitleme
+        if (mounted) setState(() => _pinUnavailable = true);
         return;
       }
 
@@ -247,6 +252,15 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                       lockIcon,
                       const SizedBox(height: 16),
                       title,
+                      if (_pinUnavailable)
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text(
+                            l10n.pinNoRecoveryWarning,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
                       if (_isLockedOut)
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
