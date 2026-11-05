@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/adaptive_layout.dart';
@@ -9,6 +10,7 @@ import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/tracker_scaffold.dart';
 import '../../providers/providers.dart';
 import '../../core/utils/motion.dart';
+import '../../core/utils/sleep_duration.dart';
 
 class SleepTrackingScreen extends ConsumerStatefulWidget {
   const SleepTrackingScreen({super.key});
@@ -71,10 +73,10 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
   }
 
   String _calculateDuration() {
-    int bedMinutes = _bedTime.hour * 60 + _bedTime.minute;
-    int wakeMinutes = _wakeTime.hour * 60 + _wakeTime.minute;
-    if (wakeMinutes <= bedMinutes) wakeMinutes += 24 * 60;
-    final diff = wakeMinutes - bedMinutes;
+    if (_bedTime == _wakeTime) {
+      return AppLocalizations.of(context)!.sleepDurationShort(0, 0);
+    }
+    final diff = sleepElapsed(_editDate, _bedTime, _wakeTime).inMinutes;
     return AppLocalizations.of(
       context,
     )!.sleepDurationShort(diff ~/ 60, diff % 60);
@@ -148,6 +150,16 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
             l10n.totalSleep,
             style: TextStyle(fontSize: 14, color: AppColors.ts(context)),
           ),
+          const SizedBox(height: 8),
+          Text(
+            '${l10n.wakeTimeLabel} · ${DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(_editDate)}',
+            style: TextStyle(fontSize: 12, color: AppColors.ts(context)),
+          ),
+          if (_bedTime == _wakeTime)
+            Text(
+              '${l10n.bedTimeLabel} ≠ ${l10n.wakeTimeLabel}',
+              style: TextStyle(color: AppColors.error),
+            ),
         ],
       ),
     );
@@ -321,7 +333,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: _save,
+        onPressed: _bedTime == _wakeTime ? null : _save,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.sleep,
           foregroundColor: Colors.white,
