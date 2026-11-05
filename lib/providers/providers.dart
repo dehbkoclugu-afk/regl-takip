@@ -683,7 +683,9 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     final existing = existingNote?.trim() ?? '';
     final text = note.trim();
     if (existing.isEmpty) return text;
-    if (text.isEmpty || existing == text) return existing;
+    if (text.isEmpty || existing == text || existing.endsWith('\n$text')) {
+      return existing;
+    }
     return '$existing\n$text';
   }
 
