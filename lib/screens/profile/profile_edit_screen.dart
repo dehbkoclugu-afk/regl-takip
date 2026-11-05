@@ -128,13 +128,23 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
         );
         Navigator.of(context).pop();
       }
-    } catch (e) {
+    } on ArgumentError {
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.periodRangeOverlap),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } catch (_) {
       // Kaydetme hatası sessiz kalmasın (Hive/bildirim istisnaları)
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n.errorOccurred(e.toString())),
+            content: Text(l10n.errorOccurred(l10n.retry)),
             backgroundColor: AppColors.error,
           ),
         );

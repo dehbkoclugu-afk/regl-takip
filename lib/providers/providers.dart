@@ -350,6 +350,15 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
     }
   }
 
+  bool _overlapsOther(String? ignoredId, DateTime start, DateTime? end) =>
+      state.any((other) {
+        if (other.id == ignoredId) return false;
+        final otherStart = dateOnly(other.startDate);
+        final otherEnd = other.endDate == null ? null : dateOnly(other.endDate!);
+        return !(end?.isBefore(otherStart) ?? false) &&
+            !(otherEnd?.isBefore(start) ?? false);
+      });
+
   Future<void> addRecord(PeriodRecord record) async {
     await _hiveService.savePeriodRecord(record);
     _load();
@@ -512,14 +521,9 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
         normalizedEnd = normalizedStart;
       }
     }
-    final overlaps = state.any((other) {
-      if (other.id == recordId) return false;
-      final otherStart = dateOnly(other.startDate);
-      final otherEnd = other.endDate == null ? null : dateOnly(other.endDate!);
-      return !(normalizedEnd?.isBefore(otherStart) ?? false) &&
-          !(otherEnd?.isBefore(normalizedStart) ?? false);
-    });
-    if (overlaps) throw ArgumentError('Period range overlaps another record');
+    if (_overlapsOther(recordId, normalizedStart, normalizedEnd)) {
+      throw ArgumentError('Period range overlaps another record');
+    }
     // Hive nesnesini diske yazmadan önce değiştirme: yazma hatasında ekran
     // eski kayıt varmış gibi görünmeye devam edebilmeli.
     await _hiveService.savePeriodRecord(PeriodRecord(
@@ -584,11 +588,11 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
 
     if (target != null) {
       // Düzeltme: aynı kaydı taşı, çift kayıt üretme
-      target.startDate = normalizedNew;
-      target.endDate = end;
-      await _hiveService.savePeriodRecord(target);
-      _load();
+      await updateRecordDates(target.id, normalizedNew, end);
     } else {
+      if (_overlapsOther(null, normalizedNew, end)) {
+        throw ArgumentError('Period range overlaps another record');
+      }
       await addRecord(
         PeriodRecord(id: _uuid.v4(), startDate: normalizedNew, endDate: end),
       );

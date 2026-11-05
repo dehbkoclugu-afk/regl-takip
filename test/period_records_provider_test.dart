@@ -31,6 +31,30 @@ void main() {
   });
 
   group('syncProfilePeriodRecord', () {
+    test('profil tarihi diğer regl kaydıyla çakışırsa eski kayıt korunur', () async {
+      final notifier = PeriodRecordsNotifier(service);
+      await notifier.addRecord(PeriodRecord(
+        id: 'r1',
+        startDate: DateTime(2026, 7, 1),
+        endDate: DateTime(2026, 7, 5),
+      ));
+      await notifier.addRecord(PeriodRecord(
+        id: 'r2',
+        startDate: DateTime(2026, 7, 10),
+        endDate: DateTime(2026, 7, 14),
+      ));
+      await expectLater(
+        notifier.syncProfilePeriodRecord(
+          previousStart: DateTime(2026, 7, 1),
+          newStart: DateTime(2026, 7, 9),
+          periodLength: 5,
+        ),
+        throwsArgumentError,
+      );
+      final original = notifier.state.singleWhere((r) => r.id == 'r1');
+      expect(original.startDate, DateTime(2026, 7, 1));
+      expect(service.getAllPeriodRecords(), hasLength(2));
+    });
     test('geriye tarih düzeltmesi kaydı taşır, kırpıp çiftlemez', () async {
       final notifier = PeriodRecordsNotifier(service);
       // Yanlış girilmiş tarih: ayın 5'i, süren kayıt

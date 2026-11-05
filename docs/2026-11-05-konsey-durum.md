@@ -1,5 +1,7 @@
 # Konsey raporu uygulama durumu — 5 Kasım 2026
 
+Profildeki son regl tarihinin düzeltilmesi de diğer dönem kayıtlarıyla çakışma denetiminden geçer; reddedilen değişiklik mevcut kayıtları değiştirmez.
+
 Bu tablo kod, otomatik test ve cihaz/mağaza kanıtını ayırır. PR #11, PR #10'u taban alır ve PR #7'nin daha önce ana dala girmeyen değişikliklerini içerir. `main` henüz güncellenmedi.
 
 | Bulgu | Kod durumu | Kapanış için kalan kanıt/iş |
