@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:regl_takip/core/utils/cycle_prediction.dart';
+import 'package:regl_takip/core/utils/unit_conversion.dart';
 import 'package:regl_takip/core/utils/cycle_utils.dart';
 import 'package:regl_takip/models/daily_log.dart';
 import 'package:regl_takip/models/enums.dart';
@@ -10,6 +11,12 @@ import 'package:regl_takip/services/health_sync_batch.dart';
 import 'package:regl_takip/services/hive_service.dart';
 
 void main() {
+  test('temperature preference formats Turkish Fahrenheit consistently', () {
+    expect(
+      UnitConversion.formatTemperature(37, fahrenheit: true, locale: 'tr'),
+      '98,6 °F',
+    );
+  });
   test(
     'invalid backup never enters replacement, including zero and negative cycles',
     () {

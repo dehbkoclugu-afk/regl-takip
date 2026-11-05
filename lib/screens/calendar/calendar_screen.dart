@@ -398,9 +398,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     var isFertile = false;
     var isPredicted = false;
     final lastStart = profile?.lastPeriodStart;
-    if (profile?.trackingMode != TrackingMode.pregnancy && profile?.trackingMode != TrackingMode.pill && lastStart != null) {
+    if (profile?.trackingMode != TrackingMode.pregnancy &&
+        profile?.trackingMode != TrackingMode.pill &&
+        lastStart != null) {
       final cycleLen = ref.read(effectiveCycleLengthProvider);
-      isOvulation = (ref.read(cyclePredictionProvider)?.isOvulation(day) ?? false);
+      isOvulation =
+          (ref.read(cyclePredictionProvider)?.isOvulation(day) ?? false);
       isFertile = (ref.read(cyclePredictionProvider)?.isFertile(day) ?? false);
       isPredicted =
           !isPeriod &&
@@ -960,12 +963,15 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     bool isPredicted = false;
 
     // Hamilelik modunda tahmin/ovülasyon işaretleri yanıltıcı — gösterme
-    final showPredictions = profile?.trackingMode != TrackingMode.pregnancy && profile?.trackingMode != TrackingMode.pill;
+    final showPredictions =
+        profile?.trackingMode != TrackingMode.pregnancy &&
+        profile?.trackingMode != TrackingMode.pill;
     final lastStart = profile?.lastPeriodStart;
     if (showPredictions && lastStart != null) {
       final cycleLen = ref.read(effectiveCycleLengthProvider);
       final periodLen = profile!.averagePeriodLength;
-      isOvulation = (ref.read(cyclePredictionProvider)?.isOvulation(day) ?? false);
+      isOvulation =
+          (ref.read(cyclePredictionProvider)?.isOvulation(day) ?? false);
       isFertile = (ref.read(cyclePredictionProvider)?.isFertile(day) ?? false);
       // 3 döngü ileriye tahmini adet günleri
       isPredicted =
@@ -1439,7 +1445,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   if (log?.temperature != null)
                     _chip(
                       Icons.thermostat,
-                      UnitConversion.formatTemperature(log!.temperature!, fahrenheit: ref.read(userProfileProvider)?.useFahrenheit ?? false),
+                      UnitConversion.formatTemperature(
+                        log!.temperature!,
+                        fahrenheit:
+                            ref.read(userProfileProvider)?.useFahrenheit ??
+                            false,
+                      ),
                       AppColors.warning,
                     ),
                   if (log != null && log.waterIntake > 0)
