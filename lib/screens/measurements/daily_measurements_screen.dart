@@ -30,6 +30,7 @@ class _DailyMeasurementsScreenState
   TimeOfDay _wakeTime = const TimeOfDay(hour: 7, minute: 0);
   int _sleepQuality = 3;
   TimeOfDay _temperatureTime = TimeOfDay.now();
+  bool _saving = false;
 
   late String _initialWeight;
   late String _initialTemperature;
@@ -151,7 +152,7 @@ class _DailyMeasurementsScreenState
       bottomBar: SizedBox(
         width: double.infinity,
         child: ElevatedButton(
-          onPressed: _save,
+          onPressed: _saving ? null : _save,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
@@ -436,7 +437,8 @@ class _DailyMeasurementsScreenState
         kilograms > InputParsing.maxWeightKg) {
       return double.nan;
     }
-    return double.parse(kilograms.toStringAsFixed(1));
+    // Keep 0.1 lb entries distinct when stored as kilograms.
+    return double.parse(kilograms.toStringAsFixed(_usePounds ? 2 : 1));
   }
 
   double? _parseTemperature(String raw) {
@@ -455,6 +457,7 @@ class _DailyMeasurementsScreenState
       '${value.minute.toString().padLeft(2, '0')}';
 
   Future<void> _save() async {
+    if (_saving) return;
     if (!ensureTrackingWriteAccess(context, ref)) return;
     final l10n = AppLocalizations.of(context)!;
     final weight = _parseWeight(_weightController.text);
@@ -468,35 +471,43 @@ class _DailyMeasurementsScreenState
       return;
     }
 
-    await ref
-        .read(dailyLogProvider.notifier)
-        .updateMeasurements(
-          _editDate,
-          changedFields: {
-        if (_glasses != _initialGlasses) 'water',
-        if (_weightController.text != _initialWeight) 'weight',
-        if (_temperatureController.text != _initialTemperature || _temperatureTime != _initialTemperatureTime) 'temperature',
-        if (_sleepEnabled != _initialSleepEnabled || _bedTime != _initialBedTime || _wakeTime != _initialWakeTime || _sleepQuality != _initialSleepQuality) 'sleep',
-      },
-      waterIntake: _glasses,
-          temperature: temperature,
-          temperatureTime: temperature == null
-              ? null
-              : _timeString(_temperatureTime),
-          weight: weight,
-          sleepStart: _sleepEnabled ? _timeString(_bedTime) : null,
-          sleepEnd: _sleepEnabled ? _timeString(_wakeTime) : null,
-          sleepQuality: _sleepEnabled ? _sleepQuality : null,
-        );
-    notifyTrackingRecordSaved();
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.savedGeneric),
-        backgroundColor: AppColors.success,
-      ),
-    );
-    Navigator.of(context).pop();
+    setState(() => _saving = true);
+    try {
+      await ref.read(dailyLogProvider.notifier).updateMeasurements(
+        _editDate,
+        changedFields: {
+          if (_glasses != _initialGlasses) 'water',
+          if (_weightController.text != _initialWeight) 'weight',
+          if (_temperatureController.text != _initialTemperature ||
+              _temperatureTime != _initialTemperatureTime) 'temperature',
+          if (_sleepEnabled != _initialSleepEnabled ||
+              _bedTime != _initialBedTime ||
+              _wakeTime != _initialWakeTime ||
+              _sleepQuality != _initialSleepQuality) 'sleep',
+        },
+        waterIntake: _glasses,
+        temperature: temperature,
+        temperatureTime:
+            temperature == null ? null : _timeString(_temperatureTime),
+        weight: weight,
+        sleepStart: _sleepEnabled ? _timeString(_bedTime) : null,
+        sleepEnd: _sleepEnabled ? _timeString(_wakeTime) : null,
+        sleepQuality: _sleepEnabled ? _sleepQuality : null,
+      );
+      if (!mounted) return;
+      notifyTrackingRecordSaved();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.savedGeneric),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      Navigator.of(context).pop();
+    } catch (_) {
+      if (mounted) _showError(l10n.errorOccurred(l10n.retry));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   void _showError(String message) {
