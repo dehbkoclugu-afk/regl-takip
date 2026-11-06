@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:intl/intl.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/access.dart';
@@ -24,6 +25,7 @@ class _MedicationTrackingScreenState
     extends ConsumerState<MedicationTrackingScreen> {
   List<MedicationEntry> _medications = [];
   List<MedicationEntry> _existingDailyMedications = [];
+  bool _saving = false;
 
   late DateTime _editDate;
 
@@ -48,7 +50,7 @@ class _MedicationTrackingScreenState
     return TrackerScaffold(
       title: l10n.medicationTracking,
       floatingActionButton: FloatingActionButton(
-        onPressed: _showAddSheet,
+        onPressed: _saving ? null : _showAddSheet,
         tooltip: l10n.addMedication,
         backgroundColor: AppColors.medication,
         child: const Icon(Icons.add, color: Colors.white),
@@ -77,6 +79,16 @@ class _MedicationTrackingScreenState
                   ),
                 ),
               ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Text(
+                '${l10n.dailyLog} · ${DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(_editDate)}',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
             ),
           ),
           Expanded(
@@ -111,12 +123,24 @@ class _MedicationTrackingScreenState
                 // anahtarı kayıyor ve yanlış satır animasyonla siliniyordu
                 key: ObjectKey(med),
                 direction: DismissDirection.endToStart,
-                confirmDismiss: (_) async =>
-                    ensureTrackingWriteAccess(context, ref),
-                onDismissed: (_) {
-                  setState(() => _medications.remove(med));
-                  _savePlan();
+                confirmDismiss: (_) async {
+                  if (_saving || !ensureTrackingWriteAccess(context, ref)) {
+                    return false;
+                  }
+                  setState(() => _saving = true);
+                  try {
+                    await _persistPlan(
+                      _medications.where((entry) => !identical(entry, med)),
+                    );
+                    return mounted;
+                  } catch (_) {
+                    _showSaveError();
+                    return false;
+                  } finally {
+                    if (mounted) setState(() => _saving = false);
+                  }
                 },
+                onDismissed: (_) => setState(() => _medications.remove(med)),
                 background: Container(
                   alignment: Alignment.centerRight,
                   padding: const EdgeInsets.only(right: 20),
@@ -138,12 +162,7 @@ class _MedicationTrackingScreenState
                         toggled: med.taken,
                         child: InkWell(
                           customBorder: const CircleBorder(),
-                          onTap: () {
-                            if (!ensureTrackingWriteAccess(context, ref))
-                              return;
-                            setState(() => med.taken = !med.taken);
-                            _saveDailyStatus();
-                          },
+                          onTap: () => _toggleMedication(med),
                           // 28 px kutu tek başına dokunma hedefiydi: 48 px alan
                           child: SizedBox(
                             width: 48,
@@ -371,8 +390,9 @@ class _MedicationTrackingScreenState
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: _saving ? null : () async {
                       if (nameCtrl.text.trim().isEmpty) return;
+                      if (!ensureTrackingWriteAccess(context, ref)) return;
                       final timeStr =
                           '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}';
                       final medication = MedicationEntry(
@@ -393,11 +413,17 @@ class _MedicationTrackingScreenState
                         );
                         return;
                       }
-                      setState(() {
-                        _medications.add(medication);
-                      });
-                      _savePlan();
-                      Navigator.pop(ctx);
+                      setState(() => _saving = true);
+                      try {
+                        await _persistPlan([..._medications, medication]);
+                        if (!mounted) return;
+                        setState(() => _medications.add(medication));
+                        if (ctx.mounted) Navigator.pop(ctx);
+                      } catch (_) {
+                        _showSaveError();
+                      } finally {
+                        if (mounted) setState(() => _saving = false);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.medication,
@@ -429,26 +455,52 @@ class _MedicationTrackingScreenState
     });
   }
 
-  Future<void> _savePlan() async {
-    if (!ensureTrackingWriteAccess(context, ref)) return;
+  Future<void> _persistPlan(Iterable<MedicationEntry> entries) async {
     await ref
         .read(userProfileProvider.notifier)
         .saveProfile(
-          medicationPlan: _medications.map(medicationDefinition).toList(),
+          medicationPlan: entries.map(medicationDefinition).toList(),
           medicationPlanMigrated: true,
         );
   }
 
-  Future<void> _saveDailyStatus() async {
-    if (!ensureTrackingWriteAccess(context, ref)) return;
+  Future<void> _toggleMedication(MedicationEntry med) async {
+    if (_saving || !ensureTrackingWriteAccess(context, ref)) return;
+    setState(() => _saving = true);
+    final proposed = _medications.map((entry) => identical(entry, med)
+        ? MedicationEntry(
+            name: entry.name,
+            dose: entry.dose,
+            reminderTime: entry.reminderTime,
+            taken: !entry.taken,
+          )
+        : entry).toList();
     final dailyRecord = medicationDailyRecord(
-      _medications,
+      proposed,
       _existingDailyMedications,
     );
-    await ref
-        .read(dailyLogProvider.notifier)
-        .updateMedications(_editDate, dailyRecord);
-    _existingDailyMedications = dailyRecord;
-    notifyTrackingRecordSaved();
+    try {
+      await ref
+          .read(dailyLogProvider.notifier)
+          .updateMedications(_editDate, dailyRecord);
+      if (!mounted) return;
+      setState(() {
+        med.taken = !med.taken;
+        _existingDailyMedications = dailyRecord;
+      });
+      notifyTrackingRecordSaved();
+    } catch (_) {
+      _showSaveError();
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  void _showSaveError() {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.errorOccurred(l10n.retry))),
+    );
   }
 }
