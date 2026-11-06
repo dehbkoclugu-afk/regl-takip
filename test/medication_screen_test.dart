@@ -46,7 +46,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byIcon(Icons.check), findsNothing);
 
-    await Hive.close();
+    // Hive disk I/O must finish outside the widget test's fake async zone.
+    await tester.runAsync(() => Hive.close());
     final toggle = find.byWidgetPredicate((widget) =>
         widget is Semantics && widget.properties.label == 'Test medicine');
     await tester.tap(toggle);
