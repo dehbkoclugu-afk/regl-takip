@@ -16,6 +16,9 @@ bool shouldShowTrialEndNotice({
 
 bool canWriteDailyTracking(AccessLevel access) => access != AccessLevel.free;
 
+bool canChangeDailyTracking(AccessLevel access, {bool deletingExisting = false}) =>
+    deletingExisting || canWriteDailyTracking(access);
+
 /// Premium kapısı: erişim varsa true; ücretsiz katmandaysa paywall'ı
 /// açar ve false döner. Rota dışı giriş noktaları (sheet, buton) için —
 /// rotalar router redirect'iyle korunur.
@@ -27,8 +30,18 @@ bool ensurePremiumAccess(BuildContext context, WidgetRef ref) {
 
 /// Takip ekranlarının salt-okunur katmanı: ekran ve geçmiş görünür kalır,
 /// yalnız veri değiştiren eylem plan ekranına gider.
-bool ensureTrackingWriteAccess(BuildContext context, WidgetRef ref) =>
-    ensurePremiumAccess(context, ref);
+bool ensureTrackingWriteAccess(
+  BuildContext context,
+  WidgetRef ref, {
+  bool deletingExisting = false,
+}) {
+  if (canChangeDailyTracking(
+    ref.read(accessProvider),
+    deletingExisting: deletingExisting,
+  )) return true;
+  GoRouter.of(context).push('/paywall');
+  return false;
+}
 
 /// Başarılı kullanıcı kaydını uygulama köküne bildirir. Reklam gösterilip
 /// gösterilmeyeceği burada değil, erişim ve 24 saat sınırı yeniden

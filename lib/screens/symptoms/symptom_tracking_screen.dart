@@ -340,7 +340,6 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
 
   Future<void> _save() async {
     if (_saving) return;
-    if (!ensureTrackingWriteAccess(context, ref)) return;
     final notifier = ref.read(dailyLogProvider.notifier);
     final date = _editDate;
     final entries = _selectedSymptoms.entries
@@ -352,6 +351,12 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
       if (mounted) Navigator.of(context).pop();
       return;
     }
+    // Seçili eski semptomları temizlemek aboneliğe bağlı değildir.
+    if (!ensureTrackingWriteAccess(
+      context,
+      ref,
+      deletingExisting: entries.isEmpty && _initialSymptoms.isNotEmpty,
+    )) return;
 
     setState(() => _saving = true);
     try {

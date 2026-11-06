@@ -13,6 +13,15 @@ void main() {
     expect(canWriteDailyTracking(AccessLevel.free), isFalse);
   });
 
+  test('free users can remove an existing daily field but not write a new one', () {
+    expect(canChangeDailyTracking(AccessLevel.free), isFalse);
+    expect(
+      canChangeDailyTracking(AccessLevel.free, deletingExisting: true),
+      isTrue,
+    );
+    expect(canChangeDailyTracking(AccessLevel.trial), isTrue);
+  });
+
   test('undo edilen kayıt reklam olayı üretmez', () {
     expect(
       shouldNotifyTrackingRecord(SnackBarClosedReason.action),

@@ -422,7 +422,6 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
 
   Future<void> _save() async {
     if (_saving) return;
-    if (!ensureTrackingWriteAccess(context, ref)) return;
     final notifier = ref.read(dailyLogProvider.notifier);
     final date = _editDate;
 
@@ -436,6 +435,16 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
       if (mounted) Navigator.of(context).pop();
       return;
     }
+    final hadFlow = _initialIntensity != null ||
+        _initialColor != null ||
+        _initialClots ||
+        _initialPads > 0;
+    // Eski kaydı tamamen temizlemek yeni premium veri yazmak değildir.
+    if (!ensureTrackingWriteAccess(
+      context,
+      ref,
+      deletingExisting: !hasInput && hadFlow,
+    )) return;
 
     // setFlowDetails: seçim kaldırıldıysa alan da silinmeli. updateFlow
     // null'ı "dokunma" sayıyordu; kullanıcı akışı kaldırıp kaydettiğinde
