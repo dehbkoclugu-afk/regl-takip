@@ -22,6 +22,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
   FlowColor? _colorSelection;
   bool _hasClots = false;
   int _padChanges = 0;
+  bool _saving = false;
 
   // Dirty-guard için giriş anındaki durum
   FlowIntensity? _initialIntensity;
@@ -404,7 +405,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: _save,
+        onPressed: _saving ? null : _save,
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
@@ -420,6 +421,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
   }
 
   Future<void> _save() async {
+    if (_saving) return;
     if (!ensureTrackingWriteAccess(context, ref)) return;
     final notifier = ref.read(dailyLogProvider.notifier);
     final date = _editDate;
@@ -438,15 +440,17 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
     // setFlowDetails: seçim kaldırıldıysa alan da silinmeli. updateFlow
     // null'ı "dokunma" sayıyordu; kullanıcı akışı kaldırıp kaydettiğinde
     // eski değer kalıyordu.
-    await notifier.setFlowDetails(
-      date,
-      intensity: _intensity,
-      color: _colorSelection,
-      hasClots: _hasClots,
-      padChangeCount: _padChanges,
-    );
-    notifyTrackingRecordSaved();
-    if (mounted) {
+    setState(() => _saving = true);
+    try {
+      await notifier.setFlowDetails(
+        date,
+        intensity: _intensity,
+        color: _colorSelection,
+        hasClots: _hasClots,
+        padChangeCount: _padChanges,
+      );
+      if (!mounted) return;
+      notifyTrackingRecordSaved();
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -455,6 +459,17 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
         ),
       );
       Navigator.of(context).pop();
+    } catch (_) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.errorOccurred(l10n.retry)),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 }

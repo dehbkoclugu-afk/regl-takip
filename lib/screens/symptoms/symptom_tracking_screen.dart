@@ -25,6 +25,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
   late TabController _tabController;
   final Map<SymptomType, int> _selectedSymptoms = {};
   final Map<SymptomType, int> _initialSymptoms = {};
+  bool _saving = false;
 
   bool get _isDirty {
     if (_selectedSymptoms.length != _initialSymptoms.length) return true;
@@ -174,7 +175,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
       bottomBar: SizedBox(
         width: double.infinity,
         child: ElevatedButton(
-          onPressed: _save,
+          onPressed: _saving ? null : _save,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primaryStrong,
             foregroundColor: Colors.white,
@@ -338,6 +339,7 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
   }
 
   Future<void> _save() async {
+    if (_saving) return;
     if (!ensureTrackingWriteAccess(context, ref)) return;
     final notifier = ref.read(dailyLogProvider.notifier);
     final date = _editDate;
@@ -351,9 +353,11 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
       return;
     }
 
-    await notifier.updateSymptoms(date, entries);
-    notifyTrackingRecordSaved();
-    if (mounted) {
+    setState(() => _saving = true);
+    try {
+      await notifier.updateSymptoms(date, entries);
+      if (!mounted) return;
+      notifyTrackingRecordSaved();
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -362,6 +366,17 @@ class _SymptomTrackingScreenState extends ConsumerState<SymptomTrackingScreen>
         ),
       );
       Navigator.of(context).pop();
+    } catch (_) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.errorOccurred(l10n.retry)),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 }

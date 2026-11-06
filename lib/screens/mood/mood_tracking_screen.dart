@@ -31,6 +31,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
   MoodType? _initialMood;
   String _initialNote = '';
   bool _noteDirty = false;
+  bool _saving = false;
 
   bool get _isDirty =>
       _selectedMood != _initialMood ||
@@ -274,9 +275,10 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
         child: ElevatedButton(
           // Kayıtlı ruh hali varken seçim kaldırılırsa kaydetmek
           // silme anlamına gelir — buton kapanmamalı
-          onPressed: (_selectedMood != null ||
-                  _hadExistingMood ||
-                  _noteController.text.trim().isNotEmpty)
+          onPressed: !_saving &&
+                  (_selectedMood != null ||
+                      _hadExistingMood ||
+                      _noteController.text.trim().isNotEmpty)
               ? _save
               : null,
           style: ElevatedButton.styleFrom(
@@ -298,6 +300,7 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
   }
 
   Future<void> _save() async {
+    if (_saving) return;
     final selected = _selectedMood;
     // Kendi kaydını kaldırmak için abonelik gerekmez; yeni/yeniden yazılmış
     // not bu istisnadan yararlanıp ücretsiz katman kapısını aşamaz.
@@ -307,36 +310,43 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
         !ensureTrackingWriteAccess(context, ref)) {
       return;
     }
-    if (selected == null) {
-      await ref.read(dailyLogProvider.notifier).removeMoodKeepingNote(
-        _editDate,
-        _noteController.text,
-      );
+    setState(() => _saving = true);
+    try {
+      if (selected == null) {
+        await ref.read(dailyLogProvider.notifier).removeMoodKeepingNote(
+          _editDate,
+          _noteController.text,
+        );
+      } else {
+        final mood = MoodEntry(
+          type: selected,
+          note: _noteController.text.trim().isEmpty
+              ? null
+              : _noteController.text.trim(),
+        );
+        await ref.read(dailyLogProvider.notifier).updateMood(_editDate, mood);
+      }
       if (!mounted) return;
-      final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.recordDeleted)),
-      );
-      Navigator.of(context).pop();
-      return;
-    }
-    final mood = MoodEntry(
-      type: selected,
-      note: _noteController.text.trim().isEmpty
-          ? null
-          : _noteController.text.trim(),
-    );
-    await ref.read(dailyLogProvider.notifier).updateMood(_editDate, mood);
-    notifyTrackingRecordSaved();
-    if (mounted) {
+      if (selected != null) notifyTrackingRecordSaved();
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l10n.moodSaved),
+          content: Text(selected == null ? l10n.recordDeleted : l10n.moodSaved),
           backgroundColor: AppColors.success,
         ),
       );
       Navigator.of(context).pop();
+    } catch (_) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.errorOccurred(l10n.retry)),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 }
