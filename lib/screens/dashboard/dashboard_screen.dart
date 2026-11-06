@@ -36,6 +36,34 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  bool _lhSaving = false;
+
+  Future<void> _setLhResult(DateTime date, bool? current, bool value) async {
+    if (_lhSaving) return;
+    final next = current == value ? null : value;
+    if (!ensureTrackingWriteAccess(
+      context,
+      ref,
+      deletingExisting: next == null,
+    )) return;
+    setState(() => _lhSaving = true);
+    try {
+      await ref.read(dailyLogProvider.notifier).updateOvulationTest(date, next);
+      if (next != null) notifyTrackingRecordSaved();
+    } catch (_) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.errorOccurred(l10n.retry)),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _lhSaving = false);
+    }
+  }
+
   /// Ring'de bir segmente dokununca üstteki faz çipi de o fazı göstersin diye:
   /// ring seçimini buraya yazar, çip bunu dinler. null = seçim yok → güncel
   /// faz gösterilir. ValueNotifier (setState değil) seçildi ki yalnız çip
@@ -881,12 +909,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   color: AppColors.isDark(context)
                       ? AppColors.success
                       : AppColors.fertileWindowText,
-                  onTap: () => ref
-                      .read(dailyLogProvider.notifier)
-                      .updateOvulationTest(
-                        today,
-                        lhResult == true ? null : true,
-                      ),
+                  onTap: _lhSaving
+                      ? null
+                      : () => _setLhResult(today, lhResult, true),
                 ),
               ),
               const SizedBox(width: 8),
@@ -896,12 +921,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   label: l10n.lhNegative,
                   selected: lhResult == false,
                   color: AppColors.textSecondary,
-                  onTap: () => ref
-                      .read(dailyLogProvider.notifier)
-                      .updateOvulationTest(
-                        today,
-                        lhResult == false ? null : false,
-                      ),
+                  onTap: _lhSaving
+                      ? null
+                      : () => _setLhResult(today, lhResult, false),
                 ),
               ),
             ],
@@ -916,11 +938,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     required String label,
     required bool selected,
     required Color color,
-    required VoidCallback onTap,
+    required VoidCallback? onTap,
   }) {
     return Semantics(
       button: true,
       selected: selected,
+      enabled: onTap != null,
       child: Material(
         color: selected ? color.withValues(alpha: 0.18) : AppColors.sf(context),
         borderRadius: BorderRadius.circular(16),

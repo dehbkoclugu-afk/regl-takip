@@ -171,6 +171,20 @@ void main() {
   });
 
   group('DailyLogNotifier birleşik ölçümler', () {
+    test('LH sonucunu geri almak son kaydı siler; not varsa onu korur', () async {
+      final notifier = DailyLogNotifier(service);
+      await notifier.updateOvulationTest(day, false);
+      await notifier.updateOvulationTest(day, null);
+      expect(notifier.getDailyLog(day), isNull);
+
+      await notifier.updateNotes(day, 'Keep');
+      await notifier.updateOvulationTest(day, true);
+      await notifier.updateOvulationTest(day, null);
+      final log = DailyLogNotifier(service).getDailyLog(day)!;
+      expect(log.notes, 'Keep');
+      expect(log.ovulationTestPositive, isNull);
+    });
+
     test('son su, kilo ve not silinince boş günlük kalmaz', () async {
       final notifier = DailyLogNotifier(service);
       await notifier.updateWater(day, 3);
