@@ -42,7 +42,9 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
         kilograms > InputParsing.maxWeightKg) {
       return null;
     }
-    return double.parse(kilograms.toStringAsFixed(1));
+    // 0.1 lb ≈ 0.045 kg; one decimal kg would round distinct lb inputs to
+    // the same stored value and show a different number after reopening.
+    return double.parse(kilograms.toStringAsFixed(_usePounds ? 2 : 1));
   }
 
   late DateTime _editDate;
@@ -82,7 +84,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
       );
       _weight = double.parse(
         (_usePounds ? UnitConversion.poundsToKilograms(display) : display)
-            .toStringAsFixed(1),
+            .toStringAsFixed(_usePounds ? 2 : 1),
       );
       _controller.text = _displayWeight.toStringAsFixed(1);
     });
@@ -136,30 +138,39 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
             size: 48,
           ),
           const SizedBox(height: 12),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                _displayWeight.toStringAsFixed(1),
-                style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                  color: AppColors.categoryText(context, AppColors.weightColor),
-                ),
+          SizedBox(
+            width: double.infinity,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    _displayWeight.toStringAsFixed(1),
+                    style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                      color: AppColors.categoryText(
+                        context,
+                        AppColors.weightColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    _unit,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.categoryText(
+                        context,
+                        AppColors.weightColor,
+                      ).withValues(alpha: 0.7),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 4),
-              Text(
-                _unit,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.categoryText(
-                    context,
-                    AppColors.weightColor,
-                  ).withValues(alpha: 0.7),
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),
