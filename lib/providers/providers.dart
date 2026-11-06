@@ -671,6 +671,16 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     state = {...state, log.dateKey: log};
   }
 
+  /// Silinen son alan boş bir günlük ve takvim işareti bırakmasın.
+  /// Seri günlük kuyruğunun içinden çağrılır; diğer alanlar korunur.
+  Future<void> _saveOrDeleteDailyLog(DailyLog log) async {
+    if (hasMeaningfulDailyData(log)) {
+      await saveDailyLog(log);
+    } else {
+      await deleteDailyLog(log.dateKey);
+    }
+  }
+
   DailyLog _getOrCreateLog(DateTime date) {
     final dateKey =
         '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
@@ -684,7 +694,7 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     return _serial(date, () async {
       final log = _getOrCreateLog(date);
       log.symptoms = symptoms;
-      await saveDailyLog(log);
+      await _saveOrDeleteDailyLog(log);
     });
   }
 
@@ -692,7 +702,7 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     return _serial(date, () async {
       final log = _getOrCreateLog(date);
       log.mood = mood;
-      await saveDailyLog(log);
+      await _saveOrDeleteDailyLog(log);
     });
   }
 
@@ -716,7 +726,7 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
         log.notes = _appendNote(log.notes, text);
       }
       log.mood = null;
-      await saveDailyLog(log);
+      await _saveOrDeleteDailyLog(log);
     });
   }
 
@@ -744,7 +754,7 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
       if (mood == null && previousMood?.note?.trim().isNotEmpty == true) {
         log.notes = _appendNote(log.notes, previousMood!.note!);
       }
-      await saveDailyLog(log);
+      await _saveOrDeleteDailyLog(log);
     });
   }
 
@@ -752,7 +762,7 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     return _serial(date, () async {
       final log = _getOrCreateLog(date);
       log.waterIntake = waterIntake;
-      await saveDailyLog(log);
+      await _saveOrDeleteDailyLog(log);
     });
   }
 
@@ -765,7 +775,7 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
       final log = _getOrCreateLog(date);
       log.temperature = temperature;
       if (temperature == null || temperatureTime != null) log.temperatureTime = temperatureTime;
-      await saveDailyLog(log);
+      await _saveOrDeleteDailyLog(log);
     });
   }
 
@@ -773,7 +783,7 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     return _serial(date, () async {
       final log = _getOrCreateLog(date);
       log.weight = weight;
-      await saveDailyLog(log);
+      await _saveOrDeleteDailyLog(log);
     });
   }
 
@@ -800,11 +810,7 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
       log.sleepStart = null;
       log.sleepEnd = null;
       log.sleepQuality = null;
-      if (hasMeaningfulDailyData(log)) {
-        await saveDailyLog(log);
-      } else {
-        await deleteDailyLog(log.dateKey);
-      }
+      await _saveOrDeleteDailyLog(log);
     });
   }
 
@@ -837,11 +843,7 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
         log.sleepEnd = sleepEnd;
         log.sleepQuality = sleepQuality;
       }
-      if (!hasMeaningfulDailyData(log)) {
-        await deleteDailyLog(log.dateKey);
-        return;
-      }
-      await saveDailyLog(log);
+      await _saveOrDeleteDailyLog(log);
     });
   }
 
@@ -849,7 +851,7 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     return _serial(date, () async {
       final log = _getOrCreateLog(date);
       log.sexualActivity = entry;
-      await saveDailyLog(log);
+      await _saveOrDeleteDailyLog(log);
     });
   }
 
@@ -860,7 +862,7 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     return _serial(date, () async {
       final log = _getOrCreateLog(date);
       log.medications = medications;
-      await saveDailyLog(log);
+      await _saveOrDeleteDailyLog(log);
     });
   }
 
@@ -868,7 +870,7 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     return _serial(date, () async {
       final log = _getOrCreateLog(date);
       log.ovulationTestPositive = positive;
-      await saveDailyLog(log);
+      await _saveOrDeleteDailyLog(log);
     });
   }
 
@@ -876,7 +878,7 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     return _serial(date, () async {
       final log = _getOrCreateLog(date);
       log.notes = notes;
-      await saveDailyLog(log);
+      await _saveOrDeleteDailyLog(log);
     });
   }
 
@@ -905,7 +907,7 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     return _serial(date, () async {
       final log = _getOrCreateLog(date);
       log.flowIntensity = intensity;
-      await saveDailyLog(log);
+      await _saveOrDeleteDailyLog(log);
     });
   }
 
@@ -922,9 +924,9 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
       final log = _getOrCreateLog(date);
       log.flowIntensity = intensity;
       log.flowColor = color;
-      log.hasClots = hasClots;
-      log.padChangeCount = padChangeCount;
-      await saveDailyLog(log);
+      log.hasClots = hasClots ? true : null;
+      log.padChangeCount = padChangeCount > 0 ? padChangeCount : null;
+      await _saveOrDeleteDailyLog(log);
     });
   }
 

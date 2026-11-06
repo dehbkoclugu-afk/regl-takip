@@ -103,7 +103,52 @@ void main() {
 
       // Hızlı kayıt ekranında seçim kaldırıldığında bu yol çağrılır
       await notifier.setFlowIntensity(day, null);
-      expect(notifier.getDailyLog(day)?.flowIntensity, isNull);
+      expect(notifier.getDailyLog(day), isNull);
+      expect(DailyLogNotifier(service).getDailyLog(day), isNull);
+    });
+
+    test('akışın son alanı kaldırılınca boş günlük kalmaz', () async {
+      final notifier = DailyLogNotifier(service);
+      await notifier.setFlowDetails(
+        day,
+        intensity: FlowIntensity.light,
+        color: FlowColor.red,
+        hasClots: true,
+        padChangeCount: 2,
+      );
+      await notifier.setFlowDetails(
+        day,
+        intensity: null,
+        color: null,
+        hasClots: false,
+        padChangeCount: 0,
+      );
+      expect(notifier.getDailyLog(day), isNull);
+      expect(DailyLogNotifier(service).getDailyLog(day), isNull);
+    });
+
+    test('diğer alan varsa akışı temizlemek onu korur', () async {
+      final notifier = DailyLogNotifier(service);
+      await notifier.updateNotes(day, 'Keep');
+      await notifier.setFlowDetails(
+        day,
+        intensity: FlowIntensity.light,
+        color: null,
+        hasClots: false,
+        padChangeCount: 0,
+      );
+      await notifier.setFlowDetails(
+        day,
+        intensity: null,
+        color: null,
+        hasClots: false,
+        padChangeCount: 0,
+      );
+      final log = DailyLogNotifier(service).getDailyLog(day)!;
+      expect(log.notes, 'Keep');
+      expect(log.flowIntensity, isNull);
+      expect(log.hasClots, isNull);
+      expect(log.padChangeCount, isNull);
     });
 
     test('updateFlow(null) mevcut akışa dokunmaz (kısmi güncelleme)', () async {
@@ -126,6 +171,19 @@ void main() {
   });
 
   group('DailyLogNotifier birleşik ölçümler', () {
+    test('son su, kilo ve not silinince boş günlük kalmaz', () async {
+      final notifier = DailyLogNotifier(service);
+      await notifier.updateWater(day, 3);
+      await notifier.updateWeight(day, 64.2);
+      await notifier.updateNotes(day, 'Note');
+      await notifier.updateWater(day, 0);
+      await notifier.updateWeight(day, null);
+      expect(notifier.getDailyLog(day)?.notes, 'Note');
+      await notifier.updateNotes(day, null);
+      expect(notifier.getDailyLog(day), isNull);
+      expect(DailyLogNotifier(service).getDailyLog(day), isNull);
+    });
+
     test('dört ölçüm grubunu tek günlük kayıtta saklar ve temizler', () async {
       final notifier = DailyLogNotifier(service);
       await notifier.updateMeasurements(

@@ -459,7 +459,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
         padChangeCount: _padChanges,
       );
       if (!mounted) return;
-      notifyTrackingRecordSaved();
+      if (hasInput) notifyTrackingRecordSaved();
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
