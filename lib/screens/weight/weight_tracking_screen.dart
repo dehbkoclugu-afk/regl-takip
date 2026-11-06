@@ -24,6 +24,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   final _controller = TextEditingController();
   bool _hasExistingWeight = false;
   double _initialWeight = 60.0;
+  bool _saving = false;
 
   bool get _isDirty => _weight != _initialWeight;
 
@@ -73,6 +74,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   }
 
   void _adjust(double delta) {
+    if (_saving) return;
     setState(() {
       final display = (_displayWeight + delta).clamp(
         _usePounds
@@ -257,6 +259,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
           const SizedBox(height: 12),
           TextField(
             controller: _controller,
+            readOnly: _saving,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             style: TextStyle(
               fontSize: 22,
@@ -291,7 +294,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
             Align(
               alignment: AlignmentDirectional.centerStart,
               child: TextButton.icon(
-                onPressed: _delete,
+                onPressed: _saving ? null : _delete,
                 icon: const Icon(Icons.delete_outline_rounded, size: 18),
                 label: Text(l10n.deleteRecord),
                 style: TextButton.styleFrom(foregroundColor: AppColors.error),
@@ -307,7 +310,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: _save,
+        onPressed: _saving ? null : _save,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.weightColor,
           foregroundColor: Colors.white,
@@ -325,19 +328,28 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   }
 
   Future<void> _delete() async {
-    await ref.read(dailyLogProvider.notifier).updateWeight(_editDate, null);
-    if (!mounted) return;
-    final l10n = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.recordDeleted),
-        backgroundColor: AppColors.success,
-      ),
-    );
-    Navigator.of(context).pop();
+    if (_saving) return;
+    setState(() => _saving = true);
+    try {
+      await ref.read(dailyLogProvider.notifier).updateWeight(_editDate, null);
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.recordDeleted),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      Navigator.of(context).pop();
+    } catch (_) {
+      _showSaveError();
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   Future<void> _save() async {
+    if (_saving) return;
     if (!ensureTrackingWriteAccess(context, ref)) return;
     final l10n = AppLocalizations.of(context)!;
     // Geçersiz giriş sessizce eski değeri kaydediyordu — kullanıcıya söyle
@@ -351,11 +363,11 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
       );
       return;
     }
-    _weight = parsed;
-
-    await ref.read(dailyLogProvider.notifier).updateWeight(_editDate, _weight);
-    notifyTrackingRecordSaved();
-    if (mounted) {
+    setState(() => _saving = true);
+    try {
+      await ref.read(dailyLogProvider.notifier).updateWeight(_editDate, parsed);
+      if (!mounted) return;
+      notifyTrackingRecordSaved();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.weightSaved),
@@ -363,6 +375,21 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
         ),
       );
       Navigator.of(context).pop();
+    } catch (_) {
+      _showSaveError();
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
+  }
+
+  void _showSaveError() {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.errorOccurred(l10n.retry)),
+        backgroundColor: AppColors.error,
+      ),
+    );
   }
 }

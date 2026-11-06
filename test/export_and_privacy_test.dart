@@ -38,7 +38,8 @@ void main() {
           startDate: DateTime(2026, 1, 1),
           endDate: DateTime(2026, 1, 5)),
     ], {
-      'log': DailyLog(id: 'log', date: DateTime(2026, 1, 2), notes: note)
+      'log': DailyLog(
+          id: 'log', date: DateTime(2026, 1, 2), notes: note, weight: 60.06)
     }, l10n);
     final content = await File(path).readAsString();
     expect((await File(path).readAsBytes()).take(3), [0xef, 0xbb, 0xbf]);
@@ -48,6 +49,7 @@ void main() {
     expect(rows.first, contains('${l10n.temperature} (°C)'));
     expect(rows.first, contains('${l10n.weight} (kg)'));
     expect(rows[1][1], '2026-01-01');
+    expect(rows.last[8], 60.06);
     expect(rows.last.last, "'$note");
   });
   test('ten years of daily records and a long note export to PDF', () async {

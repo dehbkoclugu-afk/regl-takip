@@ -122,7 +122,9 @@ class ExportService {
         log.mood != null ? EnumLabels.mood(log.mood!.type, l10n) : '',
         sanitizeCsvCell(symptomNames),
         log.temperature?.toStringAsFixed(1) ?? '',
-        log.weight?.toStringAsFixed(1) ?? '',
+        // Pound input is kept at 0.01 kg precision; the fixed kg export must
+        // not discard that digit while claiming to be a lossless data copy.
+        log.weight?.toStringAsFixed(2) ?? '',
         log.waterIntake,
         log.sleepQuality ?? '',
         sanitizeCsvCell(medicationNames),
