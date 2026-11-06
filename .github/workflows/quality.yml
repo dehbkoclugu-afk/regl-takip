@@ -22,7 +22,6 @@ jobs:
       - run: flutter gen-l10n
       - run: git diff --exit-code -- lib/l10n/generated
       - run: flutter analyze
-      - run: flutter test test/medication_screen_test.dart --timeout=60s
       - run: flutter test test/weight_screen_test.dart --timeout=60s
       - run: flutter test
       - run: TZ=Europe/Berlin flutter test
