@@ -463,13 +463,17 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
       if (record.isOngoing && isSameDay(record.startDate, day)) return record;
     }
 
-    // Bu günden önce başlamış süren kayıtlar bir gün öncesiyle kapanır
-    for (final record in state.where((r) => r.isOngoing).toList()) {
-      if (day.isAfter(dateOnly(record.startDate))) {
-        record.endDate = addDays(day, -1);
-        await _hiveService.savePeriodRecord(record);
-      }
-    }
+    // Eski Hive nesnelerini yazı tamamlanmadan değiştirme; başarısızlıkta
+    // bellekteki kayıt açık kalmalı. Yeni kayıt ve kapananlar tek batch'tir.
+    final closing = state
+        .where((r) => r.isOngoing && day.isAfter(dateOnly(r.startDate)))
+        .map((r) => PeriodRecord(
+              id: r.id,
+              startDate: r.startDate,
+              endDate: addDays(day, -1),
+              notes: r.notes,
+            ))
+        .toList();
 
     DateTime? nextStart;
     for (final record in state) {
@@ -490,7 +494,7 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
     }
 
     final record = PeriodRecord(id: _uuid.v4(), startDate: day, endDate: end);
-    await _hiveService.savePeriodRecord(record);
+    await _hiveService.savePeriodRecords([...closing, record]);
     _load();
     // Widget güncellemesi burada değil: çağıran akış hemen ardından
     // profili (syncLastPeriodStart) günceller, widget orada kurulur
@@ -600,19 +604,21 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
   }
 
   Future<void> endPeriod(String recordId, DateTime date) async {
-    try {
-      final record = state.firstWhere((r) => r.id == recordId);
-      // Bitiş tarihi başlangıçtan önce olamaz
-      final day = dateOnly(date);
-      record.endDate = day.isBefore(dateOnly(record.startDate))
-          ? record.startDate
-          : day;
-      await _hiveService.savePeriodRecord(record);
-      _load();
-      await WidgetService.update(_hiveService.getUserProfile(), state);
-    } catch (_) {
-      // Record not found
-    }
+    final matches = state.where((r) => r.id == recordId);
+    if (matches.isEmpty) return;
+    final current = matches.first;
+    final day = dateOnly(date);
+    final updated = PeriodRecord(
+      id: current.id,
+      startDate: current.startDate,
+      endDate: day.isBefore(dateOnly(current.startDate))
+          ? current.startDate
+          : day,
+      notes: current.notes,
+    );
+    await _hiveService.savePeriodRecord(updated);
+    _load();
+    await WidgetService.update(_hiveService.getUserProfile(), state);
   }
 
   void refresh() {

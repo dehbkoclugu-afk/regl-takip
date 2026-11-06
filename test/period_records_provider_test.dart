@@ -137,9 +137,11 @@ void main() {
     test('yeni başlangıç süren kaydı bir gün öncesiyle kapatır', () async {
       final notifier = PeriodRecordsNotifier(service);
       await notifier.startPeriod(DateTime(2026, 7, 1));
+      final oldSnapshot = notifier.state.single;
       await notifier.startPeriod(DateTime(2026, 7, 28));
 
       expect(notifier.state.length, 2);
+      expect(oldSnapshot.endDate, isNull);
       final closed =
           notifier.state.firstWhere((r) => r.startDate.day == 1);
       expect(closed.endDate, DateTime(2026, 7, 27));
@@ -164,10 +166,34 @@ void main() {
       expect(stillOngoing.single.startDate, DateTime(2026, 7, 15));
     });
 
+    test('yazı reddedilince başlangıç ve bitiş eski dönemi değiştirmez', () async {
+      final notifier = PeriodRecordsNotifier(service);
+      final original = await notifier.startPeriod(DateTime(2026, 7, 1));
+      service.periodWriteCheckpoint = () async {
+        throw StateError('disk');
+      };
+
+      await expectLater(
+        notifier.startPeriod(DateTime(2026, 7, 28)),
+        throwsStateError,
+      );
+      expect(notifier.state, hasLength(1));
+      expect(notifier.state.single.endDate, isNull);
+      expect(service.getAllPeriodRecords().single.endDate, isNull);
+
+      await expectLater(
+        notifier.endPeriod(original.id, DateTime(2026, 7, 5)),
+        throwsStateError,
+      );
+      expect(notifier.state.single.endDate, isNull);
+      expect(service.getAllPeriodRecords().single.endDate, isNull);
+    });
+
     test('endPeriod bitişi başlangıçtan öncesine izin vermez', () async {
       final notifier = PeriodRecordsNotifier(service);
       final record = await notifier.startPeriod(DateTime(2026, 7, 10));
       await notifier.endPeriod(record.id, DateTime(2026, 7, 5));
+      expect(record.endDate, isNull);
       expect(notifier.state.single.endDate, notifier.state.single.startDate);
     });
   });

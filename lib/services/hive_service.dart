@@ -33,6 +33,8 @@ class HiveService {
   Future<void> _replacement = Future.value();
   @visibleForTesting
   Future<void> Function(String stage)? transactionCheckpoint;
+  @visibleForTesting
+  Future<void> Function()? periodWriteCheckpoint;
 
   String _name(String base) =>
       _generation.isEmpty ? base : '${base}_$_generation';
@@ -363,6 +365,7 @@ class HiveService {
     _generation = '';
     _replacement = Future.value();
     transactionCheckpoint = null;
+    periodWriteCheckpoint = null;
   }
 
   // ─── UserProfile CRUD ───────────────────────────────────────────────
@@ -412,7 +415,18 @@ class HiveService {
   }
 
   Future<void> savePeriodRecord(PeriodRecord record) async {
-    await _write(() => _periodRecordsBox.put(record.id, record));
+    await _write(() async {
+      await periodWriteCheckpoint?.call();
+      await _periodRecordsBox.put(record.id, record);
+    });
+  }
+
+  Future<void> savePeriodRecords(Iterable<PeriodRecord> records) async {
+    final byId = {for (final record in records) record.id: record};
+    await _write(() async {
+      await periodWriteCheckpoint?.call();
+      await _periodRecordsBox.putAll(byId);
+    });
   }
 
   Future<void> deletePeriodRecord(String id) async {

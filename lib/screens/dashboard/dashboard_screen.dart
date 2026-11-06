@@ -37,6 +37,7 @@ class DashboardScreen extends ConsumerStatefulWidget {
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   bool _lhSaving = false;
+  bool _periodSaving = false;
 
   Future<void> _setLhResult(DateTime date, bool? current, bool value) async {
     if (_lhSaving) return;
@@ -523,12 +524,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         color: AppColors.menstrual,
         // Regl geçmişi en değerli veri, dokunuş yanlışlıkla olabilir:
         // onay diyaloğu yerine 6 sn'lik Geri Al
-        onTap: () =>
-            _togglePeriod(context, ref, l10n, ongoingPeriod, DateTime.now()),
+        onTap: _periodSaving
+            ? null
+            : () => _togglePeriod(
+                  context, ref, l10n, ongoingPeriod, DateTime.now(),
+                ),
         // Regl iki gün sonra hatırlanabiliyor: dokunuş hep bugünü yazdığı
         // için geç kalan kullanıcı yanlış tarih girmek zorundaydı. Uzun
         // bas = gün seç.
-        onLongPress: () => _pickPeriodDate(context, ref, l10n, ongoingPeriod),
+        onLongPress: _periodSaving
+            ? null
+            : () => _pickPeriodDate(context, ref, l10n, ongoingPeriod),
       ),
     );
 
@@ -564,6 +570,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     PeriodRecord? ongoingPeriod,
     DateTime date,
   ) async {
+    if (_periodSaving) return;
+    setState(() => _periodSaving = true);
     final messenger = ScaffoldMessenger.of(context);
     final recordsNotifier = ref.read(periodRecordsProvider.notifier);
     final profileNotifier = ref.read(userProfileProvider.notifier);
@@ -572,58 +580,73 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     // Uygulamanın en önemli veri anı: dokunuşa fiziksel teyit eşlik eder
     // (ring + zemin de yeni faza yumuşakça akar)
     HapticFeedback.mediumImpact();
-    if (ongoingPeriod != null) {
-      final recordId = ongoingPeriod.id;
-      await recordsNotifier.endPeriod(recordId, date);
-      profileNotifier.refresh();
-      final snackBar = messenger.showSnackBar(
-        SnackBar(
-          content: Text(l10n.periodMarkedEnded),
-          duration: const Duration(seconds: 6),
-          action: SnackBarAction(
-            label: l10n.undo,
-            onPressed: () async {
-              await recordsNotifier.reopenRecord(recordId);
-              profileNotifier.refresh();
-            },
-          ),
-        ),
-      );
-      notifyTrackingRecordAfterUndoWindow(snackBar);
-    } else {
-      final idsBefore = ref
-          .read(periodRecordsProvider)
-          .map((r) => r.id)
-          .toSet();
-      // Geçmiş bir gün seçildiyse kayıt bugün hâlâ sürüyor sayılmaz
-      final record = await recordsNotifier.startPeriod(
-        date,
-        periodLength: prevProfile?.averagePeriodLength,
-      );
-      final created = !idsBefore.contains(record.id);
-      await profileNotifier.syncLastPeriodStart(
-        ref.read(periodRecordsProvider),
-      );
-      final snackBar = messenger.showSnackBar(
-        SnackBar(
-          content: Text(l10n.periodMarkedStarted),
-          duration: const Duration(seconds: 6),
-          action: SnackBarAction(
-            label: l10n.undo,
-            onPressed: () async {
-              if (created) await recordsNotifier.deleteRecord(record.id);
-              // Profil (lastPeriodStart dahil) eski haline:
-              // updateProfile bildirim/widget'ı da tazeler
-              if (prevProfile != null) {
-                await profileNotifier.updateProfile(prevProfile);
-              } else {
+    try {
+      if (ongoingPeriod != null) {
+        final recordId = ongoingPeriod.id;
+        await recordsNotifier.endPeriod(recordId, date);
+        if (!mounted) return;
+        profileNotifier.refresh();
+        final snackBar = messenger.showSnackBar(
+          SnackBar(
+            content: Text(l10n.periodMarkedEnded),
+            duration: const Duration(seconds: 6),
+            action: SnackBarAction(
+              label: l10n.undo,
+              onPressed: () async {
+                await recordsNotifier.reopenRecord(recordId);
                 profileNotifier.refresh();
-              }
-            },
+              },
+            ),
           ),
-        ),
-      );
-      notifyTrackingRecordAfterUndoWindow(snackBar);
+        );
+        notifyTrackingRecordAfterUndoWindow(snackBar);
+      } else {
+        final idsBefore = ref
+            .read(periodRecordsProvider)
+            .map((r) => r.id)
+            .toSet();
+        // Geçmiş bir gün seçildiyse kayıt bugün hâlâ sürüyor sayılmaz
+        final record = await recordsNotifier.startPeriod(
+          date,
+          periodLength: prevProfile?.averagePeriodLength,
+        );
+        final created = !idsBefore.contains(record.id);
+        await profileNotifier.syncLastPeriodStart(
+          ref.read(periodRecordsProvider),
+        );
+        if (!mounted) return;
+        final snackBar = messenger.showSnackBar(
+          SnackBar(
+            content: Text(l10n.periodMarkedStarted),
+            duration: const Duration(seconds: 6),
+            action: SnackBarAction(
+              label: l10n.undo,
+              onPressed: () async {
+                if (created) await recordsNotifier.deleteRecord(record.id);
+                // Profil (lastPeriodStart dahil) eski haline:
+                // updateProfile bildirim/widget'ı da tazeler
+                if (prevProfile != null) {
+                  await profileNotifier.updateProfile(prevProfile);
+                } else {
+                  profileNotifier.refresh();
+                }
+              },
+            ),
+          ),
+        );
+        notifyTrackingRecordAfterUndoWindow(snackBar);
+      }
+    } catch (_) {
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(l10n.errorOccurred(l10n.retry)),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _periodSaving = false);
     }
   }
 
@@ -1295,7 +1318,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     required IconData icon,
     required String label,
     required Color color,
-    required VoidCallback onTap,
+    required VoidCallback? onTap,
     VoidCallback? onLongPress,
   }) {
     return PressableScale(
