@@ -357,8 +357,18 @@ class CycleUtils {
     return (days % (activeDays + breakDays).clamp(1, 134)) + 1;
   }
 
-  static bool isPillBreakDay(DateTime packStart, {int activeDays = 21, int breakDays = 7}) =>
-      pillDayInPack(packStart, activeDays: activeDays, breakDays: breakDays) > activeDays;
+  static bool isPillBreakDay(
+    DateTime packStart, {
+    DateTime? now,
+    int activeDays = 21,
+    int breakDays = 7,
+  }) =>
+      pillDayInPack(
+        packStart,
+        now: now,
+        activeDays: activeDays,
+        breakDays: breakDays,
+      ) > activeDays;
 
   /// Gelecek döngülerde tahmini adet günü mü? (mevcut döngünün gerçek
   /// kayıtları hariç — onları PeriodRecord işaretler)

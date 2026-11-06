@@ -542,13 +542,14 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
 
   /// "Reglim bitti"nin geri alınması: kaydı yeniden açık hale getirir.
   Future<void> reopenRecord(String recordId) async {
-    for (final r in state) {
-      if (r.id == recordId) {
-        r.endDate = null;
-        await _hiveService.savePeriodRecord(r);
-        break;
-      }
-    }
+    final matches = state.where((r) => r.id == recordId);
+    if (matches.isEmpty) return;
+    final current = matches.first;
+    await _hiveService.savePeriodRecord(PeriodRecord(
+      id: current.id,
+      startDate: current.startDate,
+      notes: current.notes,
+    ));
     _load();
     await WidgetService.update(_hiveService.getUserProfile(), state);
   }

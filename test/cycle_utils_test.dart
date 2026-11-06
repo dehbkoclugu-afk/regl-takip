@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:regl_takip/core/constants/app_constants.dart';
 import 'package:regl_takip/core/utils/cycle_utils.dart';
+import 'package:regl_takip/core/utils/date_only.dart';
 import 'package:regl_takip/models/period_record.dart';
 
 void main() {
@@ -117,21 +118,29 @@ void main() {
       // 29 gün önce başlamış, 28 günlük döngü: tahmini tarih 1 gün geçti.
       // Eskiden gün başa sarılıp "menstrüel" gösteriliyordu; regl gelmemişken
       // bu, başlıktaki "1 gün gecikti" ile çelişiyordu.
-      final lastStart = DateTime.now().subtract(const Duration(days: 29));
-      expect(CycleUtils.periodDelayDays(lastStart, 28), 1);
-      expect(CycleUtils.getCurrentPhase(lastStart, 28, 5), CyclePhase.luteal);
+      final today = DateTime(2026, 11, 6);
+      final lastStart = addDays(today, -29);
+      expect(CycleUtils.periodDelayDays(lastStart, 28, now: today), 1);
+      expect(
+        CycleUtils.getCurrentPhase(lastStart, 28, 5, now: today),
+        CyclePhase.luteal,
+      );
       // Gösterilen gün de sarılmaz: 30. gün
-      expect(CycleUtils.displayCycleDay(lastStart, 28), 30);
+      expect(CycleUtils.displayCycleDay(lastStart, 28, now: today), 30);
     });
 
     test('long overdue cycle retains its recorded day and luteal phase', () {
-      final lastStart = DateTime.now().subtract(const Duration(days: 57));
-      expect(CycleUtils.periodDelayDays(lastStart, 28), 29);
+      final today = DateTime(2026, 11, 6);
+      final lastStart = addDays(today, -57);
+      expect(CycleUtils.periodDelayDays(lastStart, 28, now: today), 29);
       expect(
-        CycleUtils.displayCycleDay(lastStart, 28),
-        CycleUtils.currentCycleDay(lastStart),
+        CycleUtils.displayCycleDay(lastStart, 28, now: today),
+        CycleUtils.currentCycleDay(lastStart, now: today),
       );
-      expect(CycleUtils.getCurrentPhase(lastStart, 28, 5), CyclePhase.luteal);
+      expect(
+        CycleUtils.getCurrentPhase(lastStart, 28, 5, now: today),
+        CyclePhase.luteal,
+      );
     });
   });
 
@@ -171,22 +180,20 @@ void main() {
 
   group('nextFuturePeriod / daysUntilNextPeriod', () {
     test('prediction in future stays unchanged', () {
-      final lastStart = DateTime.now().subtract(const Duration(days: 10));
-      final next = CycleUtils.nextFuturePeriod(lastStart, 28);
-      final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
+      final today = DateTime(2026, 11, 6);
+      final lastStart = addDays(today, -10);
+      final next = CycleUtils.nextFuturePeriod(lastStart, 28, now: today);
       expect(next.isBefore(today), isFalse);
-      expect(CycleUtils.daysUntilNextPeriod(lastStart, 28), 18);
+      expect(CycleUtils.daysUntilNextPeriod(lastStart, 28, now: today), 18);
     });
 
     test('overdue prediction rolls forward to next cycle', () {
       // 30 gün önce başladı, 28 günlük döngü → tahmin 2 gün önceydi,
       // bir döngü ileri sarılır → 26 gün sonra
-      final lastStart = DateTime.now().subtract(const Duration(days: 30));
-      expect(CycleUtils.daysUntilNextPeriod(lastStart, 28), 26);
-      final next = CycleUtils.nextFuturePeriod(lastStart, 28);
-      final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
+      final today = DateTime(2026, 11, 6);
+      final lastStart = addDays(today, -30);
+      expect(CycleUtils.daysUntilNextPeriod(lastStart, 28, now: today), 26);
+      final next = CycleUtils.nextFuturePeriod(lastStart, 28, now: today);
       expect(next.isBefore(today), isFalse);
     });
   });

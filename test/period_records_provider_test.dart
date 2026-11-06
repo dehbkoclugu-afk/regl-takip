@@ -189,6 +189,19 @@ void main() {
       expect(service.getAllPeriodRecords().single.endDate, isNull);
     });
 
+    test('geri alma yazısı reddedilirse kapanmış dönem kapalı kalır', () async {
+      final notifier = PeriodRecordsNotifier(service);
+      final record = await notifier.startPeriod(DateTime(2026, 7, 1));
+      await notifier.endPeriod(record.id, DateTime(2026, 7, 5));
+      service.periodWriteCheckpoint = () async {
+        throw StateError('disk');
+      };
+
+      await expectLater(notifier.reopenRecord(record.id), throwsStateError);
+      expect(notifier.state.single.endDate, DateTime(2026, 7, 5));
+      expect(service.getAllPeriodRecords().single.endDate, DateTime(2026, 7, 5));
+    });
+
     test('endPeriod bitişi başlangıçtan öncesine izin vermez', () async {
       final notifier = PeriodRecordsNotifier(service);
       final record = await notifier.startPeriod(DateTime(2026, 7, 10));

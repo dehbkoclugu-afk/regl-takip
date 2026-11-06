@@ -593,8 +593,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             action: SnackBarAction(
               label: l10n.undo,
               onPressed: () async {
-                await recordsNotifier.reopenRecord(recordId);
-                profileNotifier.refresh();
+                try {
+                  await recordsNotifier.reopenRecord(recordId);
+                  profileNotifier.refresh();
+                } catch (_) {
+                  if (mounted) {
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(l10n.errorOccurred(l10n.retry)),
+                        backgroundColor: AppColors.error,
+                      ),
+                    );
+                  }
+                }
               },
             ),
           ),
@@ -622,13 +633,24 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             action: SnackBarAction(
               label: l10n.undo,
               onPressed: () async {
-                if (created) await recordsNotifier.deleteRecord(record.id);
-                // Profil (lastPeriodStart dahil) eski haline:
-                // updateProfile bildirim/widget'ı da tazeler
-                if (prevProfile != null) {
-                  await profileNotifier.updateProfile(prevProfile);
-                } else {
-                  profileNotifier.refresh();
+                try {
+                  if (created) await recordsNotifier.deleteRecord(record.id);
+                  // Profil (lastPeriodStart dahil) eski haline:
+                  // updateProfile bildirim/widget'ı da tazeler
+                  if (prevProfile != null) {
+                    await profileNotifier.updateProfile(prevProfile);
+                  } else {
+                    profileNotifier.refresh();
+                  }
+                } catch (_) {
+                  if (mounted) {
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(l10n.errorOccurred(l10n.retry)),
+                        backgroundColor: AppColors.error,
+                      ),
+                    );
+                  }
                 }
               },
             ),
