@@ -48,6 +48,7 @@ Future<void> showPeriodRecordEditor(
           record.endDate!.day,
         )
       : null;
+  var saving = false;
 
   await showModalBottomSheet<void>(
     context: context,
@@ -56,13 +57,14 @@ Future<void> showPeriodRecordEditor(
     builder: (sheetContext) => StatefulBuilder(
       builder: (sheetContext, setSheetState) {
         Future<void> pickStart() async {
+          if (saving) return;
           final picked = await showDatePicker(
             context: sheetContext,
             initialDate: start,
             firstDate: DateTime(2020),
             lastDate: DateTime.now(),
           );
-          if (picked != null) {
+          if (picked != null && sheetContext.mounted && !saving) {
             setSheetState(() {
               start = DateTime(picked.year, picked.month, picked.day);
               if (end != null && end!.isBefore(start)) end = start;
@@ -71,13 +73,14 @@ Future<void> showPeriodRecordEditor(
         }
 
         Future<void> pickEnd() async {
+          if (saving) return;
           final picked = await showDatePicker(
             context: sheetContext,
             initialDate: end ?? start,
             firstDate: start,
             lastDate: DateTime.now(),
           );
-          if (picked != null) {
+          if (picked != null && sheetContext.mounted && !saving) {
             setSheetState(
               () => end = DateTime(picked.year, picked.month, picked.day),
             );
@@ -87,11 +90,12 @@ Future<void> showPeriodRecordEditor(
         Widget dateTile({
           required String label,
           required String value,
-          required VoidCallback onTap,
+          required VoidCallback? onTap,
           Widget? trailing,
         }) {
           return Semantics(
             button: true,
+            enabled: onTap != null,
             label: label,
             value: value,
             child: Material(
@@ -171,13 +175,13 @@ Future<void> showPeriodRecordEditor(
               dateTile(
                 label: l10n.startDateLabel,
                 value: dateFormat.format(start),
-                onTap: pickStart,
+                onTap: saving ? null : pickStart,
               ),
               const SizedBox(height: 8),
               dateTile(
                 label: l10n.endDateLabel,
                 value: end != null ? dateFormat.format(end!) : l10n.ongoing,
-                onTap: pickEnd,
+                onTap: saving ? null : pickEnd,
                 trailing: end != null
                     ? IconButton(
                         tooltip: l10n.ongoing,
@@ -186,13 +190,16 @@ Future<void> showPeriodRecordEditor(
                           size: 18,
                           color: AppColors.ts(sheetContext),
                         ),
-                        onPressed: () => setSheetState(() => end = null),
+                        onPressed: saving
+                            ? null
+                            : () => setSheetState(() => end = null),
                       )
                     : null,
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () async {
+                onPressed: saving ? null : () async {
+                  setSheetState(() => saving = true);
                   try {
                     await ref
                         .read(periodRecordsProvider.notifier)
@@ -215,13 +222,17 @@ Future<void> showPeriodRecordEditor(
                     messenger.showSnackBar(
                       SnackBar(content: Text(l10n.errorOccurred(l10n.retry))),
                     );
+                  } finally {
+                    if (sheetContext.mounted) {
+                      setSheetState(() => saving = false);
+                    }
                   }
                 },
                 child: Text(l10n.save),
               ),
               TextButton(
                 style: TextButton.styleFrom(foregroundColor: AppColors.error),
-                onPressed: () async {
+                onPressed: saving ? null : () async {
                   final confirmed = await showDialog<bool>(
                     context: sheetContext,
                     builder: (ctx) => AlertDialog(
@@ -249,7 +260,8 @@ Future<void> showPeriodRecordEditor(
                       ],
                     ),
                   );
-                  if (confirmed != true) return;
+                  if (confirmed != true || !sheetContext.mounted || saving) return;
+                  setSheetState(() => saving = true);
                   try {
                     await ref
                         .read(periodRecordsProvider.notifier)
@@ -267,6 +279,10 @@ Future<void> showPeriodRecordEditor(
                     messenger.showSnackBar(
                       SnackBar(content: Text(l10n.errorOccurred(l10n.retry))),
                     );
+                  } finally {
+                    if (sheetContext.mounted) {
+                      setSheetState(() => saving = false);
+                    }
                   }
                 },
                 child: Text(l10n.deleteRecord),
