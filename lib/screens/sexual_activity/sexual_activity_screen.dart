@@ -24,6 +24,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
   bool _orgasm = false;
   final _noteController = TextEditingController();
   bool _hasExistingEntry = false;
+  bool _saving = false;
 
   // Dirty-guard için giriş anındaki durum
   ProtectionMethod _initialProtection = ProtectionMethod.none;
@@ -220,7 +221,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: _save,
+            onPressed: _saving ? null : _save,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.moodRomantic,
               foregroundColor: Colors.white,
@@ -238,7 +239,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
         // Girilen kayıt geri alınamıyordu
         if (_hasExistingEntry)
           TextButton.icon(
-            onPressed: _delete,
+            onPressed: _saving ? null : _delete,
             icon: const Icon(Icons.delete_outline_rounded, size: 18),
             label: Text(l10n.deleteRecord),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
@@ -248,21 +249,30 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
   }
 
   Future<void> _delete() async {
+    if (_saving) return;
     final l10n = AppLocalizations.of(context)!;
-    await ref
-        .read(dailyLogProvider.notifier)
-        .updateSexualActivity(_editDate, null);
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.recordDeleted),
-        backgroundColor: AppColors.success,
-      ),
-    );
-    Navigator.of(context).pop();
+    setState(() => _saving = true);
+    try {
+      await ref
+          .read(dailyLogProvider.notifier)
+          .updateSexualActivity(_editDate, null);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.recordDeleted),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      Navigator.of(context).pop();
+    } catch (_) {
+      _showSaveError();
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   Future<void> _save() async {
+    if (_saving) return;
     if (!ensureTrackingWriteAccess(context, ref)) return;
     final l10n = AppLocalizations.of(context)!;
     final entry = SexualActivityEntry(
@@ -270,11 +280,13 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
       orgasm: _orgasm,
       note: _noteController.text.isEmpty ? null : _noteController.text,
     );
-    await ref
-        .read(dailyLogProvider.notifier)
-        .updateSexualActivity(_editDate, entry);
-    notifyTrackingRecordSaved();
-    if (mounted) {
+    setState(() => _saving = true);
+    try {
+      await ref
+          .read(dailyLogProvider.notifier)
+          .updateSexualActivity(_editDate, entry);
+      if (!mounted) return;
+      notifyTrackingRecordSaved();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.savedGeneric),
@@ -282,6 +294,21 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
         ),
       );
       Navigator.of(context).pop();
+    } catch (_) {
+      _showSaveError();
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
+  }
+
+  void _showSaveError() {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.errorOccurred(l10n.retry)),
+        backgroundColor: AppColors.error,
+      ),
+    );
   }
 }

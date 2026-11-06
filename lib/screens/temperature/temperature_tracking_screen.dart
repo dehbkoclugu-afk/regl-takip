@@ -23,6 +23,7 @@ class _TemperatureTrackingScreenState
   double _temperature = 36.5;
   TimeOfDay _measureTime = TimeOfDay.now();
   bool _hasExistingMeasurement = false;
+  bool _saving = false;
 
   // Dirty-guard için giriş anındaki durum
   double _initialTemperature = 36.5;
@@ -133,7 +134,7 @@ class _TemperatureTrackingScreenState
             if (_hasExistingMeasurement) ...[
               const SizedBox(height: 8),
               TextButton.icon(
-                onPressed: _delete,
+                onPressed: _saving ? null : _delete,
                 icon: const Icon(Icons.delete_outline_rounded, size: 18),
                 label: Text(l10n.deleteMeasurement),
                 style: TextButton.styleFrom(foregroundColor: AppColors.error),
@@ -304,7 +305,7 @@ class _TemperatureTrackingScreenState
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: _save,
+        onPressed: _saving ? null : _save,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.temperature,
           foregroundColor: Colors.white,
@@ -324,29 +325,42 @@ class _TemperatureTrackingScreenState
   /// Yanlışlıkla kaydedilen ölçüm BBT eğrisini (ve ovülasyon teyidini)
   /// bozar — silinebilmeli.
   Future<void> _delete() async {
-    await ref
-        .read(dailyLogProvider.notifier)
-        .updateTemperature(_editDate, null);
-    if (!mounted) return;
-    final l10n = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.measurementDeleted),
-        backgroundColor: AppColors.success,
-      ),
-    );
-    Navigator.of(context).pop();
+    if (_saving) return;
+    setState(() => _saving = true);
+    try {
+      await ref
+          .read(dailyLogProvider.notifier)
+          .updateTemperature(_editDate, null);
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.measurementDeleted),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      Navigator.of(context).pop();
+    } catch (_) {
+      _showSaveError();
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   Future<void> _save() async {
+    if (_saving) return;
     if (!ensureTrackingWriteAccess(context, ref)) return;
     final timeStr =
         '${_measureTime.hour.toString().padLeft(2, '0')}:${_measureTime.minute.toString().padLeft(2, '0')}';
-    await ref
-        .read(dailyLogProvider.notifier)
-        .updateTemperature(_editDate, _temperature, temperatureTime: timeStr);
-    notifyTrackingRecordSaved();
-    if (mounted) {
+    setState(() => _saving = true);
+    try {
+      await ref.read(dailyLogProvider.notifier).updateTemperature(
+        _editDate,
+        _temperature,
+        temperatureTime: timeStr,
+      );
+      if (!mounted) return;
+      notifyTrackingRecordSaved();
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -355,6 +369,21 @@ class _TemperatureTrackingScreenState
         ),
       );
       Navigator.of(context).pop();
+    } catch (_) {
+      _showSaveError();
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
+  }
+
+  void _showSaveError() {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.errorOccurred(l10n.retry)),
+        backgroundColor: AppColors.error,
+      ),
+    );
   }
 }

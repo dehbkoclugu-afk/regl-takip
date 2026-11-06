@@ -24,6 +24,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
   TimeOfDay _bedTime = const TimeOfDay(hour: 23, minute: 0);
   TimeOfDay _wakeTime = const TimeOfDay(hour: 7, minute: 0);
   int _quality = 3;
+  bool _saving = false;
 
   // Dirty-guard için giriş anındaki durum
   TimeOfDay? _initialBed;
@@ -333,7 +334,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: _bedTime == _wakeTime ? null : _save,
+        onPressed: _saving || _bedTime == _wakeTime ? null : _save,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.sleep,
           foregroundColor: Colors.white,
@@ -351,22 +352,23 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
   }
 
   Future<void> _save() async {
+    if (_saving) return;
     if (!ensureTrackingWriteAccess(context, ref)) return;
     final l10n = AppLocalizations.of(context)!;
     final bedStr =
         '${_bedTime.hour.toString().padLeft(2, '0')}:${_bedTime.minute.toString().padLeft(2, '0')}';
     final wakeStr =
         '${_wakeTime.hour.toString().padLeft(2, '0')}:${_wakeTime.minute.toString().padLeft(2, '0')}';
-    await ref
-        .read(dailyLogProvider.notifier)
-        .updateSleep(
-          _editDate,
-          sleepStart: bedStr,
-          sleepEnd: wakeStr,
-          sleepQuality: _quality,
-        );
-    notifyTrackingRecordSaved();
-    if (mounted) {
+    setState(() => _saving = true);
+    try {
+      await ref.read(dailyLogProvider.notifier).updateSleep(
+        _editDate,
+        sleepStart: bedStr,
+        sleepEnd: wakeStr,
+        sleepQuality: _quality,
+      );
+      if (!mounted) return;
+      notifyTrackingRecordSaved();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.sleepSaved),
@@ -374,6 +376,16 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
         ),
       );
       Navigator.of(context).pop();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.errorOccurred(l10n.retry)),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 }
