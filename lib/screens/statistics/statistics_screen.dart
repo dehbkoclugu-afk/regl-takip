@@ -16,6 +16,7 @@ import '../../core/utils/enum_labels.dart';
 import '../../core/utils/phase_insights.dart';
 import '../../core/utils/ring_segments.dart';
 import '../../core/utils/statistics_summary.dart';
+import '../../core/utils/unit_conversion.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../models/enums.dart';
@@ -166,9 +167,11 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           _buildTrendChart(
             l10n.temperatureTrend,
             filteredLogs,
-            (log) => log.temperature,
+            (log) => profile?.useFahrenheit == true && log.temperature != null
+                ? UnitConversion.celsiusToFahrenheit(log.temperature!)
+                : log.temperature,
             AppColors.temperature,
-            '°C',
+            profile?.useFahrenheit == true ? '°F' : '°C',
             records,
             profile,
           ),
@@ -176,9 +179,11 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           _buildTrendChart(
             l10n.weightTrend,
             filteredLogs,
-            (log) => log.weight,
+            (log) => profile?.usePounds == true && log.weight != null
+                ? UnitConversion.kilogramsToPounds(log.weight!)
+                : log.weight,
             AppColors.weightColor,
-            'kg',
+            profile?.usePounds == true ? 'lb' : 'kg',
             records,
             profile,
           ),
@@ -1838,7 +1843,12 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     String? story;
     if (spots.length >= 2) {
       final delta = spots.last.y - spots.first.y;
-      final threshold = unit == 'kg' ? 0.3 : 0.15;
+      final threshold = switch (unit) {
+        'kg' => 0.3,
+        'lb' => UnitConversion.kilogramsToPounds(0.3),
+        '°F' => 0.15 * 9 / 5,
+        _ => 0.15,
+      };
       if (delta.abs() < threshold) {
         story = l10nStory.storyTrendFlat;
       } else if (delta > 0) {
