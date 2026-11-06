@@ -50,15 +50,15 @@ void main() {
 
   testWidgets('132.4 lb remains 132.4 lb after saving and reopening', (tester) async {
     await tester.pumpWidget(app());
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
     await tester.enterText(find.byType(TextField), '132.4');
     await tester.tap(find.text('Save'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
     expect(HiveService().getAllDailyLogs().single.weight, closeTo(60.06, 0.001));
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpWidget(app());
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
     expect(find.text('132.4'), findsWidgets);
   });
 
@@ -68,7 +68,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(app(textScale: 2));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
     expect(tester.takeException(), isNull);
   });
 }
