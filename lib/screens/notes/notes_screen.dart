@@ -25,6 +25,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
   static const int _maxChars = 2000;
   String _initialText = '';
   bool _dirty = false;
+  bool _saving = false;
 
   bool get _isDirty => _controller.text != _initialText;
 
@@ -202,7 +203,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: _save,
+        onPressed: _saving ? null : _save,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryDeep,
           foregroundColor: Colors.white,
@@ -220,7 +221,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
   }
 
   Future<void> _save() async {
-    if (!ensureTrackingWriteAccess(context, ref)) return;
+    if (_saving) return;
     final l10n = AppLocalizations.of(context)!;
     final notifier = ref.read(dailyLogProvider.notifier);
     final date = _editDate;
@@ -232,13 +233,20 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
       if (mounted) Navigator.of(context).pop();
       return;
     }
+    if (!ensureTrackingWriteAccess(
+      context,
+      ref,
+      deletingExisting: text.isEmpty && _initialText.trim().isNotEmpty,
+    )) return;
 
-    await notifier.updateNotes(date, text.isEmpty ? null : text);
-    notifyTrackingRecordSaved();
-    // Kaydettikten sonra "kaydedilmemiş değişiklik" uyarısı çıkmasın
-    _initialText = _controller.text;
-    _dirty = false;
-    if (mounted) {
+    setState(() => _saving = true);
+    try {
+      await notifier.updateNotes(date, text.isEmpty ? null : text);
+      if (!mounted) return;
+      if (text.isNotEmpty) notifyTrackingRecordSaved();
+      // Kaydettikten sonra "kaydedilmemiş değişiklik" uyarısı çıkmasın
+      _initialText = _controller.text;
+      _dirty = false;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.noteSaved),
@@ -246,6 +254,16 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
         ),
       );
       Navigator.of(context).pop();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.errorOccurred(l10n.retry)),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 }

@@ -58,6 +58,34 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
   String _initialNote = '';
   bool _allowPop = false;
   bool _closing = false;
+  bool _saving = false;
+
+  bool get _clearingExistingQuickFields =>
+      _flow == null &&
+      _mood == null &&
+      _symptoms.isEmpty &&
+      _noteController.text.trim().isEmpty &&
+      (_initialFlow != null ||
+          _initialMood != null ||
+          _initialSymptoms.isNotEmpty ||
+          _initialNote.isNotEmpty);
+
+  bool _canPersist() => ensureTrackingWriteAccess(
+    context,
+    ref,
+    deletingExisting: _clearingExistingQuickFields,
+  );
+
+  void _showSaveError() {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.errorOccurred(l10n.retry)),
+        backgroundColor: AppColors.error,
+      ),
+    );
+  }
 
   bool get _isDirty =>
       _flow != _initialFlow ||
@@ -138,6 +166,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
 
   /// Gün değiştirirken taslağı sessizce kaydetme ya da kaybetme.
   Future<void> _switchDay(int deltaDays) async {
+    if (_saving || _closing) return;
     final target = DateTime(_date.year, _date.month, _date.day + deltaDays);
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -166,8 +195,16 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
       );
       if (!mounted || save == null) return;
       if (save) {
-        if (!ensureTrackingWriteAccess(context, ref)) return;
-        await _persist(_date);
+        if (!_canPersist()) return;
+        setState(() => _saving = true);
+        try {
+          await _persist(_date);
+        } catch (_) {
+          _showSaveError();
+          return;
+        } finally {
+          if (mounted) setState(() => _saving = false);
+        }
       }
     }
     if (!mounted) return;
@@ -180,18 +217,28 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
   }
 
   Future<void> _save() async {
-    if (!ensureTrackingWriteAccess(context, ref)) return;
+    if (_saving || _closing || !_canPersist()) return;
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
 
-    final wrote = await _persist(_date);
+    setState(() => _saving = true);
+    bool wrote;
+    try {
+      wrote = await _persist(_date);
+    } catch (_) {
+      _showSaveError();
+      return;
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
     if (!mounted) return;
+    final clearing = _clearingExistingQuickFields;
     setState(() => _allowPop = true);
     navigator.pop();
     // Hiçbir şey yazılmadıysa "Kaydedildi" demek yanlış bilgi
     if (!wrote) return;
-    notifyTrackingRecordSaved();
+    if (!clearing) notifyTrackingRecordSaved();
     messenger.showSnackBar(
       SnackBar(
         content: Text(l10n.savedGeneric),
@@ -201,7 +248,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
   }
 
   Future<void> _close({bool openTrackers = false}) async {
-    if (_closing) return;
+    if (_closing || _saving) return;
     _closing = true;
     try {
       if (_isDirty) {
@@ -228,9 +275,16 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
         );
         if (!mounted || save == null) return;
         if (save) {
-          if (!ensureTrackingWriteAccess(context, ref)) return;
-          await _persist(_date);
-          notifyTrackingRecordSaved();
+          if (!_canPersist()) return;
+          try {
+            final wrote = await _persist(_date);
+            if (wrote && !_clearingExistingQuickFields) {
+              notifyTrackingRecordSaved();
+            }
+          } catch (_) {
+            _showSaveError();
+            return;
+          }
         }
       }
       if (!mounted) return;
@@ -490,7 +544,10 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
 
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(onPressed: _save, child: Text(l10n.save)),
+                child: ElevatedButton(
+                  onPressed: _saving || _closing ? null : _save,
+                  child: Text(l10n.save),
+                ),
               ),
               const SizedBox(height: 8),
               Center(

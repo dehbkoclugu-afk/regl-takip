@@ -22,6 +22,7 @@ class WaterTrackingScreen extends ConsumerStatefulWidget {
 class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
   int _glasses = 0;
   int _initialGlasses = 0;
+  bool _saving = false;
 
   bool get _isDirty => _glasses != _initialGlasses;
 
@@ -422,7 +423,7 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: _save,
+        onPressed: _saving ? null : _save,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.water,
           foregroundColor: Colors.white,
@@ -440,10 +441,17 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
   }
 
   Future<void> _save() async {
-    if (!ensureTrackingWriteAccess(context, ref)) return;
-    await ref.read(dailyLogProvider.notifier).updateWater(_editDate, _glasses);
-    notifyTrackingRecordSaved();
-    if (mounted) {
+    if (_saving) return;
+    if (!ensureTrackingWriteAccess(
+      context,
+      ref,
+      deletingExisting: _glasses == 0 && _initialGlasses > 0,
+    )) return;
+    setState(() => _saving = true);
+    try {
+      await ref.read(dailyLogProvider.notifier).updateWater(_editDate, _glasses);
+      if (!mounted) return;
+      if (_glasses > 0) notifyTrackingRecordSaved();
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -452,6 +460,17 @@ class _WaterTrackingScreenState extends ConsumerState<WaterTrackingScreen> {
         ),
       );
       Navigator.of(context).pop();
+    } catch (_) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.errorOccurred(l10n.retry)),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 }

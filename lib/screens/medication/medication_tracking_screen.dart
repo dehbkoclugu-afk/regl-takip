@@ -124,9 +124,8 @@ class _MedicationTrackingScreenState
                 key: ObjectKey(med),
                 direction: DismissDirection.endToStart,
                 confirmDismiss: (_) async {
-                  if (_saving || !ensureTrackingWriteAccess(context, ref)) {
-                    return false;
-                  }
+                  // Kullanıcı mevcut planını abonelik olmadan silebilir.
+                  if (_saving) return false;
                   setState(() => _saving = true);
                   try {
                     await _persistPlan(
@@ -465,7 +464,12 @@ class _MedicationTrackingScreenState
   }
 
   Future<void> _toggleMedication(MedicationEntry med) async {
-    if (_saving || !ensureTrackingWriteAccess(context, ref)) return;
+    if (_saving ||
+        !ensureTrackingWriteAccess(
+          context,
+          ref,
+          deletingExisting: med.taken,
+        )) return;
     setState(() => _saving = true);
     final proposed = _medications.map((entry) => identical(entry, med)
         ? MedicationEntry(
@@ -488,7 +492,7 @@ class _MedicationTrackingScreenState
         med.taken = !med.taken;
         _existingDailyMedications = dailyRecord;
       });
-      notifyTrackingRecordSaved();
+      if (med.taken) notifyTrackingRecordSaved();
     } catch (_) {
       _showSaveError();
     } finally {
