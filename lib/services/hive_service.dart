@@ -270,6 +270,13 @@ class HiveService {
     return _write(() => _replaceAll(profile, records, logs));
   }
 
+  /// Profil tarihini ve ona bağlı dönem kaydını aynı nesil geçişinde yazar.
+  /// Günlükleri yazı sırası içinden okur; bekleyen günlük kayıt kaybolmaz.
+  Future<void> replaceProfileAndPeriods(
+    UserProfile profile,
+    List<PeriodRecord> records,
+  ) => _write(() => _replaceAll(profile, records, getAllDailyLogs()));
+
   Future<void> _write(Future<void> Function() action) {
     final operation = _replacement.then((_) => action());
     _replacement = operation.catchError((Object _) {});

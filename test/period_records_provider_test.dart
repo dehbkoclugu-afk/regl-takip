@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:regl_takip/models/period_record.dart';
+import 'package:regl_takip/models/user_profile.dart';
 import 'package:regl_takip/providers/providers.dart';
 import 'package:regl_takip/services/hive_service.dart';
 
@@ -31,6 +32,38 @@ void main() {
   });
 
   group('syncProfilePeriodRecord', () {
+    test('profil ve dönem tarihi kesintide birlikte eski hâlinde kalır', () async {
+      final oldStart = DateTime(2026, 7, 5);
+      final newStart = DateTime(2026, 7, 1);
+      await service.saveUserProfile(UserProfile(lastPeriodStart: oldStart));
+      final periods = PeriodRecordsNotifier(service);
+      await periods.addRecord(PeriodRecord(id: 'r1', startDate: oldStart));
+      final profile = UserProfileNotifier(service);
+      final change = periods.prepareProfilePeriodRecord(
+        previousStart: oldStart,
+        newStart: newStart,
+        periodLength: 5,
+      )!;
+      final updated = profile.state!.copyWith(lastPeriodStart: newStart);
+      service.transactionCheckpoint = (stage) async {
+        if (stage == 'beforeCommit') throw StateError('disk');
+      };
+
+      await expectLater(
+        profile.updateProfileAndPeriods(updated, [change]),
+        throwsStateError,
+      );
+      expect(profile.state!.lastPeriodStart, oldStart);
+      expect(periods.state.single.startDate, oldStart);
+      expect(service.getUserProfile()!.lastPeriodStart, oldStart);
+      expect(service.getAllPeriodRecords().single.startDate, oldStart);
+
+      service.transactionCheckpoint = null;
+      await profile.updateProfileAndPeriods(updated, [change]);
+      periods.refresh();
+      expect(profile.state!.lastPeriodStart, newStart);
+      expect(periods.state.single.startDate, newStart);
+    });
     test('profil tarihi diğer regl kaydıyla çakışırsa eski kayıt korunur', () async {
       final notifier = PeriodRecordsNotifier(service);
       await notifier.addRecord(PeriodRecord(
@@ -253,6 +286,23 @@ void main() {
 
       expect(records, hasLength(3));
       expect(notifier.state, hasLength(3));
+    });
+
+    test('toplu geçmiş kayıt yazısı reddedilince hiçbir gün eklenmez', () async {
+      final notifier = PeriodRecordsNotifier(service);
+      service.periodWriteCheckpoint = () async {
+        throw StateError('disk');
+      };
+
+      await expectLater(
+        notifier.addCompletedPeriodRanges([
+          (start: DateTime(2026, 4, 1), end: DateTime(2026, 4, 5)),
+          (start: DateTime(2026, 5, 1), end: DateTime(2026, 5, 5)),
+        ]),
+        throwsStateError,
+      );
+      expect(notifier.state, isEmpty);
+      expect(service.getAllPeriodRecords(), isEmpty);
     });
 
     test('toplu paketin kendi içindeki çakışmada hiçbir kayıt yazmaz',

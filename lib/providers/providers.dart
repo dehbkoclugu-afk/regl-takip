@@ -173,6 +173,25 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     await WidgetService.update(profile, _hiveService.getAllPeriodRecords());
   }
 
+  Future<void> updateProfileAndPeriods(
+    UserProfile profile,
+    List<PeriodRecord> records,
+  ) async {
+    await _hiveService.replaceProfileAndPeriods(profile, records);
+    state = profile;
+    try {
+      await NotificationService().rescheduleAll(
+        profile,
+        records: records,
+        medications: profile.medicationPlan,
+        logs: _hiveService.getAllDailyLogs(),
+      );
+    } catch (e) {
+      debugPrint('[NOTIF] rescheduleAll failed: $e');
+    }
+    await WidgetService.update(profile, records);
+  }
+
   Future<void> saveProfile({
     String? name,
     DateTime? birthDate,
@@ -424,9 +443,7 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
           ),
         )
         .toList();
-    for (final record in records) {
-      await _hiveService.savePeriodRecord(record);
-    }
+    await _hiveService.savePeriodRecords(records);
     _load();
     return records;
   }
@@ -562,18 +579,18 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
   /// profil tarihine karşılık gelen kayıt bulunur ve YERİNDE taşınır;
   /// yoksa bağımsız yeni bir kayıt açılır. Bitiş, regl bugün hâlâ
   /// sürüyor olmalı mı sorusuna göre yeniden türetilir.
-  Future<void> syncProfilePeriodRecord({
+  PeriodRecord? prepareProfilePeriodRecord({
     DateTime? previousStart,
     required DateTime newStart,
     required int periodLength,
-  }) async {
+  }) {
     final normalizedNew = DateTime(newStart.year, newStart.month, newStart.day);
 
     bool sameDay(DateTime a, DateTime b) =>
         a.year == b.year && a.month == b.month && a.day == b.day;
 
     // Yeni tarih zaten kayıtlıysa dokunma
-    if (state.any((r) => sameDay(r.startDate, normalizedNew))) return;
+    if (state.any((r) => sameDay(r.startDate, normalizedNew))) return null;
 
     final end = CycleUtils.completedPeriodEnd(
       normalizedNew,
@@ -592,16 +609,36 @@ class PeriodRecordsNotifier extends StateNotifier<List<PeriodRecord>> {
     }
 
     if (target != null) {
-      // Düzeltme: aynı kaydı taşı, çift kayıt üretme
-      await updateRecordDates(target.id, normalizedNew, end);
-    } else {
-      if (_overlapsOther(null, normalizedNew, end)) {
+      if (_overlapsOther(target.id, normalizedNew, end)) {
         throw ArgumentError('Period range overlaps another record');
       }
-      await addRecord(
-        PeriodRecord(id: _uuid.v4(), startDate: normalizedNew, endDate: end),
+      return PeriodRecord(
+        id: target.id,
+        startDate: normalizedNew,
+        endDate: end,
+        notes: target.notes,
       );
     }
+    if (_overlapsOther(null, normalizedNew, end)) {
+      throw ArgumentError('Period range overlaps another record');
+    }
+    return PeriodRecord(id: _uuid.v4(), startDate: normalizedNew, endDate: end);
+  }
+
+  Future<void> syncProfilePeriodRecord({
+    DateTime? previousStart,
+    required DateTime newStart,
+    required int periodLength,
+  }) async {
+    final change = prepareProfilePeriodRecord(
+      previousStart: previousStart,
+      newStart: newStart,
+      periodLength: periodLength,
+    );
+    if (change == null) return;
+    await _hiveService.savePeriodRecord(change);
+    _load();
+    await WidgetService.update(_hiveService.getUserProfile(), state);
   }
 
   Future<void> endPeriod(String recordId, DateTime date) async {

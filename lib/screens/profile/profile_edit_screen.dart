@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
+import '../../models/user_profile.dart';
 import '../../providers/providers.dart';
 import '../../core/utils/motion.dart';
 
@@ -94,29 +95,43 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       final periodLength = _periodLength.round();
       final lastPeriod = _lastPeriodDate;
 
-      // Takvim ve istatistikler kayıtlara bakar: profildeki tarihi
-      // değiştirmek yetmez, kayıtlar da eşitlenmeli. startPeriod değil
-      // syncProfilePeriodRecord: geriye tarih düzeltmesi mevcut kaydı
-      // taşımalı, kırpıp çift kayıt üretmemeli.
-      if (lastPeriod != null) {
-        await ref
-            .read(periodRecordsProvider.notifier)
-            .syncProfilePeriodRecord(
-              previousStart: ref.read(userProfileProvider)?.lastPeriodStart,
-              newStart: lastPeriod,
-              periodLength: periodLength,
-            );
-      }
-
-      await ref
-          .read(userProfileProvider.notifier)
-          .saveProfile(
+      final current = ref.read(userProfileProvider) ?? UserProfile();
+      final updated = current.copyWith(
             name: _nameController.text.trim(),
             birthDate: _birthDate,
             lastPeriodStart: _lastPeriodDate,
             averageCycleLength: _cycleLength.round(),
             averagePeriodLength: periodLength,
           );
+      final periodNotifier = ref.read(periodRecordsProvider.notifier);
+      final change = lastPeriod == null
+          ? null
+          : periodNotifier.prepareProfilePeriodRecord(
+              previousStart: current.lastPeriodStart,
+              newStart: lastPeriod,
+              periodLength: periodLength,
+            );
+      if (change == null) {
+        await ref.read(userProfileProvider.notifier).saveProfile(
+          name: updated.name,
+          birthDate: updated.birthDate,
+          lastPeriodStart: updated.lastPeriodStart,
+          averageCycleLength: updated.averageCycleLength,
+          averagePeriodLength: updated.averagePeriodLength,
+        );
+      } else {
+        final existingRecords = ref.read(periodRecordsProvider);
+        final records = [
+          for (final record in existingRecords)
+            if (record.id == change.id) change else record,
+          if (!existingRecords.any((r) => r.id == change.id))
+            change,
+        ];
+        await ref
+            .read(userProfileProvider.notifier)
+            .updateProfileAndPeriods(updated, records);
+        periodNotifier.refresh();
+      }
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
