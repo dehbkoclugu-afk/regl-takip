@@ -792,6 +792,22 @@ class DailyLogNotifier extends StateNotifier<Map<String, DailyLog>> {
     });
   }
 
+  Future<void> clearSleep(DateTime date) {
+    return _serial(date, () async {
+      final existing = getDailyLog(date);
+      if (existing == null) return;
+      final log = DailyLog.fromJson(existing.toJson());
+      log.sleepStart = null;
+      log.sleepEnd = null;
+      log.sleepQuality = null;
+      if (hasMeaningfulDailyData(log)) {
+        await saveDailyLog(log);
+      } else {
+        await deleteDailyLog(log.dateKey);
+      }
+    });
+  }
+
   /// Birleşik günlük ölçümler ekranını tek Hive yazımıyla kaydeder.
   ///
   /// Nullable alanlar bilerek doğrudan atanır: kullanıcı birleşik ekrandan

@@ -161,6 +161,41 @@ void main() {
 
       expect(notifier.getDailyLog(day), isNull);
     });
+
+    test('uykuyu silmek diğer ölçümleri korur; son alanı silince günü kaldırır', () async {
+      final notifier = DailyLogNotifier(service);
+      await notifier.updateMeasurements(
+        day,
+        waterIntake: 0,
+        temperature: null,
+        temperatureTime: null,
+        weight: 64.2,
+        sleepStart: '23:10',
+        sleepEnd: '07:00',
+        sleepQuality: 4,
+      );
+
+      await notifier.clearSleep(day);
+      final remaining = notifier.getDailyLog(day)!;
+      expect(remaining.weight, 64.2);
+      expect(remaining.sleepStart, isNull);
+      expect(remaining.sleepEnd, isNull);
+      expect(remaining.sleepQuality, isNull);
+      expect(DailyLogNotifier(service).getDailyLog(day)?.weight, 64.2);
+
+      await notifier.updateMeasurements(
+        day,
+        changedFields: {'weight'},
+        waterIntake: 0,
+        temperature: null,
+        temperatureTime: null,
+        weight: null,
+        sleepStart: null,
+        sleepEnd: null,
+        sleepQuality: null,
+      );
+      expect(notifier.getDailyLog(day), isNull);
+    });
   });
 
   test('eski ilaç listesi profile yalnız bir kez taşınır', () async {

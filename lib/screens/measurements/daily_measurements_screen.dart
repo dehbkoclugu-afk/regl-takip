@@ -458,7 +458,6 @@ class _DailyMeasurementsScreenState
 
   Future<void> _save() async {
     if (_saving) return;
-    if (!ensureTrackingWriteAccess(context, ref)) return;
     final l10n = AppLocalizations.of(context)!;
     final weight = _parseWeight(_weightController.text);
     if (weight?.isNaN == true) {
@@ -471,20 +470,46 @@ class _DailyMeasurementsScreenState
       return;
     }
 
+    final changedFields = <String>{
+      if (_glasses != _initialGlasses) 'water',
+      if (_weightController.text != _initialWeight) 'weight',
+      if (_temperatureController.text != _initialTemperature ||
+          _temperatureTime != _initialTemperatureTime) 'temperature',
+      if (_sleepEnabled != _initialSleepEnabled ||
+          _bedTime != _initialBedTime ||
+          _wakeTime != _initialWakeTime ||
+          _sleepQuality != _initialSleepQuality) 'sleep',
+    };
+    if (changedFields.isEmpty) {
+      Navigator.of(context).pop();
+      return;
+    }
+    final onlyClearingExisting = changedFields.every((field) {
+      switch (field) {
+        case 'water':
+          return _initialGlasses > 0 && _glasses == 0;
+        case 'weight':
+          return _initialWeight.isNotEmpty &&
+              _weightController.text.trim().isEmpty;
+        case 'temperature':
+          return _initialTemperature.isNotEmpty &&
+              _temperatureController.text.trim().isEmpty;
+        case 'sleep':
+          return _initialSleepEnabled && !_sleepEnabled;
+      }
+      return false;
+    });
+    if (!ensureTrackingWriteAccess(
+      context,
+      ref,
+      deletingExisting: onlyClearingExisting,
+    )) return;
+
     setState(() => _saving = true);
     try {
       await ref.read(dailyLogProvider.notifier).updateMeasurements(
         _editDate,
-        changedFields: {
-          if (_glasses != _initialGlasses) 'water',
-          if (_weightController.text != _initialWeight) 'weight',
-          if (_temperatureController.text != _initialTemperature ||
-              _temperatureTime != _initialTemperatureTime) 'temperature',
-          if (_sleepEnabled != _initialSleepEnabled ||
-              _bedTime != _initialBedTime ||
-              _wakeTime != _initialWakeTime ||
-              _sleepQuality != _initialSleepQuality) 'sleep',
-        },
+        changedFields: changedFields,
         waterIntake: _glasses,
         temperature: temperature,
         temperatureTime:
@@ -495,7 +520,7 @@ class _DailyMeasurementsScreenState
         sleepQuality: _sleepEnabled ? _sleepQuality : null,
       );
       if (!mounted) return;
-      notifyTrackingRecordSaved();
+      if (!onlyClearingExisting) notifyTrackingRecordSaved();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.savedGeneric),

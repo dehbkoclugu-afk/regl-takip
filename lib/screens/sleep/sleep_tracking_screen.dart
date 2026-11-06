@@ -25,6 +25,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
   TimeOfDay _wakeTime = const TimeOfDay(hour: 7, minute: 0);
   int _quality = 3;
   bool _saving = false;
+  bool _hasExistingSleep = false;
 
   // Dirty-guard için giriş anındaki durum
   TimeOfDay? _initialBed;
@@ -47,6 +48,7 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
     if (_editDate.isAfter(now))
       _editDate = DateTime(now.year, now.month, now.day);
     final log = ref.read(dailyLogProvider.notifier).getDailyLog(_editDate);
+    _hasExistingSleep = log?.sleepStart != null || log?.sleepEnd != null;
     if (log != null) {
       if (log.sleepStart != null) {
         final parts = log.sleepStart!.split(':');
@@ -124,7 +126,19 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
           ],
         ),
       ),
-      bottomBar: _buildSaveButton(l10n),
+      bottomBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildSaveButton(l10n),
+          if (_hasExistingSleep)
+            TextButton.icon(
+              onPressed: _saving ? null : _delete,
+              icon: const Icon(Icons.delete_outline_rounded, size: 18),
+              label: Text(l10n.deleteRecord),
+              style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            ),
+        ],
+      ),
     );
   }
 
@@ -378,6 +392,34 @@ class _SleepTrackingScreenState extends ConsumerState<SleepTrackingScreen> {
       Navigator.of(context).pop();
     } catch (_) {
       if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.errorOccurred(l10n.retry)),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _delete() async {
+    if (_saving || !_hasExistingSleep) return;
+    setState(() => _saving = true);
+    try {
+      await ref.read(dailyLogProvider.notifier).clearSleep(_editDate);
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.recordDeleted),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      Navigator.of(context).pop();
+    } catch (_) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.errorOccurred(l10n.retry)),
