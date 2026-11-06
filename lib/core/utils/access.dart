@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../services/usage_metrics.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,10 +12,12 @@ bool shouldShowTrialEndNotice({
   required AccessLevel access,
   required bool alreadyShown,
   required bool onboardingCompleted,
-}) =>
-    access == AccessLevel.free && !alreadyShown && onboardingCompleted;
+}) => access == AccessLevel.free && !alreadyShown && onboardingCompleted;
 
 bool canWriteDailyTracking(AccessLevel access) => access != AccessLevel.free;
+
+bool canChangeDailyTracking(AccessLevel access, {bool deletingExisting = false}) =>
+    deletingExisting || canWriteDailyTracking(access);
 
 /// Premium kapısı: erişim varsa true; ücretsiz katmandaysa paywall'ı
 /// açar ve false döner. Rota dışı giriş noktaları (sheet, buton) için —
@@ -27,13 +30,26 @@ bool ensurePremiumAccess(BuildContext context, WidgetRef ref) {
 
 /// Takip ekranlarının salt-okunur katmanı: ekran ve geçmiş görünür kalır,
 /// yalnız veri değiştiren eylem plan ekranına gider.
-bool ensureTrackingWriteAccess(BuildContext context, WidgetRef ref) =>
-    ensurePremiumAccess(context, ref);
+bool ensureTrackingWriteAccess(
+  BuildContext context,
+  WidgetRef ref, {
+  bool deletingExisting = false,
+}) {
+  if (canChangeDailyTracking(
+    ref.read(accessProvider),
+    deletingExisting: deletingExisting,
+  )) return true;
+  GoRouter.of(context).push('/paywall');
+  return false;
+}
 
 /// Başarılı kullanıcı kaydını uygulama köküne bildirir. Reklam gösterilip
 /// gösterilmeyeceği burada değil, erişim ve 24 saat sınırı yeniden
 /// doğrulandıktan sonra kökte kararlaştırılır.
-void notifyTrackingRecordSaved() => AdService.notifyRecordSaved();
+void notifyTrackingRecordSaved() {
+  unawaited(UsageMetrics.record(UsageEvent.trackingAction));
+  AdService.notifyRecordSaved();
+}
 
 bool shouldNotifyTrackingRecord(SnackBarClosedReason reason) =>
     reason != SnackBarClosedReason.action;
@@ -43,7 +59,9 @@ bool shouldNotifyTrackingRecord(SnackBarClosedReason reason) =>
 void notifyTrackingRecordAfterUndoWindow(
   ScaffoldFeatureController<SnackBar, SnackBarClosedReason> controller,
 ) {
-  unawaited(controller.closed.then((reason) {
-    if (shouldNotifyTrackingRecord(reason)) notifyTrackingRecordSaved();
-  }));
+  unawaited(
+    controller.closed.then((reason) {
+      if (shouldNotifyTrackingRecord(reason)) notifyTrackingRecordSaved();
+    }),
+  );
 }

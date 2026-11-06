@@ -108,16 +108,8 @@ class _PhaseGlyphPainter extends CustomPainter {
     final bottom = Offset(s * 0.64, s * 0.88);
     final path = Path()
       ..moveTo(top.dx, top.dy)
-      ..arcToPoint(
-        bottom,
-        radius: Radius.circular(s * 0.42),
-        clockwise: false,
-      )
-      ..arcToPoint(
-        top,
-        radius: Radius.circular(s * 0.34),
-        clockwise: true,
-      );
+      ..arcToPoint(bottom, radius: Radius.circular(s * 0.42), clockwise: false)
+      ..arcToPoint(top, radius: Radius.circular(s * 0.34), clockwise: true);
     canvas.drawPath(path, paint);
   }
 

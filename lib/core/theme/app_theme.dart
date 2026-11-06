@@ -26,8 +26,9 @@ class AppTheme {
     final isDark = brightness == Brightness.dark;
 
     final ink = isDark ? AppColors.textPrimaryDark : AppColors.textPrimary;
-    final inkSecondary =
-        isDark ? AppColors.textSecondaryDark : AppColors.textSecondary;
+    final inkSecondary = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondary;
     final surface = isDark ? AppColors.surfaceDark : AppColors.surface;
 
     TextStyle style(double size, FontWeight weight, Color color) =>
@@ -37,6 +38,11 @@ class AppTheme {
       useMaterial3: true,
       brightness: brightness,
       fontFamily: _fontFamily,
+      fontFamilyFallback: const [
+        'NotoSansArabic',
+        'NotoSansDevanagari',
+        'NotoSansSC',
+      ],
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         brightness: brightness,
@@ -48,8 +54,9 @@ class AppTheme {
       ),
       focusColor: (isDark ? AppColors.primaryLight : AppColors.primaryDeep)
           .withValues(alpha: isDark ? 0.32 : 0.20),
-      scaffoldBackgroundColor:
-          isDark ? AppColors.backgroundDark : AppColors.background,
+      scaffoldBackgroundColor: isDark
+          ? AppColors.backgroundDark
+          : AppColors.background,
       textTheme: TextTheme(
         // Metrik sesi: bu uygulama sayı anlatır ("14. gün", "%72",
         // "28 gün"). Kahraman sayılar tek ölçekten (display*) gelir:
@@ -94,8 +101,7 @@ class AppTheme {
         // yerine tema yönetir (açık temada beyaz ikon sorunu)
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          statusBarIconBrightness:
-              isDark ? Brightness.light : Brightness.dark,
+          statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
           statusBarBrightness: brightness,
         ),
         titleTextStyle: TextStyle(
@@ -124,8 +130,7 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor:
-              isDark ? AppColors.primaryLight : AppColors.primary,
+          foregroundColor: isDark ? AppColors.primaryLight : AppColors.primary,
           side: BorderSide(
             color: isDark ? AppColors.primaryLight : AppColors.primary,
             width: 1.5,
@@ -157,27 +162,24 @@ class AppTheme {
           borderRadius: BorderRadius.circular(16),
           borderSide: isDark
               ? const BorderSide(color: AppColors.dividerDark)
-              : BorderSide(
-                  color: AppColors.primary.withValues(alpha: 0.15)),
+              : BorderSide(color: AppColors.primary.withValues(alpha: 0.15)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }

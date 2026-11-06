@@ -12,6 +12,7 @@ import '../models/user_profile.dart';
 import 'encrypted_backup_codec.dart';
 import 'hive_service.dart';
 import 'premium_service.dart';
+import 'backup_validation.dart';
 
 /// Yedek dosyası içeriği — parse ve restore arasındaki taşıyıcı.
 class BackupData {
@@ -65,8 +66,7 @@ class BackupService {
   /// değil: kullanıcı paylaşım sayfasını iptal etmiş olabilir.
   static Future<void> markBackedUp() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(
-        lastBackupKey, DateTime.now().millisecondsSinceEpoch);
+    await prefs.setInt(lastBackupKey, DateTime.now().millisecondsSinceEpoch);
   }
 
   /// Yedek bayatladı mı? Hiç alınmadıysa da true — telefon kaybında
@@ -120,9 +120,7 @@ class BackupService {
       EncryptedBackupCodec().isEncryptedEnvelope(source);
 
   Future<String> decryptBackup(String source, String password) =>
-      Isolate.run(
-        () => EncryptedBackupCodec().decrypt(source, password),
-      );
+      Isolate.run(() => EncryptedBackupCodec().decrypt(source, password));
 
   Future<String> readBackupFile(String path) async {
     final file = File(path);
@@ -154,6 +152,30 @@ class BackupService {
     }
 
     try {
+      final rawProfile = decoded['profile'];
+      if (rawProfile is Map) {
+        if (rawProfile['trackingMode'] != null &&
+            ![
+              'period',
+              'ttc',
+              'pregnancy',
+              'pill',
+            ].contains(rawProfile['trackingMode'])) {
+          throw BackupException('Invalid tracking mode');
+        }
+        for (final field in [
+          'birthDate',
+          'lastPeriodStart',
+          'pregnancyStartDate',
+          'pillPackStartDate',
+        ]) {
+          final value = rawProfile[field];
+          if (value != null &&
+              (value is! String || DateTime.tryParse(value) == null)) {
+            throw BackupException('Invalid backup date');
+          }
+        }
+      }
       final profile = decoded['profile'] != null
           ? UserProfile.fromJson(decoded['profile'] as Map<String, dynamic>)
           : null;
@@ -164,7 +186,7 @@ class BackupService {
           .map((l) => DailyLog.fromJson(l as Map<String, dynamic>))
           .toList();
       final trialEpoch = decoded['trialStart'];
-      return BackupData(
+      final data = BackupData(
         profile: profile,
         periodRecords: records,
         dailyLogs: logs,
@@ -172,6 +194,8 @@ class BackupService {
             ? DateTime.fromMillisecondsSinceEpoch(trialEpoch)
             : null,
       );
+      validateBackupData(data);
+      return data;
     } catch (e) {
       if (e is BackupException) rethrow;
       throw BackupException('Yedek verisi çözümlenemedi: $e');
@@ -187,55 +211,17 @@ class BackupService {
   /// yedeği kaybediyordu. Önce mevcut veri bellekte tutulur, hata olursa
   /// geri yazılır ve hata yukarı iletilir.
   Future<void> restoreBackup(BackupData data) async {
-    final previous = BackupData(
-      profile: _hiveService.getUserProfile() == null
-          ? null
-          : UserProfile.fromJson(_hiveService.getUserProfile()!.toJson()),
-      periodRecords: _hiveService
-          .getAllPeriodRecords()
-          .map((r) => PeriodRecord.fromJson(r.toJson()))
-          .toList(),
-      dailyLogs: _hiveService
-          .getAllDailyLogs()
-          .map((l) => DailyLog.fromJson(l.toJson()))
-          .toList(),
+    validateBackupData(data);
+    await _hiveService.replaceAll(
+      profile: data.profile?.copyWith(
+        pinEnabled: false,
+        biometricEnabled: false,
+      ),
+      records: data.periodRecords,
+      logs: data.dailyLogs,
     );
-
-    try {
-      await _writeAll(data, resetLock: true);
-    } catch (e) {
-      try {
-        await _writeAll(previous, resetLock: false);
-      } catch (rollbackError) {
-        throw BackupException(
-            'Geri yükleme ve geri alma başarısız: $e / $rollbackError');
-      }
-      rethrow;
-    }
-    if (data.trialStart != null) {
-      await adoptEarlierTrialStart(data.trialStart);
-    }
-  }
-
-  Future<void> _writeAll(BackupData data, {required bool resetLock}) async {
-    await _hiveService.clearAll();
-
-    if (data.profile != null) {
-      // PIN hash'i ve biyometrik kayıt cihaza özgüdür, yedeğe girmez.
-      // pinEnabled=true geri yüklenirse ve bu cihazda hash yoksa kullanıcı
-      // kilit ekranından asla geçemez — kilit ayarları sıfırlanır.
-      final profile = resetLock
-          ? data.profile!.copyWith(pinEnabled: false, biometricEnabled: false)
-          : data.profile!;
-      await _hiveService.saveUserProfile(profile);
-    }
-    for (final record in data.periodRecords) {
-      await _hiveService.savePeriodRecord(record);
-    }
-    for (final log in data.dailyLogs) {
-      await _hiveService.saveDailyLog(log);
-    }
     await _hiveService.ensureMedicationPlanMigrated();
+    if (data.trialStart != null) await adoptEarlierTrialStart(data.trialStart);
   }
 
   /// Yedekteki deneme başlangıcı bu kurulumunkinden eskiyse onu benimser.
@@ -249,7 +235,9 @@ class BackupService {
     if (fromBackup == null) return current;
     if (current == null || fromBackup.isBefore(current)) {
       await prefs.setInt(
-          PremiumService.trialStartKey, fromBackup.millisecondsSinceEpoch);
+        PremiumService.trialStartKey,
+        fromBackup.millisecondsSinceEpoch,
+      );
       return fromBackup;
     }
     return current;

@@ -32,6 +32,7 @@ class AppColors {
   // Beyaz metinle >=3:1 kontrast veren etkileşim tonları
   // (pastel primary beyazla 2.06:1 — buton/appbar zemini olarak kullanılamaz)
   static const Color primaryStrong = Color(0xFFC2607F);
+
   /// Ailenin bordo ucu: gradyan bitişleri, vurgu ikonları, "ağırlık"
   /// gereken marka anları. Pastel tek başına şeker duruyordu.
   static const Color primaryDeep = Color(0xFF9A3F5F);
@@ -72,6 +73,7 @@ class AppColors {
   static const Color ovulationDay = Color(0xFFBA90C6);
   static const Color fertileWindow = Color(0xFFA8D5BA);
   static const Color fertileWindowLight = Color(0xFFD4EDDA);
+
   /// Açık yeşil fertil hücrenin üstünde okunan metin (WCAG AA)
   static const Color fertileWindowText = Color(0xFF1F5B36);
 
@@ -179,6 +181,7 @@ class AppColors {
   static const Color surface = Color(0xFFFFFBFE);
   static const Color surfaceElevated = Color(0xFFFFFFFF);
   static const Color textPrimary = Color(0xFF2D2D3A);
+
   /// Düz zeminde 6,2:1; ana ekranın faz gradyanının en yoğun noktasında
   /// (ovülasyon moru, %35 alfa) 4,7:1.
   ///

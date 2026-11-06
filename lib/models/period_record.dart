@@ -26,20 +26,20 @@ class PeriodRecord extends HiveObject {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'startDate': startDate.toIso8601String(),
-        'endDate': endDate?.toIso8601String(),
-        'notes': notes,
-      };
+    'id': id,
+    'startDate': startDate.toIso8601String(),
+    'endDate': endDate?.toIso8601String(),
+    'notes': notes,
+  };
 
   factory PeriodRecord.fromJson(Map<String, dynamic> json) => PeriodRecord(
-        id: json['id'] as String,
-        startDate: DateTime.parse(json['startDate'] as String),
-        endDate: json['endDate'] != null
-            ? DateTime.tryParse(json['endDate'] as String)
-            : null,
-        notes: json['notes'] as String?,
-      );
+    id: json['id'] as String,
+    startDate: DateTime.parse(json['startDate'] as String),
+    endDate: json['endDate'] != null
+        ? DateTime.parse(json['endDate'] as String)
+        : null,
+    notes: json['notes'] as String?,
+  );
 
   int get durationDays {
     return daysBetween(startDate, endDate ?? DateTime.now()) + 1;
@@ -49,8 +49,11 @@ class PeriodRecord extends HiveObject {
 
   bool containsDate(DateTime date) {
     final normalizedDate = DateTime(date.year, date.month, date.day);
-    final normalizedStart =
-        DateTime(startDate.year, startDate.month, startDate.day);
+    final normalizedStart = DateTime(
+      startDate.year,
+      startDate.month,
+      startDate.day,
+    );
     final normalizedEnd = endDate != null
         ? DateTime(endDate!.year, endDate!.month, endDate!.day)
         : DateTime.now();
@@ -67,10 +70,7 @@ class SymptomEntry {
   @HiveField(1)
   int severity;
 
-  SymptomEntry({
-    required this.type,
-    this.severity = 1,
-  });
+  SymptomEntry({required this.type, this.severity = 1});
 
   Map<String, dynamic> toJson() => {'type': type.name, 'severity': severity};
 
@@ -90,10 +90,7 @@ class MoodEntry {
   @HiveField(1)
   String? note;
 
-  MoodEntry({
-    required this.type,
-    this.note,
-  });
+  MoodEntry({required this.type, this.note});
 
   Map<String, dynamic> toJson() => {'type': type.name, 'note': note};
 
@@ -122,15 +119,18 @@ class SexualActivityEntry {
   });
 
   Map<String, dynamic> toJson() => {
-        'protectionMethod': protectionMethod.name,
-        'orgasm': orgasm,
-        'note': note,
-      };
+    'protectionMethod': protectionMethod.name,
+    'orgasm': orgasm,
+    'note': note,
+  };
 
   factory SexualActivityEntry.fromJson(Map<String, dynamic> json) =>
       SexualActivityEntry(
-        protectionMethod: enumFromName(ProtectionMethod.values,
-                json['protectionMethod'] as String?) ??
+        protectionMethod:
+            enumFromName(
+              ProtectionMethod.values,
+              json['protectionMethod'] as String?,
+            ) ??
             ProtectionMethod.none,
         orgasm: json['orgasm'] as bool? ?? false,
         note: json['note'] as String?,
@@ -159,11 +159,11 @@ class MedicationEntry {
   });
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'dose': dose,
-        'taken': taken,
-        'reminderTime': reminderTime,
-      };
+    'name': name,
+    'dose': dose,
+    'taken': taken,
+    'reminderTime': reminderTime,
+  };
 
   factory MedicationEntry.fromJson(Map<String, dynamic> json) =>
       MedicationEntry(

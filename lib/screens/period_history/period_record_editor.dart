@@ -17,7 +17,6 @@ import '../../providers/providers.dart';
 /// Takibin kendisi ücretsizse doğruluğu da ücretsiz olmalı — bu yüzden
 /// düzenleyici ortak bir yere taşındı.
 
-
 /// Düzenleme/silme sonrası profil tarihi kayıtların türevi olarak
 /// eşitlenir: en yeni kaydın başlangıcı = lastPeriodStart. Elle çift
 /// tutmanın ürettiği ayrışma (B-8) böylece tek yönlü akara bağlanır.
@@ -38,11 +37,18 @@ Future<void> showPeriodRecordEditor(
   final messenger = ScaffoldMessenger.of(context);
 
   var start = DateTime(
-      record.startDate.year, record.startDate.month, record.startDate.day);
+    record.startDate.year,
+    record.startDate.month,
+    record.startDate.day,
+  );
   var end = record.endDate != null
-      ? DateTime(record.endDate!.year, record.endDate!.month,
-          record.endDate!.day)
+      ? DateTime(
+          record.endDate!.year,
+          record.endDate!.month,
+          record.endDate!.day,
+        )
       : null;
+  var saving = false;
 
   await showModalBottomSheet<void>(
     context: context,
@@ -51,13 +57,14 @@ Future<void> showPeriodRecordEditor(
     builder: (sheetContext) => StatefulBuilder(
       builder: (sheetContext, setSheetState) {
         Future<void> pickStart() async {
+          if (saving) return;
           final picked = await showDatePicker(
             context: sheetContext,
             initialDate: start,
             firstDate: DateTime(2020),
             lastDate: DateTime.now(),
           );
-          if (picked != null) {
+          if (picked != null && sheetContext.mounted && !saving) {
             setSheetState(() {
               start = DateTime(picked.year, picked.month, picked.day);
               if (end != null && end!.isBefore(start)) end = start;
@@ -66,26 +73,29 @@ Future<void> showPeriodRecordEditor(
         }
 
         Future<void> pickEnd() async {
+          if (saving) return;
           final picked = await showDatePicker(
             context: sheetContext,
             initialDate: end ?? start,
             firstDate: start,
             lastDate: DateTime.now(),
           );
-          if (picked != null) {
+          if (picked != null && sheetContext.mounted && !saving) {
             setSheetState(
-                () => end = DateTime(picked.year, picked.month, picked.day));
+              () => end = DateTime(picked.year, picked.month, picked.day),
+            );
           }
         }
 
         Widget dateTile({
           required String label,
           required String value,
-          required VoidCallback onTap,
+          required VoidCallback? onTap,
           Widget? trailing,
         }) {
           return Semantics(
             button: true,
+            enabled: onTap != null,
             label: label,
             value: value,
             child: Material(
@@ -96,20 +106,28 @@ Future<void> showPeriodRecordEditor(
                 onTap: onTap,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   child: Row(
                     children: [
-                      Text(label,
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.ts(sheetContext))),
+                      Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.ts(sheetContext),
+                        ),
+                      ),
                       const Spacer(),
-                      Text(value,
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.tp(sheetContext))),
+                      Text(
+                        value,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.tp(sheetContext),
+                        ),
+                      ),
                       if (trailing != null) trailing,
                     ],
                   ),
@@ -122,11 +140,14 @@ Future<void> showPeriodRecordEditor(
         return Container(
           decoration: BoxDecoration(
             color: AppColors.sf(sheetContext),
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(28)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           ),
           padding: EdgeInsets.fromLTRB(
-              24, 16, 24, 24 + MediaQuery.viewInsetsOf(sheetContext).bottom),
+            24,
+            16,
+            24,
+            24 + MediaQuery.viewInsetsOf(sheetContext).bottom,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -142,59 +163,88 @@ Future<void> showPeriodRecordEditor(
                 ),
               ),
               const SizedBox(height: 16),
-              Text(l10n.editPeriodRecord,
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.tp(sheetContext))),
+              Text(
+                l10n.editPeriodRecord,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.tp(sheetContext),
+                ),
+              ),
               const SizedBox(height: 16),
               dateTile(
                 label: l10n.startDateLabel,
                 value: dateFormat.format(start),
-                onTap: pickStart,
+                onTap: saving ? null : pickStart,
               ),
               const SizedBox(height: 8),
               dateTile(
                 label: l10n.endDateLabel,
                 value: end != null ? dateFormat.format(end!) : l10n.ongoing,
-                onTap: pickEnd,
+                onTap: saving ? null : pickEnd,
                 trailing: end != null
                     ? IconButton(
                         tooltip: l10n.ongoing,
-                        icon: Icon(Icons.close_rounded,
-                            size: 18, color: AppColors.ts(sheetContext)),
-                        onPressed: () => setSheetState(() => end = null),
+                        icon: Icon(
+                          Icons.close_rounded,
+                          size: 18,
+                          color: AppColors.ts(sheetContext),
+                        ),
+                        onPressed: saving
+                            ? null
+                            : () => setSheetState(() => end = null),
                       )
                     : null,
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () async {
-                  Navigator.of(sheetContext).pop();
-                  await ref
-                      .read(periodRecordsProvider.notifier)
-                      .updateRecordDates(record.id, start, end);
-                  await _syncProfileToNewestRecord(ref);
-                  notifyTrackingRecordSaved();
-                  messenger.showSnackBar(SnackBar(
-                      content: Text(l10n.recordUpdated),
-                      backgroundColor: AppColors.success));
+                onPressed: saving ? null : () async {
+                  setSheetState(() => saving = true);
+                  try {
+                    await ref
+                        .read(periodRecordsProvider.notifier)
+                        .updateRecordDates(record.id, start, end);
+                    await _syncProfileToNewestRecord(ref);
+                    if (!sheetContext.mounted) return;
+                    Navigator.of(sheetContext).pop();
+                    notifyTrackingRecordSaved();
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(l10n.recordUpdated),
+                        backgroundColor: AppColors.success,
+                      ),
+                    );
+                  } on ArgumentError {
+                    messenger.showSnackBar(
+                      SnackBar(content: Text(l10n.periodRangeOverlap)),
+                    );
+                  } catch (_) {
+                    messenger.showSnackBar(
+                      SnackBar(content: Text(l10n.errorOccurred(l10n.retry))),
+                    );
+                  } finally {
+                    if (sheetContext.mounted) {
+                      setSheetState(() => saving = false);
+                    }
+                  }
                 },
                 child: Text(l10n.save),
               ),
               TextButton(
-                style:
-                    TextButton.styleFrom(foregroundColor: AppColors.error),
-                onPressed: () async {
+                style: TextButton.styleFrom(foregroundColor: AppColors.error),
+                onPressed: saving ? null : () async {
                   final confirmed = await showDialog<bool>(
                     context: sheetContext,
                     builder: (ctx) => AlertDialog(
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24)),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
                       title: Text(l10n.deleteRecord),
-                      content: Text(end != null
-                          ? '${dateFormat.format(start)} - ${dateFormat.format(end!)}'
-                          : '${dateFormat.format(start)} (${l10n.ongoing})'),
+                      content: Text(
+                        end != null
+                            ? '${dateFormat.format(start)} - ${dateFormat.format(end!)}'
+                            : '${dateFormat.format(start)} (${l10n.ongoing})',
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(ctx, false),
@@ -203,23 +253,37 @@ Future<void> showPeriodRecordEditor(
                         TextButton(
                           onPressed: () => Navigator.pop(ctx, true),
                           style: TextButton.styleFrom(
-                              foregroundColor: AppColors.error),
+                            foregroundColor: AppColors.error,
+                          ),
                           child: Text(l10n.delete),
                         ),
                       ],
                     ),
                   );
-                  if (confirmed != true) return;
-                  if (sheetContext.mounted) {
+                  if (confirmed != true || !sheetContext.mounted || saving) return;
+                  setSheetState(() => saving = true);
+                  try {
+                    await ref
+                        .read(periodRecordsProvider.notifier)
+                        .deleteRecord(record.id);
+                    await _syncProfileToNewestRecord(ref);
+                    if (!sheetContext.mounted) return;
                     Navigator.of(sheetContext).pop();
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(l10n.recordDeleted),
+                        backgroundColor: AppColors.success,
+                      ),
+                    );
+                  } catch (_) {
+                    messenger.showSnackBar(
+                      SnackBar(content: Text(l10n.errorOccurred(l10n.retry))),
+                    );
+                  } finally {
+                    if (sheetContext.mounted) {
+                      setSheetState(() => saving = false);
+                    }
                   }
-                  await ref
-                      .read(periodRecordsProvider.notifier)
-                      .deleteRecord(record.id);
-                  await _syncProfileToNewestRecord(ref);
-                  messenger.showSnackBar(SnackBar(
-                      content: Text(l10n.recordDeleted),
-                      backgroundColor: AppColors.success));
                 },
                 child: Text(l10n.deleteRecord),
               ),

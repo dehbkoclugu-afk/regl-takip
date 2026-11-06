@@ -18,4 +18,9 @@
     <style name="NormalTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">?android:colorBackground</item>
     </style>
+    <style name="NeutralLaunchTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowSplashScreenBackground">#F5F5F5</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_disguised</item>
+        <item name="android:windowBackground">#F5F5F5</item>
+    </style>
 </resources>

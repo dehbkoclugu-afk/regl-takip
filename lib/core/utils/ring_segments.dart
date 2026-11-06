@@ -30,7 +30,8 @@ List<RingSegment> ringSegmentsFor(int cycleLength, int periodLength) {
   ];
   if (fertileStart > period + 1) {
     segments.add(
-        RingSegment(period + 1, fertileStart - 1, AppColors.ringFollicular));
+      RingSegment(period + 1, fertileStart - 1, AppColors.ringFollicular),
+    );
   }
   if (fertileEnd >= fertileStart) {
     segments.add(RingSegment(fertileStart, fertileEnd, AppColors.ringFertile));

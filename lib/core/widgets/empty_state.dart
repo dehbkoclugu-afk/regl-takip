@@ -34,19 +34,25 @@ class EmptyState extends StatelessWidget {
           child: Icon(icon, size: 34, color: accent),
         ),
         const SizedBox(height: 14),
-        Text(title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: AppColors.tp(context))),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: AppColors.tp(context),
+          ),
+        ),
         const SizedBox(height: 6),
-        Text(message,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 13,
-                height: 1.4,
-                color: AppColors.ts(context))),
+        Text(
+          message,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 13,
+            height: 1.4,
+            color: AppColors.ts(context),
+          ),
+        ),
       ],
     );
   }

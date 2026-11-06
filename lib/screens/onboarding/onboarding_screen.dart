@@ -1,7 +1,4 @@
-
-import 'dart:io';
-
-import 'package:file_picker/file_picker.dart';
+import '../../services/backup_import_flow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -60,8 +57,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     // Açılışta kutular çözülemeyip sıfırdan başlandıysa (cihaz/yedek
     // geçişi) kullanıcı ilk burada karşılanır — nedeni açıklanmalı
     if (HiveService().dataResetPerformed) {
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => _showDataResetNotice());
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => _showDataResetNotice(),
+      );
     }
   }
 
@@ -73,8 +71,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(l10n.dataResetTitle),
         content: SingleChildScrollView(
-          child: Text(l10n.dataResetBody,
-              style: const TextStyle(fontSize: 14, height: 1.5)),
+          child: Text(
+            l10n.dataResetBody,
+            style: const TextStyle(fontSize: 14, height: 1.5),
+          ),
         ),
         actions: [
           TextButton(
@@ -95,50 +95,23 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Future<void> _restoreFromBackup() async {
     final l10n = AppLocalizations.of(context)!;
-    final result = await FilePicker.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['json'],
-    );
-    final path = result?.files.single.path;
-    if (path == null) return;
-
-    final BackupData data;
+    final data = await pickBackupForRestore(context);
+    if (data == null) return;
     try {
-      data = BackupService(
-        HiveService(),
-      ).parseBackup(await File(path).readAsString());
+      await BackupService(HiveService()).restoreBackup(data);
     } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.invalidBackupFile),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.invalidBackupFile),
+            backgroundColor: AppColors.error,
+          ),
+        );
       return;
     }
-
-    if (!mounted) return;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.restoreConfirmTitle),
-        content: Text(l10n.restoreConfirmBody(data.totalRecordCount)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l10n.restore),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true) return;
-
-    await BackupService(HiveService()).restoreBackup(data);
+    final trialStart = await BackupService.adoptEarlierTrialStart(null);
+    if (trialStart != null)
+      ref.read(trialStartProvider.notifier).state = trialStart;
     ref.read(userProfileProvider.notifier).refresh();
     ref.read(periodRecordsProvider.notifier).refresh();
     ref.read(dailyLogProvider.notifier).refresh();
@@ -156,10 +129,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       } catch (_) {
         // Geri yükleme bildirim kurulumu başarısız olsa da geçerlidir.
       }
-      await WidgetService.update(
-        profile,
-        HiveService().getAllPeriodRecords(),
-      );
+      await WidgetService.update(profile, HiveService().getAllPeriodRecords());
     }
 
     if (!mounted) return;
@@ -228,13 +198,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final wants = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24)),
-        icon: const Icon(Icons.notifications_active_rounded,
-            color: AppColors.primaryStrong, size: 32),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        icon: const Icon(
+          Icons.notifications_active_rounded,
+          color: AppColors.primaryStrong,
+          size: 32,
+        ),
         title: Text(l10n.notifPermissionTitle),
-        content: Text(l10n.notifPermissionBody,
-            style: const TextStyle(fontSize: 14, height: 1.5)),
+        content: Text(
+          l10n.notifPermissionBody,
+          style: const TextStyle(fontSize: 14, height: 1.5),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -266,8 +240,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(l10n.consentTitle),
         content: SingleChildScrollView(
-          child: Text(l10n.consentBody,
-              style: const TextStyle(fontSize: 14, height: 1.5)),
+          child: Text(
+            l10n.consentBody,
+            style: const TextStyle(fontSize: 14, height: 1.5),
+          ),
         ),
         actions: [
           TextButton(
@@ -307,12 +283,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       // Takvim, istatistik ve "reglim bitti" akışı profile'a değil
       // PeriodRecord'lara bakar — girilen son regl kayıt olarak da yazılmalı,
       // yoksa kullanıcı boş bir takvimle karşılaşır.
-      final record =
-          await ref.read(periodRecordsProvider.notifier).startPeriod(lastPeriod);
+      final record = await ref
+          .read(periodRecordsProvider.notifier)
+          .startPeriod(lastPeriod);
       final end = CycleUtils.completedPeriodEnd(
-          lastPeriod, periodLength, DateTime.now());
+        lastPeriod,
+        periodLength,
+        DateTime.now(),
+      );
       if (end != null) {
-        await ref.read(periodRecordsProvider.notifier).endPeriod(record.id, end);
+        await ref
+            .read(periodRecordsProvider.notifier)
+            .endPeriod(record.id, end);
       }
 
       final profile = UserProfile(
@@ -324,8 +306,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         onboardingCompleted: true,
         trackingMode: _mode,
         // Gebelikte LMP = girilen son regl tarihi: hafta sayacı hemen doğru
-        pregnancyStartDate:
-            _mode == TrackingMode.pregnancy ? lastPeriod : null,
+        pregnancyStartDate: _mode == TrackingMode.pregnancy ? lastPeriod : null,
         pillPackStartDate: pillPackStart,
       );
 
@@ -473,10 +454,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       child: SizedBox(
         width: double.infinity,
         height: 56,
-        child: _ActionButton(
-          label: l10n.startBtn,
-          onPressed: _nextMainPage,
-        ),
+        child: _ActionButton(label: l10n.startBtn, onPressed: _nextMainPage),
       ),
     );
   }
@@ -501,12 +479,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         children: [
           const SizedBox(height: 8),
           Text(
-            l10n.letsKnowYou,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                l10n.letsKnowYou,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
-          )
+              )
               .animateSafe(context)
               .fadeIn(duration: 400.ms)
               .slideY(begin: -0.2, end: 0, duration: 400.ms),
@@ -560,9 +538,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         foregroundColor: Colors.white,
         disabledForegroundColor: Colors.white.withValues(alpha: 0.5),
         side: BorderSide(color: Colors.white.withValues(alpha: 0.4)),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         minimumSize: const Size(48, 52),
       ),
@@ -617,24 +593,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   /// burada olursa iç içe iki kaydırılabilir alan oluşur.
   Widget _formCard({required List<Widget> children}) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(28),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 30,
-            offset: const Offset(0, 10),
+          width: double.infinity,
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 30,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: children,
-      ),
-    )
+          child: Column(mainAxisSize: MainAxisSize.min, children: children),
+        )
         .animateSafe(context)
         .fadeIn(duration: 350.ms)
         .slideY(begin: 0.03, end: 0, duration: 350.ms);
@@ -648,8 +621,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     required String hint,
     required VoidCallback onTap,
   }) {
-    final formatter =
-        DateFormat('dd MMMM yyyy', Localizations.localeOf(context).toString());
+    final formatter = DateFormat(
+      'dd MMMM yyyy',
+      Localizations.localeOf(context).toString(),
+    );
     final selected = value != null;
     return Semantics(
       button: true,
@@ -736,15 +711,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 child: Text(
                   title,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
               ),
               if (optional)
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.background,
                     borderRadius: BorderRadius.circular(10),
@@ -764,9 +741,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           Text(
             subtitle,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
-                  height: 1.4,
-                ),
+              color: AppColors.textSecondary,
+              height: 1.4,
+            ),
           ),
         ],
       ),
@@ -776,25 +753,45 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Widget _buildModeSection() {
     final l10n = AppLocalizations.of(context)!;
     final modes = [
-      (TrackingMode.period, Icons.water_drop_rounded, l10n.modePeriod,
-          l10n.modePeriodDesc),
-      (TrackingMode.pregnancy, Icons.pregnant_woman_rounded,
-          l10n.modePregnancy, l10n.modePregnancyDesc),
-      (TrackingMode.pill, Icons.medication_rounded, l10n.modePill,
-          l10n.modePillDesc),
-      (TrackingMode.ttc, Icons.favorite_rounded, l10n.modeTtc,
-          l10n.modeTtcDesc),
+      (
+        TrackingMode.period,
+        Icons.water_drop_rounded,
+        l10n.modePeriod,
+        l10n.modePeriodDesc,
+      ),
+      (
+        TrackingMode.pregnancy,
+        Icons.pregnant_woman_rounded,
+        l10n.modePregnancy,
+        l10n.modePregnancyDesc,
+      ),
+      (
+        TrackingMode.pill,
+        Icons.medication_rounded,
+        l10n.modePill,
+        l10n.modePillDesc,
+      ),
+      (
+        TrackingMode.ttc,
+        Icons.favorite_rounded,
+        l10n.modeTtc,
+        l10n.modeTtcDesc,
+      ),
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _sectionHeader(
-            Icons.route_rounded, l10n.modeStepTitle, l10n.modeStepSubtitle),
+          Icons.route_rounded,
+          l10n.modeStepTitle,
+          l10n.modeStepSubtitle,
+        ),
         LayoutBuilder(
           builder: (context, constraints) {
-            final textScale =
-                effectiveTextScale(MediaQuery.textScalerOf(context));
+            final textScale = effectiveTextScale(
+              MediaQuery.textScalerOf(context),
+            );
             return GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -812,64 +809,71 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               ),
               itemCount: modes.length,
               itemBuilder: (context, index) {
-            final (mode, icon, title, desc) = modes[index];
-            final isSelected = _mode == mode;
-            return Semantics(
-              button: true,
-              selected: isSelected,
-              label: '$title, $desc',
-              child: InkWell(
-                borderRadius: BorderRadius.circular(16),
-                onTap: () => setState(() => _mode = mode),
-                child: ExcludeSemantics(
-                  child: AnimatedContainer(
-                    duration: context.motionDuration(
-                        const Duration(milliseconds: 200)),
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.primary.withValues(alpha: 0.1)
-                          : AppColors.background,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: isSelected
-                            ? AppColors.primaryStrong
-                            : Colors.transparent,
-                        width: 1.5,
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(icon,
-                            size: 26,
+                final (mode, icon, title, desc) = modes[index];
+                final isSelected = _mode == mode;
+                return Semantics(
+                  button: true,
+                  selected: isSelected,
+                  label: '$title, $desc',
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () => setState(() => _mode = mode),
+                    child: ExcludeSemantics(
+                      child: AnimatedContainer(
+                        duration: context.motionDuration(
+                          const Duration(milliseconds: 200),
+                        ),
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppColors.primary.withValues(alpha: 0.1)
+                              : AppColors.background,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
                             color: isSelected
                                 ? AppColors.primaryStrong
-                                : AppColors.textSecondary),
-                        const SizedBox(height: 6),
-                        Text(title,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
+                                : Colors.transparent,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              icon,
+                              size: 26,
                               color: isSelected
                                   ? AppColors.primaryStrong
-                                  : AppColors.textPrimary,
-                            )),
-                        const SizedBox(height: 2),
-                        Text(desc,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 10.5,
-                              height: 1.2,
-                              color: AppColors.textSecondary,
-                            )),
-                      ],
+                                  : AppColors.textSecondary,
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              title,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: isSelected
+                                    ? AppColors.primaryStrong
+                                    : AppColors.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              desc,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 10.5,
+                                height: 1.2,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            );
+                );
               },
             );
           },
@@ -883,9 +887,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _sectionHeader(Icons.person_outline_rounded, l10n.enterName,
-            l10n.whatShouldWeCallYou,
-            optional: true),
+        _sectionHeader(
+          Icons.person_outline_rounded,
+          l10n.enterName,
+          l10n.whatShouldWeCallYou,
+          optional: true,
+        ),
         TextField(
           controller: _nameController,
           textCapitalization: TextCapitalization.words,
@@ -904,11 +911,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide:
-                  const BorderSide(color: AppColors.primary, width: 1.5),
+              borderSide: const BorderSide(
+                color: AppColors.primary,
+                width: 1.5,
+              ),
             ),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 18,
+            ),
           ),
         ),
       ],
@@ -921,8 +932,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _sectionHeader(
-            Icons.cake_outlined, l10n.yourBirthDate, l10n.birthDateHelp,
-            optional: true),
+          Icons.cake_outlined,
+          l10n.yourBirthDate,
+          l10n.birthDateHelp,
+          optional: true,
+        ),
         _dateField(
           value: _birthDate,
           semanticsLabel: l10n.yourBirthDate,
@@ -939,8 +953,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       key: _lastPeriodKey,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _sectionHeader(Icons.water_drop_outlined, l10n.lastPeriodTitle,
-            l10n.lastPeriodHelp),
+        _sectionHeader(
+          Icons.water_drop_outlined,
+          l10n.lastPeriodTitle,
+          l10n.lastPeriodHelp,
+        ),
         _dateField(
           value: _lastPeriodDate,
           semanticsLabel: l10n.lastPeriodTitle,
@@ -952,13 +969,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         // kullanıcı sıkışıp kalıyordu. Yaklaşık seçim, uydurma bir kesinlik
         // girmekten iyi: tahminler zaten kayıt geldikçe kendini düzeltiyor.
         Align(
-          alignment: Alignment.centerLeft,
+          alignment: AlignmentDirectional.centerStart,
           child: TextButton.icon(
             onPressed: _pickApproximateLastPeriod,
             icon: const Icon(Icons.help_outline_rounded, size: 18),
             label: Text(l10n.dontRememberExactly),
             style: TextButton.styleFrom(
-                foregroundColor: AppColors.primaryStrong),
+              foregroundColor: AppColors.primaryStrong,
+            ),
           ),
         ),
       ],
@@ -991,20 +1009,26 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 16),
-            Text(l10n.approxTitle,
-                style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary)),
+            Text(
+              l10n.approxTitle,
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
             const SizedBox(height: 4),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(l10n.approxSubtitle,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      fontSize: 13,
-                      height: 1.4,
-                      color: AppColors.textSecondary)),
+              child: Text(
+                l10n.approxSubtitle,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 13,
+                  height: 1.4,
+                  color: AppColors.textSecondary,
+                ),
+              ),
             ),
             const SizedBox(height: 8),
             // Renk açıkça veriliyor: sayfanın zemini AppColors.surface, yani
@@ -1028,8 +1052,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
 
     if (daysAgo == null || !mounted) return;
-    setState(() =>
-        _lastPeriodDate = addDays(today, -daysAgo));
+    setState(() => _lastPeriodDate = addDays(today, -daysAgo));
   }
 
   /// Döngü ve regl uzunluğu tek bölümde: aynı biçimdeki iki slider ayrı
@@ -1040,8 +1063,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _sectionHeader(Icons.loop_rounded, l10n.durationsStepTitle,
-            l10n.durationsStepHelp),
+        _sectionHeader(
+          Icons.loop_rounded,
+          l10n.durationsStepTitle,
+          l10n.durationsStepHelp,
+        ),
         _durationSlider(
           label: l10n.cycleLengthTitle,
           value: _cycleLength,
@@ -1092,9 +1118,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           l10n.nDays(value.round()),
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: AppColors.primaryStrong,
-              ),
+            fontWeight: FontWeight.bold,
+            color: AppColors.primaryStrong,
+          ),
         ),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
@@ -1120,21 +1146,30 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           child: usesLargeText(MediaQuery.textScalerOf(context))
               ? Column(
                   children: [
-                    Text('$averageLabel (${l10n.averageLabel})',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                            color: AppColors.textSecondary,
-                            fontWeight: FontWeight.w500)),
+                    Text(
+                      '$averageLabel (${l10n.averageLabel})',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('${min.round()}',
-                            style: const TextStyle(
-                                color: AppColors.textSecondary)),
-                        Text('${max.round()}',
-                            style: const TextStyle(
-                                color: AppColors.textSecondary)),
+                        Text(
+                          '${min.round()}',
+                          style: const TextStyle(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        Text(
+                          '${max.round()}',
+                          style: const TextStyle(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -1142,16 +1177,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               : Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('${min.round()}',
-                        style: const TextStyle(
-                            color: AppColors.textSecondary)),
-                    Text('$averageLabel (${l10n.averageLabel})',
-                        style: const TextStyle(
-                            color: AppColors.textSecondary,
-                            fontWeight: FontWeight.w500)),
-                    Text('${max.round()}',
-                        style: const TextStyle(
-                            color: AppColors.textSecondary)),
+                    Text(
+                      '${min.round()}',
+                      style: const TextStyle(color: AppColors.textSecondary),
+                    ),
+                    Text(
+                      '$averageLabel (${l10n.averageLabel})',
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      '${max.round()}',
+                      style: const TextStyle(color: AppColors.textSecondary),
+                    ),
                   ],
                 ),
         ),

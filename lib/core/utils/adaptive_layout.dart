@@ -16,17 +16,17 @@ int adaptiveGridColumns({
 }) {
   final scaleGrowth = 1 + (math.max(1, textScale) - 1) * 0.35;
   final targetWidth = minCardWidth * scaleGrowth;
-  return ((width + spacing) / (targetWidth + spacing))
-      .floor()
-      .clamp(1, maxColumns);
+  return ((width + spacing) / (targetWidth + spacing)).floor().clamp(
+    1,
+    maxColumns,
+  );
 }
 
 double scaledGridExtent(
   double baseExtent,
   double textScale, {
   double growth = 0.65,
-}) =>
-    baseExtent * (1 + (math.max(1, textScale) - 1) * growth);
+}) => baseExtent * (1 + (math.max(1, textScale) - 1) * growth);
 
 /// Yüzen gezinme pill'inin kapladığı dikey alan.
 ///
@@ -44,5 +44,13 @@ double scaledGridExtent(
 /// [gap] pill ile içeriğin son satırı arasında kalacak nefes payı. Sıfırken
 /// içerik tam pill'in üstünde bitiyor ve son satır çubuğa yapışık duruyor —
 /// yasal uyarı gibi tek satırlık kapanışlarda bu sıkışık görünüyordu.
-double bottomNavInset(BuildContext context, {double gap = 24}) =>
+///
+/// 24'lük pay telefonda hâlâ yetmiyordu: takvimdeki iki satırlık yasal
+/// uyarının ikinci satırı pilin arkasında kalmaya devam etti. 128'lik taban
+/// (kenar boşluğu + iç dolgu + NavigationBar'ın nominal 80 yüksekliği)
+/// gerçek cihazdaki pil yüksekliğini muhtemelen az hesaplıyor — nominal 80,
+/// bu uygulamanın özel etiket/ikon boyutlarıyla NavigationBar'ın gerçekte
+/// büyüdüğü payı saymıyor olabilir. Kesin farkı ölçemediğimiz için pay
+/// belirgin şekilde büyütüldü.
+double bottomNavInset(BuildContext context, {double gap = 56}) =>
     MediaQuery.viewPaddingOf(context).bottom + 128 + gap;

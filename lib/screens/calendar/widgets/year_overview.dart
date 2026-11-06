@@ -10,11 +10,7 @@ import '../../../models/period_record.dart';
 import '../../../models/user_profile.dart';
 
 /// Material haftanın ilk günü indeksine göre sabit altı haftalık ay ızgarası.
-List<DateTime?> buildMonthGrid(
-  int year,
-  int month,
-  int firstDayOfWeek,
-) {
+List<DateTime?> buildMonthGrid(int year, int month, int firstDayOfWeek) {
   if (firstDayOfWeek < 0 || firstDayOfWeek > 6) {
     throw RangeError.range(firstDayOfWeek, 0, 6, 'firstDayOfWeek');
   }
@@ -23,9 +19,7 @@ List<DateTime?> buildMonthGrid(
   final daysInMonth = DateTime(year, month + 1, 0).day;
   return List<DateTime?>.generate(42, (index) {
     final day = index - offset + 1;
-    return day < 1 || day > daysInMonth
-        ? null
-        : DateTime(year, month, day);
+    return day < 1 || day > daysInMonth ? null : DateTime(year, month, day);
   });
 }
 
@@ -63,6 +57,7 @@ class _YearOverviewSheetState extends State<YearOverviewSheet> {
     return profile != null &&
         start != null &&
         profile.trackingMode != TrackingMode.pregnancy &&
+        profile.trackingMode != TrackingMode.pill &&
         !_isPeriodDay(day) &&
         CycleUtils.isPredictedPeriodDay(
           day,
@@ -99,8 +94,9 @@ class _YearOverviewSheetState extends State<YearOverviewSheet> {
               Row(
                 children: [
                   IconButton(
-                    onPressed:
-                        _year <= 2020 ? null : () => setState(() => _year--),
+                    onPressed: _year <= 2020
+                        ? null
+                        : () => setState(() => _year--),
                     tooltip: '${_year - 1}',
                     icon: const Icon(Icons.chevron_left_rounded),
                   ),
@@ -119,8 +115,9 @@ class _YearOverviewSheetState extends State<YearOverviewSheet> {
                     ),
                   ),
                   IconButton(
-                    onPressed:
-                        _year >= 2030 ? null : () => setState(() => _year++),
+                    onPressed: _year >= 2030
+                        ? null
+                        : () => setState(() => _year++),
                     tooltip: '${_year + 1}',
                     icon: const Icon(Icons.chevron_right_rounded),
                   ),
@@ -141,8 +138,8 @@ class _YearOverviewSheetState extends State<YearOverviewSheet> {
                       final maxColumns = constraints.maxWidth >= 720
                           ? 4
                           : constraints.maxWidth >= 420
-                              ? 3
-                              : 2;
+                          ? 3
+                          : 2;
                       final columns = largeText
                           ? adaptiveGridColumns(
                               width: constraints.maxWidth,
@@ -158,14 +155,11 @@ class _YearOverviewSheetState extends State<YearOverviewSheet> {
                           crossAxisCount: columns,
                           crossAxisSpacing: 10,
                           mainAxisSpacing: 10,
-                          childAspectRatio:
-                              largeText ? 1 : (columns == 2 ? 1.15 : 1.05),
+                          childAspectRatio: largeText
+                              ? 1
+                              : (columns == 2 ? 1.15 : 1.05),
                           mainAxisExtent: largeText
-                              ? scaledGridExtent(
-                                  125,
-                                  textScale,
-                                  growth: 0.45,
-                                )
+                              ? scaledGridExtent(125, textScale, growth: 0.45)
                               : null,
                         ),
                         itemCount: 12,
@@ -190,14 +184,8 @@ class _YearOverviewSheetState extends State<YearOverviewSheet> {
                 spacing: 18,
                 runSpacing: 6,
                 children: [
-                  _LegendDot(
-                    filled: true,
-                    label: l10n.periodDayLabel,
-                  ),
-                  _LegendDot(
-                    filled: false,
-                    label: l10n.predicted,
-                  ),
+                  _LegendDot(filled: true, label: l10n.periodDayLabel),
+                  _LegendDot(filled: false, label: l10n.predicted),
                 ],
               ),
             ],
@@ -231,10 +219,11 @@ class _MonthCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final days = buildMonthGrid(year, month, firstDayOfWeek);
-    final periodDays =
-        days.whereType<DateTime>().where(isPeriodDay).length;
-    final predictedDays =
-        days.whereType<DateTime>().where(isPredictedDay).length;
+    final periodDays = days.whereType<DateTime>().where(isPeriodDay).length;
+    final predictedDays = days
+        .whereType<DateTime>()
+        .where(isPredictedDay)
+        .length;
     final monthName = DateFormat.MMMM(locale).format(DateTime(year, month));
     final stateLabel = [
       if (periodDays > 0) l10n.monthPeriodDays(periodDays),
@@ -274,9 +263,9 @@ class _MonthCard extends StatelessWidget {
                       padding: EdgeInsets.zero,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 7,
-                        childAspectRatio: 1.35,
-                      ),
+                            crossAxisCount: 7,
+                            childAspectRatio: 1.35,
+                          ),
                       itemCount: days.length,
                       itemBuilder: (context, index) {
                         final day = days[index];
@@ -291,8 +280,8 @@ class _MonthCard extends StatelessWidget {
                               color: actual
                                   ? AppColors.primaryStrong
                                   : predicted
-                                      ? Colors.transparent
-                                      : AppColors.dv(context),
+                                  ? Colors.transparent
+                                  : AppColors.dv(context),
                               shape: BoxShape.circle,
                               border: predicted
                                   ? Border.all(
@@ -324,26 +313,26 @@ class _LegendDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 10,
-            height: 10,
-            decoration: BoxDecoration(
-              color: filled ? AppColors.primaryStrong : Colors.transparent,
-              shape: BoxShape.circle,
-              border: filled
-                  ? null
-                  : Border.all(color: AppColors.primaryStrong, width: 1.4),
-            ),
-          ),
-          const SizedBox(width: 5),
-          Flexible(
-            child: Text(
-              label,
-              style: TextStyle(fontSize: 11, color: AppColors.ts(context)),
-            ),
-          ),
-        ],
-      );
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Container(
+        width: 10,
+        height: 10,
+        decoration: BoxDecoration(
+          color: filled ? AppColors.primaryStrong : Colors.transparent,
+          shape: BoxShape.circle,
+          border: filled
+              ? null
+              : Border.all(color: AppColors.primaryStrong, width: 1.4),
+        ),
+      ),
+      const SizedBox(width: 5),
+      Flexible(
+        child: Text(
+          label,
+          style: TextStyle(fontSize: 11, color: AppColors.ts(context)),
+        ),
+      ),
+    ],
+  );
 }

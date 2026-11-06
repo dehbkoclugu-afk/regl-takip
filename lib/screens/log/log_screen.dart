@@ -39,6 +39,9 @@ class _LogScreenState extends ConsumerState<LogScreen> {
     final fromCalendar = ref.read(selectedDateProvider);
     final now = DateTime.now();
     _selectedDate = fromCalendar.isAfter(now) ? now : fromCalendar;
+    if (fromCalendar.isAfter(now)) {
+      ref.read(selectedDateProvider.notifier).state = _selectedDate;
+    }
     _buildWeekDates();
   }
 
@@ -50,10 +53,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
       _selectedDate.month,
       _selectedDate.day,
     );
-    _weekDates = List.generate(
-      7,
-      (i) => addDays(anchor, -(6 - i)),
-    );
+    _weekDates = List.generate(7, (i) => addDays(anchor, -(6 - i)));
   }
 
   Future<void> _pickDate() async {
@@ -315,8 +315,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final textScale =
-            effectiveTextScale(MediaQuery.textScalerOf(context));
+        final textScale = effectiveTextScale(MediaQuery.textScalerOf(context));
         return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -333,54 +332,54 @@ class _LogScreenState extends ConsumerState<LogScreen> {
           ),
           itemCount: categories.length,
           itemBuilder: (context, index) {
-        final cat = categories[index];
-        final motion = context.motionEnabled;
-        // Container transform: kart, açılan ekranın kendisine BÜYÜR —
-        // "bu ekran o karttan çıktı" mekânsal sürekliliği. Hareket
-        // kısıtlıysa düz rota geçişi.
-        final Widget card;
-        if (motion) {
-          card = OpenContainer(
-            transitionDuration: const Duration(milliseconds: 350),
-            transitionType: ContainerTransitionType.fadeThrough,
-            closedElevation: 0,
-            openElevation: 0,
-            closedShape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            closedColor: AppColors.sf(context),
-            middleColor: AppColors.bg(context),
-            openColor: AppColors.bg(context),
-            openBuilder: (context, _) => cat.screenBuilder(context),
-            closedBuilder: (context, open) =>
-                InkWell(onTap: open, child: _buildCategoryCardBody(cat)),
-          );
-        } else {
-          card = Material(
-            color: AppColors.sf(context),
-            borderRadius: BorderRadius.circular(20),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              onTap: () => context.push(cat.route),
-              child: _buildCategoryCardBody(cat),
-            ),
-          );
-        }
-        return Semantics(
-              button: true,
-              label: cat.summary.isEmpty
-                  ? cat.label
-                  : '${cat.label}: ${cat.summary}',
-              child: card,
-            )
-            .animateSafe(context)
-            .fadeIn(delay: (index * 50).ms, duration: 300.ms)
-            .scale(
-              begin: const Offset(0.95, 0.95),
-              end: const Offset(1, 1),
-              delay: (index * 50).ms,
-              duration: 300.ms,
-            );
+            final cat = categories[index];
+            final motion = context.motionEnabled;
+            // Container transform: kart, açılan ekranın kendisine BÜYÜR —
+            // "bu ekran o karttan çıktı" mekânsal sürekliliği. Hareket
+            // kısıtlıysa düz rota geçişi.
+            final Widget card;
+            if (motion) {
+              card = OpenContainer(
+                transitionDuration: const Duration(milliseconds: 350),
+                transitionType: ContainerTransitionType.fadeThrough,
+                closedElevation: 0,
+                openElevation: 0,
+                closedShape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                closedColor: AppColors.sf(context),
+                middleColor: AppColors.bg(context),
+                openColor: AppColors.bg(context),
+                openBuilder: (context, _) => cat.screenBuilder(context),
+                closedBuilder: (context, open) =>
+                    InkWell(onTap: open, child: _buildCategoryCardBody(cat)),
+              );
+            } else {
+              card = Material(
+                color: AppColors.sf(context),
+                borderRadius: BorderRadius.circular(20),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  onTap: () => context.push(cat.route),
+                  child: _buildCategoryCardBody(cat),
+                ),
+              );
+            }
+            return Semantics(
+                  button: true,
+                  label: cat.summary.isEmpty
+                      ? cat.label
+                      : '${cat.label}: ${cat.summary}',
+                  child: card,
+                )
+                .animateSafe(context)
+                .fadeIn(delay: (index * 50).ms, duration: 300.ms)
+                .scale(
+                  begin: const Offset(0.95, 0.95),
+                  end: const Offset(1, 1),
+                  delay: (index * 50).ms,
+                  duration: 300.ms,
+                );
           },
         );
       },
@@ -500,10 +499,7 @@ class _LogScreenState extends ConsumerState<LogScreen> {
     return '$start - ${log!.sleepEnd ?? '?'}';
   }
 
-  String _getMeasurementsSummary(
-    DailyLog? log,
-    AppLocalizations l10n,
-  ) {
+  String _getMeasurementsSummary(DailyLog? log, AppLocalizations l10n) {
     if (log == null) return '';
     final values = [
       _getTempSummary(log),

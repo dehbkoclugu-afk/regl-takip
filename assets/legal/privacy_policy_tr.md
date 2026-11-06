@@ -1,63 +1,24 @@
-# Gizlilik Politikası
+# Gizlilik politikası
 
-**Son güncelleme: 26 Ekim 2026**
+Güncelleme: 23 Ekim 2026. Geliştirici: CEY Studio. İletişim: dehbkoclugu@gmail.com.
 
-CEY Studio olarak, "Döngü Takip - Regl & Adet Takvimi" uygulamasını kullanırken gizliliğinize saygı duyuyoruz. Bu gizlilik politikası, uygulamamızın verilerinizi nasıl işlediğini açıklamaktadır.
+## Sağlık kayıtları
+Ad, doğum tarihi, regl tarihleri, belirtiler, ruh hâli, ölçümler, ilaçlar, cinsel aktivite ve notlar cihazınızda şifreli yerel depolamada saklanır. Cihaza özgü anahtarın kaybı verileri okunamaz hâle getirebilir. Ayarlar üzerinden parolalı yedek alın. Okunamayan dosyalar otomatik silinmez.
 
-## 1. Toplanan Veriler
+## Sizin seçiminizle paylaşım
+Dışa aktarma veya paylaşımı seçtiğinizde veriler seçtiğiniz hedefe iletilir. PDF, CSV ve takvim dosyaları okunabilir dosyalardır; parolalı yedekler şifrelidir. Uygulamanın iki günden eski geçici çıktıları temizlenebilir. Paylaştığınız kopyalar alıcılarda kalabilir. Health Connect veya Apple Sağlık eşitlemesini seçerseniz regl kayıtları ilgili platformun izinleri ve gizlilik ayarlarıyla aktarılır. Uygulama verilerini silmek dışa aktarılmış veya başka hizmetlere gönderilmiş kopyaları otomatik silmez.
 
-Uygulamamız aşağıdaki bilgileri yalnızca cihazınızda yerel olarak saklar:
+## Satın alma doğrulaması
+Ödemeyi Google Play veya Apple işler. Doğrulama hizmeti yapılandırıldığında ürün ve işlem kimlikleri ile mağazanın doğrulama belirteçleri; erişim, bitiş veya iptal durumunu kontrol etmek üzere geliştiricinin doğrulama hizmetine ve ilgili mağazaya gönderilir. Sağlık kayıtları ve notlar bu isteklere dahil değildir. Mağazanın işlemleri kendi gizlilik politikasına tabidir. Doğrulama internet bağlantısı gerektirir.
 
-- Kullanıcı adı ve doğum tarihi
-- Regl döngüsü verileri (başlangıç/bitiş tarihleri, döngü uzunluğu)
-- Günlük sağlık kayıtları (ruh hali, semptomlar, akış yoğunluğu)
-- Su tüketimi, uyku, kilo ve vücut ısısı verileri
-- İlaç hatırlatma bilgileri
-- Cinsel aktivite kayıtları
-- Notlar
+## Reklamlar ve tanılama
+Ücretsiz katmanda Google AdMob reklamları gösterilebilir. SDK, rıza ayarlarına göre teknik ve reklam verilerini işleyebilir. Uygulama sağlık kayıtlarını AdMob'a göndermez. Reklam istekleri UMP uygunluk kontrolünden geçer; gerekli gizlilik tercihleri Ayarlar'dan yeniden açılabilir. Premium ve deneme erişiminde reklam gösterilmez. Sentry etkin olan derlemeler teknik çökme raporu gönderebilir; varsayılan kişisel veri gönderimi ve performans takibi kapalıdır. Teknik tanılama alanlarına özel bilgilerinizi yazmayın.
 
-## 2. Verilerin Saklanması
+## İsteğe bağlı kullanım sayıları
+Kullanım ölçümü varsayılan olarak kapalıdır. Açarsanız uygulama açılışı, kurulumun tamamlanması, takip eylemi, teklif ekranı ve doğrulanmış satın alım sayıları bu cihazda toplu olarak saklanır. Kimlik, sağlık değerleri, notlar veya tarihler eklenmez. Bu sürüm bu sayıları bir sunucuya göndermez. Ayarı kapatmak bu sayıları siler.
 
-Tüm kişisel verileriniz yalnızca cihazınızda, şifreli olarak saklanır. Verileriniz bizim ya da başka birinin sunucusuna veya bulut hizmetine gönderilmez. Tek istisna, yalnızca sizin başlattığınız Sağlık entegrasyonudur (bkz. Bölüm 4). Regl takibi internet bağlantısı olmadan çalışır; satın alma, reklam ve isteğe bağlı çökme raporlama için internet gerekir.
+## Bildirimler ve denetimler
+Hatırlatmalar cihazda planlanır. Bildirim metni çevrenizdeki kişilerce görülebilir; gizli mod nötr metin kullanır. İzinleri, PIN/biyometri kilidini, dışa aktarımı ve silmeyi Ayarlar'dan yönetebilirsiniz. Silme, daha önce paylaşılan kopyaları geri çekmez. Sorularınız için yukarıdaki e-posta adresini kullanabilirsiniz.
 
-## 3. Veri Paylaşımı
-
-Verilerinizi hiçbir üçüncü tarafla paylaşmıyoruz. Uygulama, kişisel verilerinizi satmaz, kiralamaz veya ticari amaçlarla kullanmaz. Sağlık verileriniz reklam ya da pazarlama amacıyla kullanılmaz.
-
-## 4. Üçüncü Taraf Hizmetleri
-
-Sağlık verileriniz, aşağıdaki Sağlık entegrasyonunu kendiniz kullanmadıkça hiçbir üçüncü tarafa gönderilmez. Uygulamanın kullandığı üçüncü taraf hizmetleri şunlardır:
-
-- **Health Connect (Android) / Apple Sağlık (iOS)**: Yalnızca ayarlardan siz başlattığınızda ve izin verdiğinizde kullanılır. Yazma: regl günleriniz cihazınızdaki Health Connect / Sağlık uygulamasına aktarılır; uygulamada sildiğiniz ya da kısalttığınız kayıtların aktarılmış günleri bir sonraki senkronda geri alınır. Okuma: son 12 aydaki adet günleri, uygulamaya eklemeden önce onayınıza sunulur. Bu veriler yalnızca regl takibi için kullanılır, reklam veya başka bir amaçla işlenmez ve üçüncü taraflara aktarılmaz. İzinleri istediğiniz zaman Health Connect / Sağlık ayarlarından geri alabilirsiniz.
-
-- **Google Play Faturalandırma**: Premium satın alma işlemleri için kullanılır. Bu işlemler Google'ın kendi gizlilik politikasına tabidir.
-- **Google AdMob**: Ücretsiz sürümde reklam göstermek için kullanılır. AdMob, reklam sunumu için cihaz tanımlayıcıları gibi teknik veriler işleyebilir; sağlık verilerinize erişemez. AB/Birleşik Krallık kullanıcılarından reklam kişiselleştirme için ayrıca onay istenir. Premium sürümde reklam ve AdMob yoktur.
-- **Çökme raporlama (Sentry)**: Yalnızca etkinleştirilmiş sürümlerde, uygulama çökmelerinde teknik hata bilgisi gönderilir. Kişisel ve sağlık verisi gönderimi kapalıdır.
-
-## 5. Bildirimler
-
-Uygulama, hatırlatma bildirimleri göndermek için cihazınızın bildirim sistemini kullanır. Bu bildirimler tamamen yereldir ve herhangi bir sunucuya veri göndermez.
-
-## 6. Güvenlik
-
-Uygulama, PIN kodu ve biyometrik kimlik doğrulama (parmak izi/yüz tanıma) ile korunabilir. Bu güvenlik bilgileri cihazınızda şifreli olarak saklanır.
-
-## 7. Veri Dışa Aktarma ve Silme
-
-- Verilerinizi istediğiniz zaman CSV veya PDF formatında dışa aktarabilir, parolayla şifrelenmiş yedek alabilirsiniz. Dışa aktarılan geçici dosyalar uygulamanın bir sonraki açılışında cihazdan silinir.
-- Ayarlardaki "Tüm verileri sil" seçeneğiyle ya da uygulamayı kaldırarak tüm verilerinizi kalıcı olarak silebilirsiniz. Health Connect / Sağlık'a daha önce aktarılmış veriler o uygulamalarda kalır; oradan ayrıca silebilirsiniz.
-
-## 8. Çocukların Gizliliği
-
-Uygulamamız 13 yaşın altındaki çocuklara yönelik değildir. Bilerek 13 yaşın altındaki çocuklardan kişisel bilgi toplamıyoruz.
-
-## 9. Gizlilik Politikası Değişiklikleri
-
-Bu gizlilik politikasını zaman zaman güncelleyebiliriz. Değişiklikler bu sayfada yayınlanacaktır.
-
-## 10. İletişim
-
-Gizlilik politikamızla ilgili sorularınız için bizimle iletişime geçebilirsiniz:
-
-**E-posta:** dehbkoclugu@gmail.com
-**Geliştirici:** CEY Studio
+## Hedef kitle ve güncellemeler
+Uygulama 13 yaş altındaki çocuklara yönelik değildir. Tahminler bilgilendirme amaçlıdır; tıbbi tavsiye veya korunma yöntemi değildir. Veri işleme değişirse politika güncellenebilir; tarih sürümü gösterir.

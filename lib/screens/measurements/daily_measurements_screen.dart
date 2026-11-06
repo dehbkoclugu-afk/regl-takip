@@ -30,6 +30,7 @@ class _DailyMeasurementsScreenState
   TimeOfDay _wakeTime = const TimeOfDay(hour: 7, minute: 0);
   int _sleepQuality = 3;
   TimeOfDay _temperatureTime = TimeOfDay.now();
+  bool _saving = false;
 
   late String _initialWeight;
   late String _initialTemperature;
@@ -56,12 +57,17 @@ class _DailyMeasurementsScreenState
       _sleepQuality != _initialSleepQuality ||
       _temperatureTime != _initialTemperatureTime;
 
+  late DateTime _editDate;
+
   @override
   void initState() {
     super.initState();
-    final log = ref
-        .read(dailyLogProvider.notifier)
-        .getDailyLog(ref.read(selectedDateProvider));
+    final selected = ref.read(selectedDateProvider);
+    final now = DateTime.now();
+    _editDate = DateTime(selected.year, selected.month, selected.day);
+    if (_editDate.isAfter(now))
+      _editDate = DateTime(now.year, now.month, now.day);
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(_editDate);
     _glasses = log?.waterIntake ?? 0;
 
     if (log?.weight != null) {
@@ -81,10 +87,7 @@ class _DailyMeasurementsScreenState
     _bedTime = _parseTime(log?.sleepStart, _bedTime);
     _wakeTime = _parseTime(log?.sleepEnd, _wakeTime);
     _sleepQuality = log?.sleepQuality ?? 3;
-    _temperatureTime = _parseTime(
-      log?.temperatureTime,
-      _temperatureTime,
-    );
+    _temperatureTime = _parseTime(log?.temperatureTime, _temperatureTime);
 
     _initialWeight = _weightController.text;
     _initialTemperature = _temperatureController.text;
@@ -149,7 +152,7 @@ class _DailyMeasurementsScreenState
       bottomBar: SizedBox(
         width: double.infinity,
         child: ElevatedButton(
-          onPressed: _save,
+          onPressed: _saving ? null : _save,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
@@ -179,8 +182,7 @@ class _DailyMeasurementsScreenState
         runSpacing: 8,
         children: [
           IconButton.filledTonal(
-            onPressed:
-                _glasses == 0 ? null : () => setState(() => _glasses--),
+            onPressed: _glasses == 0 ? null : () => setState(() => _glasses--),
             tooltip: l10n.decrease,
             icon: const Icon(Icons.remove_rounded),
           ),
@@ -269,8 +271,7 @@ class _DailyMeasurementsScreenState
                     children: List.generate(5, (index) {
                       final value = index + 1;
                       return IconButton(
-                        onPressed: () =>
-                            setState(() => _sleepQuality = value),
+                        onPressed: () => setState(() => _sleepQuality = value),
                         tooltip: l10n.severityLevel(value),
                         icon: Icon(
                           value <= _sleepQuality
@@ -296,8 +297,7 @@ class _DailyMeasurementsScreenState
         children: [
           TextField(
             controller: _temperatureController,
-            keyboardType:
-                const TextInputType.numberWithOptions(decimal: true),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             textInputAction: TextInputAction.done,
             onChanged: (_) => setState(() {}),
             decoration: InputDecoration(
@@ -430,13 +430,15 @@ class _DailyMeasurementsScreenState
     if (raw.trim().isEmpty) return null;
     final value = double.tryParse(raw.trim().replaceAll(',', '.'));
     if (value == null || value.isNaN) return double.nan;
-    final kilograms =
-        _usePounds ? UnitConversion.poundsToKilograms(value) : value;
+    final kilograms = _usePounds
+        ? UnitConversion.poundsToKilograms(value)
+        : value;
     if (kilograms < InputParsing.minWeightKg ||
         kilograms > InputParsing.maxWeightKg) {
       return double.nan;
     }
-    return double.parse(kilograms.toStringAsFixed(1));
+    // Keep 0.1 lb entries distinct when stored as kilograms.
+    return double.parse(kilograms.toStringAsFixed(_usePounds ? 2 : 1));
   }
 
   double? _parseTemperature(String raw) {
@@ -455,7 +457,7 @@ class _DailyMeasurementsScreenState
       '${value.minute.toString().padLeft(2, '0')}';
 
   Future<void> _save() async {
-    if (!ensureTrackingWriteAccess(context, ref)) return;
+    if (_saving) return;
     final l10n = AppLocalizations.of(context)!;
     final weight = _parseWeight(_weightController.text);
     if (weight?.isNaN == true) {
@@ -468,26 +470,69 @@ class _DailyMeasurementsScreenState
       return;
     }
 
-    await ref.read(dailyLogProvider.notifier).updateMeasurements(
-      ref.read(selectedDateProvider),
-      waterIntake: _glasses,
-      temperature: temperature,
-      temperatureTime:
-          temperature == null ? null : _timeString(_temperatureTime),
-      weight: weight,
-      sleepStart: _sleepEnabled ? _timeString(_bedTime) : null,
-      sleepEnd: _sleepEnabled ? _timeString(_wakeTime) : null,
-      sleepQuality: _sleepEnabled ? _sleepQuality : null,
-    );
-    notifyTrackingRecordSaved();
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.savedGeneric),
-        backgroundColor: AppColors.success,
-      ),
-    );
-    Navigator.of(context).pop();
+    final changedFields = <String>{
+      if (_glasses != _initialGlasses) 'water',
+      if (_weightController.text != _initialWeight) 'weight',
+      if (_temperatureController.text != _initialTemperature ||
+          _temperatureTime != _initialTemperatureTime) 'temperature',
+      if (_sleepEnabled != _initialSleepEnabled ||
+          _bedTime != _initialBedTime ||
+          _wakeTime != _initialWakeTime ||
+          _sleepQuality != _initialSleepQuality) 'sleep',
+    };
+    if (changedFields.isEmpty) {
+      Navigator.of(context).pop();
+      return;
+    }
+    final onlyClearingExisting = changedFields.every((field) {
+      switch (field) {
+        case 'water':
+          return _initialGlasses > 0 && _glasses == 0;
+        case 'weight':
+          return _initialWeight.isNotEmpty &&
+              _weightController.text.trim().isEmpty;
+        case 'temperature':
+          return _initialTemperature.isNotEmpty &&
+              _temperatureController.text.trim().isEmpty;
+        case 'sleep':
+          return _initialSleepEnabled && !_sleepEnabled;
+      }
+      return false;
+    });
+    if (!ensureTrackingWriteAccess(
+      context,
+      ref,
+      deletingExisting: onlyClearingExisting,
+    )) return;
+
+    setState(() => _saving = true);
+    try {
+      await ref.read(dailyLogProvider.notifier).updateMeasurements(
+        _editDate,
+        changedFields: changedFields,
+        waterIntake: _glasses,
+        temperature: temperature,
+        temperatureTime:
+            temperature == null ? null : _timeString(_temperatureTime),
+        weight: weight,
+        sleepStart: _sleepEnabled ? _timeString(_bedTime) : null,
+        sleepEnd: _sleepEnabled ? _timeString(_wakeTime) : null,
+        sleepQuality: _sleepEnabled ? _sleepQuality : null,
+      );
+      if (!mounted) return;
+      if (!onlyClearingExisting) notifyTrackingRecordSaved();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.savedGeneric),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      Navigator.of(context).pop();
+    } catch (_) {
+      if (mounted) _showError(l10n.errorOccurred(l10n.retry));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   void _showError(String message) {

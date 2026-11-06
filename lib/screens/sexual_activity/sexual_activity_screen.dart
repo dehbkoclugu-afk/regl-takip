@@ -24,6 +24,7 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
   bool _orgasm = false;
   final _noteController = TextEditingController();
   bool _hasExistingEntry = false;
+  bool _saving = false;
 
   // Dirty-guard için giriş anındaki durum
   ProtectionMethod _initialProtection = ProtectionMethod.none;
@@ -44,10 +45,17 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
     ProtectionMethod.other: l10n.other,
   };
 
+  late DateTime _editDate;
+
   @override
   void initState() {
     super.initState();
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
+    final selected = ref.read(selectedDateProvider);
+    final now = DateTime.now();
+    _editDate = DateTime(selected.year, selected.month, selected.day);
+    if (_editDate.isAfter(now))
+      _editDate = DateTime(now.year, now.month, now.day);
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(_editDate);
     if (log?.sexualActivity != null) {
       _protection = log!.sexualActivity!.protectionMethod;
       _orgasm = log.sexualActivity!.orgasm;
@@ -72,26 +80,31 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
       title: l10n.sexualActivity,
       isDirty: _isDirty,
       body: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.protectionMethod,
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold,
-                          color: AppColors.tp(context)))
-                      .animateSafe(context).fadeIn(duration: 400.ms),
-                  const SizedBox(height: 16),
-                  _buildProtectionChips(l10n),
-                  const SizedBox(height: 28),
-                  _buildOrgasmToggle(l10n)
-                      .animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
-                  const SizedBox(height: 28),
-                  _buildNoteField(l10n)
-                      .animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
-                ],
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.protectionMethod,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.tp(context),
               ),
-            ),
+            ).animateSafe(context).fadeIn(duration: 400.ms),
+            const SizedBox(height: 16),
+            _buildProtectionChips(l10n),
+            const SizedBox(height: 28),
+            _buildOrgasmToggle(
+              l10n,
+            ).animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
+            const SizedBox(height: 28),
+            _buildNoteField(
+              l10n,
+            ).animateSafe(context).fadeIn(delay: 400.ms, duration: 400.ms),
+          ],
+        ),
+      ),
       bottomBar: _buildSaveButton(l10n),
     );
   }
@@ -106,17 +119,20 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
         final method = entry.value;
         final isSelected = _protection == method;
         return ChoiceChip(
-          label: Text(labels[method]!,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                color: isSelected ? Colors.white : AppColors.tp(context),
-              )),
+          label: Text(
+            labels[method]!,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+              color: isSelected ? Colors.white : AppColors.tp(context),
+            ),
+          ),
           selected: isSelected,
           selectedColor: AppColors.moodRomantic,
           backgroundColor: AppColors.sf(context),
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20)),
+            borderRadius: BorderRadius.circular(20),
+          ),
           onSelected: (_) => setState(() => _protection = method),
         ).animateSafe(context).fadeIn(delay: (i * 60).ms, duration: 300.ms);
       }).toList(),
@@ -132,10 +148,14 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(l10n.orgasm,
-              style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w700,
-                  color: AppColors.tp(context))),
+          Text(
+            l10n.orgasm,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.tp(context),
+            ),
+          ),
           Switch.adaptive(
             value: _orgasm,
             activeThumbColor: AppColors.moodRomantic,
@@ -155,10 +175,14 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.noteOptional,
-              style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w700,
-                  color: AppColors.tp(context))),
+          Text(
+            l10n.noteOptional,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.tp(context),
+            ),
+          ),
           const SizedBox(height: 12),
           TextField(
             controller: _noteController,
@@ -173,12 +197,16 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
               hintText: l10n.addNoteHint,
               hintStyle: TextStyle(color: AppColors.ts(context)),
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.dv(context))),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppColors.dv(context)),
+              ),
               focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                      color: AppColors.moodRomantic, width: 2)),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(
+                  color: AppColors.moodRomantic,
+                  width: 2,
+                ),
+              ),
             ),
           ),
         ],
@@ -188,52 +216,63 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
 
   Widget _buildSaveButton(AppLocalizations l10n) {
     return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _save,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.moodRomantic,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: _saving ? null : _save,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.moodRomantic,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-              child: Text(l10n.save,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
+            child: Text(
+              l10n.save,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
-          // Girilen kayıt geri alınamıyordu
-          if (_hasExistingEntry)
-            TextButton.icon(
-              onPressed: _delete,
-              icon: const Icon(Icons.delete_outline_rounded, size: 18),
-              label: Text(l10n.deleteRecord),
-              style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            ),
-        ],
+        ),
+        // Girilen kayıt geri alınamıyordu
+        if (_hasExistingEntry)
+          TextButton.icon(
+            onPressed: _saving ? null : _delete,
+            icon: const Icon(Icons.delete_outline_rounded, size: 18),
+            label: Text(l10n.deleteRecord),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+          ),
+      ],
     );
   }
 
   Future<void> _delete() async {
-    if (!ensureTrackingWriteAccess(context, ref)) return;
+    if (_saving) return;
     final l10n = AppLocalizations.of(context)!;
-    await ref
-        .read(dailyLogProvider.notifier)
-        .updateSexualActivity(ref.read(selectedDateProvider), null);
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+    setState(() => _saving = true);
+    try {
+      await ref
+          .read(dailyLogProvider.notifier)
+          .updateSexualActivity(_editDate, null);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
           content: Text(l10n.recordDeleted),
-          backgroundColor: AppColors.success),
-    );
-    Navigator.of(context).pop();
+          backgroundColor: AppColors.success,
+        ),
+      );
+      Navigator.of(context).pop();
+    } catch (_) {
+      _showSaveError();
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   Future<void> _save() async {
+    if (_saving) return;
     if (!ensureTrackingWriteAccess(context, ref)) return;
     final l10n = AppLocalizations.of(context)!;
     final entry = SexualActivityEntry(
@@ -241,16 +280,35 @@ class _SexualActivityScreenState extends ConsumerState<SexualActivityScreen> {
       orgasm: _orgasm,
       note: _noteController.text.isEmpty ? null : _noteController.text,
     );
-    await ref
-        .read(dailyLogProvider.notifier)
-        .updateSexualActivity(ref.read(selectedDateProvider), entry);
-    notifyTrackingRecordSaved();
-    if (mounted) {
+    setState(() => _saving = true);
+    try {
+      await ref
+          .read(dailyLogProvider.notifier)
+          .updateSexualActivity(_editDate, entry);
+      if (!mounted) return;
+      notifyTrackingRecordSaved();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.savedGeneric),
-            backgroundColor: AppColors.success),
+        SnackBar(
+          content: Text(l10n.savedGeneric),
+          backgroundColor: AppColors.success,
+        ),
       );
       Navigator.of(context).pop();
+    } catch (_) {
+      _showSaveError();
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
+  }
+
+  void _showSaveError() {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.errorOccurred(l10n.retry)),
+        backgroundColor: AppColors.error,
+      ),
+    );
   }
 }

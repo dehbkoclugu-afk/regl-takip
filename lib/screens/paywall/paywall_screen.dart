@@ -7,6 +7,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/adaptive_layout.dart';
 import '../../providers/providers.dart';
 import '../../services/premium_service.dart';
+import '../../services/usage_metrics.dart';
 
 /// Premium teklif ekranı. Deneme sürerken üst bilgi kalan günü söyler;
 /// deneme bittiyse ücretsiz katmanın kapsamını açıklar. Fiyatlar yalnız
@@ -21,6 +22,22 @@ class PaywallScreen extends ConsumerStatefulWidget {
 
 class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   bool _busy = false;
+  @override
+  void initState() {
+    super.initState();
+    UsageMetrics.record(UsageEvent.paywallView);
+    PremiumService().purchaseState.addListener(_onPurchaseState);
+  }
+
+  void _onPurchaseState() {
+    if (mounted) setState(() => _busy = PremiumService().purchaseBusy);
+  }
+
+  @override
+  void dispose() {
+    PremiumService().purchaseState.removeListener(_onPurchaseState);
+    super.dispose();
+  }
 
   Future<void> _buy(Future<bool> Function() action) async {
     if (_busy) return;
@@ -30,14 +47,19 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     try {
       final started = await action();
       if (!started && mounted) {
-        messenger.showSnackBar(SnackBar(
+        messenger.showSnackBar(
+          SnackBar(
             content: Text(l10n.storeUnavailable),
-            backgroundColor: AppColors.warning));
+            backgroundColor: AppColors.warning,
+          ),
+        );
       }
       // Sonuç purchaseStream'den gelir; isPremiumProvider köprüyle döner —
       // build'deki dinleyici ekranı kendiliğinden kapatır
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted && !PremiumService().purchaseBusy) {
+        setState(() => _busy = false);
+      }
     }
   }
 
@@ -54,7 +76,10 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       if (!mounted) return;
       if (!restored) {
         messenger.showSnackBar(
-            SnackBar(content: Text(l10n.noPurchasesToRestore)));
+          // Mağaza akışı süre dolmadan yanıtlamamış olabilir; yokluk
+          // doğrulanmadığı hâlde "satın alma bulunamadı" demeyelim.
+          SnackBar(content: Text(l10n.restoreNotConfirmed)),
+        );
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -98,6 +123,12 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              if (service.purchaseState.value == PurchaseFlowState.pending)
+                Text(l10n.purchasePending, textAlign: TextAlign.center),
+              if (service.purchaseState.value == PurchaseFlowState.verifying)
+                Text(l10n.purchaseVerifying, textAlign: TextAlign.center),
+              if (service.purchaseState.value == PurchaseFlowState.error)
+                Text(l10n.purchaseFailed, textAlign: TextAlign.center),
               Text(
                 l10n.paywallTitle,
                 textAlign: TextAlign.center,
@@ -126,21 +157,26 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
               _buildYourDataCard(context, l10n, ref),
               const SizedBox(height: 24),
               // Özellikler
-              ...features.map((f) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    child: Row(
-                      children: [
-                        Icon(f.$1, size: 20, color: AppColors.primaryStrong),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(f.$2,
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.tp(context))),
+              ...features.map(
+                (f) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Row(
+                    children: [
+                      Icon(f.$1, size: 20, color: AppColors.primaryStrong),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          f.$2,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.tp(context),
+                          ),
                         ),
-                      ],
-                    ),
-                  )),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               const SizedBox(height: 24),
               // Fiyatlar mağazadan asenkron gelir; sabit bir tanıtım fiyatı
               // göstermek kullanıcının mağaza ekranında başka rakam görmesi
@@ -158,18 +194,15 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                       monthly != null &&
                       monthly.rawPrice > 0) {
                     final monthlyEquivalent = yearly.rawPrice / 12;
-                    final saving = ((1 -
-                                yearly.rawPrice /
-                                    (monthly.rawPrice * 12)) *
-                            100)
-                        .round()
-                        .clamp(0, 99);
+                    final saving =
+                        ((1 - yearly.rawPrice / (monthly.rawPrice * 12)) * 100)
+                            .round()
+                            .clamp(0, 99);
                     final formatted = NumberFormat.simpleCurrency(
                       locale: Localizations.localeOf(context).toString(),
                       name: yearly.currencyCode,
                     ).format(monthlyEquivalent);
-                    yearlyComparison =
-                        '$formatted${l10n.perMonth} · −$saving%';
+                    yearlyComparison = '$formatted${l10n.perMonth} · −$saving%';
                   }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -232,8 +265,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                 child: Text(l10n.restorePurchases),
               ),
               TextButton(
-                onPressed:
-                    _busy ? null : () => Navigator.of(context).maybePop(),
+                onPressed: _busy
+                    ? null
+                    : () => Navigator.of(context).maybePop(),
                 child: Text(
                   access == AccessLevel.free
                       ? l10n.continueFreeBtn
@@ -253,7 +287,10 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
 /// Hiç veri yoksa çizilmez — boş bir "0 kayıt" kartı argümanın tersini
 /// söylerdi.
 Widget _buildYourDataCard(
-    BuildContext context, AppLocalizations l10n, WidgetRef ref) {
+  BuildContext context,
+  AppLocalizations l10n,
+  WidgetRef ref,
+) {
   final cycles = ref.watch(periodRecordsProvider).length;
   final logs = ref.watch(dailyLogProvider).length;
   if (cycles == 0 && logs == 0) return const SizedBox.shrink();
@@ -273,8 +310,11 @@ Widget _buildYourDataCard(
     ),
     child: Row(
       children: [
-        Icon(Icons.inventory_2_rounded,
-            size: 20, color: AppColors.primaryStrong),
+        Icon(
+          Icons.inventory_2_rounded,
+          size: 20,
+          color: AppColors.primaryStrong,
+        ),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -343,26 +383,29 @@ class _PlanCard extends StatelessWidget {
           spacing: 8,
           runSpacing: 6,
           children: [
-            Text(title,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: foreground,
-                )),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: foreground,
+              ),
+            ),
             if (badge != null)
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Text(badge!,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.primaryStrong,
-                    )),
+                child: Text(
+                  badge!,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primaryStrong,
+                  ),
+                ),
               ),
           ],
         ),
@@ -380,19 +423,18 @@ class _PlanCard extends StatelessWidget {
       ],
     );
     final priceWidget = ready
-        ? Text('$price$suffix',
+        ? Text(
+            '$price$suffix',
             style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w800,
               color: foreground,
-            ))
+            ),
+          )
         : SizedBox(
             width: 18,
             height: 18,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: foreground,
-            ),
+            child: CircularProgressIndicator(strokeWidth: 2, color: foreground),
           );
 
     return Semantics(
@@ -400,16 +442,13 @@ class _PlanCard extends StatelessWidget {
       enabled: ready && !busy,
       label: ready ? '$title, $price$suffix' : title,
       child: Material(
-        color: highlighted
-            ? AppColors.primaryStrong
-            : AppColors.sf(context),
+        color: highlighted ? AppColors.primaryStrong : AppColors.sf(context),
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: (busy || !ready) ? null : onTap,
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               border: highlighted
@@ -419,11 +458,7 @@ class _PlanCard extends StatelessWidget {
             child: largeText
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      info,
-                      const SizedBox(height: 12),
-                      priceWidget,
-                    ],
+                    children: [info, const SizedBox(height: 12), priceWidget],
                   )
                 : Row(
                     children: [

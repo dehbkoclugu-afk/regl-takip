@@ -8,8 +8,8 @@ import 'package:home_widget/home_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../core/constants/app_constants.dart';
 import '../core/utils/cycle_utils.dart';
+import '../core/utils/cycle_prediction.dart';
 import '../core/utils/date_only.dart';
 import '../core/utils/language_utils.dart';
 import '../core/utils/ring_segments.dart';
@@ -17,6 +17,7 @@ import '../models/enums.dart';
 import '../models/period_record.dart';
 import '../models/user_profile.dart';
 import 'disguise_service.dart';
+import 'hive_service.dart';
 
 enum WidgetPeriodActionDestination { wait, discard, startPeriod }
 
@@ -166,6 +167,54 @@ class WidgetService {
       'fertile': 'Фертильное окно',
       'periodStarted': 'Месячные начались',
     },
+    'pt': {
+      'day': 'Dia',
+      'daysLeft': 'dias restantes',
+      'today': 'Hoje!',
+      'week': 'Semana',
+      'pill': 'Pílula',
+      'breakWeek': 'Semana de pausa',
+      'nextPeriod': 'Próxima menstruação',
+      'ovulation': 'Ovulação',
+      'fertile': 'Janela fértil',
+      'periodStarted': 'Minha menstruação começou',
+    },
+    'ar': {
+      'day': 'اليوم',
+      'daysLeft': 'أيام متبقية',
+      'today': 'اليوم!',
+      'week': 'الأسبوع',
+      'pill': 'الحبة',
+      'breakWeek': 'أسبوع التوقف',
+      'nextPeriod': 'الدورة القادمة',
+      'ovulation': 'الإباضة',
+      'fertile': 'فترة الخصوبة',
+      'periodStarted': 'بدأت دورتي الشهرية',
+    },
+    'hi': {
+      'day': 'दिन',
+      'daysLeft': 'दिन बाकी',
+      'today': 'आज!',
+      'week': 'सप्ताह',
+      'pill': 'गोली',
+      'breakWeek': 'विराम सप्ताह',
+      'nextPeriod': 'अगला मासिक धर्म',
+      'ovulation': 'अंडोत्सर्जन',
+      'fertile': 'प्रजनन अवधि',
+      'periodStarted': 'मेरा मासिक धर्म शुरू हुआ',
+    },
+    'zh': {
+      'day': '天',
+      'daysLeft': '天后',
+      'today': '今天！',
+      'week': '周',
+      'pill': '药片',
+      'breakWeek': '停药周',
+      'nextPeriod': '下次月经',
+      'ovulation': '排卵',
+      'fertile': '易孕期',
+      'periodStarted': '月经开始了',
+    },
   };
 
   static String _t(String locale, String key) =>
@@ -210,13 +259,12 @@ class WidgetService {
 
       // Gizli moddayken widget döngü verisi sızdırmamalı —
       // uygulama "Notlar" kılığındayken nötr içerik göster
-      if (await DisguiseService.isDisguised()) {
+      if (await DisguiseService.isDisguised() || profile?.pinEnabled == true) {
         await HomeWidget.saveWidgetData<String>('line1', _t(locale, 'notes'));
         await HomeWidget.saveWidgetData<String>('line2', '');
         await HomeWidget.saveWidgetData<String>('ring_path', null);
         await HomeWidget.saveWidgetData<String>('daily', null);
-        await HomeWidget.saveWidgetData<bool>(
-            'period_action_visible', false);
+        await HomeWidget.saveWidgetData<bool>('period_action_visible', false);
         await HomeWidget.saveWidgetData<String>('period_action_label', '');
         await _savePredictions(null, null, null, null);
         await HomeWidget.updateWidget(androidName: _androidProvider);
@@ -249,9 +297,13 @@ class WidgetService {
       await HomeWidget.saveWidgetData<String>('ring_path', today['ring']);
       await HomeWidget.saveWidgetData<String>('daily', jsonEncode(days));
       await HomeWidget.saveWidgetData<bool>(
-          'period_action_visible', periodActionVisible);
+        'period_action_visible',
+        periodActionVisible,
+      );
       await HomeWidget.saveWidgetData<String>(
-          'period_action_label', _t(locale, 'periodStarted'));
+        'period_action_label',
+        _t(locale, 'periodStarted'),
+      );
       for (final key in _predictionKeys) {
         await HomeWidget.saveWidgetData<String>(key, today[key] ?? '');
       }
@@ -296,8 +348,10 @@ class WidgetService {
     switch (profile.trackingMode) {
       case TrackingMode.pregnancy:
         if (profile.pregnancyStartDate != null) {
-          final week =
-              CycleUtils.pregnancyWeek(profile.pregnancyStartDate!, now: day);
+          final week = CycleUtils.pregnancyWeek(
+            profile.pregnancyStartDate!,
+            now: day,
+          );
           out['line1'] = locale == 'tr'
               ? '$week. ${_t(locale, 'week')}'
               : '${_t(locale, 'week')} $week';
@@ -305,11 +359,15 @@ class WidgetService {
         break;
       case TrackingMode.pill:
         if (profile.pillPackStartDate != null) {
-          final pillDay =
-              CycleUtils.pillDayInPack(profile.pillPackStartDate!, now: day);
-          out['line1'] = pillDay > 21
-              ? '${_t(locale, 'breakWeek')} ${pillDay - 21}/7'
-              : '${_t(locale, 'pill')} $pillDay/21';
+          final pillDay = CycleUtils.pillDayInPack(
+            profile.pillPackStartDate!,
+            now: day,
+            activeDays: profile.pillActiveDays,
+            breakDays: profile.pillBreakDays,
+          );
+          out['line1'] = pillDay > profile.pillActiveDays
+              ? '${_t(locale, 'breakWeek')} ${pillDay - profile.pillActiveDays}/${profile.pillBreakDays}'
+              : '${_t(locale, 'pill')} $pillDay/${profile.pillActiveDays}';
         }
         break;
       case TrackingMode.ttc:
@@ -321,36 +379,41 @@ class WidgetService {
           records,
           smartEnabled: profile.smartPredictionEnabled,
         );
-        final cycleDay =
-            CycleUtils.displayCycleDay(lastStart, cycleLen, now: day);
-        final delay =
-            CycleUtils.periodDelayDays(lastStart, cycleLen, now: day);
-        final daysLeft =
-            CycleUtils.daysUntilNextPeriod(lastStart, cycleLen, now: day);
+        final cycleDay = CycleUtils.displayCycleDay(
+          lastStart,
+          cycleLen,
+          now: day,
+        );
+        final delay = CycleUtils.periodDelayDays(lastStart, cycleLen, now: day);
+        final daysLeft = CycleUtils.daysUntilNextPeriod(
+          lastStart,
+          cycleLen,
+          now: day,
+        );
         out['line1'] = '${_t(locale, 'day')} $cycleDay';
         // Gecikmede "26 gün kaldı" demek gecikmeyi saklardı (tahmin bir
         // sonraki döngüye ileri sarılıyor)
         out['line2'] = delay > 0
             ? '$delay ${_t(locale, 'daysLate')}'
             : daysLeft > 0
-                ? '$daysLeft ${_t(locale, 'daysLeft')}'
-                : _t(locale, 'today');
+            ? '$daysLeft ${_t(locale, 'daysLeft')}'
+            : _t(locale, 'today');
         // İmza görsel cebe: mini faz ring'i (uygulamadaki haritanın
         // küçük hali) PNG olarak çizilir, native ImageView gösterir
         out['ring'] = await _renderRingPng(
-            cycleLen, profile.averagePeriodLength, cycleDay, ringFile);
+          cycleLen,
+          profile.averagePeriodLength,
+          cycleDay,
+          ringFile,
+        );
 
-        // Geniş widget: üç tahmin tarihi. Geçmişte kalan
-        // ovülasyon/fertil pencere bir sonraki döngüye kaydırılır.
-        final today = dateOnly(day);
-        final predPeriod =
-            CycleUtils.nextFuturePeriod(lastStart, cycleLen, now: day);
-        var ovulation = CycleUtils.predictOvulation(lastStart, cycleLen);
-        while (ovulation.isBefore(today)) {
-          ovulation = addDays(ovulation, cycleLen);
-        }
-        final fertile = addDays(
-            ovulation, -AppConstants.fertileWindowStartBeforeOvulation);
+        final prediction = CyclePrediction.calculate(
+          start: lastStart,
+          length: cycleLen,
+          mode: profile.trackingMode,
+          logs: HiveService().getAllDailyLogs(),
+          now: day,
+        )!;
         String fmt(DateTime d) {
           // Locale verisi henüz yüklenmemişse (erken çağrı) sayısal düşüş
           try {
@@ -361,11 +424,15 @@ class WidgetService {
         }
 
         out['pred1_label'] = _t(locale, 'nextPeriod');
-        out['pred1_value'] = fmt(predPeriod);
-        out['pred2_label'] = _t(locale, 'ovulation');
-        out['pred2_value'] = fmt(ovulation);
+        out['pred1_value'] = fmt(prediction.nextPeriod);
+        out['pred2_label'] = prediction.source == PredictionSource.lh
+            ? (locale == 'tr' ? 'LH sonrası tahmin' : 'After positive LH')
+            : prediction.source == PredictionSource.temperature
+            ? (locale == 'tr' ? 'Sıcaklık örüntüsü' : 'Temperature pattern')
+            : _t(locale, 'ovulation');
+        out['pred2_value'] = fmt(prediction.ovulation);
         out['pred3_label'] = _t(locale, 'fertile');
-        out['pred3_value'] = fmt(fertile);
+        out['pred3_value'] = fmt(prediction.fertileStart);
         break;
     }
     return out;
@@ -390,9 +457,13 @@ class WidgetService {
 
     Future<void> save(String key, String label, DateTime? date) async {
       await HomeWidget.saveWidgetData<String>(
-          '${key}_label', date == null ? '' : _t(loc, label));
+        '${key}_label',
+        date == null ? '' : _t(loc, label),
+      );
       await HomeWidget.saveWidgetData<String>(
-          '${key}_value', date == null ? '' : fmtDate(date));
+        '${key}_value',
+        date == null ? '' : fmtDate(date),
+      );
     }
 
     await save('pred1', 'nextPeriod', period);
@@ -405,7 +476,11 @@ class WidgetService {
   /// imza görsel iki yüzeyde tek kaynaktan. Hata durumunda null:
   /// widget ring'siz, metinle çalışmaya devam eder.
   static Future<String?> _renderRingPng(
-      int cycleLength, int periodLength, int day, String fileName) async {
+    int cycleLength,
+    int periodLength,
+    int day,
+    String fileName,
+  ) async {
     try {
       const size = 160.0;
       const stroke = 20.0;
@@ -454,12 +529,20 @@ class WidgetService {
         center.dy + radius * math.sin(tAngle),
       );
       canvas.drawCircle(
-          todayCenter, 11, ui.Paint()..color = const ui.Color(0xFFFFFFFF));
-      canvas.drawCircle(todayCenter, 7,
-          ui.Paint()..color = segmentColorForDay(segments, clamped));
+        todayCenter,
+        11,
+        ui.Paint()..color = const ui.Color(0xFFFFFFFF),
+      );
+      canvas.drawCircle(
+        todayCenter,
+        7,
+        ui.Paint()..color = segmentColorForDay(segments, clamped),
+      );
 
-      final image =
-          await recorder.endRecording().toImage(size.toInt(), size.toInt());
+      final image = await recorder.endRecording().toImage(
+        size.toInt(),
+        size.toInt(),
+      );
       final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
       if (bytes == null) return null;
 

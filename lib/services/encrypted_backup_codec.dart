@@ -3,10 +3,7 @@ import 'dart:math';
 
 import 'package:cryptography/cryptography.dart';
 
-enum EncryptedBackupError {
-  invalidFormat,
-  authenticationFailed,
-}
+enum EncryptedBackupError { invalidFormat, authenticationFailed }
 
 class EncryptedBackupException implements Exception {
   final EncryptedBackupError error;
@@ -14,11 +11,7 @@ class EncryptedBackupException implements Exception {
   const EncryptedBackupException(this.error);
 }
 
-enum BackupPasswordValidation {
-  valid,
-  invalidLength,
-  mismatch,
-}
+enum BackupPasswordValidation { valid, invalidLength, mismatch }
 
 BackupPasswordValidation validateBackupPassword(
   String password, {
@@ -68,17 +61,13 @@ class EncryptedBackupCodec {
     DateTime? createdAt,
   }) async {
     if (!isValidBackupPassword(password)) {
-      throw const EncryptedBackupException(
-        EncryptedBackupError.invalidFormat,
-      );
+      throw const EncryptedBackupException(EncryptedBackupError.invalidFormat);
     }
     final actualSalt = salt ?? _randomBytes(_saltLength);
     final actualNonce = nonce ?? _randomBytes(_nonceLength);
     if (actualSalt.length != _saltLength ||
         actualNonce.length != _nonceLength) {
-      throw const EncryptedBackupException(
-        EncryptedBackupError.invalidFormat,
-      );
+      throw const EncryptedBackupException(EncryptedBackupError.invalidFormat);
     }
 
     final header = _header(
@@ -106,9 +95,7 @@ class EncryptedBackupCodec {
     };
     final encoded = jsonEncode(envelope);
     if (utf8.encode(encoded).length > maxFileBytes) {
-      throw const EncryptedBackupException(
-        EncryptedBackupError.invalidFormat,
-      );
+      throw const EncryptedBackupException(EncryptedBackupError.invalidFormat);
     }
     return encoded;
   }
@@ -127,9 +114,7 @@ class EncryptedBackupCodec {
     final mac = _decodeBase64(cipher['mac'], _macLength);
     final ciphertext = _decodeBase64(cipher['ciphertext'], null);
     if (ciphertext.isEmpty) {
-      throw const EncryptedBackupException(
-        EncryptedBackupError.invalidFormat,
-      );
+      throw const EncryptedBackupException(EncryptedBackupError.invalidFormat);
     }
 
     final secretKey = await _kdf.deriveKeyFromPassword(
@@ -168,23 +153,20 @@ class EncryptedBackupCodec {
 
   Map<String, dynamic> _decodeEnvelope(String source) {
     if (utf8.encode(source).length > maxFileBytes) {
-      throw const EncryptedBackupException(
-        EncryptedBackupError.invalidFormat,
-      );
+      throw const EncryptedBackupException(EncryptedBackupError.invalidFormat);
     }
     final dynamic decoded;
     try {
       decoded = jsonDecode(source);
     } catch (_) {
-      throw const EncryptedBackupException(
-        EncryptedBackupError.invalidFormat,
-      );
+      throw const EncryptedBackupException(EncryptedBackupError.invalidFormat);
     }
     final createdAt = decoded is Map<String, dynamic>
         ? decoded['createdAt']
         : null;
-    final parsedCreatedAt =
-        createdAt is String ? DateTime.tryParse(createdAt) : null;
+    final parsedCreatedAt = createdAt is String
+        ? DateTime.tryParse(createdAt)
+        : null;
     if (decoded is! Map<String, dynamic> ||
         decoded['app'] != 'regl_takip' ||
         decoded['envelopeVersion'] != envelopeVersion ||
@@ -192,9 +174,7 @@ class EncryptedBackupCodec {
         parsedCreatedAt == null ||
         !parsedCreatedAt.isUtc ||
         parsedCreatedAt.toIso8601String() != createdAt) {
-      throw const EncryptedBackupException(
-        EncryptedBackupError.invalidFormat,
-      );
+      throw const EncryptedBackupException(EncryptedBackupError.invalidFormat);
     }
     final kdf = decoded['kdf'];
     final cipher = decoded['cipher'];
@@ -205,9 +185,7 @@ class EncryptedBackupCodec {
         kdf['iterations'] != _iterations ||
         kdf['parallelism'] != _parallelism ||
         cipher['name'] != 'aes-256-gcm') {
-      throw const EncryptedBackupException(
-        EncryptedBackupError.invalidFormat,
-      );
+      throw const EncryptedBackupException(EncryptedBackupError.invalidFormat);
     }
     return decoded;
   }
@@ -216,32 +194,29 @@ class EncryptedBackupCodec {
     required String createdAt,
     required List<int> salt,
     required List<int> nonce,
-  }) =>
-      <String, dynamic>{
-        'app': 'regl_takip',
-        'envelopeVersion': envelopeVersion,
-        'createdAt': createdAt,
-        'kdf': <String, dynamic>{
-          'name': 'argon2id',
-          'memoryKiB': _memoryKiB,
-          'iterations': _iterations,
-          'parallelism': _parallelism,
-          'salt': base64Encode(salt),
-        },
-        'cipher': <String, dynamic>{
-          'name': 'aes-256-gcm',
-          'nonce': base64Encode(nonce),
-        },
-      };
+  }) => <String, dynamic>{
+    'app': 'regl_takip',
+    'envelopeVersion': envelopeVersion,
+    'createdAt': createdAt,
+    'kdf': <String, dynamic>{
+      'name': 'argon2id',
+      'memoryKiB': _memoryKiB,
+      'iterations': _iterations,
+      'parallelism': _parallelism,
+      'salt': base64Encode(salt),
+    },
+    'cipher': <String, dynamic>{
+      'name': 'aes-256-gcm',
+      'nonce': base64Encode(nonce),
+    },
+  };
 
   List<int> _aad(Map<String, dynamic> header) =>
       utf8.encode(jsonEncode(header));
 
   List<int> _decodeBase64(dynamic value, int? expectedLength) {
     if (value is! String) {
-      throw const EncryptedBackupException(
-        EncryptedBackupError.invalidFormat,
-      );
+      throw const EncryptedBackupException(EncryptedBackupError.invalidFormat);
     }
     try {
       final bytes = base64Decode(value);
@@ -252,9 +227,7 @@ class EncryptedBackupCodec {
       }
       return bytes;
     } on FormatException {
-      throw const EncryptedBackupException(
-        EncryptedBackupError.invalidFormat,
-      );
+      throw const EncryptedBackupException(EncryptedBackupError.invalidFormat);
     }
   }
 

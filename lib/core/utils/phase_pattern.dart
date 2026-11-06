@@ -91,7 +91,9 @@ Path dashArc(Rect rect, double start, double sweep, List<double> intervals) {
       final len = intervals[i % intervals.length];
       if (draw) {
         dashed.addPath(
-            metric.extractPath(distance, distance + len), Offset.zero);
+          metric.extractPath(distance, distance + len),
+          Offset.zero,
+        );
       }
       distance += len;
       draw = !draw;

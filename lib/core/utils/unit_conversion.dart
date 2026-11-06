@@ -1,5 +1,18 @@
+import 'package:intl/intl.dart';
+
 class UnitConversion {
   UnitConversion._();
+  static String formatTemperature(
+    double celsius, {
+    bool fahrenheit = false,
+    String locale = 'en',
+  }) {
+    final number = NumberFormat.decimalPatternDigits(
+      locale: locale,
+      decimalDigits: 1,
+    ).format(fahrenheit ? celsiusToFahrenheit(celsius) : celsius);
+    return '$number ${fahrenheit ? '°F' : '°C'}';
+  }
 
   static const double poundsPerKilogram = 2.2046226218;
 

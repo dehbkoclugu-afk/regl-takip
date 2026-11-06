@@ -8,10 +8,16 @@ import 'package:regl_takip/l10n/generated/app_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/router/app_router.dart';
 import '../../core/utils/motion.dart';
 import '../../core/utils/pin_lockout.dart';
 import '../../core/utils/pin_utils.dart';
 import '../../providers/providers.dart';
+import '../../services/backup_import_flow.dart';
+import '../../services/backup_service.dart';
+import '../../services/hive_service.dart';
+import '../../services/notification_service.dart';
+import '../../services/widget_service.dart';
 import 'widgets/pin_pad.dart';
 
 class LockScreen extends ConsumerStatefulWidget {
@@ -28,6 +34,8 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   String _enteredPin = '';
   bool _isError = false;
   bool _isVerifying = false;
+  bool _pinUnavailable = false;
+  bool _restoringBackup = false;
 
   // Brute-force koruması: 5 yanlış denemeden sonra artan bekleme süresi
   final _lockout = PinLockout();
@@ -41,7 +49,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   void initState() {
     super.initState();
     _restoreLockout();
-    _recoverIfPinMissing();
+    _checkPinAvailability();
     _tryBiometric();
   }
 
@@ -53,22 +61,75 @@ class _LockScreenState extends ConsumerState<LockScreen> {
 
   bool get _isLockedOut => _lockoutRemainingSeconds > 0;
   bool get _acceptsInput =>
-      _lockoutRestored && !_isLockedOut && !_isVerifying;
+      ref.read(userProfileProvider)?.pinEnabled == true &&
+      _lockoutRestored &&
+      !_pinUnavailable &&
+      !_isLockedOut &&
+      !_isVerifying;
 
-  /// Hive geri yüklendiği hâlde secure storage boşsa (cihaz yedeğinden
-  /// dönüş, Keystore sıfırlanması) `pinEnabled` açık ama PIN yok olur —
-  /// kullanıcı asla giremeyeceği bir ekranda kilitli kalır. Böyle bir
-  /// durumda kilidi kapat ve içeri al.
-  Future<void> _recoverIfPinMissing() async {
+  /// Cihaz geri yüklemesi veya Keystore kaybı PIN anahtarını silebilir.
+  /// Profil hâlâ kilitliyse bunu otomatik olarak kapatmak korumayı aşar.
+  Future<void> _checkPinAvailability() async {
     final profile = ref.read(userProfileProvider);
     if (profile?.pinEnabled != true) return;
-    final stored = await _storage.read(key: 'app_pin');
-    if (stored != null || !mounted) return;
-    await ref.read(userProfileProvider.notifier).saveProfile(pinEnabled: false);
-    if (!mounted) return;
-    // Biyometri hâlâ açıksa kilit ekranı orada kalır; değilse içeri gir
-    final p = ref.read(userProfileProvider);
-    if (p?.biometricEnabled != true) widget.onUnlocked();
+    try {
+      final stored = await _storage.read(key: 'app_pin');
+      if (mounted && stored == null) {
+        setState(() => _pinUnavailable = true);
+      }
+    } catch (_) {
+      if (mounted) setState(() => _pinUnavailable = true);
+    }
+  }
+
+  Future<void> _restoreFromBackup() async {
+    if (_restoringBackup) return;
+    setState(() => _restoringBackup = true);
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final data = await pickBackupForRestore(context);
+      if (data == null || !mounted) return;
+      await BackupService(HiveService()).restoreBackup(data);
+      final trialStart = await BackupService.adoptEarlierTrialStart(null);
+      if (trialStart != null) {
+        ref.read(trialStartProvider.notifier).state = trialStart;
+      }
+      ref.read(userProfileProvider.notifier).refresh();
+      ref.read(periodRecordsProvider.notifier).refresh();
+      ref.read(dailyLogProvider.notifier).refresh();
+      final profile = HiveService().getUserProfile();
+      try {
+        if (profile != null) {
+          await NotificationService().rescheduleAll(
+            profile,
+            records: HiveService().getAllPeriodRecords(),
+            medications: profile.medicationPlan,
+            logs: HiveService().getAllDailyLogs(),
+          );
+        }
+        await WidgetService.update(
+          profile,
+          HiveService().getAllPeriodRecords(),
+        );
+      } catch (_) {
+        // Bildirim veya widget hatası, doğrulanmış restore'u geri almaz.
+      }
+      if (!mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text(l10n.backupRestored)));
+      widget.onUnlocked();
+      ref
+          .read(routerProvider)
+          .go(
+            profile?.onboardingCompleted == true ? '/dashboard' : '/onboarding',
+          );
+    } catch (_) {
+      if (mounted) {
+        messenger.showSnackBar(SnackBar(content: Text(l10n.invalidBackupFile)));
+      }
+    } finally {
+      if (mounted) setState(() => _restoringBackup = false);
+    }
   }
 
   Future<void> _restoreLockout() async {
@@ -160,7 +221,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
     try {
       final stored = await _storage.read(key: 'app_pin');
       if (stored == null) {
-        // PIN kaydı yok: _recoverIfPinMissing devrede, burada kilitleme
+        if (mounted) setState(() => _pinUnavailable = true);
         return;
       }
 
@@ -197,8 +258,11 @@ class _LockScreenState extends ConsumerState<LockScreen> {
     final profile = ref.watch(userProfileProvider);
     final motion = context.motionEnabled;
 
-    Widget lockIcon = Icon(Icons.lock_rounded,
-        size: 48, color: Colors.white.withValues(alpha: 0.9));
+    Widget lockIcon = Icon(
+      Icons.lock_rounded,
+      size: 48,
+      color: Colors.white.withValues(alpha: 0.9),
+    );
     if (motion) {
       lockIcon = lockIcon
           .animateSafe(context)
@@ -218,10 +282,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
 
     Widget wrongPinText = Text(
       l10n.wrongPin,
-      style: TextStyle(
-        fontSize: 14,
-        color: Colors.yellow.shade200,
-      ),
+      style: TextStyle(fontSize: 14, color: Colors.yellow.shade200),
     );
     if (motion) {
       wrongPinText = wrongPinText.animateSafe(context).shakeX(hz: 4, amount: 4);
@@ -248,6 +309,28 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                       lockIcon,
                       const SizedBox(height: 16),
                       title,
+                      if (_pinUnavailable)
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              Text(
+                                l10n.pinUnavailableRecovery,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              TextButton(
+                                onPressed: _restoringBackup
+                                    ? null
+                                    : _restoreFromBackup,
+                                child: Text(
+                                  l10n.restoreData,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       if (_isLockedOut)
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
@@ -277,8 +360,11 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                       if (profile?.biometricEnabled == true)
                         TextButton.icon(
                           onPressed: _tryBiometric,
-                          icon: const Icon(Icons.fingerprint_rounded,
-                              color: Colors.white, size: 28),
+                          icon: const Icon(
+                            Icons.fingerprint_rounded,
+                            color: Colors.white,
+                            size: 28,
+                          ),
                           label: Text(
                             l10n.unlockWithBiometric,
                             textAlign: TextAlign.center,

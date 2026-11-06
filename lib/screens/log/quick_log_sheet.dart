@@ -49,8 +49,51 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
 
   FlowIntensity? _flow;
   MoodType? _mood;
+  String? _moodNote;
   final Map<SymptomType, int> _symptoms = {};
   final TextEditingController _noteController = TextEditingController();
+  FlowIntensity? _initialFlow;
+  MoodType? _initialMood;
+  Map<SymptomType, int> _initialSymptoms = {};
+  String _initialNote = '';
+  bool _allowPop = false;
+  bool _closing = false;
+  bool _saving = false;
+
+  bool get _clearingExistingQuickFields =>
+      _flow == null &&
+      _mood == null &&
+      _symptoms.isEmpty &&
+      _noteController.text.trim().isEmpty &&
+      (_initialFlow != null ||
+          _initialMood != null ||
+          _initialSymptoms.isNotEmpty ||
+          _initialNote.isNotEmpty);
+
+  bool _canPersist() => ensureTrackingWriteAccess(
+    context,
+    ref,
+    deletingExisting: _clearingExistingQuickFields,
+  );
+
+  void _showSaveError() {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.errorOccurred(l10n.retry)),
+        backgroundColor: AppColors.error,
+      ),
+    );
+  }
+
+  bool get _isDirty =>
+      _flow != _initialFlow ||
+      _mood != _initialMood ||
+      _noteController.text.trim() != _initialNote ||
+      _symptoms.length != _initialSymptoms.length ||
+      _symptoms.entries.any((entry) =>
+          _initialSymptoms[entry.key] != entry.value);
 
   /// Sheet'te gösterilen en sık semptomlar; tamamı semptom ekranında
   static const _commonSymptoms = [
@@ -82,11 +125,16 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     final log = ref.read(dailyLogProvider.notifier).getDailyLog(date);
     _flow = log?.flowIntensity;
     _mood = log?.mood?.type;
+    _moodNote = log?.mood?.note;
     _symptoms.clear();
     for (final s in log?.symptoms ?? const <SymptomEntry>[]) {
       _symptoms[s.type] = s.severity;
     }
     _noteController.text = log?.notes ?? '';
+    _initialFlow = _flow;
+    _initialMood = _mood;
+    _initialSymptoms = Map.of(_symptoms);
+    _initialNote = _noteController.text.trim();
   }
 
   /// Formdaki hâli [date] gününe yazar. Hiçbir şey girilmemişse ve o güne
@@ -104,33 +152,61 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
         note.isNotEmpty;
     if (!hasInput && !hasExistingLog) return false;
 
-    // setFlowIntensity: seçim kaldırıldığında akış da silinmeli.
-    // updateFlow null'ı "dokunma" sayıyor, eski değer kalıyordu.
-    await notifier.setFlowIntensity(date, _flow);
-    await notifier.updateMood(
+    await notifier.updateQuickLog(
       date,
-      _mood != null ? MoodEntry(type: _mood!) : null,
-    );
-    await notifier.updateSymptoms(
-      date,
-      _symptoms.entries
+      flow: _flow,
+      mood: _mood,
+      symptoms: _symptoms.entries
           .map((e) => SymptomEntry(type: e.key, severity: e.value))
           .toList(),
+      notes: note.isEmpty ? null : note,
     );
-    await notifier.updateNotes(date, note.isEmpty ? null : note);
     return true;
   }
 
-  /// Gün değiştirir. Ekrandaki hâl önce mevcut güne yazılır: kullanıcı
-  /// "dünü girdim, şimdi bugüne geçeyim" derken girdisini kaybetmemeli.
+  /// Gün değiştirirken taslağı sessizce kaydetme ya da kaybetme.
   Future<void> _switchDay(int deltaDays) async {
-    if (!ensureTrackingWriteAccess(context, ref)) return;
+    if (_saving || _closing) return;
     final target = DateTime(_date.year, _date.month, _date.day + deltaDays);
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     if (target.isAfter(today)) return;
-
-    await _persist(_date);
+    if (_isDirty) {
+      final l10n = AppLocalizations.of(context)!;
+      final save = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(l10n.discardChangesTitle),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l10n.discard),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l10n.save),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || save == null) return;
+      if (save) {
+        if (!_canPersist()) return;
+        setState(() => _saving = true);
+        try {
+          await _persist(_date);
+        } catch (_) {
+          _showSaveError();
+          return;
+        } finally {
+          if (mounted) setState(() => _saving = false);
+        }
+      }
+    }
     if (!mounted) return;
     setState(() {
       _date = target;
@@ -141,23 +217,84 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
   }
 
   Future<void> _save() async {
-    if (!ensureTrackingWriteAccess(context, ref)) return;
+    if (_saving || _closing || !_canPersist()) return;
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
 
-    final wrote = await _persist(_date);
+    setState(() => _saving = true);
+    bool wrote;
+    try {
+      wrote = await _persist(_date);
+    } catch (_) {
+      _showSaveError();
+      return;
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
     if (!mounted) return;
+    final clearing = _clearingExistingQuickFields;
+    setState(() => _allowPop = true);
     navigator.pop();
     // Hiçbir şey yazılmadıysa "Kaydedildi" demek yanlış bilgi
     if (!wrote) return;
-    notifyTrackingRecordSaved();
+    if (!clearing) notifyTrackingRecordSaved();
     messenger.showSnackBar(
       SnackBar(
         content: Text(l10n.savedGeneric),
         backgroundColor: AppColors.success,
       ),
     );
+  }
+
+  Future<void> _close({bool openTrackers = false}) async {
+    if (_closing || _saving) return;
+    _closing = true;
+    try {
+      if (_isDirty) {
+        final l10n = AppLocalizations.of(context)!;
+        final save = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(l10n.discardChangesTitle),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(l10n.cancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(l10n.discard),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text(l10n.save),
+              ),
+            ],
+          ),
+        );
+        if (!mounted || save == null) return;
+        if (save) {
+          if (!_canPersist()) return;
+          try {
+            final wrote = await _persist(_date);
+            if (wrote && !_clearingExistingQuickFields) {
+              notifyTrackingRecordSaved();
+            }
+          } catch (_) {
+            _showSaveError();
+            return;
+          }
+        }
+      }
+      if (!mounted) return;
+      final router = openTrackers ? GoRouter.of(context) : null;
+      setState(() => _allowPop = true);
+      Navigator.of(context).pop();
+      router?.push('/log');
+    } finally {
+      _closing = false;
+    }
   }
 
   @override
@@ -169,13 +306,18 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     final today = DateTime(now.year, now.month, now.day);
     final canGoForward = _date.isBefore(today);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-        border: Border.all(color: AppColors.dv(context), width: 1),
-      ),
-      padding: EdgeInsets.only(
+    return PopScope(
+      canPop: _allowPop,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _close();
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.sf(context),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          border: Border.all(color: AppColors.dv(context), width: 1),
+        ),
+        padding: EdgeInsets.only(
         left: 20,
         right: 20,
         top: 12,
@@ -270,8 +412,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                       for (final option in options)
                         SizedBox(
                           width: optionWidth,
-                          child:
-                              _flowOption(option.$1, option.$2, option.$3),
+                          child: _flowOption(option.$1, option.$2, option.$3),
                         ),
                     ],
                   );
@@ -302,6 +443,11 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                   }).toList(),
                 ),
               ),
+              if (_mood == null && _moodNote?.trim().isNotEmpty == true)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text('${l10n.notes} → ${l10n.myNotes}'),
+                ),
               const SizedBox(height: 20),
 
               // Semptomlar — sık girilenler önde (liste kullanıldıkça
@@ -398,15 +544,15 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
 
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(onPressed: _save, child: Text(l10n.save)),
+                child: ElevatedButton(
+                  onPressed: _saving || _closing ? null : _save,
+                  child: Text(l10n.save),
+                ),
               ),
               const SizedBox(height: 8),
               Center(
                 child: TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    context.push('/log');
-                  },
+                  onPressed: () => _close(openTrackers: true),
                   child: Text(
                     l10n.allTrackers,
                     style: TextStyle(
@@ -419,6 +565,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
             ],
           ),
         ),
+      ),
       ),
     );
   }
@@ -437,61 +584,61 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
   Widget _flowOption(FlowIntensity intensity, String label, int drops) {
     final selected = _flow == intensity;
     return Semantics(
-        button: true,
-        selected: selected,
-        label: label,
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 3),
-          decoration: BoxDecoration(
-            color: selected
-                ? AppColors.menstrual.withValues(alpha: 0.15)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: selected ? AppColors.primaryStrong : AppColors.dv(context),
-              width: selected ? 1.5 : 1,
-            ),
+      button: true,
+      selected: selected,
+      label: label,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 3),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppColors.menstrual.withValues(alpha: 0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: selected ? AppColors.primaryStrong : AppColors.dv(context),
+            width: selected ? 1.5 : 1,
           ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(16),
-              onTap: () => setState(() => _flow = selected ? null : intensity),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        drops,
-                        (_) => Icon(
-                          Icons.water_drop_rounded,
-                          size: 10,
-                          color: selected
-                              ? AppColors.primaryStrong
-                              : AppColors.ts(context),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      label,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () => setState(() => _flow = selected ? null : intensity),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      drops,
+                      (_) => Icon(
+                        Icons.water_drop_rounded,
+                        size: 10,
                         color: selected
                             ? AppColors.primaryStrong
                             : AppColors.ts(context),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: selected
+                          ? AppColors.primaryStrong
+                          : AppColors.ts(context),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
         ),
+      ),
     );
   }
 

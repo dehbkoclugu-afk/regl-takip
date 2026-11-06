@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:regl_takip/models/period_record.dart';
+import 'package:regl_takip/models/user_profile.dart';
 import 'package:regl_takip/providers/providers.dart';
 import 'package:regl_takip/services/hive_service.dart';
 
@@ -31,6 +32,62 @@ void main() {
   });
 
   group('syncProfilePeriodRecord', () {
+    test('profil ve dönem tarihi kesintide birlikte eski hâlinde kalır', () async {
+      final oldStart = DateTime(2026, 7, 5);
+      final newStart = DateTime(2026, 7, 1);
+      await service.saveUserProfile(UserProfile(lastPeriodStart: oldStart));
+      final periods = PeriodRecordsNotifier(service);
+      await periods.addRecord(PeriodRecord(id: 'r1', startDate: oldStart));
+      final profile = UserProfileNotifier(service);
+      final change = periods.prepareProfilePeriodRecord(
+        previousStart: oldStart,
+        newStart: newStart,
+        periodLength: 5,
+      )!;
+      final updated = profile.state!.copyWith(lastPeriodStart: newStart);
+      service.transactionCheckpoint = (stage) async {
+        if (stage == 'beforeCommit') throw StateError('disk');
+      };
+
+      await expectLater(
+        profile.updateProfileAndPeriods(updated, [change]),
+        throwsStateError,
+      );
+      expect(profile.state!.lastPeriodStart, oldStart);
+      expect(periods.state.single.startDate, oldStart);
+      expect(service.getUserProfile()!.lastPeriodStart, oldStart);
+      expect(service.getAllPeriodRecords().single.startDate, oldStart);
+
+      service.transactionCheckpoint = null;
+      await profile.updateProfileAndPeriods(updated, [change]);
+      periods.refresh();
+      expect(profile.state!.lastPeriodStart, newStart);
+      expect(periods.state.single.startDate, newStart);
+    });
+    test('profil tarihi diğer regl kaydıyla çakışırsa eski kayıt korunur', () async {
+      final notifier = PeriodRecordsNotifier(service);
+      await notifier.addRecord(PeriodRecord(
+        id: 'r1',
+        startDate: DateTime(2026, 7, 1),
+        endDate: DateTime(2026, 7, 5),
+      ));
+      await notifier.addRecord(PeriodRecord(
+        id: 'r2',
+        startDate: DateTime(2026, 7, 10),
+        endDate: DateTime(2026, 7, 14),
+      ));
+      await expectLater(
+        notifier.syncProfilePeriodRecord(
+          previousStart: DateTime(2026, 7, 1),
+          newStart: DateTime(2026, 7, 9),
+          periodLength: 5,
+        ),
+        throwsArgumentError,
+      );
+      final original = notifier.state.singleWhere((r) => r.id == 'r1');
+      expect(original.startDate, DateTime(2026, 7, 1));
+      expect(service.getAllPeriodRecords(), hasLength(2));
+    });
     test('geriye tarih düzeltmesi kaydı taşır, kırpıp çiftlemez', () async {
       final notifier = PeriodRecordsNotifier(service);
       // Yanlış girilmiş tarih: ayın 5'i, süren kayıt
@@ -113,9 +170,11 @@ void main() {
     test('yeni başlangıç süren kaydı bir gün öncesiyle kapatır', () async {
       final notifier = PeriodRecordsNotifier(service);
       await notifier.startPeriod(DateTime(2026, 7, 1));
+      final oldSnapshot = notifier.state.single;
       await notifier.startPeriod(DateTime(2026, 7, 28));
 
       expect(notifier.state.length, 2);
+      expect(oldSnapshot.endDate, isNull);
       final closed =
           notifier.state.firstWhere((r) => r.startDate.day == 1);
       expect(closed.endDate, DateTime(2026, 7, 27));
@@ -140,10 +199,47 @@ void main() {
       expect(stillOngoing.single.startDate, DateTime(2026, 7, 15));
     });
 
+    test('yazı reddedilince başlangıç ve bitiş eski dönemi değiştirmez', () async {
+      final notifier = PeriodRecordsNotifier(service);
+      final original = await notifier.startPeriod(DateTime(2026, 7, 1));
+      service.periodWriteCheckpoint = () async {
+        throw StateError('disk');
+      };
+
+      await expectLater(
+        notifier.startPeriod(DateTime(2026, 7, 28)),
+        throwsStateError,
+      );
+      expect(notifier.state, hasLength(1));
+      expect(notifier.state.single.endDate, isNull);
+      expect(service.getAllPeriodRecords().single.endDate, isNull);
+
+      await expectLater(
+        notifier.endPeriod(original.id, DateTime(2026, 7, 5)),
+        throwsStateError,
+      );
+      expect(notifier.state.single.endDate, isNull);
+      expect(service.getAllPeriodRecords().single.endDate, isNull);
+    });
+
+    test('geri alma yazısı reddedilirse kapanmış dönem kapalı kalır', () async {
+      final notifier = PeriodRecordsNotifier(service);
+      final record = await notifier.startPeriod(DateTime(2026, 7, 1));
+      await notifier.endPeriod(record.id, DateTime(2026, 7, 5));
+      service.periodWriteCheckpoint = () async {
+        throw StateError('disk');
+      };
+
+      await expectLater(notifier.reopenRecord(record.id), throwsStateError);
+      expect(notifier.state.single.endDate, DateTime(2026, 7, 5));
+      expect(service.getAllPeriodRecords().single.endDate, DateTime(2026, 7, 5));
+    });
+
     test('endPeriod bitişi başlangıçtan öncesine izin vermez', () async {
       final notifier = PeriodRecordsNotifier(service);
       final record = await notifier.startPeriod(DateTime(2026, 7, 10));
       await notifier.endPeriod(record.id, DateTime(2026, 7, 5));
+      expect(record.endDate, isNull);
       expect(notifier.state.single.endDate, notifier.state.single.startDate);
     });
   });
@@ -192,6 +288,23 @@ void main() {
       expect(notifier.state, hasLength(3));
     });
 
+    test('toplu geçmiş kayıt yazısı reddedilince hiçbir gün eklenmez', () async {
+      final notifier = PeriodRecordsNotifier(service);
+      service.periodWriteCheckpoint = () async {
+        throw StateError('disk');
+      };
+
+      await expectLater(
+        notifier.addCompletedPeriodRanges([
+          (start: DateTime(2026, 4, 1), end: DateTime(2026, 4, 5)),
+          (start: DateTime(2026, 5, 1), end: DateTime(2026, 5, 5)),
+        ]),
+        throwsStateError,
+      );
+      expect(notifier.state, isEmpty);
+      expect(service.getAllPeriodRecords(), isEmpty);
+    });
+
     test('toplu paketin kendi içindeki çakışmada hiçbir kayıt yazmaz',
         () async {
       final notifier = PeriodRecordsNotifier(service);
@@ -232,6 +345,35 @@ void main() {
       ));
       await notifier.updateRecordDates('r1', DateTime(2026, 7, 1), null);
       expect(notifier.state.single.isOngoing, isTrue);
+    });
+
+    test('çakışan tarih düzeltmesi kayıtları değiştirmez', () async {
+      final notifier = PeriodRecordsNotifier(service);
+      await notifier.addRecord(PeriodRecord(
+        id: 'r1',
+        startDate: DateTime(2026, 7, 1),
+        endDate: DateTime(2026, 7, 5),
+      ));
+      await notifier.addRecord(PeriodRecord(
+        id: 'r2',
+        startDate: DateTime(2026, 7, 10),
+        endDate: DateTime(2026, 7, 15),
+      ));
+      await expectLater(
+        notifier.updateRecordDates(
+          'r1', DateTime(2026, 7, 8), DateTime(2026, 7, 12)),
+        throwsArgumentError,
+      );
+      expect(notifier.state.singleWhere((r) => r.id == 'r1').startDate,
+          DateTime(2026, 7, 1));
+      expect(service.getAllPeriodRecords().singleWhere((r) => r.id == 'r1').startDate,
+          DateTime(2026, 7, 1));
+      await expectLater(
+        notifier.updateRecordDates('r1', DateTime(2026, 7, 1), null),
+        throwsArgumentError,
+      );
+      expect(notifier.state.singleWhere((r) => r.id == 'r1').endDate,
+          DateTime(2026, 7, 5));
     });
 
     test('reopenRecord "reglim bitti"yi geri alır', () async {

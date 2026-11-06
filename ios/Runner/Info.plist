@@ -2,6 +2,19 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 	<dict>
+		<key>CFBundleLocalizations</key>
+		<array>
+			<string>tr</string>
+			<string>en</string>
+			<string>es</string>
+			<string>de</string>
+			<string>fr</string>
+			<string>ru</string>
+			<string>pt</string>
+			<string>ar</string>
+			<string>hi</string>
+			<string>zh</string>
+		</array>
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
@@ -49,6 +62,8 @@
 		<string>Uygulama kilidini güvenli biçimde açmak için Face ID kullanılır.</string>
 		<key>GADApplicationIdentifier</key>
 		<string>ca-app-pub-2554058432197193~3764480294</string>
+		<key>NSUserTrackingUsageDescription</key>
+		<string>Size daha iyi reklam deneyimi sunmak için izninizi istiyoruz.</string>
 		<key>SKAdNetworkItems</key>
 		<array>
 			<dict>

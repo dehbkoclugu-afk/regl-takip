@@ -22,6 +22,7 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
   FlowColor? _colorSelection;
   bool _hasClots = false;
   int _padChanges = 0;
+  bool _saving = false;
 
   // Dirty-guard için giriş anındaki durum
   FlowIntensity? _initialIntensity;
@@ -35,10 +36,17 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
       _hasClots != _initialClots ||
       _padChanges != _initialPads;
 
+  late DateTime _editDate;
+
   @override
   void initState() {
     super.initState();
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
+    final selected = ref.read(selectedDateProvider);
+    final now = DateTime.now();
+    _editDate = DateTime(selected.year, selected.month, selected.day);
+    if (_editDate.isAfter(now))
+      _editDate = DateTime(now.year, now.month, now.day);
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(_editDate);
     if (log != null) {
       _intensity = log.flowIntensity;
       _colorSelection = log.flowColor;
@@ -58,34 +66,42 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
       title: l10n.flowTracking,
       isDirty: _isDirty,
       body: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.flowIntensity,
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold,
-                          color: AppColors.tp(context)))
-                      .animateSafe(context).fadeIn(duration: 400.ms),
-                  const SizedBox(height: 16),
-                  _buildIntensityRow(l10n),
-                  const SizedBox(height: 28),
-                  Text(l10n.color,
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold,
-                          color: AppColors.tp(context)))
-                      .animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms),
-                  const SizedBox(height: 16),
-                  _buildColorRow(l10n),
-                  const SizedBox(height: 28),
-                  _buildClotsToggle(l10n)
-                      .animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
-                  const SizedBox(height: 28),
-                  _buildPadCounter(l10n)
-                      .animateSafe(context).fadeIn(delay: 300.ms, duration: 400.ms),
-                ],
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.flowIntensity,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.tp(context),
               ),
-            ),
+            ).animateSafe(context).fadeIn(duration: 400.ms),
+            const SizedBox(height: 16),
+            _buildIntensityRow(l10n),
+            const SizedBox(height: 28),
+            Text(
+              l10n.color,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.tp(context),
+              ),
+            ).animateSafe(context).fadeIn(delay: 100.ms, duration: 400.ms),
+            const SizedBox(height: 16),
+            _buildColorRow(l10n),
+            const SizedBox(height: 28),
+            _buildClotsToggle(
+              l10n,
+            ).animateSafe(context).fadeIn(delay: 200.ms, duration: 400.ms),
+            const SizedBox(height: 28),
+            _buildPadCounter(
+              l10n,
+            ).animateSafe(context).fadeIn(delay: 300.ms, duration: 400.ms),
+          ],
+        ),
+      ),
       bottomBar: _buildSaveButton(l10n),
     );
   }
@@ -107,61 +123,91 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
         final item = entry.value;
         final isSelected = _intensity == item.$1;
         return Semantics(
-          button: true,
-          selected: isSelected,
-          label: item.$2,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(16),
-            onTap: () => setState(
-                () => _intensity = _intensity == item.$1 ? null : item.$1),
-            child: ExcludeSemantics(
-              child: AnimatedContainer(
-            duration: context.motionDuration(const Duration(milliseconds: 250)),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            decoration: BoxDecoration(
-              gradient: isSelected
-                  ? LinearGradient(
-                      colors: [item.$4.withValues(alpha: 0.3), item.$4.withValues(alpha: 0.15)],
-                    )
-                  : null,
-              color: isSelected ? null : AppColors.sf(context),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: isSelected ? item.$4 : AppColors.dv(context),
-                width: isSelected ? 2 : 1,
-              ),
-              boxShadow: isSelected
-                  ? [BoxShadow(color: item.$4.withValues(alpha: 0.2), blurRadius: 12)]
-                  : [],
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: List.generate(item.$3,
-                      (_) => Icon(Icons.water_drop, color: item.$4, size: 16)),
+              button: true,
+              selected: isSelected,
+              label: item.$2,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () => setState(
+                  () => _intensity = _intensity == item.$1 ? null : item.$1,
                 ),
-                const SizedBox(height: 6),
-                Text(item.$2,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                      // Akış tonları yalnız parlaklıkla ayrışıyor (1,36:1 —
-                      // 2,93:1): metin olarak okunmuyorlar, koyulaştırılınca
-                      // da dördü aynı renge çöküyor. Yoğunluğu damla sayısı,
-                      // çerçeve ve zemin taşıyor; etiket okunur kalmalı
-                      color: isSelected
-                          ? AppColors.tp(context)
-                          : AppColors.ts(context),
-                    )),
-              ],
-            ),
+                child: ExcludeSemantics(
+                  child: AnimatedContainer(
+                    duration: context.motionDuration(
+                      const Duration(milliseconds: 250),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: isSelected
+                          ? LinearGradient(
+                              colors: [
+                                item.$4.withValues(alpha: 0.3),
+                                item.$4.withValues(alpha: 0.15),
+                              ],
+                            )
+                          : null,
+                      color: isSelected ? null : AppColors.sf(context),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isSelected ? item.$4 : AppColors.dv(context),
+                        width: isSelected ? 2 : 1,
+                      ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: item.$4.withValues(alpha: 0.2),
+                                blurRadius: 12,
+                              ),
+                            ]
+                          : [],
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: List.generate(
+                            item.$3,
+                            (_) => Icon(
+                              Icons.water_drop,
+                              color: item.$4,
+                              size: 16,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          item.$2,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: isSelected
+                                ? FontWeight.w700
+                                : FontWeight.w600,
+                            // Akış tonları yalnız parlaklıkla ayrışıyor (1,36:1 —
+                            // 2,93:1): metin olarak okunmuyorlar, koyulaştırılınca
+                            // da dördü aynı renge çöküyor. Yoğunluğu damla sayısı,
+                            // çerçeve ve zemin taşıyor; etiket okunur kalmalı
+                            color: isSelected
+                                ? AppColors.tp(context)
+                                : AppColors.ts(context),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-        ).animateSafe(context).fadeIn(delay: (i * 60).ms, duration: 300.ms)
-            .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1),
-                delay: (i * 60).ms, duration: 300.ms);
+            )
+            .animateSafe(context)
+            .fadeIn(delay: (i * 60).ms, duration: 300.ms)
+            .scale(
+              begin: const Offset(0.9, 0.9),
+              end: const Offset(1, 1),
+              delay: (i * 60).ms,
+              duration: 300.ms,
+            );
       }).toList(),
     );
   }
@@ -183,46 +229,67 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
         final item = entry.value;
         final isSelected = _colorSelection == item.$1;
         return Semantics(
-          button: true,
-          selected: isSelected,
-          label: item.$2,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(16),
-            onTap: () => setState(() =>
-                _colorSelection = _colorSelection == item.$1 ? null : item.$1),
-            child: ExcludeSemantics(
-              child: Column(
-            children: [
-              AnimatedContainer(
-                duration:
-                    context.motionDuration(const Duration(milliseconds: 250)),
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: item.$3,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: isSelected ? AppColors.tp(context) : Colors.transparent,
-                    width: 2.5,
-                  ),
-                  boxShadow: isSelected
-                      ? [BoxShadow(color: item.$3.withValues(alpha: 0.4), blurRadius: 12)]
-                      : [],
+              button: true,
+              selected: isSelected,
+              label: item.$2,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () => setState(
+                  () => _colorSelection = _colorSelection == item.$1
+                      ? null
+                      : item.$1,
                 ),
-                child: isSelected
-                    ? const Icon(Icons.check, color: Colors.white, size: 22)
-                    : null,
+                child: ExcludeSemantics(
+                  child: Column(
+                    children: [
+                      AnimatedContainer(
+                        duration: context.motionDuration(
+                          const Duration(milliseconds: 250),
+                        ),
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: item.$3,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isSelected
+                                ? AppColors.tp(context)
+                                : Colors.transparent,
+                            width: 2.5,
+                          ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: item.$3.withValues(alpha: 0.4),
+                                    blurRadius: 12,
+                                  ),
+                                ]
+                              : [],
+                        ),
+                        child: isSelected
+                            ? const Icon(
+                                Icons.check,
+                                color: Colors.white,
+                                size: 22,
+                              )
+                            : null,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        item.$2,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppColors.ts(context),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(height: 6),
-              Text(item.$2,
-                  style: TextStyle(
-                      fontSize: 11, color: AppColors.ts(context)),
-                  textAlign: TextAlign.center),
-            ],
-          ),
-            ),
-          ),
-        ).animateSafe(context).fadeIn(delay: (100 + i * 60).ms, duration: 300.ms);
+            )
+            .animateSafe(context)
+            .fadeIn(delay: (100 + i * 60).ms, duration: 300.ms);
       }).toList(),
     );
   }
@@ -240,13 +307,18 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l10n.clots,
-                    style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w700,
-                        color: AppColors.tp(context))),
-                Text(l10n.clotsQuestion,
-                    style: TextStyle(
-                        fontSize: 13, color: AppColors.ts(context))),
+                Text(
+                  l10n.clots,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.tp(context),
+                  ),
+                ),
+                Text(
+                  l10n.clotsQuestion,
+                  style: TextStyle(fontSize: 13, color: AppColors.ts(context)),
+                ),
               ],
             ),
           ),
@@ -269,10 +341,14 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.padChange,
-              style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w700,
-                  color: AppColors.tp(context))),
+          Text(
+            l10n.padChange,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.tp(context),
+            ),
+          ),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -283,15 +359,21 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
               const SizedBox(width: 32),
               Semantics(
                 liveRegion: true,
-                child: Text('$_padChanges',
-                    style: const TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary)),
+                child: Text(
+                  '$_padChanges',
+                  style: const TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
+                ),
               ),
               const SizedBox(width: 32),
               _counterBtn(
-                  Icons.add, l10n.increase, () => setState(() => _padChanges++)),
+                Icons.add,
+                l10n.increase,
+                () => setState(() => _padChanges++),
+              ),
             ],
           ),
         ],
@@ -323,24 +405,28 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: _save,
+        onPressed: _saving ? null : _save,
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
         ),
-        child: Text(l10n.save,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        child: Text(
+          l10n.save,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
 
   Future<void> _save() async {
-    if (!ensureTrackingWriteAccess(context, ref)) return;
+    if (_saving) return;
     final notifier = ref.read(dailyLogProvider.notifier);
-    final date = ref.read(selectedDateProvider);
+    final date = _editDate;
 
-    final hasInput = _intensity != null ||
+    final hasInput =
+        _intensity != null ||
         _colorSelection != null ||
         _hasClots ||
         _padChanges > 0;
@@ -349,25 +435,50 @@ class _FlowTrackingScreenState extends ConsumerState<FlowTrackingScreen> {
       if (mounted) Navigator.of(context).pop();
       return;
     }
+    final hadFlow = _initialIntensity != null ||
+        _initialColor != null ||
+        _initialClots ||
+        _initialPads > 0;
+    // Eski kaydı tamamen temizlemek yeni premium veri yazmak değildir.
+    if (!ensureTrackingWriteAccess(
+      context,
+      ref,
+      deletingExisting: !hasInput && hadFlow,
+    )) return;
 
     // setFlowDetails: seçim kaldırıldıysa alan da silinmeli. updateFlow
     // null'ı "dokunma" sayıyordu; kullanıcı akışı kaldırıp kaydettiğinde
     // eski değer kalıyordu.
-    await notifier.setFlowDetails(
-      date,
-      intensity: _intensity,
-      color: _colorSelection,
-      hasClots: _hasClots,
-      padChangeCount: _padChanges,
-    );
-    notifyTrackingRecordSaved();
-    if (mounted) {
+    setState(() => _saving = true);
+    try {
+      await notifier.setFlowDetails(
+        date,
+        intensity: _intensity,
+        color: _colorSelection,
+        hasClots: _hasClots,
+        padChangeCount: _padChanges,
+      );
+      if (!mounted) return;
+      if (hasInput) notifyTrackingRecordSaved();
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.flowSaved),
-            backgroundColor: AppColors.success),
+        SnackBar(
+          content: Text(l10n.flowSaved),
+          backgroundColor: AppColors.success,
+        ),
       );
       Navigator.of(context).pop();
+    } catch (_) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.errorOccurred(l10n.retry)),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 }

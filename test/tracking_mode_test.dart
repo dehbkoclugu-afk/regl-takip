@@ -1,43 +1,40 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:regl_takip/core/utils/cycle_utils.dart';
+import 'package:regl_takip/core/utils/date_only.dart';
 import 'package:regl_takip/models/enums.dart';
 import 'package:regl_takip/models/user_profile.dart';
 
 void main() {
   group('pregnancyWeek', () {
     test('week 1 on start day and within first 6 days', () {
-      final today = DateTime.now();
-      expect(CycleUtils.pregnancyWeek(today), 1);
+      final today = DateTime(2026, 11, 6);
+      expect(CycleUtils.pregnancyWeek(today, now: today), 1);
       expect(
-        CycleUtils.pregnancyWeek(
-            today.subtract(const Duration(days: 6))),
+        CycleUtils.pregnancyWeek(addDays(today, -6), now: today),
         1,
       );
     });
 
     test('week increments every 7 days', () {
-      final today = DateTime.now();
+      final today = DateTime(2026, 11, 6);
       expect(
-        CycleUtils.pregnancyWeek(
-            today.subtract(const Duration(days: 7))),
+        CycleUtils.pregnancyWeek(addDays(today, -7), now: today),
         2,
       );
       expect(
-        CycleUtils.pregnancyWeek(
-            today.subtract(const Duration(days: 70))),
+        CycleUtils.pregnancyWeek(addDays(today, -70), now: today),
         11,
       );
     });
 
     test('future date clamps to week 1, long past clamps to 42', () {
-      final today = DateTime.now();
+      final today = DateTime(2026, 11, 6);
       expect(
-        CycleUtils.pregnancyWeek(today.add(const Duration(days: 10))),
+        CycleUtils.pregnancyWeek(addDays(today, 10), now: today),
         1,
       );
       expect(
-        CycleUtils.pregnancyWeek(
-            today.subtract(const Duration(days: 500))),
+        CycleUtils.pregnancyWeek(addDays(today, -500), now: today),
         42,
       );
     });
@@ -54,30 +51,31 @@ void main() {
 
   group('pillDayInPack', () {
     test('day 1 on pack start', () {
-      expect(CycleUtils.pillDayInPack(DateTime.now()), 1);
+      final today = DateTime(2026, 11, 6);
+      expect(CycleUtils.pillDayInPack(today, now: today), 1);
     });
 
     test('active days 1-21, break days 22-28, wraps to next pack', () {
-      final today = DateTime.now();
+      final today = DateTime(2026, 11, 6);
       // 20 gün önce başladı → gün 21 (son aktif hap)
-      final day21Start = today.subtract(const Duration(days: 20));
-      expect(CycleUtils.pillDayInPack(day21Start), 21);
-      expect(CycleUtils.isPillBreakDay(day21Start), isFalse);
+      final day21Start = addDays(today, -20);
+      expect(CycleUtils.pillDayInPack(day21Start, now: today), 21);
+      expect(CycleUtils.isPillBreakDay(day21Start, now: today), isFalse);
 
       // 21 gün önce → gün 22 (ara haftanın ilki)
-      final day22Start = today.subtract(const Duration(days: 21));
-      expect(CycleUtils.pillDayInPack(day22Start), 22);
-      expect(CycleUtils.isPillBreakDay(day22Start), isTrue);
+      final day22Start = addDays(today, -21);
+      expect(CycleUtils.pillDayInPack(day22Start, now: today), 22);
+      expect(CycleUtils.isPillBreakDay(day22Start, now: today), isTrue);
 
       // 27 gün önce → gün 28 (ara haftanın sonu)
-      final day28Start = today.subtract(const Duration(days: 27));
-      expect(CycleUtils.pillDayInPack(day28Start), 28);
-      expect(CycleUtils.isPillBreakDay(day28Start), isTrue);
+      final day28Start = addDays(today, -27);
+      expect(CycleUtils.pillDayInPack(day28Start, now: today), 28);
+      expect(CycleUtils.isPillBreakDay(day28Start, now: today), isTrue);
 
       // 28 gün önce → yeni paket, gün 1
-      final newPackStart = today.subtract(const Duration(days: 28));
-      expect(CycleUtils.pillDayInPack(newPackStart), 1);
-      expect(CycleUtils.isPillBreakDay(newPackStart), isFalse);
+      final newPackStart = addDays(today, -28);
+      expect(CycleUtils.pillDayInPack(newPackStart, now: today), 1);
+      expect(CycleUtils.isPillBreakDay(newPackStart, now: today), isFalse);
     });
   });
 

@@ -55,8 +55,7 @@ void main() {
 
     final plainProfile =
         await Hive.openBox<UserProfile>(AppConstants.userProfileBox);
-    await plainProfile.put(
-        AppConstants.currentUserKey,
+    await plainProfile.put(AppConstants.currentUserKey,
         UserProfile(name: 'Migrasyon', lastPeriodStart: DateTime(2026, 7, 1)));
 
     final plainRecords =
@@ -89,8 +88,7 @@ void main() {
 
     // 3) Kutu dosyası artık şifreli: ham baytlarda düz metin olmamalı
     // (düz kutuda "Migrasyon" adı dosyada ASCII olarak görünürdü)
-    final boxFile =
-        File('${tempDir.path}/${AppConstants.userProfileBox}.hive');
+    final boxFile = File(service.profileStoragePath!);
     expect(boxFile.existsSync(), isTrue);
     final raw = String.fromCharCodes(await boxFile.readAsBytes());
     expect(raw.contains('Migrasyon'), isFalse,

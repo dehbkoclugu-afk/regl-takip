@@ -84,8 +84,7 @@ class QuickStatusCards extends ConsumerWidget {
     final todayLog = dailyLogs[todayKey];
 
     final hasMood = todayLog?.mood != null;
-    final hasSymptoms =
-        todayLog != null && todayLog.symptoms.isNotEmpty;
+    final hasSymptoms = todayLog != null && todayLog.symptoms.isNotEmpty;
     final hasAnyLog = hasMood || hasSymptoms;
     final consistency = calculateTrackingConsistency(
       dailyLogs.values,
@@ -93,98 +92,112 @@ class QuickStatusCards extends ConsumerWidget {
     );
     final consistencyText = consistency.streakDays > 0
         ? '${l10n.trackingStreak(consistency.streakDays)} · '
-            '${l10n.weeklyTracking(consistency.lastSevenDays)}'
+              '${l10n.weeklyTracking(consistency.lastSevenDays)}'
         : l10n.weeklyTracking(consistency.lastSevenDays);
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
-          // Rozet başlıkla aynı satırı paylaşıyordu ve iki fakti birden
-          // taşıdığı için sıkışıp sarıyordu: "… Son 7 günde 1 / kayıt".
-          // Kendi satırında tam genişliği bulunca tek satıra sığıyor ve
-          // hiçbir bilgi kırpılmıyor.
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.todaySummary,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.tp(context),
-                ),
-              ),
-              if (consistency.lastSevenDays > 0) ...[
-                const SizedBox(height: 6),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    consistencyText,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsetsDirectional.only(start: 4, bottom: 12),
+              // Rozet başlıkla aynı satırı paylaşıyordu ve iki fakti birden
+              // taşıdığı için sıkışıp sarıyordu: "… Son 7 günde 1 / kayıt".
+              // Kendi satırında tam genişliği bulunca tek satıra sığıyor ve
+              // hiçbir bilgi kırpılmıyor.
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.todaySummary,
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.primaryDeep,
+                      color: AppColors.tp(context),
                     ),
                   ),
+                  if (consistency.lastSevenDays > 0) ...[
+                    const SizedBox(height: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 9,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        consistencyText,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primaryDeep,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (!hasAnyLog) _buildEmptyState(context, ref, l10n),
+            if (hasAnyLog) ...[
+              if (largeText && hasMood && hasSymptoms)
+                Column(
+                  children: [
+                    _buildMoodCard(context, ref, todayLog.mood!.type, l10n),
+                    const SizedBox(height: 12),
+                    _buildSymptomCard(
+                      context,
+                      ref,
+                      todayLog.symptoms.length,
+                      l10n,
+                    ),
+                  ],
+                )
+              else
+                Row(
+                  children: [
+                    if (hasMood)
+                      Expanded(
+                        child: _buildMoodCard(
+                          context,
+                          ref,
+                          todayLog!.mood!.type,
+                          l10n,
+                        ),
+                      ),
+                    if (hasMood && hasSymptoms) const SizedBox(width: 12),
+                    if (hasSymptoms)
+                      Expanded(
+                        child: _buildSymptomCard(
+                          context,
+                          ref,
+                          todayLog.symptoms.length,
+                          l10n,
+                        ),
+                      ),
+                  ],
+                ),
+              // Kısmi gün: biri girilmiş, diğeri boş. Boş durumda yönlendirme
+              // vardı ama yarısı dolu günde eksik olan hiç istenmiyordu.
+              if (!hasMood || !hasSymptoms) ...[
+                const SizedBox(height: 10),
+                _buildMissingPrompt(
+                  context,
+                  ref,
+                  label: hasMood ? l10n.symptoms : l10n.mood,
+                  route: hasMood ? '/symptoms' : '/mood',
+                  icon: hasMood
+                      ? Icons.monitor_heart_rounded
+                      : Icons.add_reaction_rounded,
+                  l10n: l10n,
                 ),
               ],
             ],
-          ),
-        ),
-        if (!hasAnyLog) _buildEmptyState(context, ref, l10n),
-        if (hasAnyLog) ...[
-          if (largeText && hasMood && hasSymptoms)
-            Column(
-              children: [
-                _buildMoodCard(context, ref, todayLog.mood!.type, l10n),
-                const SizedBox(height: 12),
-                _buildSymptomCard(
-                    context, ref, todayLog.symptoms.length, l10n),
-              ],
-            )
-          else
-            Row(
-              children: [
-                if (hasMood)
-                  Expanded(
-                    child: _buildMoodCard(
-                        context, ref, todayLog!.mood!.type, l10n),
-                  ),
-                if (hasMood && hasSymptoms) const SizedBox(width: 12),
-                if (hasSymptoms)
-                  Expanded(
-                    child: _buildSymptomCard(
-                        context, ref, todayLog.symptoms.length, l10n),
-                  ),
-              ],
-            ),
-          // Kısmi gün: biri girilmiş, diğeri boş. Boş durumda yönlendirme
-          // vardı ama yarısı dolu günde eksik olan hiç istenmiyordu.
-          if (!hasMood || !hasSymptoms) ...[
-            const SizedBox(height: 10),
-            _buildMissingPrompt(
-              context,
-              ref,
-              label: hasMood ? l10n.symptoms : l10n.mood,
-              route: hasMood ? '/symptoms' : '/mood',
-              icon: hasMood
-                  ? Icons.monitor_heart_rounded
-                  : Icons.add_reaction_rounded,
-              l10n: l10n,
-            ),
           ],
-        ],
-      ],
-    )
+        )
         .animateSafe(context)
         .fadeIn(delay: 600.ms, duration: 600.ms)
         .slideY(begin: 0.15, end: 0, delay: 600.ms, duration: 600.ms);
@@ -238,8 +251,7 @@ class QuickStatusCards extends ConsumerWidget {
           },
           child: Padding(
             // 18 px ikon + 2x15 = 48 px: Material asgari dokunma hedefi
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
             child: Row(
               children: [
                 Icon(icon, size: 18, color: AppColors.ts(context)),
@@ -248,11 +260,16 @@ class QuickStatusCards extends ConsumerWidget {
                   child: Text(
                     l10n.notLoggedToday(label),
                     style: TextStyle(
-                        fontSize: 13, color: AppColors.ts(context)),
+                      fontSize: 13,
+                      color: AppColors.ts(context),
+                    ),
                   ),
                 ),
-                Icon(Icons.chevron_right_rounded,
-                    size: 18, color: AppColors.ts(context)),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  size: 18,
+                  color: AppColors.ts(context),
+                ),
               ],
             ),
           ),
@@ -262,7 +279,10 @@ class QuickStatusCards extends ConsumerWidget {
   }
 
   Widget _buildEmptyState(
-      BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) {
     return Semantics(
       button: true,
       label: '${l10n.howAreYouFeeling}. ${l10n.logMoodAndSymptoms}',
@@ -272,9 +292,8 @@ class QuickStatusCards extends ConsumerWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: () {
-            // "Kayıt Ekle" butonuyla aynı kapı: ikisi de günlük ekranına
-            // gidiyor, ikisi de aynı kontrolden geçmeli. Kart bu kontrolü
-            // atlıyordu, yani ücretsiz kullanıcı formu doldurup ancak
+            // Günlük ekranına giden diğer girişlerle aynı kontrol: kart
+            // bunu atlıyordu, yani ücretsiz kullanıcı formu doldurup ancak
             // kaydederken duvara tosluyordu — emek harcattıktan sonra
             // reddetmek, baştan söylemekten kötü.
             if (!ensurePremiumAccess(context, ref)) return;
@@ -295,56 +314,56 @@ class QuickStatusCards extends ConsumerWidget {
             ),
             child: Row(
               children: [
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.primaryLight.withValues(alpha: 0.2),
-                    AppColors.primary.withValues(alpha: 0.1),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.primaryLight.withValues(alpha: 0.2),
+                        AppColors.primary.withValues(alpha: 0.1),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(
+                    Icons.add_reaction_rounded,
+                    color: AppColors.primary,
+                    size: 26,
+                  ),
                 ),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Icon(
-                Icons.add_reaction_rounded,
-                color: AppColors.primary,
-                size: 26,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.howAreYouFeeling,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.tp(context),
-                    ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.howAreYouFeeling,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.tp(context),
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        l10n.logMoodAndSymptoms,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.ts(context),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 3),
-                  Text(
-                    l10n.logMoodAndSymptoms,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.ts(context),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: AppColors.ts(context).withValues(alpha: 0.5),
-              size: 24,
-            ),
+                ),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: AppColors.ts(context).withValues(alpha: 0.5),
+                  size: 24,
+                ),
               ],
             ),
           ),
@@ -353,8 +372,12 @@ class QuickStatusCards extends ConsumerWidget {
     );
   }
 
-  Widget _buildMoodCard(BuildContext context, WidgetRef ref, MoodType mood,
-      AppLocalizations l10n) {
+  Widget _buildMoodCard(
+    BuildContext context,
+    WidgetRef ref,
+    MoodType mood,
+    AppLocalizations l10n,
+  ) {
     // Kart özeti gösteriyordu ama dokunulmuyordu: düzeltmek için günlük
     // ekranından dolaşmak gerekiyordu
     return _tappable(
@@ -363,139 +386,143 @@ class QuickStatusCards extends ConsumerWidget {
       route: '/mood',
       semanticsLabel: '${l10n.mood}: ${_moodName(mood, l10n)}',
       child: Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: _moodColor(mood).withValues(alpha: 0.12),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: _moodColor(mood).withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.sf(context),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: _moodColor(mood).withValues(alpha: 0.12),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
             ),
-            child: Center(
-              child: Text(
-                _moodEmoji(mood),
-                style: const TextStyle(fontSize: 24),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: _moodColor(mood).withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Center(
+                child: Text(
+                  _moodEmoji(mood),
+                  style: const TextStyle(fontSize: 24),
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.mood,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.ts(context),
-                    letterSpacing: 0.3,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.mood,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.ts(context),
+                      letterSpacing: 0.3,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  _moodName(mood, l10n),
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.tp(context),
+                  const SizedBox(height: 2),
+                  Text(
+                    _moodName(mood, l10n),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.tp(context),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildSymptomCard(BuildContext context, WidgetRef ref,
-      int symptomCount, AppLocalizations l10n) {
+  Widget _buildSymptomCard(
+    BuildContext context,
+    WidgetRef ref,
+    int symptomCount,
+    AppLocalizations l10n,
+  ) {
     return _tappable(
       context,
       ref,
       route: '/symptoms',
       semanticsLabel: '${l10n.symptoms}: ${l10n.nSymptoms(symptomCount)}',
       child: Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.sf(context),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.secondary.withValues(alpha: 0.08),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: AppColors.secondary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.sf(context),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.secondary.withValues(alpha: 0.08),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
             ),
-            child: const Icon(
-              Icons.monitor_heart_rounded,
-              color: AppColors.secondary,
-              size: 24,
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.symptoms,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.ts(context),
-                    letterSpacing: 0.3,
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: AppColors.secondary.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.monitor_heart_rounded,
+                color: AppColors.secondary,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.symptoms,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.ts(context),
+                      letterSpacing: 0.3,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  l10n.nSymptoms(symptomCount),
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.tp(context),
+                  const SizedBox(height: 2),
+                  Text(
+                    l10n.nSymptoms(symptomCount),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.tp(context),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }

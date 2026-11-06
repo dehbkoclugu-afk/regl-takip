@@ -1,31 +1,24 @@
 import 'package:flutter/foundation.dart';
 import 'package:quick_actions/quick_actions.dart';
 
-enum QuickActionDestination {
-  wait,
-  discard,
-  today,
-  quickLog,
-  paywall,
-}
+enum QuickActionDestination { wait, discard, today, quickLog, paywall }
 
 List<ShortcutItem> shortcutItemsFor({
   required bool disguised,
   required String quickLogTitle,
   required String todayTitle,
-}) =>
-    disguised
-        ? const []
-        : [
-            ShortcutItem(
-              type: QuickActionService.actionQuickLog,
-              localizedTitle: quickLogTitle,
-            ),
-            ShortcutItem(
-              type: QuickActionService.actionToday,
-              localizedTitle: todayTitle,
-            ),
-          ];
+}) => disguised
+    ? const []
+    : [
+        ShortcutItem(
+          type: QuickActionService.actionQuickLog,
+          localizedTitle: quickLogTitle,
+        ),
+        ShortcutItem(
+          type: QuickActionService.actionToday,
+          localizedTitle: todayTitle,
+        ),
+      ];
 
 QuickActionDestination resolveQuickAction({
   required String? type,
@@ -46,9 +39,10 @@ QuickActionDestination resolveQuickAction({
   }
   return switch (type) {
     QuickActionService.actionToday => QuickActionDestination.today,
-    QuickActionService.actionQuickLog => hasDailyAccess
-        ? QuickActionDestination.quickLog
-        : QuickActionDestination.paywall,
+    QuickActionService.actionQuickLog =>
+      hasDailyAccess
+          ? QuickActionDestination.quickLog
+          : QuickActionDestination.paywall,
     _ => QuickActionDestination.discard,
   };
 }

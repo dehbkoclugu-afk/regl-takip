@@ -1,4 +1,5 @@
 import '../../models/period_record.dart';
+import 'calendar_days.dart';
 import '../constants/app_constants.dart';
 import 'date_only.dart';
 
@@ -6,29 +7,31 @@ class CycleUtils {
   CycleUtils._();
 
   /// Bir sonraki adet başlangıç tarihini tahmin eder
-  static DateTime predictNextPeriod(
-      DateTime lastPeriodStart, int cycleLength) {
+  static DateTime predictNextPeriod(DateTime lastPeriodStart, int cycleLength) {
+    if (cycleLength < 1 || cycleLength > 365)
+      throw ArgumentError.value(cycleLength, 'cycleLength');
     return addDays(lastPeriodStart, cycleLength);
   }
 
   /// Ovülasyon tarihini tahmin eder (bir sonraki adetten 14 gün önce)
-  static DateTime predictOvulation(
-      DateTime lastPeriodStart, int cycleLength) {
+  static DateTime predictOvulation(DateTime lastPeriodStart, int cycleLength) {
     return addDays(
-        lastPeriodStart, cycleLength - AppConstants.ovulationDayBeforePeriod);
+      lastPeriodStart,
+      cycleLength - AppConstants.ovulationDayBeforePeriod,
+    );
   }
 
   /// Verimli pencere başlangıcını hesaplar (ovülasyondan 5 gün önce)
   static DateTime fertileWindowStart(
-      DateTime lastPeriodStart, int cycleLength) {
+    DateTime lastPeriodStart,
+    int cycleLength,
+  ) {
     final ovulation = predictOvulation(lastPeriodStart, cycleLength);
-    return addDays(
-        ovulation, -AppConstants.fertileWindowStartBeforeOvulation);
+    return addDays(ovulation, -AppConstants.fertileWindowStartBeforeOvulation);
   }
 
   /// Verimli pencere bitişini hesaplar (ovülasyondan 1 gün sonra)
-  static DateTime fertileWindowEnd(
-      DateTime lastPeriodStart, int cycleLength) {
+  static DateTime fertileWindowEnd(DateTime lastPeriodStart, int cycleLength) {
     final ovulation = predictOvulation(lastPeriodStart, cycleLength);
     return addDays(ovulation, 1);
   }
@@ -52,8 +55,11 @@ class CycleUtils {
   /// Tahmini tarih geçtiyse ([periodDelayDays] > 0) gün başa SARILMAZ:
   /// regl gelmemişken "1. gün" yazmak gecikmeyi saklar. Gecikme penceresi
   /// dışında eski davranış (sarma) sürer.
-  static int displayCycleDay(DateTime lastPeriodStart, int cycleLength,
-      {DateTime? now}) {
+  static int displayCycleDay(
+    DateTime lastPeriodStart,
+    int cycleLength, {
+    DateTime? now,
+  }) {
     final raw = currentCycleDay(lastPeriodStart, now: now);
     if (periodDelayDays(lastPeriodStart, cycleLength, now: now) > 0) {
       return raw;
@@ -72,18 +78,22 @@ class CycleUtils {
   /// hiç bitmiş kayıt yoksa [fallback] döner (aksi halde "0,0 gün" gibi
   /// anlamsız bir ortalama gösterilir).
   static double averagePeriodDuration(
-      List<PeriodRecord> records, int fallback) {
+    List<PeriodRecord> records,
+    int fallback,
+  ) {
     final completed = records.where((r) => r.endDate != null).toList();
     if (completed.isEmpty) return fallback.toDouble();
-    final total =
-        completed.fold<int>(0, (sum, r) => sum + r.durationDays);
+    final total = completed.fold<int>(0, (sum, r) => sum + r.durationDays);
     return total / completed.length;
   }
 
   /// Onboarding'de girilen "son regl başlangıcı" için kayıt bitiş tarihi.
   /// Regl bugün hâlâ sürüyorsa null döner: kayıt açık (isOngoing) kalmalı.
   static DateTime? completedPeriodEnd(
-      DateTime start, int periodLength, DateTime today) {
+    DateTime start,
+    int periodLength,
+    DateTime today,
+  ) {
     final t = dateOnly(today);
     final end = addDays(start, periodLength - 1);
     return end.isAfter(t) ? null : end;
@@ -129,7 +139,9 @@ class CycleUtils {
       return CyclePhase.luteal;
     }
     final cycleDay = wrappedCycleDay(
-        currentCycleDay(lastPeriodStart, now: now), cycleLength);
+      currentCycleDay(lastPeriodStart, now: now),
+      cycleLength,
+    );
     return phaseForDay(cycleDay, cycleLength, periodLength);
   }
 
@@ -143,8 +155,7 @@ class CycleUtils {
 
     final gaps = <int>[];
     for (int i = 1; i < sorted.length; i++) {
-      final diff =
-          daysBetween(sorted[i - 1].startDate, sorted[i].startDate);
+      final diff = daysBetween(sorted[i - 1].startDate, sorted[i].startDate);
       if (diff >= AppConstants.minCycleLength &&
           diff <= AppConstants.maxCycleLength) {
         gaps.add(diff);
@@ -168,6 +179,9 @@ class CycleUtils {
     List<PeriodRecord> records, {
     bool smartEnabled = true,
   }) {
+    if (manualLength < AppConstants.minCycleLength ||
+        manualLength > AppConstants.maxCycleLength)
+      throw ArgumentError.value(manualLength, 'manualLength');
     if (!smartEnabled) return manualLength;
     final gaps = validCycleGaps(records);
     if (gaps.length < 3) return manualLength;
@@ -200,7 +214,10 @@ class CycleUtils {
   /// denk geldiğini döndürür (1..cycleLength; lastPeriodStart öncesi null).
   /// Gelecek döngülere de sarar — takvim tahmin işaretleri için.
   static int? dayInCycleFor(
-      DateTime date, DateTime lastPeriodStart, int cycleLength) {
+    DateTime date,
+    DateTime lastPeriodStart,
+    int cycleLength,
+  ) {
     final diff = daysBetween(lastPeriodStart, date);
     if (diff < 0) return null;
     return (diff % cycleLength) + 1;
@@ -228,13 +245,30 @@ class CycleUtils {
   /// [temps] tarih-sıcaklık çiftleri (sırasız olabilir); en az 9 ölçüm ister.
   /// Teyit yoksa null.
   static DateTime? detectOvulationFromBBT(
-      List<MapEntry<DateTime, double>> temps) {
+    List<MapEntry<DateTime, double>> temps,
+  ) {
     if (temps.length < 9) return null;
+    if (temps.any(
+      (t) => !t.value.isFinite || t.value < 35 || t.value >= 37.8,
+    )) {
+      return null;
+    }
 
     final sorted = List<MapEntry<DateTime, double>>.from(temps)
       ..sort((a, b) => a.key.compareTo(b.key));
 
     for (int i = 6; i + 2 < sorted.length; i++) {
+      if (CalendarDays.between(sorted[i + 2].key, sorted[i - 6].key) != 8) {
+        continue;
+      }
+      if (sorted
+              .sublist(i - 6, i + 3)
+              .map((t) => CalendarDays.utc(t.key))
+              .toSet()
+              .length !=
+          9) {
+        continue;
+      }
       double coverline = sorted[i - 6].value;
       for (int j = i - 5; j < i; j++) {
         if (sorted[j].value > coverline) coverline = sorted[j].value;
@@ -280,21 +314,31 @@ class CycleUtils {
   /// 21+7 hap döngüsünde paket günü (1..28).
   /// 1-21 aktif hap, 22-28 ara hafta.
   /// Hap paketinde ara (plasebo) döneminde miyiz?
-  static bool pillIsBreak(int dayInPack) =>
-      dayInPack > AppConstants.pillActiveDays;
+  static bool pillIsBreak(int dayInPack, {int activeDays = 21}) =>
+      dayInPack > activeDays;
 
   /// Ara dönemin başlamasına kaç gün kaldığı. Ara dönemdeyse 0.
   /// Hap modu ana ekranda tek bir çipti: kaçıncı gün olduğu yazıyordu ama
   /// bu modun asıl sorusu "ara ne zaman başlıyor" cevapsızdı.
-  static int pillDaysUntilBreak(int dayInPack) {
-    if (pillIsBreak(dayInPack)) return 0;
-    return AppConstants.pillActiveDays + 1 - dayInPack;
+  static int pillDaysUntilBreak(
+    int dayInPack, {
+    int activeDays = 21,
+    int breakDays = 7,
+  }) {
+    if (breakDays == 0 || pillIsBreak(dayInPack, activeDays: activeDays)) {
+      return 0;
+    }
+    return activeDays + 1 - dayInPack;
   }
 
   /// Yeni paketin başlamasına kaç gün kaldığı. Etkin dönemdeyse 0.
-  static int pillDaysUntilNewPack(int dayInPack) {
-    if (!pillIsBreak(dayInPack)) return 0;
-    return AppConstants.pillPackDays + 1 - dayInPack;
+  static int pillDaysUntilNewPack(
+    int dayInPack, {
+    int activeDays = 21,
+    int breakDays = 7,
+  }) {
+    if (!pillIsBreak(dayInPack, activeDays: activeDays)) return 0;
+    return activeDays + breakDays + 1 - dayInPack;
   }
 
   /// Gebelik testinin anlamlı olduğu en erken gün.
@@ -302,14 +346,29 @@ class CycleUtils {
   static DateTime earliestPregnancyTestDay(DateTime ovulation) =>
       addDays(ovulation, AppConstants.pregnancyTestAfterOvulation);
 
-  static int pillDayInPack(DateTime packStart, {DateTime? now}) {
+  static int pillDayInPack(
+    DateTime packStart, {
+    DateTime? now,
+    int activeDays = 21,
+    int breakDays = 7,
+  }) {
     final days = daysBetween(packStart, now ?? DateTime.now());
     if (days < 0) return 1;
-    return (days % 28) + 1;
+    return (days % (activeDays + breakDays).clamp(1, 134)) + 1;
   }
 
-  static bool isPillBreakDay(DateTime packStart) =>
-      pillDayInPack(packStart) > 21;
+  static bool isPillBreakDay(
+    DateTime packStart, {
+    DateTime? now,
+    int activeDays = 21,
+    int breakDays = 7,
+  }) =>
+      pillDayInPack(
+        packStart,
+        now: now,
+        activeDays: activeDays,
+        breakDays: breakDays,
+      ) > activeDays;
 
   /// Gelecek döngülerde tahmini adet günü mü? (mevcut döngünün gerçek
   /// kayıtları hariç — onları PeriodRecord işaretler)
@@ -331,7 +390,10 @@ class CycleUtils {
   /// Bir tarihin verimli pencerede olup olmadığını kontrol eder
   /// (mevcut ve gelecek döngülere sarar)
   static bool isInFertileWindow(
-      DateTime date, DateTime lastPeriodStart, int cycleLength) {
+    DateTime date,
+    DateTime lastPeriodStart,
+    int cycleLength,
+  ) {
     final day = dayInCycleFor(date, lastPeriodStart, cycleLength);
     if (day == null) return false;
     final ovulationDay = ovulationDayNumber(cycleLength);
@@ -341,7 +403,10 @@ class CycleUtils {
   /// Bir tarihin ovülasyon günü olup olmadığını kontrol eder
   /// (mevcut ve gelecek döngülere sarar)
   static bool isOvulationDay(
-      DateTime date, DateTime lastPeriodStart, int cycleLength) {
+    DateTime date,
+    DateTime lastPeriodStart,
+    int cycleLength,
+  ) {
     final day = dayInCycleFor(date, lastPeriodStart, cycleLength);
     if (day == null) return false;
     return day == ovulationDayNumber(cycleLength);
@@ -349,9 +414,14 @@ class CycleUtils {
 
   /// Gelecekteki (bugün dahil) ilk tahmini adet başlangıcını döndürür.
   /// Tahmin geçmişte kaldıysa döngü uzunluğu kadar ileri sarar.
-  static DateTime nextFuturePeriod(DateTime lastPeriodStart, int cycleLength,
-      {DateTime? now}) {
+  static DateTime nextFuturePeriod(
+    DateTime lastPeriodStart,
+    int cycleLength, {
+    DateTime? now,
+  }) {
     final today = dateOnly(now ?? DateTime.now());
+    if (cycleLength < 1 || cycleLength > 365)
+      throw ArgumentError.value(cycleLength, 'cycleLength');
     var next = predictNextPeriod(lastPeriodStart, cycleLength);
     while (next.isBefore(today)) {
       next = addDays(next, cycleLength);
@@ -360,11 +430,17 @@ class CycleUtils {
   }
 
   /// Sonraki adete kalan gün sayısı
-  static int daysUntilNextPeriod(DateTime lastPeriodStart, int cycleLength,
-      {DateTime? now}) {
+  static int daysUntilNextPeriod(
+    DateTime lastPeriodStart,
+    int cycleLength, {
+    DateTime? now,
+  }) {
     final reference = now ?? DateTime.now();
-    final nextPeriod =
-        nextFuturePeriod(lastPeriodStart, cycleLength, now: reference);
+    final nextPeriod = nextFuturePeriod(
+      lastPeriodStart,
+      cycleLength,
+      now: reference,
+    );
     final diff = daysBetween(reference, nextPeriod);
     return diff > 0 ? diff : 0;
   }
@@ -381,21 +457,19 @@ class CycleUtils {
   /// sonraki tahmini tarih de geçmiş demektir ve uygulama "çok geç kaldı"
   /// ile "kullanıcı uzun süredir kayıt girmiyor"u birbirinden ayıramaz.
   /// O noktada 0 dönüp normal tahmin diline geri dönmek dürüst olan.
-  static int periodDelayDays(DateTime lastPeriodStart, int cycleLength,
-      {DateTime? now}) {
+  static int periodDelayDays(
+    DateTime lastPeriodStart,
+    int cycleLength, {
+    DateTime? now,
+  }) {
     final predicted = predictNextPeriod(lastPeriodStart, cycleLength);
     final delay = daysBetween(predicted, now ?? DateTime.now());
-    if (delay <= 0 || delay >= cycleLength) return 0;
+    if (delay <= 0) return 0;
     return delay;
   }
 }
 
-enum CyclePhase {
-  menstrual,
-  follicular,
-  ovulation,
-  luteal,
-}
+enum CyclePhase { menstrual, follicular, ovulation, luteal }
 
 /// TTC modu için günlük doğurganlık seviyesi
 enum FertilityLevel { low, medium, high }

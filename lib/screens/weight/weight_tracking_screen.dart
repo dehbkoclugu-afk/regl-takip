@@ -24,6 +24,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   final _controller = TextEditingController();
   bool _hasExistingWeight = false;
   double _initialWeight = 60.0;
+  bool _saving = false;
 
   bool get _isDirty => _weight != _initialWeight;
 
@@ -42,15 +43,22 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
         kilograms > InputParsing.maxWeightKg) {
       return null;
     }
-    return double.parse(kilograms.toStringAsFixed(1));
+    // 0.1 lb ≈ 0.045 kg; one decimal kg would round distinct lb inputs to
+    // the same stored value and show a different number after reopening.
+    return double.parse(kilograms.toStringAsFixed(_usePounds ? 2 : 1));
   }
+
+  late DateTime _editDate;
 
   @override
   void initState() {
     super.initState();
-    final log = ref
-        .read(dailyLogProvider.notifier)
-        .getDailyLog(ref.read(selectedDateProvider));
+    final selected = ref.read(selectedDateProvider);
+    final now = DateTime.now();
+    _editDate = DateTime(selected.year, selected.month, selected.day);
+    if (_editDate.isAfter(now))
+      _editDate = DateTime(now.year, now.month, now.day);
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(_editDate);
     if (log?.weight != null) {
       _weight = log!.weight!;
       _hasExistingWeight = true;
@@ -66,6 +74,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   }
 
   void _adjust(double delta) {
+    if (_saving) return;
     setState(() {
       final display = (_displayWeight + delta).clamp(
         _usePounds
@@ -77,7 +86,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
       );
       _weight = double.parse(
         (_usePounds ? UnitConversion.poundsToKilograms(display) : display)
-            .toStringAsFixed(1),
+            .toStringAsFixed(_usePounds ? 2 : 1),
       );
       _controller.text = _displayWeight.toStringAsFixed(1);
     });
@@ -131,30 +140,39 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
             size: 48,
           ),
           const SizedBox(height: 12),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                _displayWeight.toStringAsFixed(1),
-                style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                  color: AppColors.categoryText(context, AppColors.weightColor),
-                ),
+          SizedBox(
+            width: double.infinity,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    _displayWeight.toStringAsFixed(1),
+                    style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                      color: AppColors.categoryText(
+                        context,
+                        AppColors.weightColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    _unit,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.categoryText(
+                        context,
+                        AppColors.weightColor,
+                      ).withValues(alpha: 0.7),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 4),
-              Text(
-                _unit,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.categoryText(
-                    context,
-                    AppColors.weightColor,
-                  ).withValues(alpha: 0.7),
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),
@@ -241,6 +259,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
           const SizedBox(height: 12),
           TextField(
             controller: _controller,
+            readOnly: _saving,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             style: TextStyle(
               fontSize: 22,
@@ -273,9 +292,9 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
           if (_hasExistingWeight) ...[
             const SizedBox(height: 4),
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: TextButton.icon(
-                onPressed: _delete,
+                onPressed: _saving ? null : _delete,
                 icon: const Icon(Icons.delete_outline_rounded, size: 18),
                 label: Text(l10n.deleteRecord),
                 style: TextButton.styleFrom(foregroundColor: AppColors.error),
@@ -291,7 +310,7 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: _save,
+        onPressed: _saving ? null : _save,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.weightColor,
           foregroundColor: Colors.white,
@@ -309,22 +328,28 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
   }
 
   Future<void> _delete() async {
-    if (!ensureTrackingWriteAccess(context, ref)) return;
-    await ref
-        .read(dailyLogProvider.notifier)
-        .updateWeight(ref.read(selectedDateProvider), null);
-    if (!mounted) return;
-    final l10n = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.recordDeleted),
-        backgroundColor: AppColors.success,
-      ),
-    );
-    Navigator.of(context).pop();
+    if (_saving) return;
+    setState(() => _saving = true);
+    try {
+      await ref.read(dailyLogProvider.notifier).updateWeight(_editDate, null);
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.recordDeleted),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      Navigator.of(context).pop();
+    } catch (_) {
+      _showSaveError();
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   Future<void> _save() async {
+    if (_saving) return;
     if (!ensureTrackingWriteAccess(context, ref)) return;
     final l10n = AppLocalizations.of(context)!;
     // Geçersiz giriş sessizce eski değeri kaydediyordu — kullanıcıya söyle
@@ -338,13 +363,11 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
       );
       return;
     }
-    _weight = parsed;
-
-    await ref
-        .read(dailyLogProvider.notifier)
-        .updateWeight(ref.read(selectedDateProvider), _weight);
-    notifyTrackingRecordSaved();
-    if (mounted) {
+    setState(() => _saving = true);
+    try {
+      await ref.read(dailyLogProvider.notifier).updateWeight(_editDate, parsed);
+      if (!mounted) return;
+      notifyTrackingRecordSaved();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.weightSaved),
@@ -352,6 +375,21 @@ class _WeightTrackingScreenState extends ConsumerState<WeightTrackingScreen> {
         ),
       );
       Navigator.of(context).pop();
+    } catch (_) {
+      _showSaveError();
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
+  }
+
+  void _showSaveError() {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.errorOccurred(l10n.retry)),
+        backgroundColor: AppColors.error,
+      ),
+    );
   }
 }

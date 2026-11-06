@@ -68,8 +68,7 @@ class _TrackerScaffoldState extends State<TrackerScaffold> {
     final discard = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(l10n.discardChangesTitle),
         content: Text(l10n.discardChangesBody),
         actions: [
@@ -103,10 +102,14 @@ class _TrackerScaffoldState extends State<TrackerScaffold> {
       child: Scaffold(
         backgroundColor: AppColors.bg(context),
         appBar: AppBar(
-          title: Text(widget.title,
-              maxLines: largeText ? 2 : 1,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, color: AppColors.tp(context))),
+          title: Text(
+            widget.title,
+            maxLines: largeText ? 2 : 1,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppColors.tp(context),
+            ),
+          ),
           toolbarHeight: largeText ? 80 : null,
           backgroundColor: AppColors.bg(context),
           elevation: 0,

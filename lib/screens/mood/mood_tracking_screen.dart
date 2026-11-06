@@ -31,15 +31,23 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
   MoodType? _initialMood;
   String _initialNote = '';
   bool _noteDirty = false;
+  bool _saving = false;
 
   bool get _isDirty =>
       _selectedMood != _initialMood ||
       _noteController.text.trim() != _initialNote;
 
+  late DateTime _editDate;
+
   @override
   void initState() {
     super.initState();
-    final log = ref.read(dailyLogProvider.notifier).getDailyLog(ref.read(selectedDateProvider));
+    final selected = ref.read(selectedDateProvider);
+    final now = DateTime.now();
+    _editDate = DateTime(selected.year, selected.month, selected.day);
+    if (_editDate.isAfter(now))
+      _editDate = DateTime(now.year, now.month, now.day);
+    final log = ref.read(dailyLogProvider.notifier).getDailyLog(_editDate);
     if (log?.mood != null) {
       _selectedMood = log!.mood!.type;
       _noteController.text = log.mood!.note ?? '';
@@ -76,183 +84,269 @@ class _MoodTrackingScreenState extends ConsumerState<MoodTrackingScreen> {
       title: l10n.mood,
       isDirty: _isDirty,
       body: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.howAreYouFeeling,
-                      style: TextStyle(
-                          fontSize: 22, fontWeight: FontWeight.bold,
-                          color: AppColors.tp(context)))
-                      .animateSafe(context).fadeIn(duration: 400.ms),
-                  const SizedBox(height: 20),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      final textScale = effectiveTextScale(
-                        MediaQuery.textScalerOf(context),
-                      );
-                      return GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: adaptiveGridColumns(
-                            width: constraints.maxWidth,
-                            textScale: textScale,
-                            maxColumns: 3,
-                            minCardWidth: 80,
-                          ),
-                          mainAxisExtent: scaledGridExtent(110, textScale),
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                        ),
-                        itemCount: MoodType.values.length,
-                        itemBuilder: (context, index) {
-                      final mood = MoodType.values[index];
-                      final emojiData = _moodEmojis[mood]!;
-                      // Etiketler tek kaynaktan (EnumLabels); ekranın kendi
-                      // kopya map'i vardı
-                      final label = EnumLabels.mood(mood, l10n);
-                      final isSelected = _selectedMood == mood;
-
-                      return Semantics(
-                        button: true,
-                        selected: isSelected,
-                        label: label,
-                        child: InkWell(
-                        borderRadius: BorderRadius.circular(20),
-                        onTap: () => setState(() =>
-                            _selectedMood = _selectedMood == mood ? null : mood),
-                        child: ExcludeSemantics(
-                        child: AnimatedContainer(
-                          duration: context.motionDuration(
-                              const Duration(milliseconds: 250)),
-                          decoration: BoxDecoration(
-                            gradient: isSelected
-                                ? LinearGradient(
-                                    colors: [emojiData.$2.withValues(alpha: 0.2), emojiData.$2.withValues(alpha: 0.08)],
-                                  )
-                                : null,
-                            color: isSelected ? null : AppColors.sf(context),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: isSelected ? emojiData.$2 : AppColors.dv(context),
-                              width: isSelected ? 2 : 0.5,
-                            ),
-                            boxShadow: isSelected
-                                ? [BoxShadow(color: emojiData.$2.withValues(alpha: 0.2), blurRadius: 12)]
-                                : [],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(emojiData.$1,
-                                  style: TextStyle(
-                                      fontSize: isSelected ? 36 : 30)),
-                              const SizedBox(height: 6),
-                              Text(label,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w700 : FontWeight.w600,
-                                    // Pastelin kendisi metin olarak okunmuyordu
-                                    // (moodHappy beyaz üstünde 1,26:1); ton
-                                    // korunur, parlaklık kısılır
-                                    color: isSelected
-                                        ? AppColors.readable(
-                                            context, emojiData.$2)
-                                        : AppColors.ts(context),
-                                  )),
-                            ],
-                          ),
-                        ),
-                        ),
-                        ),
-                      ).animateSafe(context)
-                          .fadeIn(delay: (index * 40).ms, duration: 300.ms)
-                          .scale(begin: const Offset(0.9, 0.9),
-                              end: const Offset(1.0, 1.0),
-                              delay: (index * 40).ms, duration: 300.ms);
-                        },
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 24),
-                  Text(l10n.addNoteOptional,
-                      style: TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600,
-                          color: AppColors.tp(context))),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: _noteController,
-                    maxLines: 3,
-                    // Dirty durumu değiştiğinde PopScope tazelenmeli; her
-                    // tuş vuruşunda değil, yalnız bayrak dönünce rebuild
-                    onChanged: (_) {
-                      final dirty = _isDirty;
-                      if (dirty != _noteDirty) {
-                        setState(() => _noteDirty = dirty);
-                      }
-                    },
-                    decoration: InputDecoration(
-                      hintText: l10n.writeAboutToday,
-                      hintStyle: TextStyle(color: AppColors.ts(context)),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(color: AppColors.dv(context))),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(
-                              color: AppColors.primary, width: 2)),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.howAreYouFeeling,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: AppColors.tp(context),
+              ),
+            ).animateSafe(context).fadeIn(duration: 400.ms),
+            const SizedBox(height: 20),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final textScale = effectiveTextScale(
+                  MediaQuery.textScalerOf(context),
+                );
+                return GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: adaptiveGridColumns(
+                      width: constraints.maxWidth,
+                      textScale: textScale,
+                      maxColumns: 3,
+                      minCardWidth: 80,
                     ),
-                  ).animateSafe(context).fadeIn(delay: 500.ms, duration: 400.ms),
-                ],
+                    mainAxisExtent: scaledGridExtent(110, textScale),
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                  ),
+                  itemCount: MoodType.values.length,
+                  itemBuilder: (context, index) {
+                    final mood = MoodType.values[index];
+                    final emojiData = _moodEmojis[mood]!;
+                    // Etiketler tek kaynaktan (EnumLabels); ekranın kendi
+                    // kopya map'i vardı
+                    final label = EnumLabels.mood(mood, l10n);
+                    final isSelected = _selectedMood == mood;
+
+                    return Semantics(
+                          button: true,
+                          selected: isSelected,
+                          label: label,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(20),
+                            onTap: () => setState(
+                              () => _selectedMood = _selectedMood == mood
+                                  ? null
+                                  : mood,
+                            ),
+                            child: ExcludeSemantics(
+                              child: AnimatedContainer(
+                                duration: context.motionDuration(
+                                  const Duration(milliseconds: 250),
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: isSelected
+                                      ? LinearGradient(
+                                          colors: [
+                                            emojiData.$2.withValues(alpha: 0.2),
+                                            emojiData.$2.withValues(
+                                              alpha: 0.08,
+                                            ),
+                                          ],
+                                        )
+                                      : null,
+                                  color: isSelected
+                                      ? null
+                                      : AppColors.sf(context),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? emojiData.$2
+                                        : AppColors.dv(context),
+                                    width: isSelected ? 2 : 0.5,
+                                  ),
+                                  boxShadow: isSelected
+                                      ? [
+                                          BoxShadow(
+                                            color: emojiData.$2.withValues(
+                                              alpha: 0.2,
+                                            ),
+                                            blurRadius: 12,
+                                          ),
+                                        ]
+                                      : [],
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      emojiData.$1,
+                                      style: TextStyle(
+                                        fontSize: isSelected ? 36 : 30,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      label,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: isSelected
+                                            ? FontWeight.w700
+                                            : FontWeight.w600,
+                                        // Pastelin kendisi metin olarak okunmuyordu
+                                        // (moodHappy beyaz üstünde 1,26:1); ton
+                                        // korunur, parlaklık kısılır
+                                        color: isSelected
+                                            ? AppColors.readable(
+                                                context,
+                                                emojiData.$2,
+                                              )
+                                            : AppColors.ts(context),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                        .animateSafe(context)
+                        .fadeIn(delay: (index * 40).ms, duration: 300.ms)
+                        .scale(
+                          begin: const Offset(0.9, 0.9),
+                          end: const Offset(1.0, 1.0),
+                          delay: (index * 40).ms,
+                          duration: 300.ms,
+                        );
+                  },
+                );
+              },
+            ),
+            const SizedBox(height: 24),
+            Text(
+              l10n.addNoteOptional,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.tp(context),
               ),
             ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _noteController,
+              maxLines: 3,
+              // Dirty durumu değiştiğinde PopScope tazelenmeli; her
+              // tuş vuruşunda değil, yalnız bayrak dönünce rebuild
+              onChanged: (_) {
+                final dirty = _isDirty;
+                if (dirty != _noteDirty) {
+                  setState(() => _noteDirty = dirty);
+                }
+              },
+              decoration: InputDecoration(
+                hintText: l10n.writeAboutToday,
+                hintStyle: TextStyle(color: AppColors.ts(context)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(color: AppColors.dv(context)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(
+                    color: AppColors.primary,
+                    width: 2,
+                  ),
+                ),
+              ),
+            ).animateSafe(context).fadeIn(delay: 500.ms, duration: 400.ms),
+            if (_selectedMood == null && _noteController.text.trim().isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Row(
+                  children: [
+                    const Icon(Icons.arrow_forward_rounded, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text('${l10n.notes} → ${l10n.myNotes}')),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
       bottomBar: SizedBox(
         width: double.infinity,
         child: ElevatedButton(
           // Kayıtlı ruh hali varken seçim kaldırılırsa kaydetmek
           // silme anlamına gelir — buton kapanmamalı
-          onPressed:
-              (_selectedMood != null || _hadExistingMood) ? _save : null,
+          onPressed: !_saving &&
+                  (_selectedMood != null ||
+                      _hadExistingMood ||
+                      _noteController.text.trim().isNotEmpty)
+              ? _save
+              : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primaryStrong,
             foregroundColor: Colors.white,
             disabledBackgroundColor: AppColors.dv(context),
             padding: const EdgeInsets.symmetric(vertical: 16),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
           ),
-          child: Text(l10n.save,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          child: Text(
+            l10n.save,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
         ),
       ),
     );
   }
 
   Future<void> _save() async {
-    if (!ensureTrackingWriteAccess(context, ref)) return;
+    if (_saving) return;
     final selected = _selectedMood;
-    final mood = selected == null
-        ? null
-        : MoodEntry(
-            type: selected,
-            note: _noteController.text.trim().isEmpty
-                ? null
-                : _noteController.text.trim(),
-          );
-    await ref
-        .read(dailyLogProvider.notifier)
-        .updateMood(ref.read(selectedDateProvider), mood);
-    notifyTrackingRecordSaved();
-    if (mounted) {
+    // Kendi kaydını kaldırmak için abonelik gerekmez; yeni/yeniden yazılmış
+    // not bu istisnadan yararlanıp ücretsiz katman kapısını aşamaz.
+    final unchangedExistingNote =
+        _hadExistingMood && _noteController.text.trim() == _initialNote;
+    if ((selected != null || !unchangedExistingNote) &&
+        !ensureTrackingWriteAccess(context, ref)) {
+      return;
+    }
+    setState(() => _saving = true);
+    try {
+      if (selected == null) {
+        await ref.read(dailyLogProvider.notifier).removeMoodKeepingNote(
+          _editDate,
+          _noteController.text,
+        );
+      } else {
+        final mood = MoodEntry(
+          type: selected,
+          note: _noteController.text.trim().isEmpty
+              ? null
+              : _noteController.text.trim(),
+        );
+        await ref.read(dailyLogProvider.notifier).updateMood(_editDate, mood);
+      }
+      if (!mounted) return;
+      if (selected != null) notifyTrackingRecordSaved();
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.moodSaved),
-            backgroundColor: AppColors.success),
+        SnackBar(
+          content: Text(selected == null ? l10n.recordDeleted : l10n.moodSaved),
+          backgroundColor: AppColors.success,
+        ),
       );
       Navigator.of(context).pop();
+    } catch (_) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.errorOccurred(l10n.retry)),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 }
