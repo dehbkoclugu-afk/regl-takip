@@ -104,9 +104,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       (Icons.edit_calendar_rounded, l10n.paywallFeatureTrackers),
       (Icons.insights_rounded, l10n.paywallFeatureStats),
       (Icons.auto_awesome_rounded, l10n.paywallFeatureInsights),
-      (Icons.picture_as_pdf_rounded, l10n.paywallFeatureExport),
       (Icons.favorite_rounded, l10n.paywallFeatureHealth),
-      (Icons.visibility_off_rounded, l10n.paywallFeatureDisguise),
       (Icons.block_rounded, l10n.paywallFeatureNoAds),
     ];
 

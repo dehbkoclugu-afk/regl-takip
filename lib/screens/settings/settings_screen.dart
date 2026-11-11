@@ -906,7 +906,6 @@ class SettingsScreen extends ConsumerWidget {
               l10n.exportPdfReport,
               AppColors.error,
               () async {
-                if (!ensurePremiumAccess(context, ref)) return;
                 final exportService = ExportService();
                 final periods = ref.read(periodRecordsProvider);
                 final dailyLogs = ref.read(dailyLogProvider);
@@ -939,7 +938,6 @@ class SettingsScreen extends ConsumerWidget {
               l10n.exportCsvFile,
               AppColors.success,
               () async {
-                if (!ensurePremiumAccess(context, ref)) return;
                 final exportService = ExportService();
                 final periods = ref.read(periodRecordsProvider);
                 final dailyLogs = ref.read(dailyLogProvider);
@@ -969,7 +967,6 @@ class SettingsScreen extends ConsumerWidget {
               l10n.exportCalendarFile,
               AppColors.primaryDeep,
               () async {
-                if (!ensurePremiumAccess(context, ref)) return;
                 final exportService = ExportService();
                 try {
                   final path = await exportService.exportCalendar(
@@ -1938,7 +1935,6 @@ class _DisguiseTileState extends ConsumerState<_DisguiseTile> {
             : (value) async {
                 // Gizli mod premium kapsamı; KAPATMAK her zaman serbest
                 // (aboneliği biten kullanıcı kılıkta mahsur kalmamalı)
-                if (value && !ensurePremiumAccess(context, ref)) return;
                 final ok = await DisguiseService.setDisguise(value);
                 if (!ok) return;
                 // Launcher kimliği değiştiği anda sağlık kısayolları da
