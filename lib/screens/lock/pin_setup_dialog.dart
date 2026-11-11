@@ -111,12 +111,16 @@ class _PinVerifyScreenState extends State<_PinVerifyScreen> {
 
   Future<void> _verify() async {
     setState(() => _isVerifying = true);
-    final stored = await _storage.read(key: 'app_pin');
-    if (stored == null) {
+    final raw = await _storage.read(key: 'app_pin');
+    if (raw == null) {
       // Kayıt yoksa doğrulanacak şey de yok — engel olma
       if (mounted) Navigator.of(context).pop(true);
       return;
     }
+    final stored = await upgradePlaintextPin(
+      raw,
+      (v) => _storage.write(key: 'app_pin', value: v),
+    );
     final ok = await compute(verifyPinTask, [stored, _pin]);
     if (!mounted) return;
     if (ok) {
