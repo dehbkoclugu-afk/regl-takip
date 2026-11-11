@@ -39,7 +39,6 @@ class HiveService {
   String _name(String base) =>
       _generation.isEmpty ? base : '${base}_$_generation';
   bool _isInitialized = false;
-  bool _dataResetPerformed = false;
 
   bool get isInitialized => _isInitialized;
   String? readMetadata(String key) => _catalog?.get(key);
@@ -51,10 +50,6 @@ class HiveService {
 
   @visibleForTesting
   String? get profileStoragePath => _userProfileBox.path;
-
-  /// Açılışta kutular çözülemeyip karantinaya alındıysa ve sıfırdan
-  /// başlandıysa true — UI tek seferlik açıklama göstermek için okur.
-  bool get dataResetPerformed => _dataResetPerformed;
 
   /// [encryptionKey] testlerde enjekte edilir; prod'da secure storage'dan
   /// okunur/üretilir. [manageHivePath] false ise Hive.init çağıranın
@@ -158,8 +153,8 @@ class HiveService {
 
   // crashRecovery: false — Hive'ın varsayılan "kurtarması", çözülemeyen
   // frame'lerde kutuyu sessizce BOŞALTIP açar (yanlış anahtarda tüm veri
-  // iz bırakmadan gider). Kapalıyken hata fırlar; init'teki catch dosyayı
-  // budanmadan karantinaya alır ve kullanıcıya haber verir.
+  // iz bırakmadan gider). Kapalıyken hata fırlar; init başarısız olur, dosya
+  // dokunulmadan kalır ve main.dart kurtarma ekranını gösterir.
   Future<void> _openPlainBoxes() async {
     _userProfileBox = await Hive.openBox<UserProfile>(
       AppConstants.userProfileBox,
@@ -366,7 +361,6 @@ class HiveService {
   @visibleForTesting
   void resetForTesting() {
     _isInitialized = false;
-    _dataResetPerformed = false;
     _catalog = null;
     _cipher = null;
     _generation = '';

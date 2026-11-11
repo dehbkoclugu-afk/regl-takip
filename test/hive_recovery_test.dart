@@ -96,17 +96,6 @@ void main() {
     });
     await done.future;
 
-    expect(service.dataResetPerformed, isFalse);
     expect(service.getUserProfile()?.name, 'Bayrak Kaybı');
-  });
-
-  test('doğru anahtarla normal açılış bayrak bırakmaz', () async {
-    final service = HiveService();
-    await service.init(
-      encryptionKey: keyA,
-      manageHivePath: false,
-      assumeEncrypted: true,
-    );
-    expect(service.dataResetPerformed, isFalse);
   });
 }

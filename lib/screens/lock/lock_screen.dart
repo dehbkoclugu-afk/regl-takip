@@ -72,13 +72,24 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   Future<void> _checkPinAvailability() async {
     final profile = ref.read(userProfileProvider);
     if (profile?.pinEnabled != true) return;
+    final String? stored;
     try {
-      final stored = await _storage.read(key: 'app_pin');
-      if (mounted && stored == null) {
-        setState(() => _pinUnavailable = true);
-      }
+      stored = await _storage.read(key: 'app_pin');
     } catch (_) {
       if (mounted) setState(() => _pinUnavailable = true);
+      return;
+    }
+    if (stored == null) {
+      if (mounted) setState(() => _pinUnavailable = true);
+      return;
+    }
+    try {
+      await upgradePlaintextPin(
+        stored,
+        (v) => _storage.write(key: 'app_pin', value: v),
+      );
+    } catch (_) {
+      // Yükseltme yazılamadıysa PIN hâlâ okunabilir; girişte yeniden denenir.
     }
   }
 
@@ -219,18 +230,22 @@ class _LockScreenState extends ConsumerState<LockScreen> {
     final entered = _enteredPin;
 
     try {
-      final stored = await _storage.read(key: 'app_pin');
-      if (stored == null) {
+      final raw = await _storage.read(key: 'app_pin');
+      if (raw == null) {
         if (mounted) setState(() => _pinUnavailable = true);
         return;
       }
+      final stored = await upgradePlaintextPin(
+        raw,
+        (v) => _storage.write(key: 'app_pin', value: v),
+      );
 
       // PBKDF2 50k tur — UI thread'i kilitlememek için isolate'ta
       final isMatch = await compute(verifyPinTask, [stored, entered]);
 
       if (isMatch) {
         if (!PinUtils.isModern(stored)) {
-          // Eski format (düz metin / tuzsuz SHA-256) → tuzlu PBKDF2'ye yükselt
+          // Eski format (tuzsuz SHA-256) → tuzlu PBKDF2'ye yükselt
           final upgraded = await compute(encodePinTask, entered);
           await _storage.write(key: 'app_pin', value: upgraded);
         }

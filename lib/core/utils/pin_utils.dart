@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 
 /// PIN saklama ve doğrulama.
 ///
@@ -10,8 +11,9 @@ import 'package:crypto/crypto.dart';
 /// çözülür; PBKDF2 + rastgele tuz her cihazda farklı hash üretir ve deneme
 /// başına maliyeti yükseltir.
 ///
-/// Eski formatlar (düz metin, tuzsuz SHA-256) doğrulamada hâlâ kabul edilir;
-/// çağıran taraf başarılı girişten sonra [encodePin] ile yükseltmelidir.
+/// Tuzsuz SHA-256 kaydı doğrulamada hâlâ kabul edilir; çağıran taraf başarılı
+/// girişten sonra [encodePin] ile yükseltmelidir. Düz metin kayıt artık
+/// karşılaştırılmaz: okunduğu anda [upgradePlaintextPin] ile PBKDF2'ye çevrilir.
 class PinUtils {
   PinUtils._();
 
@@ -36,6 +38,10 @@ class PinUtils {
 
   static bool isModern(String stored) => stored.startsWith('$_prefix\$');
 
+  /// En eski sürümün düz metin kaydı: ne PBKDF2 ne 64 haneli SHA-256 hex.
+  static bool isPlaintext(String stored) =>
+      !isModern(stored) && stored.length != 64;
+
   static bool verifyPin(String stored, String pin) {
     if (isModern(stored)) {
       final parts = stored.split(r'$');
@@ -54,8 +60,8 @@ class PinUtils {
       final actual = _pbkdf2(utf8.encode(pin), salt, rounds);
       return _constantTimeEquals(expected, actual);
     }
-    // Eski kurulumlar: tuzsuz SHA-256 ya da (çok eski) düz metin
-    return stored == hashPin(pin) || stored == pin;
+    // Eski kurulumlar: tuzsuz SHA-256
+    return stored == hashPin(pin);
   }
 
   static List<int> _pbkdf2(List<int> password, List<int> salt, int rounds) {
@@ -88,3 +94,16 @@ bool verifyPinTask(List<String> storedAndPin) =>
     PinUtils.verifyPin(storedAndPin[0], storedAndPin[1]);
 
 String encodePinTask(String pin) => PinUtils.encodePin(pin);
+
+/// Düz metin PIN kaydını PIN sorulmadan PBKDF2'ye çevirip [persist] ile
+/// yazar; güncel kaydı döndürür. Biyometriyle açan kullanıcı PIN'i hiç
+/// yazmadığı için girişte yükseltme ona ulaşmıyordu.
+Future<String> upgradePlaintextPin(
+  String stored,
+  Future<void> Function(String upgraded) persist,
+) async {
+  if (!PinUtils.isPlaintext(stored)) return stored;
+  final upgraded = await compute(encodePinTask, stored);
+  await persist(upgraded);
+  return upgraded;
+}

@@ -1,4 +1,3 @@
-import '../../services/backup_import_flow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -13,10 +12,7 @@ import '../../core/utils/date_only.dart';
 import '../../providers/providers.dart';
 import '../../models/enums.dart';
 import '../../models/user_profile.dart';
-import '../../services/hive_service.dart';
-import '../../services/backup_service.dart';
 import '../../services/notification_service.dart';
-import '../../services/widget_service.dart';
 import 'widgets/animated_ring_intro.dart';
 import 'widgets/onboarding_page.dart';
 import '../../core/utils/motion.dart';
@@ -50,99 +46,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   double _periodLength = 5;
 
   bool _isSaving = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Açılışta kutular çözülemeyip sıfırdan başlandıysa (cihaz/yedek
-    // geçişi) kullanıcı ilk burada karşılanır — nedeni açıklanmalı
-    if (HiveService().dataResetPerformed) {
-      WidgetsBinding.instance.addPostFrameCallback(
-        (_) => _showDataResetNotice(),
-      );
-    }
-  }
-
-  Future<void> _showDataResetNotice() async {
-    if (!mounted) return;
-    final l10n = AppLocalizations.of(context)!;
-    await showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.dataResetTitle),
-        content: SingleChildScrollView(
-          child: Text(
-            l10n.dataResetBody,
-            style: const TextStyle(fontSize: 14, height: 1.5),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              _restoreFromBackup();
-            },
-            child: Text(l10n.restoreData),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.done),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _restoreFromBackup() async {
-    final l10n = AppLocalizations.of(context)!;
-    final data = await pickBackupForRestore(context);
-    if (data == null) return;
-    try {
-      await BackupService(HiveService()).restoreBackup(data);
-    } catch (_) {
-      if (mounted)
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.invalidBackupFile),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      return;
-    }
-    final trialStart = await BackupService.adoptEarlierTrialStart(null);
-    if (trialStart != null)
-      ref.read(trialStartProvider.notifier).state = trialStart;
-    ref.read(userProfileProvider.notifier).refresh();
-    ref.read(periodRecordsProvider.notifier).refresh();
-    ref.read(dailyLogProvider.notifier).refresh();
-
-    final profile = HiveService().getUserProfile();
-    if (profile != null) {
-      final logs = HiveService().getAllDailyLogs();
-      try {
-        await NotificationService().rescheduleAll(
-          profile,
-          records: HiveService().getAllPeriodRecords(),
-          medications: profile.medicationPlan,
-          logs: logs,
-        );
-      } catch (_) {
-        // Geri yükleme bildirim kurulumu başarısız olsa da geçerlidir.
-      }
-      await WidgetService.update(profile, HiveService().getAllPeriodRecords());
-    }
-
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.backupRestored),
-        backgroundColor: AppColors.success,
-      ),
-    );
-    if (profile?.onboardingCompleted ?? false) {
-      GoRouter.of(context).go('/dashboard');
-    }
-  }
 
   @override
   void dispose() {

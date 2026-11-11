@@ -44,9 +44,26 @@ void main() {
       expect(PinUtils.verifyPin(legacy, '9999'), isFalse);
     });
 
-    test('düz metin kaydı (en eski sürüm) hâlâ doğrulanır', () {
-      expect(PinUtils.verifyPin('1234', '1234'), isTrue);
-      expect(PinUtils.verifyPin('1234', '4321'), isFalse);
+    test('düz metin kaydı karşılaştırılmaz, PBKDF2ye yükseltilir', () async {
+      expect(PinUtils.verifyPin('1234', '1234'), isFalse);
+      expect(PinUtils.isPlaintext('1234'), isTrue);
+      expect(PinUtils.isPlaintext(PinUtils.hashPin('1234')), isFalse);
+
+      String? written;
+      final upgraded = await upgradePlaintextPin(
+        '1234',
+        (v) async => written = v,
+      );
+      expect(written, upgraded);
+      expect(PinUtils.isModern(upgraded), isTrue);
+      expect(PinUtils.verifyPin(upgraded, '1234'), isTrue);
+      expect(PinUtils.verifyPin(upgraded, '4321'), isFalse);
+
+      // Güncel kayıt dokunulmadan döner
+      written = null;
+      expect(await upgradePlaintextPin(upgraded, (v) async => written = v),
+          upgraded);
+      expect(written, isNull);
     });
 
     test('yükseltilen kayıt modern formatta doğrulanır', () {
