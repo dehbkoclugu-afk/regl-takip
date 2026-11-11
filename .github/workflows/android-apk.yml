@@ -60,7 +60,7 @@ jobs:
       - name: Build APK
         env:
           ALLOW_DEBUG_SIGNED_RELEASE: 'true'
-        run: flutter build apk --release --split-per-abi
+        run: flutter build apk --release --split-per-abi --dart-define=PURCHASE_VERIFY_URL=${{ secrets.PURCHASE_VERIFY_URL }}
 
       - name: Publish release
         uses: softprops/action-gh-release@v2

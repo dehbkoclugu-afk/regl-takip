@@ -12,6 +12,10 @@ workflows:
           source: true
       cancel_previous_builds: true
     environment:
+      # Satın alma doğrulama servisi (server/billing). Codemagic > Environment
+      # variables altında "billing" grubunda PURCHASE_VERIFY_URL tanımlanmalı.
+      groups:
+        - billing
       android_signing:
         - regl
       flutter: 3.44.8
@@ -40,10 +44,10 @@ workflows:
           EOF
       - name: Build app bundle
         script: |
-          flutter build appbundle --release
+          flutter build appbundle --release --dart-define=PURCHASE_VERIFY_URL="$PURCHASE_VERIFY_URL"
       - name: Build installable APKs
         script: |
-          flutter build apk --release --split-per-abi
+          flutter build apk --release --split-per-abi --dart-define=PURCHASE_VERIFY_URL="$PURCHASE_VERIFY_URL"
     artifacts:
       - build/app/outputs/bundle/release/*.aab
       - build/app/outputs/flutter-apk/*.apk
@@ -70,6 +74,10 @@ workflows:
     integrations:
       app_store_connect: Codemagic
     environment:
+      # Satın alma doğrulama servisi (server/billing). Codemagic > Environment
+      # variables altında "billing" grubunda PURCHASE_VERIFY_URL tanımlanmalı.
+      groups:
+        - billing
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.regl.reglTakip
@@ -101,7 +109,7 @@ workflows:
           xcode-project use-profiles
       - name: Flutter build ipa
         script: |
-          flutter build ipa --release --no-tree-shake-icons --export-options-plist=/Users/builder/export_options.plist
+          flutter build ipa --release --dart-define=PURCHASE_VERIFY_URL="$PURCHASE_VERIFY_URL" --no-tree-shake-icons --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
